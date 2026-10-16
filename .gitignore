@@ -1,0 +1,8 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Credenciales SMTP: viven solo en el servidor y en esta copia local.
+public/php/mail-config.php

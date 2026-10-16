@@ -1,0 +1,46 @@
+# Aterna Studio — export estático para Hostinger.
+# Sustituye a next.config.ts > headers(), incompatible con output: 'export'.
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+
+  <FilesMatch "^(aterna-symbol|aterna-wordmark|aterna-mark|aterna-lockup|icon|apple-icon|og)\.(webp|png|jpg)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+
+# Next.js exporta cada ruta como <ruta>.html, PERO cuando una ruta tiene
+# subrutas (p. ej. /servicios con /servicios/seo) también crea una carpeta
+# <ruta>/. Sin las dos líneas siguientes, Apache redirige /servicios ->
+# /servicios/ (la carpeta), no encuentra index.html y devuelve 403.
+#
+#   - MultiViews off: no negociar variantes automáticamente.
+#   - DirectorySlash off: NO redirigir /servicios a /servicios/ cuando existe
+#     la carpeta; así la regla de reescritura puede servir /servicios.html.
+<IfModule mod_negotiation.c>
+  Options -MultiViews
+</IfModule>
+<IfModule mod_dir.c>
+  DirectorySlash Off
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Si la ruta pedida NO es un archivo real pero existe <ruta>.html, servirlo.
+  # (Se quita la condición !-d a propósito: queremos servir /servicios.html
+  # aunque exista la carpeta /servicios/.) Las carpetas reales con index.html
+  # —p. ej. /ejemplos/reformas-sevilla/— no tienen un .html gemelo, así que
+  # esta regla no las toca y Apache sirve su index.html con normalidad.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+  RewriteRule ^(.+?)/?$ $1.html [L]
+</IfModule>
+
+# Índice por defecto para las carpetas que sí lo tienen (ejemplos, raíz).
+DirectoryIndex index.html
+
+# Página 404 propia (Next la exporta como 404.html).
+ErrorDocument 404 /404.html
