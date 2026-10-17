@@ -10,7 +10,7 @@ export default function Home() {
       <StudioStatement n={1} />
       <Services n={2} />
       <Approach n={3} />
-      <FinalCTA />
+      <FinalCTA n={4} />
     </>
   );
 }

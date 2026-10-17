@@ -14,12 +14,13 @@ import {
   prefersReducedMotion,
   registerGsap,
 } from "@/lib/motion";
-import { formatAmount, slugToProduct, startingPrice, type ServiceSlug } from "@/lib/pricing";
+import { formatPrice, pricing, slugToProduct, startingPrice, type ServiceSlug } from "@/lib/pricing";
 import { useReveal } from "@/lib/reveal";
 import { site } from "@/lib/site";
 import { CopyEmail } from "./CopyEmail";
-import { Arrow } from "./icons";
-import { IllStudio, approachIllustrations, serviceIllustrations } from "./illustrations";
+import { ArrowRight } from "./icons";
+import { IllClosingPlane, IllStudio, serviceIllustrations } from "./illustrations";
+import { StudioArcs, StudioField } from "./illustrations/StudioDepth";
 import { WordReveal } from "./WordReveal";
 
 /** "01 — Estudio": la numeración la pone cada página según su orden real. */
@@ -90,11 +91,11 @@ export function Hero() {
           <div className="hero__actions">
             <Link href="/contacto" className="btn-primary hero__cta">
               {t.cta}
-              <Arrow />
+              <ArrowRight />
             </Link>
             <Link href="/servicios" className="btn-ghost">
               {t.hero.secondary}
-              <Arrow />
+              <ArrowRight />
             </Link>
           </div>
         </div>
@@ -115,12 +116,13 @@ export function StudioStatement({ n }: { n?: number }) {
   const body = useReveal({ selector: "[data-r]", y: 24, stagger: 0.12 });
   return (
     <section className="section section-lg on-paper studio" id="estudio" aria-labelledby="studio-title">
+      <StudioField className="studio-field" />
       <div className="container studio__inner">
         <p className="t-label studio__eyebrow">{eyebrow(t.studioHome.eyebrow, n)}</p>
-        <div className="studio__lead">
-          <WordReveal as="h2" id="studio-title" className="t-display studio__title" text={t.studioHome.title} />
-          <IllStudio className="studio__ill" />
-        </div>
+        <WordReveal as="h2" id="studio-title" className="t-display studio__title" text={t.studioHome.title} />
+        {/* Capa de arcos con la misma caja que la ilustración, por detrás. */}
+        <StudioArcs className="studio-depth" />
+        <IllStudio className="studio__ill" />
         <div className="studio__body" ref={body}>
           <p className="t-lead" data-r>
             {t.studioHome.body[0]}
@@ -131,7 +133,7 @@ export function StudioStatement({ n }: { n?: number }) {
           <p data-r>
             <Link href="/estudio" className="btn-ghost">
               {t.studioHome.link}
-              <Arrow />
+              <ArrowRight />
             </Link>
           </p>
         </div>
@@ -140,23 +142,31 @@ export function StudioStatement({ n }: { n?: number }) {
   );
 }
 
-/** Precio de salida de un servicio, p. ej. "desde €1490" o "€390/mes". */
-export function useStartingPriceLabel() {
-  const { t } = useI18n();
-  return (slug: ServiceSlug) => {
-    const p = startingPrice[slugToProduct[slug]];
-    if (p.custom) return { label: t.common.customPrice, once: false };
-    const amount = `€${formatAmount(p.amount)}`;
-    const label = `${p.from ? `${t.common.priceFrom} ` : ""}${amount}${p.unit === "month" ? t.common.perMonth : ""}`;
-    return { label, once: p.unit === "once" };
-  };
+/**
+ * Precio de salida de un servicio, igual en toda la web: "Desde 1490 €",
+ * "Desde 390 €/mes" o "Precio personalizado". Siempre lleva "desde" porque
+ * cada servicio tiene varios planes.
+ */
+export function StartingPrice({ slug, className }: { slug: ServiceSlug; className?: string }) {
+  const { t, locale } = useI18n();
+  const product = slugToProduct[slug];
+  const p = startingPrice[product];
+  const cls = `price-tag${className ? ` ${className}` : ""}`;
+  if (p.custom) return <span className={cls}>{t.common.customPrice}</span>;
+  const from = p.from || pricing[product].length > 1;
+  return (
+    <span className={cls}>
+      {from ? <span className="price-tag__soft">{t.common.priceFrom} </span> : null}
+      <span className="price-tag__amount">{formatPrice(p.amount, locale)}</span>
+      {p.unit === "month" ? <span className="price-tag__soft">{t.common.perMonth}</span> : null}
+    </span>
+  );
 }
 
-/** Home: los cuatro servicios, cada uno con su ilustración y su página. */
+/** Home: los cuatro servicios, cada uno con su icono (el único sitio donde aparece) y su página. */
 export function Services({ n }: { n?: number }) {
   const { t } = useI18n();
   const list = useReveal<HTMLUListElement>({ selector: ".service", y: 24, stagger: 0.1 });
-  const price = useStartingPriceLabel();
   return (
     <section className="section services" id="servicios" aria-labelledby="services-title">
       <div className="container">
@@ -168,7 +178,6 @@ export function Services({ n }: { n?: number }) {
           {t.servicePages.index.cards.map((card, i) => {
             const slug = card.slug as ServiceSlug;
             const Illus = serviceIllustrations[slug];
-            const p = price(slug);
             return (
               <li className="service" key={slug}>
                 <Link href={`/servicios/${slug}`} className="service__inner">
@@ -177,10 +186,10 @@ export function Services({ n }: { n?: number }) {
                   <div className="service__body">
                     <p className="t-body muted">{card.body}</p>
                     <p className="service__meta">
-                      <span className="t-label dim">{p.label}</span>
-                      <span className="service__cta t-small">
+                      <StartingPrice slug={slug} className="t-small" />
+                      <span className="link-cta">
                         {card.cta}
-                        <Arrow />
+                        <ArrowRight />
                       </span>
                     </p>
                   </div>
@@ -193,7 +202,7 @@ export function Services({ n }: { n?: number }) {
         <div className="section-foot">
           <Link href="/servicios" className="btn-primary">
             {t.services.all}
-            <Arrow />
+            <ArrowRight />
           </Link>
         </div>
       </div>
@@ -256,18 +265,14 @@ export function Approach({ n }: { n?: number }) {
             <span className="approach__line-fill" />
           </div>
           <ol className="approach__phases">
-            {t.approach.items.map((item, i) => {
-              const Illus = approachIllustrations[i];
-              return (
-                <li className="phase" data-on="false" key={i}>
-                  <span className="phase__dot" aria-hidden="true" />
-                  <Illus className="phase__ill" />
-                  <span className="t-index phase__index">{String(i + 1).padStart(2, "0")}</span>
-                  <h3 className="phase__title">{item.title}</h3>
-                  <p className="t-small phase__body">{item.body}</p>
-                </li>
-              );
-            })}
+            {t.approach.items.map((item, i) => (
+              <li className="phase" data-on="false" key={i}>
+                <span className="phase__dot" aria-hidden="true" />
+                <span className="t-index phase__index">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="phase__title">{item.title}</h3>
+                <p className="t-small phase__body">{item.body}</p>
+              </li>
+            ))}
           </ol>
         </div>
       </div>
@@ -275,27 +280,36 @@ export function Approach({ n }: { n?: number }) {
   );
 }
 
-export function FinalCTA() {
+/** Cierre de página: el contacto, sobre papel. En la portada lleva número. */
+export function FinalCTA({ n }: { n?: number }) {
   const { t } = useI18n();
   const tail = useReveal({ selector: "[data-r]", y: 20, stagger: 0.1 });
   return (
     <section className="section section-lg on-paper final-cta" aria-labelledby="cta-title">
-      <div className="container final-cta__inner">
+      <div className="container final-cta__inner" ref={tail}>
+        <div className="final-cta__marks">
+          <p className="t-label final-cta__eyebrow">{eyebrow(t.finalCta.eyebrow, n)}</p>
+          <p className="t-label dim final-cta__disciplines" aria-hidden="true">
+            {t.common.disciplines.join(" · ")}
+          </p>
+        </div>
         <WordReveal as="h2" id="cta-title" className="t-hero final-cta__title" text={t.finalCta.title} />
-        <div className="final-cta__tail" ref={tail}>
-          <div className="final-cta__copy">
-            <p className="t-lead" data-r>
-              {t.finalCta.copy[0]}
-            </p>
-            <p className="t-body muted" data-r>
-              {t.finalCta.copy[1]}
-            </p>
-          </div>
-          <div className="final-cta__actions" data-r>
-            <Link href="/contacto" className="btn-primary">
-              {t.cta}
-              <Arrow />
-            </Link>
+        <IllClosingPlane className="final-cta__ill" />
+        <div className="final-cta__copy">
+          <p className="t-lead" data-r>
+            {t.finalCta.copy[0]}
+          </p>
+          <p className="t-body muted" data-r>
+            {t.finalCta.copy[1]}
+          </p>
+        </div>
+        <div className="final-cta__contact" data-r>
+          <Link href="/contacto" className="btn-primary">
+            {t.cta}
+            <ArrowRight />
+          </Link>
+          <div className="final-cta__mail">
+            <p className="t-label dim">{t.finalCta.mailLabel}</p>
             <CopyEmail email={site.email} />
           </div>
         </div>

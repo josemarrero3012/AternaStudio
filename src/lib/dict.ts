@@ -26,7 +26,8 @@ const es = {
     "disciplines": [
       "Diseño",
       "Desarrollo",
-      "SEO"
+      "SEO",
+      "Asistente IA"
     ],
     "positioning": "Webs premium y crecimiento orgánico",
     "scroll": "Scroll",
@@ -35,6 +36,7 @@ const es = {
     "priceFrom": "desde",
     "overview": "El servicio",
     "customPrice": "Precio personalizado",
+    "recommended": "Recomendado",
     "customPriceNote": "según los minutos que necesites"
   },
   "hero": {
@@ -81,6 +83,8 @@ const es = {
     "link": "Conocer el estudio"
   },
   "finalCta": {
+    "eyebrow": "Contacto",
+    "mailLabel": "O escríbenos directamente",
     "title": "Si tu web ya no\nrepresenta a tu negocio,\nhablemos.",
     "copy": [
       "Cuéntanos qué haces y qué quieres que tu presencia digital consiga.",
@@ -132,7 +136,7 @@ const es = {
           "kicker": "Cuota mensual",
           "title": "SEO y crecimiento orgánico",
           "body": "Que te encuentren los que ya te están buscando. Trabajo mensual, medido y reportado con honestidad.",
-          "cta": "Ver SEO y crecimiento"
+          "cta": "Ver SEO"
         },
         {
           "slug": "mantenimiento",
@@ -474,7 +478,7 @@ const es = {
         },
         {
           "title": "El movimiento con motivo",
-          "body": "Una animación tiene que explicar algo: una jerarquía, una continuidad, un cambio de estado. Si sólo está para impresionar, sobra y además cuesta batería."
+          "body": "Una animación tiene que explicar algo: una jerarquía, una continuidad, un cambio de estado. Si solo está para impresionar, sobra y además cuesta batería."
         },
         {
           "title": "Pocos proyectos a la vez",
@@ -496,7 +500,7 @@ const es = {
         },
         {
           "dt": "Qué hacemos",
-          "dd": "Diseño · Dirección de arte · Desarrollo"
+          "dd": "Diseño · Desarrollo · SEO · Asistente IA"
         },
         {
           "dt": "Disponibilidad",
@@ -543,7 +547,8 @@ const en: Dict = {
     "disciplines": [
       "Design",
       "Development",
-      "SEO"
+      "SEO",
+      "AI assistant"
     ],
     "positioning": "Premium websites and organic growth",
     "scroll": "Scroll",
@@ -552,6 +557,7 @@ const en: Dict = {
     "priceFrom": "from",
     "overview": "The service",
     "customPrice": "Custom pricing",
+    "recommended": "Recommended",
     "customPriceNote": "based on the minutes you need"
   },
   "hero": {
@@ -598,6 +604,8 @@ const en: Dict = {
     "link": "About the studio"
   },
   "finalCta": {
+    "eyebrow": "Contact",
+    "mailLabel": "Or write to us directly",
     "title": "If your website no longer\nrepresents your business,\nlet’s talk.",
     "copy": [
       "Tell us what you do and what you want your digital presence to achieve.",
@@ -649,7 +657,7 @@ const en: Dict = {
           "kicker": "Monthly",
           "title": "SEO & organic growth",
           "body": "Get found by the people already searching for you. Monthly work, measured and reported honestly.",
-          "cta": "See SEO & growth"
+          "cta": "See SEO"
         },
         {
           "slug": "mantenimiento",
@@ -1013,7 +1021,7 @@ const en: Dict = {
         },
         {
           "dt": "What we do",
-          "dd": "Design · Art direction · Development"
+          "dd": "Design · Development · SEO · AI assistant"
         },
         {
           "dt": "Availability",

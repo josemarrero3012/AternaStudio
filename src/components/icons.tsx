@@ -1,10 +1,33 @@
-// Iconos de trazo (equivalentes a lucide arrow-up-right y check), en línea
-// para no cargar una librería por dos glifos.
+// Iconos de trazo (equivalentes a lucide arrow-right, arrow-up-right y
+// check), en línea para no cargar una librería por tres glifos.
+//
+// Las flechas tienen significado: → navega dentro de la web; ↗ sale de ella
+// (enlace externo, se abre en otra pestaña).
 
-export function Arrow({ size = 15 }: { size?: number }) {
+export function ArrowRight({ size = 15 }: { size?: number }) {
   return (
     <svg
       className="arrow"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M5 12h14" />
+      <path d="m13 6 6 6-6 6" />
+    </svg>
+  );
+}
+
+export function ArrowExternal({ size = 15 }: { size?: number }) {
+  return (
+    <svg
+      className="arrow arrow--external"
       width={size}
       height={size}
       viewBox="0 0 24 24"

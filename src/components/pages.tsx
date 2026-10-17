@@ -7,12 +7,13 @@ import { withBase } from "@/lib/base";
 import Link from "next/link";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
-import { formatAmount, pricing, slugToProduct, type ServiceSlug } from "@/lib/pricing";
+import { formatPrice, pricing, slugToProduct, type ServiceSlug } from "@/lib/pricing";
 import { site } from "@/lib/site";
 import { CopyEmail } from "./CopyEmail";
-import { Arrow, Check } from "./icons";
-import { IllContact, IllLost, IllStudio, serviceIllustrations } from "./illustrations";
-import { Approach, FinalCTA, useStartingPriceLabel } from "./sections";
+import { ArrowExternal, ArrowRight, Check } from "./icons";
+import { IllContact, IllLost, IllStudioPage } from "./illustrations";
+import { EstudioArcs } from "./illustrations/StudioDepth";
+import { Approach, FinalCTA, StartingPrice } from "./sections";
 import { WordReveal } from "./WordReveal";
 
 // /servicios ----------------------------------------------------------------
@@ -20,7 +21,6 @@ import { WordReveal } from "./WordReveal";
 export function ServiciosContent() {
   const { t } = useI18n();
   const page = t.servicePages.index;
-  const price = useStartingPriceLabel();
   return (
     <>
       <section className="container page-head">
@@ -32,21 +32,18 @@ export function ServiciosContent() {
         <div className="svc-cards">
           {page.cards.map((card) => {
             const slug = card.slug as ServiceSlug;
-            const Illus = serviceIllustrations[slug];
-            const p = price(slug);
             return (
               <Link key={slug} href={`/servicios/${slug}`} className="svc-card">
-                <Illus className="svc-card__ill" />
                 <p className="t-label dim svc-card__kicker">{card.kicker}</p>
                 <h2 className="svc-card__title">{card.title}</h2>
                 <p className="t-body muted svc-card__body">{card.body}</p>
+                {/* La modalidad de pago ya la dice el antetítulo: aquí solo el importe. */}
                 <p className="svc-card__price">
-                  {p.label}
-                  {p.once ? <span className="t-label dim svc-card__once"> · {t.common.oncePayment}</span> : null}
+                  <StartingPrice slug={slug} />
                 </p>
-                <span className="t-small svc-card__cta">
+                <span className="link-cta svc-card__cta">
                   {card.cta}
-                  <Arrow />
+                  <ArrowRight />
                 </span>
               </Link>
             );
@@ -80,8 +77,10 @@ function Plan({
   features: string[];
   featured: boolean;
 }) {
+  const { t } = useI18n();
   return (
     <article className={`plan${featured ? " plan--featured" : ""}`}>
+      {featured ? <span className="t-label plan__badge">{t.common.recommended}</span> : null}
       <header className="plan__head">
         <h3 className="t-label plan__name">{name}</h3>
         <p className={`plan__price${priceSuffix === undefined && !/\d/.test(priceLabel) ? " plan__price--text" : ""}`}>
@@ -105,11 +104,10 @@ function Plan({
 }
 
 export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const product = slugToProduct[slug];
   const page = t.servicePages[product];
   const prices = pricing[product];
-  const Illus = serviceIllustrations[slug];
 
   return (
     <>
@@ -124,7 +122,6 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
       <section className="container section svc-row svc-row--first" aria-label={t.common.overview}>
         <div className="svc-row__label">
           <span className="t-label dim">{t.common.overview}</span>
-          <Illus className="svc-row__ill" />
         </div>
         <div className="svc-row__body svc-prose">
           {page.intro.map((p, i) => (
@@ -171,7 +168,7 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
                   <span className="t-label dim ex-card__label">{ex.label}</span>
                   <span className="ex-card__title">
                     {ex.title}
-                    <Arrow />
+                    <ArrowExternal />
                   </span>
                 </a>
               ))}
@@ -203,7 +200,7 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
                 />
               );
             }
-            const amount = `€${formatAmount(p.amount)}`;
+            const amount = formatPrice(p.amount, locale);
             return (
               <Plan
                 key={i}
@@ -251,14 +248,16 @@ export function EstudioContent() {
         <p className="t-label dim page-head__eyebrow">{page.eyebrow}</p>
         <WordReveal as="h1" className="t-display" text={page.h1} onScroll={false} delay={0.1} />
       </section>
-      <section className="section on-paper" aria-label={page.eyebrow}>
+      <section className="section on-paper estudio-about" aria-label={page.eyebrow}>
         <div className="container estudio__grid">
           <div className="prose">
             <p className="t-lead">{page.prose[0]}</p>
             <p className="t-body muted-strong">{page.prose[1]}</p>
             <p className="t-body muted-strong">{page.prose[2]}</p>
           </div>
-          <IllStudio className="estudio__ill" label={page.prose[0].split(".").slice(0, 2).join(".") + "."} />
+          {/* Capa de arcos y raíces con la misma caja que la ilustración, por detrás. */}
+          <EstudioArcs className="estudio-depth" />
+          <IllStudioPage className="estudio__ill" label={page.prose[0].split(".").slice(0, 2).join(".") + "."} />
         </div>
       </section>
       <section className="section" aria-labelledby="beliefs-title">
@@ -363,7 +362,7 @@ function ContactForm() {
       <div className="contact-form__footer">
         <button type="submit" className="btn-primary contact-form__submit" disabled={sending}>
           {sending ? t.contactForm.sending : t.contactForm.submit}
-          {!sending ? <Arrow /> : null}
+          {!sending ? <ArrowRight /> : null}
         </button>
         <p className="t-small contact-form__note" data-state={state} role="status" aria-live="polite">
           {note}
@@ -419,11 +418,11 @@ export function NotFoundContent() {
         <div className="not-found__actions">
           <Link href="/" className="btn-primary">
             {page.back}
-            <Arrow />
+            <ArrowRight />
           </Link>
           <Link href="/servicios" className="btn-ghost">
             {t.services.all}
-            <Arrow />
+            <ArrowRight />
           </Link>
         </div>
       </div>

@@ -42,11 +42,28 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 
 ## Ilustraciones
 
-Son SVG hechos en código con un lenguaje común (`Ill.tsx`): línea uniforme
-con un ligero temblor de trazo, tres tintas planas de la marca (azul,
-violeta y rosa) desplazadas respecto al contorno, como una risografía, y
-el árbol del símbolo como hilo conductor. Se adaptan solos a fondo claro u
-oscuro y se dibujan al entrar en pantalla, salvo con «reducir movimiento».
+El arte original está en `design/illustrations/` (PNG). `node
+scripts/prepare-illustrations.js` lo recorta, le quita el fondo y lo deja
+en WebP en `public/illustrations/`. Para cambiar una ilustración, sustituye
+el PNG con el mismo nombre y vuelve a ejecutar el script.
 
-Para crear una nueva, compón formas con `<S d="…" f="a|b|c|s" />`
-(contorno + relleno), `<Dot>`, `<Spark>` y `<Dash>`.
+| Archivo | Dónde aparece | Fondo |
+| --- | --- | --- |
+| `estudio-portada` | Portada, bloque «Estudio» | papel |
+| `estudio-pagina` | `/estudio` | papel |
+| `servicio-web`, `-seo`, `-mantenimiento`, `-asistente-ia` | Portada, lista de servicios | tinta |
+| `contacto` | `/contacto` | tinta |
+| `cierre-avion` | Cierre de página (contacto), al final de casi todas | papel |
+
+Reglas:
+
+- **Cada imagen en un solo sitio.** Los iconos de servicio viven en la lista
+  de la portada; ni las tarjetas de `/servicios` ni las fichas los repiten.
+- Las escenas (fondo crema que el script vuelve transparente) van solo
+  sobre papel. Las imágenes neón (el script las deja como luz sobre fondo
+  transparente) van solo sobre tinta.
+- Exporta los originales a ≥1200 px de ancho para que se vean nítidos en
+  pantallas retina.
+
+La 404 conserva su dibujo SVG hecho en código (`IllLost`, motor en
+`Ill.tsx`).

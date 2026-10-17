@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { LOCALES } from "@/lib/dict";
 import { useI18n } from "@/lib/i18n";
 import { site } from "@/lib/site";
-import { Arrow } from "./icons";
+import { ArrowRight } from "./icons";
 
 function LangToggle({ className = "" }: { className?: string }) {
   const { locale, setLocale, t } = useI18n();
@@ -118,7 +118,7 @@ function MobileMenu() {
         <div className="menu-panel__foot">
           <Link href="/contacto" className="btn-primary">
             {t.cta}
-            <Arrow />
+            <ArrowRight />
           </Link>
           <a href={`mailto:${site.email}`} className="t-small link-underline muted">
             {site.email}
@@ -132,17 +132,38 @@ function MobileMenu() {
 export function Header() {
   const pathname = usePathname();
   const { t } = useI18n();
+  const header = useRef<HTMLElement>(null);
   const [scrolled, setScrolled] = useState(false);
+  // Superficie que pasa por debajo: sobre papel la cabecera se vuelve clara
+  // (el velo de tinta sobre papel quedaba gris y el logo desaparecía).
+  const [surface, setSurface] = useState<"ink" | "paper">("ink");
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      setScrolled(window.scrollY > 24);
+      const el = header.current;
+      if (!el) return;
+      const y = el.getBoundingClientRect().height / 2;
+      const below = document.elementsFromPoint(window.innerWidth / 2, y).find((n) => !el.contains(n));
+      setSurface(below?.closest(".on-paper") ? "paper" : "ink");
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [pathname]);
 
   return (
-    <header className="header" data-scrolled={scrolled}>
+    <header ref={header} className="header" data-scrolled={scrolled} data-surface={surface}>
       <div className="container header__inner">
         <Link href="/" className="header__brand" aria-label={`${site.name} — inicio`}>
           <Image src={withBase("/brand/aterna-symbol.webp")} alt="" width={319} height={320} priority className="header__symbol" />
@@ -167,7 +188,7 @@ export function Header() {
           <LangToggle className="header__lang" />
           <Link href="/contacto" className="btn-primary header__cta">
             {t.cta}
-            <Arrow />
+            <ArrowRight />
           </Link>
         </div>
         <MobileMenu />

@@ -11,8 +11,13 @@
 //   3. contorno.
 // Al entrar en pantalla los contornos se dibujan y los rellenos "caen" a su
 // sitio. Sin JS o con prefers-reduced-motion se muestra el estado final.
+//
+// Una sola plumilla: grosor, desplazamiento y temblor se fijan en píxeles de
+// pantalla (ver `nib`), no en unidades del viewBox. Así un icono de 96 px y
+// una escena de 430 px parecen dibujados por la misma mano.
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { withBase } from "@/lib/base";
 
 export type Tone = "a" | "b" | "c" | "s";
 
@@ -69,6 +74,16 @@ export const rrect = (x: number, y: number, w: number, h: number, r: number) =>
 
 // Contenedor ---------------------------------------------------------------
 
+/**
+ * Plumilla en px de pantalla según el ancho dibujado: crece muy poco con el
+ * tamaño (1,75 px en un icono, 2,6 px en una escena) para que la línea no se
+ * vuelva un hilo en lo pequeño ni un rotulador en lo grande.
+ */
+function nib(width: number) {
+  const line = Math.min(2.6, Math.max(1.75, 1.5 + width / 400));
+  return { line, offset: line * 1.6, rough: 1.1 };
+}
+
 type IllProps = {
   viewBox: string;
   children: ReactNode;
@@ -101,6 +116,28 @@ export function Ill({ viewBox, children, className, label }: IllProps) {
     return () => io.disconnect();
   }, []);
 
+  // Pasa la plumilla de px de pantalla a unidades del viewBox de este SVG.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !("ResizeObserver" in window)) return;
+    const vbWidth = el.viewBox.baseVal.width;
+    const displace = el.querySelector("feDisplacementMap");
+    const apply = () => {
+      const w = el.getBoundingClientRect().width;
+      if (!w || !vbWidth) return;
+      const u = vbWidth / w;
+      const { line, offset, rough } = nib(w);
+      el.style.setProperty("--ill-sw", String(line * u));
+      el.style.setProperty("--ill-off", `${offset * u}px`);
+      el.style.setProperty("--ill-dash", `${0.77 * line * u} ${3.46 * line * u}`);
+      displace?.setAttribute("scale", String(rough * u));
+    };
+    apply();
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   return (
     <svg
       ref={ref}
@@ -120,5 +157,57 @@ export function Ill({ viewBox, children, className, label }: IllProps) {
       </defs>
       <g filter={`url(#rough-${uid})`}>{children}</g>
     </svg>
+  );
+}
+
+// Ilustraciones en imagen ---------------------------------------------------
+
+type IllImageProps = {
+  src: string;
+  width: number;
+  height: number;
+  className?: string;
+  label?: string;
+};
+
+/**
+ * Ilustración rasterizada (PNG/WebP sin fondo). Entra con un fundido y una
+ * leve subida al aparecer en pantalla, igual que las vectoriales.
+ */
+export function IllImage({ src, width, height, className, label }: IllImageProps) {
+  const ref = useRef<HTMLImageElement>(null);
+  const [anim, setAnim] = useState<"static" | "pending" | "in">("static");
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!("IntersectionObserver" in window)) return;
+    setAnim("pending");
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          io.disconnect();
+          requestAnimationFrame(() => setAnim("in"));
+        }
+      },
+      { threshold: 0.25, rootMargin: "0px 0px -6% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <img
+      ref={ref}
+      src={withBase(src)}
+      width={width}
+      height={height}
+      alt={label ?? ""}
+      aria-hidden={label ? undefined : true}
+      loading="lazy"
+      decoding="async"
+      className={`ill-img${className ? ` ${className}` : ""}`}
+      data-anim={anim}
+    />
   );
 }

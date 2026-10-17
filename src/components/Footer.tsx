@@ -48,6 +48,9 @@ export function Footer() {
           </ul>
         </div>
       </div>
+      <div className="container" aria-hidden="true">
+        <p className="footer__giant">Aterna</p>
+      </div>
       <div className="container footer__base">
         <p className="t-label dim">
           © {new Date().getFullYear()} {site.name}

@@ -1,3 +1,5 @@
+import type { Locale } from "./dict";
+
 export type Price = {
   amount: number;
   unit: "once" | "month";
@@ -47,6 +49,14 @@ export const slugToProduct = {
 
 export type ServiceSlug = keyof typeof slugToProduct;
 
-export function formatAmount(amount: number) {
-  return new Intl.NumberFormat("es-ES").format(amount);
+/**
+ * Importe con la convención de cada idioma: "1490 €" en español (símbolo
+ * detrás, como en los textos) y "€1,490" en inglés.
+ */
+export function formatPrice(amount: number, locale: Locale) {
+  return new Intl.NumberFormat(locale === "es" ? "es-ES" : "en-GB", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(amount);
 }
