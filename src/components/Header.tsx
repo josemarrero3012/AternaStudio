@@ -1,5 +1,6 @@
 "use client";
 
+import { withBase } from "@/lib/base";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -144,8 +145,8 @@ export function Header() {
     <header className="header" data-scrolled={scrolled}>
       <div className="container header__inner">
         <Link href="/" className="header__brand" aria-label={`${site.name} — inicio`}>
-          <Image src="/brand/aterna-symbol.webp" alt="" width={319} height={320} priority className="header__symbol" />
-          <Image src="/brand/aterna-wordmark.webp" alt={site.name} width={917} height={256} priority className="header__wordmark" />
+          <Image src={withBase("/brand/aterna-symbol.webp")} alt="" width={319} height={320} priority className="header__symbol" />
+          <Image src={withBase("/brand/aterna-wordmark.webp")} alt={site.name} width={917} height={256} priority className="header__wordmark" />
         </Link>
         <nav className="header__nav" aria-label="Principal">
           <ul>

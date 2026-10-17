@@ -2,6 +2,7 @@
 
 // Secciones compartidas entre páginas.
 
+import { withBase } from "@/lib/base";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { useI18n } from "@/lib/i18n";
@@ -65,14 +66,14 @@ export function Hero() {
         <video
           ref={video}
           className="hero__video"
-          poster="/brand/hero-tree-poster.jpg"
+          poster={withBase("/brand/hero-tree-poster.jpg")}
           muted
           loop
           playsInline
           preload="metadata"
         >
-          <source src="/brand/hero-tree.webm" type="video/webm" />
-          <source src="/brand/hero-tree.mp4" type="video/mp4" />
+          <source src={withBase("/brand/hero-tree.webm")} type="video/webm" />
+          <source src={withBase("/brand/hero-tree.mp4")} type="video/mp4" />
         </video>
         <div className="hero__scrim" />
       </div>

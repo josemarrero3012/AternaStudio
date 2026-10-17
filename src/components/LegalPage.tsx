@@ -1,10 +1,11 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { basePath } from "@/lib/base";
 
 // Las páginas legales se publican tal cual las redactó el titular (en
 // src/content/legal/*.html). Se leen en build: no viajan en el JS.
 export function LegalPage({ file, title, lang }: { file: string; title: string; lang: "es" | "de" }) {
-  const html = readFileSync(path.join(process.cwd(), "src/content/legal", `${file}.html`), "utf8");
+  const html = readFileSync(path.join(process.cwd(), "src/content/legal", `${file}.html`), "utf8").replaceAll('href="/', `href="${basePath}/`);
   return (
     <section className="container page-head legal" lang={lang}>
       <p className="t-label dim page-head__eyebrow">Legal</p>

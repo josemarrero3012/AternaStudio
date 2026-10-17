@@ -4,6 +4,8 @@ Código fuente de aternastudio.com. Es Next.js con exportación estática:
 `npm run build` genera la carpeta `out/` y esa carpeta es la web que se
 sube a Hostinger. No hace falta Node.js en el servidor.
 
+**Demo en vivo:** https://josemarrero3012.github.io/AternaStudio/
+
 ## Uso
 
 ```bash
@@ -17,6 +19,13 @@ Para publicar, sube el **contenido** de `out/` a `public_html/`. Incluye
 
 > `public/php/mail-config.php` (credenciales SMTP) **no está en git**. Si
 > clonas el repo, cópialo desde el servidor antes de compilar.
+
+### Demo en GitHub Pages
+
+Cada push a `main` ejecuta `.github/workflows/pages.yml`, que compila con
+`NEXT_PUBLIC_BASE_PATH=/AternaStudio` y publica `out/`. En la demo el
+formulario de contacto no envía (no hay PHP en Pages). Para compilar así en
+local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 
 ## Dónde está cada cosa
 

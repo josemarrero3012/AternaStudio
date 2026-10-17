@@ -1,3 +1,4 @@
+import { withBase } from "@/lib/base";
 import type { Metadata, Viewport } from "next";
 import { Archivo, Fraunces, Geist_Mono } from "next/font/google";
 import { Curtain, Cursor, PageTransition, SmoothScroll, WhatsAppWidget } from "@/components/Chrome";
@@ -16,7 +17,7 @@ const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono"
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   ...pageMeta({ path: "/" }),
-  icons: { icon: [{ url: "/favicon.ico" }, { url: "/brand/icon.png", type: "image/png" }], apple: "/brand/apple-icon.png" },
+  icons: { icon: [{ url: withBase("/favicon.ico") }, { url: withBase("/brand/icon.png"), type: "image/png" }], apple: withBase("/brand/apple-icon.png") },
 };
 
 export const viewport: Viewport = { themeColor: "#08080a" };

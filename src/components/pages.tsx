@@ -3,6 +3,7 @@
 // Contenido de cada página. Son componentes de cliente porque los textos
 // cambian con el selector de idioma; el HTML exportado sale en español.
 
+import { withBase } from "@/lib/base";
 import Link from "next/link";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
@@ -166,7 +167,7 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
             <p className="t-body muted svc-examples__lead">{page.examplesLead}</p>
             <div className="ex-cards">
               {page.examples.map((ex, i) => (
-                <a key={i} className="ex-card" href={ex.href} target="_blank" rel="noopener noreferrer">
+                <a key={i} className="ex-card" href={withBase(ex.href)} target="_blank" rel="noopener noreferrer">
                   <span className="t-label dim ex-card__label">{ex.label}</span>
                   <span className="ex-card__title">
                     {ex.title}

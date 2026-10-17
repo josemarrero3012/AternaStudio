@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   output: "export",
   images: { unoptimized: true },
   trailingSlash: false,
+  // En GitHub Pages la web vive en /AternaStudio (ver .github/workflows).
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || undefined,
 };
 
 export default nextConfig;
