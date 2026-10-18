@@ -1,153 +1,11 @@
 /* ==========================================================================
    Aterna Studio — sistema de diseño
-   Tokens → base → tipografía → componentes → secciones → páginas →
-   ilustraciones. Mobile-first; los cortes son 768 px y 1024 px.
+   Tokens (src/styles/tokens.css) → base → tipografía → componentes →
+   secciones → páginas → ilustraciones. Mobile-first; los cortes son 768 px
+   y 1024 px.
    ========================================================================== */
 
-/* Tokens ------------------------------------------------------------------ */
-
-:root {
-  /* Marca */
-  --aterna-blue: #17459b;
-  --aterna-blue-bright: #2e63d6;
-  --aterna-blue-deep: #0e2a66;
-  --aterna-violet: #7d3790;
-  --aterna-rose: #ff2073;
-  --aterna-rose-deep: #b0154e;
-  --aterna-blue-on-ink: #3d72d8;
-  --aterna-violet-on-ink: #a558c4;
-  --aterna-rose-on-ink: #ff4d8f;
-  --brand-gradient: linear-gradient(135deg, #17459b 0%, #7d3790 52%, #ff2073 100%);
-  --brand-gradient-h: linear-gradient(90deg, #17459b 0%, #7d3790 52%, #ff2073 100%);
-  --brand-gradient-on-ink: linear-gradient(90deg, #5b8cf0 0%, #b46ad3 50%, #ff5a98 100%);
-  /* Para texto sobre el vídeo del hero, donde el azul de marca se pierde. */
-  --brand-gradient-light: linear-gradient(90deg, #9db8ff 0%, #d29cf0 50%, #ff8db5 100%);
-
-  /* Superficies */
-  --ink: #08080a;
-  --ink-raised: #101014;
-  --ink-hair: #f4f2ee1a;
-  --ink-hair-strong: #f4f2ee38;
-  /* Papel: crema cálido; sus textos, negro casi puro y grises cálidos. */
-  --paper: #f3f0ec;
-  --paper-raised: #e9e5df;
-  --paper-hair: #1111111f;
-  --paper-hair-strong: #11111140;
-  --text-hi: #f4f2ee;
-  --text-mid: #a3a3ac;
-  --text-low: #8d8d98; /* 6,1:1 sobre tinta; antes #7c7c87, 4,85:1 al límite */
-  --text-ink-hi: #111111;
-  --text-ink-mid: #55504a; /* 7:1 sobre papel */
-  --text-ink-low: #655f58; /* 5,5:1 sobre papel */
-
-  /* Acentos puntuales (dibujos y detalles, no texto: el magenta da 3,3:1). */
-  --accent-violet: #8d42e8;
-  --accent-magenta: #f02ca8;
-  --accent-blue: #2e63d6;
-
-  /* Contexto por defecto: fondo tinta */
-  --surface: var(--ink);
-  --surface-raised: var(--ink-raised);
-  --on-surface-hi: var(--text-hi);
-  --on-surface-mid: var(--text-mid);
-  --on-surface-low: var(--text-low);
-  --hair: var(--ink-hair);
-  --hair-strong: var(--ink-hair-strong);
-  /* Línea de campo de formulario: ≥3:1 con el fondo (WCAG 1.4.11). */
-  --field-line: #f4f2ee6b;
-
-  /* Tipografía */
-  --font-display: var(--font-fraunces), "Times New Roman", serif;
-  --font-ui: var(--font-archivo), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
-  --t-hero: clamp(2.75rem, 1.125rem + 6.25vw, 6.75rem);
-  --t-display: clamp(2.125rem, 1.15rem + 4.6vw, 4.75rem);
-  --t-title: clamp(1.6875rem, 1.35rem + 1.6vw, 2.75rem);
-  --t-card: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
-  --t-lead: clamp(1.1875rem, 1.1rem + 0.35vw, 1.5rem);
-  --t-body: clamp(1rem, 0.98rem + 0.1vw, 1.0625rem);
-  --t-small: 0.875rem;
-  --t-label: clamp(0.75rem, 0.73rem + 0.08vw, 0.8125rem);
-  --lh-hero: 0.92;
-  --lh-display: 0.98;
-  --lh-title: 1.06;
-  --lh-lead: 1.5;
-  --lh-body: 1.62;
-  --ls-hero: -0.02em;
-  --ls-display: -0.016em;
-  --ls-title: -0.02em;
-  --ls-lead: -0.01em;
-  --ls-label: 0.18em;
-  --measure: 62ch;
-
-  /* Espacio (escala de 4/8 px) */
-  --s-1: 4px;
-  --s-2: 8px;
-  --s-3: 12px;
-  --s-4: 16px;
-  --s-5: 24px;
-  --s-6: 32px;
-  --s-7: 40px;
-  --s-8: 48px;
-  --s-9: 64px;
-  --s-10: 80px;
-  --s-12: 128px;
-  --section-y: clamp(80px, 9vw, 160px);
-  --section-y-lg: clamp(104px, 13vw, 220px);
-  --block-y: clamp(40px, 4vw, 64px);
-  --head-top: clamp(120px, 10vw, 152px);
-  --gutter: 16px;
-  --margin: 20px;
-  --container: 1440px;
-
-  /* Forma y movimiento */
-  --r-xs: 2px;
-  --r-card: 10px;
-  --r-pill: 999px;
-  --d-micro: 0.2s;
-  --d-std: 0.45s;
-  --d-cine: 0.9s;
-  --e-aterna: cubic-bezier(0.16, 1, 0.3, 1);
-  --e-inout: cubic-bezier(0.65, 0, 0.35, 1);
-  --e-out: cubic-bezier(0.22, 1, 0.36, 1);
-
-  /* Capas */
-  --z-base: 1;
-  --z-header: 50;
-  --z-float: 80;
-  --z-menu: 90;
-  --z-curtain: 100;
-
-  /* Ilustraciones sobre tinta */
-  --ill-a: #3d72d8;
-  --ill-b: #a558c4;
-  --ill-c: #ff3d84;
-  --ill-s: #1d1d25;
-}
-
-@media (min-width: 768px) {
-  :root {
-    --gutter: 24px;
-    --margin: 48px;
-  }
-}
-
-.on-paper {
-  --surface: var(--paper);
-  --surface-raised: var(--paper-raised);
-  --on-surface-hi: var(--text-ink-hi);
-  --on-surface-mid: var(--text-ink-mid);
-  --on-surface-low: var(--text-ink-low);
-  --hair: var(--paper-hair);
-  --hair-strong: var(--paper-hair-strong);
-  --field-line: #08080a80;
-  --ill-a: #2e63d6;
-  --ill-b: #a558c4;
-  --ill-c: #ff2073;
-  --ill-s: #e2ddd3;
-  background-color: var(--surface);
-  color: var(--on-surface-hi);
-}
+@import "../styles/tokens.css";
 
 /* Base -------------------------------------------------------------------- */
 
@@ -162,6 +20,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Las anclas (p. ej. «Ver planes») quedan bajo la cabecera fija, no tapadas. */
+  scroll-padding-top: calc(var(--header-h) + var(--s-5));
 }
 
 body {
@@ -261,6 +121,24 @@ h4 {
 
 .skip-link:focus-visible {
   top: var(--s-4);
+}
+
+/* Scroll suave (Lenis, ver Chrome.tsx). */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+[tabindex="-1"]:focus-visible {
+  outline: none;
 }
 
 /* Layout ------------------------------------------------------------------ */
@@ -419,15 +297,18 @@ h4 {
   cursor: pointer;
 }
 
+/* Principal: pastilla rellena del color del texto, la única de cada vista.
+   Al pasar, rosa de marca (tokens --btn-* por superficie). */
 .btn-primary {
   padding: 0 28px;
-  border: 1px solid var(--on-surface-hi);
+  border: 1px solid var(--btn-bg);
   border-radius: var(--r-pill);
-  color: var(--on-surface-hi);
-  background-color: transparent;
+  color: var(--btn-fg);
+  background-color: var(--btn-bg);
   text-transform: uppercase;
   transition:
     background-color var(--d-micro) var(--e-out),
+    border-color var(--d-micro) var(--e-out),
     color var(--d-micro) var(--e-out);
 }
 
@@ -468,10 +349,15 @@ h4 {
   --arrow-nudge: translate(2px, -2px);
 }
 
+.arrow--down {
+  --arrow-nudge: translateY(3px);
+}
+
 @media (hover: hover) {
   .btn-primary:hover {
-    background-color: var(--on-surface-hi);
-    color: var(--surface);
+    border-color: var(--btn-hover-bg);
+    background-color: var(--btn-hover-bg);
+    color: var(--btn-hover-fg);
   }
 
   .btn-primary:hover .arrow,
@@ -577,7 +463,7 @@ h4 {
 }
 
 .header[data-scrolled="true"] {
-  background-color: #08080ab8;
+  background-color: var(--ink-veil);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
@@ -602,11 +488,15 @@ body:not([data-menu="open"]) .header[data-surface="paper"] {
   --on-surface-mid: var(--text-ink-mid);
   --on-surface-low: var(--text-ink-low);
   --hair: var(--paper-hair);
+  --btn-bg: var(--text-ink-hi);
+  --btn-fg: var(--paper);
+  --btn-hover-bg: var(--aterna-rose-deep);
+  --btn-hover-fg: var(--paper);
   color: var(--text-ink-hi);
 }
 
 body:not([data-menu="open"]) .header[data-surface="paper"][data-scrolled="true"] {
-  background-color: #f3f0ecd9;
+  background-color: var(--paper-veil);
 }
 
 body:not([data-menu="open"]) .header[data-surface="paper"]::after {
@@ -621,7 +511,7 @@ body:not([data-menu="open"]) .header[data-surface="paper"] :focus-visible {
   display: flex;
   align-items: center;
   gap: var(--s-6);
-  height: 68px;
+  height: var(--header-h);
 }
 
 .header__brand {
@@ -657,10 +547,6 @@ body:not([data-menu="open"]) .header[data-surface="paper"] :focus-visible {
 }
 
 @media (min-width: 1024px) {
-  .header__inner {
-    height: 84px;
-  }
-
   .header__symbol {
     height: 34px;
   }
@@ -1727,12 +1613,32 @@ body[data-menu="open"] .whatsapp-widget,
   gap: var(--s-2) var(--s-5);
 }
 
+.footer__cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-7) var(--gutter);
+}
+
+.footer__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.footer__col ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
 .footer__nav a,
 .footer__legal a,
+.footer__col a,
 .footer__contact > a {
   min-height: 32px;
   display: inline-flex;
   align-items: center;
+  gap: 6px;
 }
 
 .footer__contact {
@@ -1763,6 +1669,7 @@ body[data-menu="open"] .whatsapp-widget,
 .footer__base {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
   gap: var(--s-4);
   margin-top: var(--s-6);
@@ -1776,6 +1683,11 @@ body[data-menu="open"] .whatsapp-widget,
     flex-direction: row;
     justify-content: space-between;
     gap: var(--s-9);
+  }
+
+  .footer__cols {
+    grid-template-columns: repeat(3, auto);
+    column-gap: var(--s-9);
   }
 
   .footer__nav ul {
@@ -1852,6 +1764,10 @@ body[data-menu="open"] .whatsapp-widget,
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .svc-cards--three {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
   .svc-card {
     padding: var(--s-7);
   }
@@ -1868,6 +1784,68 @@ body[data-menu="open"] .whatsapp-widget,
 
 .svc-head__lead {
   max-width: 46ch;
+}
+
+/* Migas: mismo aspecto que el antetítulo, con la sección enlazada. */
+.crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+}
+
+/* La barra va tras cada miga (no delante): si la línea se parte, se queda
+   arriba y no encabeza la segunda línea. */
+.crumbs li:not(:last-child)::after {
+  content: "/";
+  margin-left: var(--s-3);
+  color: var(--on-surface-low);
+}
+
+.crumbs a {
+  color: var(--on-surface-mid);
+}
+
+.crumbs [aria-current="page"] {
+  color: var(--on-surface-hi);
+}
+
+/* Franja de precio bajo la cabecera: precio de salida a la izquierda y las
+   dos acciones a la derecha, entre filetes. */
+.svc-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-5) var(--s-7);
+  margin-top: var(--s-8);
+  padding-block: var(--s-5);
+  border-block: 1px solid var(--hair);
+}
+
+.svc-summary__price {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.svc-summary__price .price-tag {
+  font-size: 1.375rem;
+}
+
+.svc-summary__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3) var(--s-6);
+}
+
+.other-svcs {
+  padding-top: 0;
+}
+
+.other-svcs__head {
+  margin-bottom: var(--s-7);
 }
 
 .svc-row {
@@ -2134,6 +2112,10 @@ body[data-menu="open"] .whatsapp-widget,
     gap: var(--s-8);
   }
 
+  .svc-head .svc-summary {
+    grid-column: 1 / -1;
+  }
+
   .svc-row {
     grid-template-columns: minmax(200px, 1fr) minmax(0, 3fr);
     gap: var(--s-8);
@@ -2323,6 +2305,13 @@ body[data-menu="open"] .whatsapp-widget,
   width: min(100%, 420px);
 }
 
+.contact-grid__channels {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-4);
+}
+
 /* Escritorio: el formulario sube a la altura del titular (antes empezaba
    640 px más abajo y dejaba vacía la esquina superior derecha). */
 @media (min-width: 1024px) {
@@ -2405,6 +2394,17 @@ body[data-menu="open"] .whatsapp-widget,
   border-bottom-color: var(--on-surface-hi);
 }
 
+/* Error solo después de que la persona haya tocado el campo. */
+.contact-form__field input:user-invalid,
+.contact-form__field textarea:user-invalid {
+  border-bottom-color: var(--aterna-rose-on-ink);
+}
+
+.contact-form__field input:disabled,
+.contact-form__field textarea:disabled {
+  opacity: 0.6;
+}
+
 .contact-form__consent {
   border: 0;
 }
@@ -2464,16 +2464,22 @@ body[data-menu="open"] .whatsapp-widget,
   gap: var(--s-4);
 }
 
-.contact-form__note:empty {
-  display: none;
+.contact-form__note[data-state="sent"],
+.contact-form__note[data-state="error"] {
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid;
+  border-radius: var(--r-card);
+  color: var(--text-hi);
 }
 
 .contact-form__note[data-state="sent"] {
-  color: #6fdc9b;
+  border-color: color-mix(in srgb, var(--ok-on-ink) 55%, transparent);
+  background-color: color-mix(in srgb, var(--ok-on-ink) 10%, transparent);
 }
 
 .contact-form__note[data-state="error"] {
-  color: var(--aterna-rose-on-ink);
+  border-color: color-mix(in srgb, var(--aterna-rose-on-ink) 60%, transparent);
+  background-color: color-mix(in srgb, var(--aterna-rose-on-ink) 10%, transparent);
 }
 
 .detail__facts {

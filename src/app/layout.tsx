@@ -1,7 +1,7 @@
 import { withBase } from "@/lib/base";
 import type { Metadata, Viewport } from "next";
 import { Archivo, Fraunces, Geist_Mono } from "next/font/google";
-import { Curtain, Cursor, PageTransition, SmoothScroll, WhatsAppWidget } from "@/components/Chrome";
+import { Curtain, Cursor, PageTransition, SkipLink, SmoothScroll, WhatsAppWidget } from "@/components/Chrome";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { JsonLd } from "@/components/JsonLd";
@@ -52,14 +52,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <JsonLd data={organization} />
         <LanguageProvider>
-          <a href="#contenido" className="skip-link">
-            Saltar al contenido
-          </a>
+          <SkipLink />
           <Curtain />
           <Cursor />
           <SmoothScroll>
             <Header />
-            <main id="contenido">
+            <main id="contenido" tabIndex={-1}>
               <PageTransition>{children}</PageTransition>
             </main>
             <Footer />

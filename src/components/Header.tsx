@@ -94,6 +94,7 @@ function MobileMenu() {
         ref={panel}
         className="menu-panel"
         data-open={open}
+        data-lenis-prevent
         role="dialog"
         aria-modal={open}
         aria-label="Navegación"

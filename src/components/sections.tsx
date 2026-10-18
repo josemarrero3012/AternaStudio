@@ -40,10 +40,17 @@ export function Hero() {
   useEffect(() => {
     if (prefersReducedMotion()) return;
     registerGsap();
+    // El vídeo solo se reproduce mientras se ve: fuera de pantalla se pausa
+    // (batería y CPU).
     const v = video.current;
+    let io: IntersectionObserver | null = null;
     if (v) {
       v.muted = true;
-      v.play().catch(() => {});
+      io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) v.play().catch(() => {});
+        else v.pause();
+      });
+      io.observe(v);
     }
     const ctx = gsap.context(() => {
       if (media.current) {
@@ -59,6 +66,7 @@ export function Hero() {
       }
     });
     return () => {
+      io?.disconnect();
       ctx.revert();
       ScrollTrigger.refresh();
     };
@@ -212,7 +220,7 @@ export function Services({ n }: { n?: number }) {
           })}
         </ul>
         <div className="section-foot">
-          <Link href="/servicios" className="btn-primary">
+          <Link href="/servicios" className="btn-ghost">
             {t.services.all}
             <ArrowRight />
           </Link>

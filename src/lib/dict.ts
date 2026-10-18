@@ -22,6 +22,7 @@ const es = {
     }
   ],
   "cta": "Empezar un proyecto",
+  "skip": "Saltar al contenido",
   "common": {
     "disciplines": [
       "Diseño",
@@ -37,7 +38,9 @@ const es = {
     "overview": "El servicio",
     "customPrice": "Precio personalizado",
     "recommended": "Recomendado",
-    "customPriceNote": "según los minutos que necesites"
+    "customPriceNote": "según los minutos que necesites",
+    "seePlans": "Ver planes",
+    "otherServices": "Otros servicios"
   },
   "hero": {
     "eyebrow": "Estudio digital independiente",
@@ -543,6 +546,7 @@ const en: Dict = {
     }
   ],
   "cta": "Start a project",
+  "skip": "Skip to content",
   "common": {
     "disciplines": [
       "Design",
@@ -558,7 +562,9 @@ const en: Dict = {
     "overview": "The service",
     "customPrice": "Custom pricing",
     "recommended": "Recommended",
-    "customPriceNote": "based on the minutes you need"
+    "customPriceNote": "based on the minutes you need",
+    "seePlans": "See plans",
+    "otherServices": "Other services"
   },
   "hero": {
     "eyebrow": "Independent digital studio",

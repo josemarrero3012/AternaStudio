@@ -2,7 +2,7 @@
 // check), en línea para no cargar una librería por tres glifos.
 //
 // Las flechas tienen significado: → navega dentro de la web; ↗ sale de ella
-// (enlace externo, se abre en otra pestaña).
+// (enlace externo, se abre en otra pestaña); ↓ baja dentro de la página.
 
 export function ArrowRight({ size = 15 }: { size?: number }) {
   return (
@@ -20,6 +20,26 @@ export function ArrowRight({ size = 15 }: { size?: number }) {
     >
       <path d="M5 12h14" />
       <path d="m13 6 6 6-6 6" />
+    </svg>
+  );
+}
+
+export function ArrowDown({ size = 15 }: { size?: number }) {
+  return (
+    <svg
+      className="arrow arrow--down"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 5v14" />
+      <path d="m6 13 6 6 6-6" />
     </svg>
   );
 }

@@ -35,7 +35,8 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 | Precios | `src/lib/pricing.ts` |
 | Datos de contacto, URL | `src/lib/site.ts` |
 | Títulos y descripciones SEO | `metadata` de cada `src/app/**/page.tsx` |
-| Sistema de diseño (tokens y estilos) | `src/app/globals.css` |
+| Tokens de diseño (color, tipo, espacio, forma, movimiento) | `src/styles/tokens.css` |
+| Estilos de componentes y páginas | `src/app/globals.css` |
 | Ilustraciones | `src/components/illustrations/` |
 | Páginas legales (HTML literal) | `src/content/legal/` |
 | Imagen para redes (OG) | `public/brand/og.png` (se regenera con `scripts/og-image.js`) |
