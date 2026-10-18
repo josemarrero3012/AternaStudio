@@ -28,6 +28,9 @@ function eyebrow(text: string, n?: number) {
   return n ? `${String(n).padStart(2, "0")} — ${text}` : text;
 }
 
+/** Pantallas que necesitan el vídeo de 2560 px. */
+const WIDE = "(min-width: 1440px), (min-resolution: 2dppx) and (min-width: 1000px)";
+
 export function Hero() {
   const { t } = useI18n();
   const media = useRef<HTMLDivElement>(null);
@@ -67,14 +70,23 @@ export function Hero() {
         <video
           ref={video}
           className="hero__video"
-          poster={withBase("/brand/hero-tree-poster.jpg")}
+          poster={withBase("/brand/hero-tree-poster-1920.jpg")}
           muted
           loop
           playsInline
           preload="metadata"
         >
-          <source src={withBase("/brand/hero-tree.webm")} type="video/webm" />
-          <source src={withBase("/brand/hero-tree.mp4")} type="video/mp4" />
+          {/* Escalado con Real-ESRGAN desde el 720p original. El navegador
+              elige la primera que encaja: recorte vertical en pantallas
+              altas, 2560 px en pantallas grandes o retina, 1920 px en el
+              resto. Nombres nuevos a propósito: .htaccess cachea los vídeos
+              un año como inmutables. */}
+          <source media="(max-aspect-ratio: 3/4)" src={withBase("/brand/hero-tree-portrait.webm")} type="video/webm" />
+          <source media="(max-aspect-ratio: 3/4)" src={withBase("/brand/hero-tree-portrait.mp4")} type="video/mp4" />
+          <source media={WIDE} src={withBase("/brand/hero-tree-2560.webm")} type="video/webm" />
+          <source media={WIDE} src={withBase("/brand/hero-tree-2560.mp4")} type="video/mp4" />
+          <source src={withBase("/brand/hero-tree-1920.webm")} type="video/webm" />
+          <source src={withBase("/brand/hero-tree-1920.mp4")} type="video/mp4" />
         </video>
         <div className="hero__scrim" />
       </div>
