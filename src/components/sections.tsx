@@ -76,7 +76,7 @@ export function Hero() {
         <video
           ref={video}
           className="hero__video"
-          poster={withBase("/brand/hero-tree-poster-1920.jpg")}
+          poster={withBase("/brand/hero-tree-poster-1920.webp")}
           muted
           loop
           playsInline

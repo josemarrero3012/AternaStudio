@@ -27,13 +27,13 @@ export function pageMeta({
       locale: "es_ES",
       title: fullTitle,
       description,
-      images: [{ url: `${site.url}/brand/og.png`, width: 1200, height: 630, alt: site.name }],
+      images: [{ url: `${site.url}/brand/og.jpg`, width: 1200, height: 630, alt: site.name }],
     },
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description,
-      images: [`${site.url}/brand/og.png`],
+      images: [`${site.url}/brand/og.jpg`],
     },
   };
 }

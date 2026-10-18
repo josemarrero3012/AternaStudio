@@ -38,7 +38,7 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 | Tokens de diseño (color, tipo, espacio, forma, movimiento) | `src/styles/tokens.css` |
 | Estilos de componentes y páginas | `src/app/globals.css` |
 | Páginas legales (HTML literal) | `src/content/legal/` |
-| Imagen para redes (OG) | `public/brand/og.png` (se regenera con `scripts/og-image.js`) |
+| Imagen para redes (OG) | `public/brand/og.jpg` (se regenera con `scripts/og-image.js`) |
 
 ## Imágenes
 
