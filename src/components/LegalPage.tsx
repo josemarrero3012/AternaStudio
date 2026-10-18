@@ -7,7 +7,7 @@ import { basePath } from "@/lib/base";
 export function LegalPage({ file, title, lang }: { file: string; title: string; lang: "es" | "de" }) {
   const html = readFileSync(path.join(process.cwd(), "src/content/legal", `${file}.html`), "utf8").replaceAll('href="/', `href="${basePath}/`);
   return (
-    <section className="container page-head legal" lang={lang}>
+    <section className="container page-head page-head--lit legal" lang={lang}>
       <p className="t-label dim page-head__eyebrow">Legal</p>
       <h1 className="t-display">{title}</h1>
       <div className="prose legal__body" dangerouslySetInnerHTML={{ __html: html }} />

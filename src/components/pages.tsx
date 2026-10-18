@@ -50,11 +50,14 @@ export function ServiciosContent() {
         <WordReveal as="h1" className="t-display" text={page.h1} onScroll={false} delay={0.1} />
         <p className="t-lead muted page-head__lead">{page.lead}</p>
       </section>
-      <section className="container section section--flush-top" aria-label={page.eyebrow}>
-        <div className="svc-cards">
-          {page.cards.map((card) => (
-            <SvcCard key={card.slug} card={card} />
-          ))}
+      {/* Banda a todo el ancho: el vidrio de las tarjetas tiene luz detrás. */}
+      <section className="section section--flush-top band-indigo" aria-label={page.eyebrow}>
+        <div className="container">
+          <div className="svc-cards">
+            {page.cards.map((card) => (
+              <SvcCard key={card.slug} card={card} />
+            ))}
+          </div>
         </div>
       </section>
       <Approach />
@@ -120,7 +123,7 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
 
   return (
     <>
-      <section className="container page-head svc-head">
+      <section className="container page-head page-head--lit svc-head">
         <div className="svc-head__intro">
           <nav aria-label="Breadcrumb" className="t-label crumbs page-head__eyebrow">
             <ol>
@@ -212,44 +215,47 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
         </section>
       ) : null}
 
-      <section className="container section svc-plans" id="planes" aria-labelledby="plans-title">
-        <header className="svc-plans__head">
-          <h2 id="plans-title" className="t-display">
-            {page.plansTitle}
-          </h2>
-          <p className="t-small dim svc-plans__note">{page.plansNote}</p>
-        </header>
-        <div className="plans" data-count={page.plans.length}>
-          {page.plans.map((plan, i) => {
-            const p = prices[i];
-            if (p.custom) {
+      {/* Banda a todo el ancho: el vidrio de los planes tiene luz detrás. */}
+      <section className="section band-indigo plans-band" id="planes" aria-labelledby="plans-title">
+        <div className="container svc-plans">
+          <header className="svc-plans__head">
+            <h2 id="plans-title" className="t-display">
+              {page.plansTitle}
+            </h2>
+            <p className="t-small dim svc-plans__note">{page.plansNote}</p>
+          </header>
+          <div className="plans" data-count={page.plans.length}>
+            {page.plans.map((plan, i) => {
+              const p = prices[i];
+              if (p.custom) {
+                return (
+                  <Plan
+                    key={i}
+                    name={plan.name}
+                    priceLabel={t.common.customPrice}
+                    unitNote={t.common.customPriceNote}
+                    tagline={plan.tagline}
+                    features={plan.features}
+                    featured={plan.featured}
+                  />
+                );
+              }
+              const amount = formatPrice(p.amount, locale);
               return (
                 <Plan
                   key={i}
                   name={plan.name}
-                  priceLabel={t.common.customPrice}
-                  unitNote={t.common.customPriceNote}
+                  priceLabel={amount}
+                  pricePrefix={p.from ? t.common.priceFrom : undefined}
+                  priceSuffix={p.unit === "month" ? t.common.perMonth : undefined}
+                  unitNote={p.unit === "month" ? undefined : t.common.oncePayment}
                   tagline={plan.tagline}
                   features={plan.features}
                   featured={plan.featured}
                 />
               );
-            }
-            const amount = formatPrice(p.amount, locale);
-            return (
-              <Plan
-                key={i}
-                name={plan.name}
-                priceLabel={amount}
-                pricePrefix={p.from ? t.common.priceFrom : undefined}
-                priceSuffix={p.unit === "month" ? t.common.perMonth : undefined}
-                unitNote={p.unit === "month" ? undefined : t.common.oncePayment}
-                tagline={plan.tagline}
-                features={plan.features}
-                featured={plan.featured}
-              />
-            );
-          })}
+            })}
+          </div>
         </div>
       </section>
 
@@ -435,7 +441,7 @@ export function ContactoContent() {
   const { t } = useI18n();
   const page = t.pages.contacto;
   return (
-    <section className="container page-head contacto">
+    <section className="container page-head page-head--lit contacto">
       <p className="t-label dim page-head__eyebrow">{page.eyebrow}</p>
       <WordReveal as="h1" className="t-hero contacto__title" text={page.h1} onScroll={false} delay={0.1} />
       <div className="contact-grid">
@@ -474,7 +480,7 @@ export function NotFoundContent() {
   const { t } = useI18n();
   const page = t.pages.notFound;
   return (
-    <section className="container page-head not-found">
+    <section className="container page-head page-head--lit not-found">
       <div className="not-found__copy">
         <p className="t-label dim page-head__eyebrow">{page.eyebrow}</p>
         <h1 className="t-display">{page.h1}</h1>

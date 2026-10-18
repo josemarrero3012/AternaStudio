@@ -1086,6 +1086,30 @@ body[data-menu="open"] .whatsapp-widget,
   padding-block: var(--head-top) var(--block-y);
 }
 
+/* Luz de entrada: las páginas interiores sin una banda bajo la cabecera
+   abren con un eco del foco del vídeo, arriba a la derecha de la columna.
+   Una sola capa quieta, a todo el ancho, que se apaga justo en el borde
+   inferior de la cabecera (o a 760 px): nunca se corta con lo siguiente.
+   El núcleo violeta es un círculo (≤504 px): en móvil, una elipse alta se
+   veía como una franja pegada al borde. */
+.page-head--lit {
+  position: relative;
+  isolation: isolate;
+}
+
+.page-head--lit::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline: calc(50% - 50vw);
+  z-index: -1;
+  height: min(100%, 760px);
+  background:
+    radial-gradient(circle calc(var(--col) * 0.7) at calc(50% + var(--col) * 0.66) 0%, color-mix(in srgb, var(--violet) 12%, transparent), transparent),
+    radial-gradient(calc(var(--col) * 1.4) 100% at calc(50% + var(--col) * 0.56) 0%, color-mix(in srgb, var(--indigo) 20%, transparent), transparent);
+  pointer-events: none;
+}
+
 .page-head__eyebrow {
   margin-bottom: var(--s-5);
 }
@@ -2043,6 +2067,11 @@ body[data-menu="open"] .whatsapp-widget,
 .svc-plans {
   position: relative;
   padding-block: clamp(56px, 6vw, 96px);
+}
+
+/* Banda de los planes: el espacio y el filete los pone .svc-plans. */
+.plans-band {
+  padding-block: 0;
 }
 
 .svc-plans__head {
