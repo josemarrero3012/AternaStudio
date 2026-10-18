@@ -168,17 +168,27 @@ html.lenis body {
 /* Bandas de color --------------------------------------------------------
    Toda la página está sobre la noche base (body). Cada banda sube hacia un
    tono más claro y vuelve a la base antes del borde: dos secciones seguidas
-   siempre se tocan en el mismo color, en cualquier orden. */
+   siempre se tocan en el mismo color, en cualquier orden.
+
+   Las luces se sitúan respecto a la columna de contenido, no a la ventana:
+   --col es media columna (la mitad del contenedor, o de la ventana si es
+   más estrecha). Hasta 1440 px equivale a usar porcentajes; en pantallas
+   más anchas (o con el zoom muy alejado) las luces siguen junto al texto en
+   vez de irse a los bordes. */
+
+:root {
+  --col: min(50vw, calc(var(--container) / 2));
+}
 
 .band-indigo {
   --band:
-    radial-gradient(60% 55% at 78% 45%, color-mix(in srgb, var(--indigo) 16%, transparent), transparent 72%),
+    radial-gradient(calc(var(--col) * 1.2) 55% at calc(50% + var(--col) * 0.56) 45%, color-mix(in srgb, var(--indigo) 16%, transparent), transparent 72%),
     linear-gradient(180deg, var(--night-0) 0%, var(--night-2) 38%, var(--night-2) 62%, var(--night-0) 100%);
 }
 
 .band-violet {
   --band:
-    radial-gradient(55% 50% at 18% 60%, color-mix(in srgb, var(--violet) 12%, transparent), transparent 72%),
+    radial-gradient(calc(var(--col) * 1.1) 50% at calc(50% - var(--col) * 0.64) 60%, color-mix(in srgb, var(--violet) 12%, transparent), transparent 72%),
     linear-gradient(180deg, var(--night-0) 0%, var(--night-1) 30%, var(--night-1) 70%, var(--night-0) 100%);
 }
 
@@ -188,8 +198,8 @@ html.lenis body {
 }
 .band-aurora {
   --band:
-    radial-gradient(70% 45% at 30% 58%, color-mix(in srgb, var(--violet) 18%, transparent), transparent 70%),
-    radial-gradient(55% 40% at 85% 40%, color-mix(in srgb, var(--indigo) 20%, transparent), transparent 70%),
+    radial-gradient(calc(var(--col) * 1.4) 45% at calc(50% - var(--col) * 0.4) 58%, color-mix(in srgb, var(--violet) 18%, transparent), transparent 70%),
+    radial-gradient(calc(var(--col) * 1.1) 40% at calc(50% + var(--col) * 0.7) 40%, color-mix(in srgb, var(--indigo) 20%, transparent), transparent 70%),
     linear-gradient(180deg, var(--night-0) 0%, var(--night-3) 45%, var(--night-2) 75%, var(--night-0) 100%);
 }
 
@@ -214,7 +224,7 @@ html.lenis body {
   inset: 0 -12%;
   z-index: -1;
   background: radial-gradient(
-    circle min(48vw, 560px) at var(--orb-x, 80%) var(--orb-y, 40%),
+    circle min(48vw, 560px) at calc(50% + var(--col) * var(--orb-x, 0.74)) var(--orb-y, 40%),
     color-mix(in srgb, var(--glow, var(--indigo)) 26%, transparent) 0%,
     transparent 100%
   );
@@ -224,20 +234,21 @@ html.lenis body {
   animation: glow-drift 26s var(--e-inout) infinite alternate;
 }
 
+/* --orb-x: desplazamiento desde el centro, en medias columnas. */
 .band-indigo::before {
-  --orb-x: 82%;
+  --orb-x: 0.79;
   --orb-y: 42%;
 }
 
 .band-violet::before {
   --glow: var(--violet);
-  --orb-x: 14%;
+  --orb-x: -0.89;
   --orb-y: 62%;
   animation-duration: 32s;
 }
 
 .band-aurora::before {
-  --orb-x: 32%;
+  --orb-x: -0.45;
   --orb-y: 52%;
   animation-duration: 22s;
 }
@@ -247,7 +258,7 @@ html.lenis body {
     transform: translate3d(0, -2%, 0);
   }
   to {
-    transform: translate3d(-10%, 2%, 0);
+    transform: translate3d(calc(var(--col) * -0.25), 2%, 0);
   }
 }
 
