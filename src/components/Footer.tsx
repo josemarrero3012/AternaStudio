@@ -65,7 +65,7 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div className="container" aria-hidden="true">
+      <div className="container footer__horizon" aria-hidden="true">
         <p className="footer__giant">Aterna</p>
       </div>
       <div className="container footer__base">

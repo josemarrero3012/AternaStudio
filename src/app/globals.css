@@ -1754,8 +1754,10 @@ body[data-menu="open"] .whatsapp-widget,
 .footer__giant {
   margin-top: var(--s-10);
   font-family: var(--font-display);
-  /* Ancho del texto ≈ 2,3 × el cuerpo: así llena el contenedor sin cortarse. */
-  font-size: min(37vw, 36rem);
+  /* Ancho del texto ≈ 2,4 × el cuerpo: así llena el contenedor sin cortarse.
+     Con 36rem medía 1384 px en un contenedor de 1344 y, desde ~1500 px de
+     ventana, la «a» final se salía de la caja y el degradado no la pintaba. */
+  font-size: min(37vw, 34.5rem);
   font-weight: 400;
   font-variation-settings: "opsz" 144;
   line-height: 0.8;
@@ -1766,6 +1768,42 @@ body[data-menu="open"] .whatsapp-widget,
   background-clip: text;
   color: transparent;
   user-select: none;
+}
+
+/* Horizonte: la marca apoyada sobre raíces de luz, como la base del vídeo.
+   Un filamento en la línea base de «Aterna» (medida con la fuente: 0,04em
+   sobre el borde inferior de la caja) y un resplandor que sube por detrás de
+   las letras. La capa baja 24 px bajo la palabra y se apaga antes del filete
+   de .footer__base, que está a 32 px: nunca se corta. */
+.footer__horizon {
+  position: relative;
+  isolation: isolate;
+}
+
+.footer__horizon::before {
+  content: "";
+  position: absolute;
+  top: 25%;
+  bottom: -24px;
+  inset-inline: calc(50% - 50vw);
+  z-index: -1;
+  background: radial-gradient(calc(var(--col) * 0.95) 70% at calc(50% + var(--col) * 0.28) 88%, color-mix(in srgb, var(--violet) 18%, transparent), transparent);
+  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent);
+  mask-image: linear-gradient(180deg, #000 78%, transparent);
+  pointer-events: none;
+}
+
+.footer__horizon .footer__giant {
+  position: relative;
+}
+
+.footer__horizon .footer__giant::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0.04em;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--lavender) 45%, transparent) 30%, var(--orchid) 68%, transparent);
 }
 
 .footer__base {
@@ -1984,6 +2022,95 @@ body[data-menu="open"] .whatsapp-widget,
   display: flex;
   flex-direction: column;
   gap: var(--s-6);
+}
+
+/* Dibujo de cada ficha (ServiceTrace.tsx), bajo «El servicio». Solo trazo,
+   puntos y un nodo, como las raíces del vídeo. Con movimiento se dibuja una
+   vez al entrar en pantalla (stroke-dashoffset), cada trazo con su retardo
+   (--t-delay) y su duración (--t-dur); con movimiento reducido se ve entero
+   desde el principio. Sin vector-effect: el trazo escala con el dibujo y la
+   animación se comporta igual en todos los navegadores. */
+.svc-trace {
+  width: 220px;
+  height: auto;
+  overflow: visible;
+}
+
+@media (min-width: 768px) {
+  .svc-trace {
+    width: min(100%, 300px);
+  }
+}
+
+.svc-trace__line,
+.svc-trace__halo {
+  fill: none;
+  stroke: url(#svc-trace-line);
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset var(--t-dur, 2.4s) var(--e-inout) calc(0.4s + var(--t-delay, 0s));
+}
+
+.svc-trace__line {
+  stroke-width: 1.2;
+}
+
+.svc-trace__halo {
+  stroke-width: 5;
+  opacity: 0.16;
+}
+
+.svc-trace__dot {
+  fill: var(--lavender);
+  fill-opacity: 0.8;
+}
+
+.svc-trace__glow {
+  fill: url(#svc-trace-glow);
+}
+
+.svc-trace__node {
+  fill: var(--orchid);
+}
+
+.svc-trace__dot,
+.svc-trace__glow,
+.svc-trace__node {
+  transition: opacity var(--d-cine) var(--e-out) calc(0.4s + var(--t-delay, 0s));
+}
+
+.svc-trace__from {
+  stop-color: var(--lavender);
+  stop-opacity: 0;
+}
+
+.svc-trace__mid {
+  stop-color: var(--lavender);
+  stop-opacity: 0.7;
+}
+
+.svc-trace__to {
+  stop-color: var(--orchid);
+}
+
+.svc-trace__glow-from {
+  stop-color: var(--orchid);
+  stop-opacity: 0.55;
+}
+
+.svc-trace__glow-to {
+  stop-color: var(--orchid);
+  stop-opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .svc-trace:not([data-draw="on"]) :is(.svc-trace__line, .svc-trace__halo) {
+    stroke-dashoffset: 1;
+  }
+
+  .svc-trace:not([data-draw="on"]) :is(.svc-trace__dot, .svc-trace__glow, .svc-trace__node) {
+    opacity: 0;
+  }
 }
 
 

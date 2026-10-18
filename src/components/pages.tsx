@@ -13,6 +13,7 @@ import { CopyEmail } from "./CopyEmail";
 import { whatsappHref } from "./Chrome";
 import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
 import { Approach, FinalCTA, NextSteps, StartingPrice } from "./sections";
+import { ServiceTrace } from "./ServiceTrace";
 import { WordReveal } from "./WordReveal";
 
 // /servicios ----------------------------------------------------------------
@@ -160,6 +161,8 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
       <section className="container section svc-row svc-row--first" aria-label={t.common.overview}>
         <div className="svc-row__label">
           <span className="t-label dim">{t.common.overview}</span>
+          {/* La frase clave del servicio, dibujada (ver ServiceTrace). */}
+          <ServiceTrace slug={slug} />
         </div>
         <div className="svc-row__body svc-prose">
           {page.intro.map((p, i) => (
