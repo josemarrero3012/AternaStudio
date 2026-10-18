@@ -133,7 +133,7 @@ export function StudioStatement({ n }: { n?: number }) {
   const { t } = useI18n();
   const body = useReveal({ selector: "[data-r]", y: 24, stagger: 0.12 });
   return (
-    <section className="section section-lg on-paper studio" id="estudio" aria-labelledby="studio-title">
+    <section className="section section-lg band-indigo studio" id="estudio" aria-labelledby="studio-title">
       <div className="container studio__inner">
         <p className="t-label studio__eyebrow">{eyebrow(t.studioHome.eyebrow, n)}</p>
         <WordReveal as="h2" id="studio-title" className="t-display studio__title" text={t.studioHome.title} />
@@ -266,7 +266,7 @@ export function Approach({ n }: { n?: number }) {
   }, []);
 
   return (
-    <section className="section approach" id="metodo" aria-labelledby="approach-title">
+    <section className="section band-violet approach" id="metodo" aria-labelledby="approach-title">
       <div className="container" ref={ref}>
         <header className="section-head">
           <p className="t-label dim">{eyebrow(t.approach.eyebrow, n)}</p>
@@ -292,12 +292,12 @@ export function Approach({ n }: { n?: number }) {
   );
 }
 
-/** Cierre de página: el contacto, sobre papel. En la portada lleva número. */
+/** Cierre de página: el contacto, en la banda más luminosa. En la portada lleva número. */
 export function FinalCTA({ n }: { n?: number }) {
   const { t } = useI18n();
   const tail = useReveal({ selector: "[data-r]", y: 20, stagger: 0.1 });
   return (
-    <section className="section section-lg on-paper final-cta" aria-labelledby="cta-title">
+    <section className="section section-lg band-aurora final-cta" aria-labelledby="cta-title">
       <div className="container final-cta__inner" ref={tail}>
         <div className="final-cta__marks">
           <p className="t-label final-cta__eyebrow">{eyebrow(t.finalCta.eyebrow, n)}</p>

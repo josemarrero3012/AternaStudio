@@ -7,54 +7,55 @@
 /* Tokens ------------------------------------------------------------------ */
 
 :root {
-  /* Marca */
-  --aterna-blue: #17459b;
-  --aterna-blue-bright: #2e63d6;
-  --aterna-blue-deep: #0e2a66;
-  --aterna-violet: #7d3790;
-  --aterna-rose: #ff2073;
-  --aterna-rose-deep: #b0154e;
-  --aterna-blue-on-ink: #3d72d8;
-  --aterna-violet-on-ink: #a558c4;
-  --aterna-rose-on-ink: #ff4d8f;
-  --brand-gradient: linear-gradient(135deg, #17459b 0%, #7d3790 52%, #ff2073 100%);
-  --brand-gradient-h: linear-gradient(90deg, #17459b 0%, #7d3790 52%, #ff2073 100%);
-  --brand-gradient-on-ink: linear-gradient(90deg, #5b8cf0 0%, #b46ad3 50%, #ff5a98 100%);
-  /* Para texto sobre el vídeo del hero, donde el azul de marca se pierde. */
-  --brand-gradient-light: linear-gradient(90deg, #9db8ff 0%, #d29cf0 50%, #ff8db5 100%);
+  /* Paleta «noche», sacada del vídeo del hero: fondo azul noche casi negro,
+     raíces índigo y lavanda, destellos violeta y orquídea. Toda la web vive
+     en esta familia; no hay superficies claras. */
+  --night-0: #05060f; /* fondo del vídeo; base de la página */
+  --night-1: #090b1c;
+  --night-2: #0e1129;
+  --night-3: #151a3d;
+  --night-4: #1c2250; /* superficies elevadas */
 
-  /* Superficies */
-  --ink: #08080a;
-  --ink-raised: #101014;
-  --ink-hair: #f4f2ee1a;
-  --ink-hair-strong: #f4f2ee38;
-  /* Papel: crema cálido; sus textos, negro casi puro y grises cálidos. */
-  --paper: #f3f0ec;
-  --paper-raised: #e9e5df;
-  --paper-hair: #1111111f;
-  --paper-hair-strong: #11111140;
-  --text-hi: #f4f2ee;
-  --text-mid: #a3a3ac;
-  --text-low: #8d8d98; /* 6,1:1 sobre tinta; antes #7c7c87, 4,85:1 al límite */
-  --text-ink-hi: #111111;
-  --text-ink-mid: #55504a; /* 7:1 sobre papel */
-  --text-ink-low: #655f58; /* 5,5:1 sobre papel */
+  /* Acentos del vídeo. Índigo solo para líneas y luz (3,4:1); el resto
+     sirve también para texto sobre cualquier noche (≥4,5:1). */
+  --indigo: #4b55d6;
+  --lavender: #9aa3ff;
+  --violet: #9a5cf0;
+  --orchid: #d77cf5;
+  /* Rosa de marca: solo el hover del botón principal y los errores. */
+  --rose: #ff4d8f;
 
-  /* Acentos puntuales (detalles, no texto: el magenta da 3,3:1). */
-  --accent-violet: #8d42e8;
-  --accent-magenta: #f02ca8;
-  --accent-blue: #2e63d6;
+  --brand-gradient: linear-gradient(135deg, var(--indigo) 0%, var(--violet) 52%, var(--orchid) 100%);
+  --brand-gradient-h: linear-gradient(90deg, var(--indigo) 0%, var(--violet) 52%, var(--orchid) 100%);
+  /* Para texto y bordes finos: la versión clara, legible sobre noche. */
+  --brand-gradient-on-ink: linear-gradient(90deg, #8590ff 0%, #b57cf5 50%, #e48af7 100%);
+  /* Para texto sobre el vídeo del hero, más luminoso aún. */
+  --brand-gradient-light: linear-gradient(90deg, #b3bcff 0%, #d6a8f7 50%, #f0b2f5 100%);
 
-  /* Contexto por defecto: fondo tinta */
+  /* Superficies (nombres heredados: «ink» es la noche base). */
+  --ink: var(--night-0);
+  --ink-raised: var(--night-3);
+  --ink-hair: #e6e9ff1a;
+  --ink-hair-strong: #e6e9ff38;
+  --text-hi: #eef0fa;
+  --text-mid: #a9adc8; /* ≥6,8:1 sobre cualquier noche */
+  --text-low: #9195b6; /* ≥5,1:1 sobre cualquier noche */
+  --text-support: #c6c9de; /* apoyo del hero, sobre el vídeo */
+
+  /* Acentos puntuales (detalles, no texto). */
+  --accent-violet: var(--violet);
+  --accent-magenta: var(--orchid);
+
+  /* Contexto */
   --surface: var(--ink);
-  --surface-raised: var(--ink-raised);
+  --surface-raised: var(--night-3);
   --on-surface-hi: var(--text-hi);
   --on-surface-mid: var(--text-mid);
   --on-surface-low: var(--text-low);
   --hair: var(--ink-hair);
   --hair-strong: var(--ink-hair-strong);
   /* Línea de campo de formulario: ≥3:1 con el fondo (WCAG 1.4.11). */
-  --field-line: #f4f2ee6b;
+  --field-line: #e6e9ff6b;
 
   /* Tipografía */
   --font-display: var(--font-fraunces), "Times New Roman", serif;
@@ -119,18 +120,17 @@
   --z-menu: 90;
   --z-curtain: 100;
 
-  /* Velos de la cabecera al hacer scroll */
-  --ink-veil: #08080ab8;
-  --paper-veil: #f3f0ecd9;
+  /* Velo de la cabecera al hacer scroll */
+  --ink-veil: color-mix(in srgb, var(--night-0) 72%, transparent);
 
-  /* Estados de formulario sobre tinta */
+  /* Estados de formulario */
   --ok-on-ink: #6fdc9b;
 
-  /* Botón principal: relleno del color del texto; al pasar, rosa de marca
-     (texto tinta sobre #ff4d8f: 6,6:1). */
+  /* Botón principal: relleno claro; al pasar, rosa de marca (texto noche
+     sobre rosa: 6,5:1). */
   --btn-bg: var(--text-hi);
   --btn-fg: var(--ink);
-  --btn-hover-bg: var(--aterna-rose-on-ink);
+  --btn-hover-bg: var(--rose);
   --btn-hover-fg: var(--ink);
 }
 
@@ -145,22 +145,4 @@
   :root {
     --header-h: 84px;
   }
-}
-
-.on-paper {
-  --surface: var(--paper);
-  --surface-raised: var(--paper-raised);
-  --on-surface-hi: var(--text-ink-hi);
-  --on-surface-mid: var(--text-ink-mid);
-  --on-surface-low: var(--text-ink-low);
-  --hair: var(--paper-hair);
-  --hair-strong: var(--paper-hair-strong);
-  --field-line: #08080a80;
-  /* Sobre papel: botón tinta; al pasar, rosa oscuro con texto papel (6,3:1). */
-  --btn-bg: var(--text-ink-hi);
-  --btn-fg: var(--paper);
-  --btn-hover-bg: var(--aterna-rose-deep);
-  --btn-hover-fg: var(--paper);
-  background-color: var(--surface);
-  color: var(--on-surface-hi);
 }

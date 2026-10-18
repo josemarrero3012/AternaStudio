@@ -133,38 +133,27 @@ function MobileMenu() {
 export function Header() {
   const pathname = usePathname();
   const { t } = useI18n();
-  const header = useRef<HTMLElement>(null);
   const [scrolled, setScrolled] = useState(false);
-  // Superficie que pasa por debajo: sobre papel la cabecera se vuelve clara
-  // (el velo de tinta sobre papel quedaba gris y el logo desaparecía).
-  const [surface, setSurface] = useState<"ink" | "paper">("ink");
 
   useEffect(() => {
     let raf = 0;
     const update = () => {
       raf = 0;
       setScrolled(window.scrollY > 24);
-      const el = header.current;
-      if (!el) return;
-      const y = el.getBoundingClientRect().height / 2;
-      const below = document.elementsFromPoint(window.innerWidth / 2, y).find((n) => !el.contains(n));
-      setSurface(below?.closest(".on-paper") ? "paper" : "ink");
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
     };
   }, [pathname]);
 
   return (
-    <header ref={header} className="header" data-scrolled={scrolled} data-surface={surface}>
+    <header className="header" data-scrolled={scrolled}>
       <div className="container header__inner">
         <Link href="/" className="header__brand" aria-label={`${site.name} — inicio`}>
           <Image src={withBase("/brand/aterna-symbol.webp")} alt="" width={319} height={320} priority className="header__symbol" />

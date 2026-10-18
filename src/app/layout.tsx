@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   icons: { icon: [{ url: withBase("/favicon.ico") }, { url: withBase("/brand/icon.png"), type: "image/png" }], apple: withBase("/brand/apple-icon.png") },
 };
 
-export const viewport: Viewport = { themeColor: "#08080a" };
+export const viewport: Viewport = { themeColor: "#05060f" };
 
 const organization = {
   "@context": "https://schema.org",

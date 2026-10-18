@@ -298,7 +298,7 @@ export function EstudioContent() {
         <p className="t-label dim page-head__eyebrow">{page.eyebrow}</p>
         <WordReveal as="h1" className="t-display" text={page.h1} onScroll={false} delay={0.1} />
       </section>
-      <section className="section on-paper estudio-about" aria-label={page.eyebrow}>
+      <section className="section band-indigo estudio-about" aria-label={page.eyebrow}>
         <div className="container estudio__grid">
           <p className="t-lead estudio__lead">{page.prose[0]}</p>
           <div className="prose estudio__prose">
