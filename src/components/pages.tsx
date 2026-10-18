@@ -24,7 +24,7 @@ function SvcCard({ card, heading = "h2" }: { card: Card; heading?: "h2" | "h3" }
   const slug = card.slug as ServiceSlug;
   const Heading = heading;
   return (
-    <Link href={`/servicios/${slug}`} className="svc-card">
+    <Link href={`/servicios/${slug}`} className="svc-card" data-spot>
       <p className="t-label dim svc-card__kicker">{card.kicker}</p>
       <Heading className="svc-card__title">{card.title}</Heading>
       <p className="t-body muted svc-card__body">{card.body}</p>
@@ -86,7 +86,7 @@ function Plan({
 }) {
   const { t } = useI18n();
   return (
-    <article className={`plan${featured ? " plan--featured" : ""}`}>
+    <article className={`plan${featured ? " plan--featured" : ""}`} data-spot>
       {featured ? <span className="t-label plan__badge">{t.common.recommended}</span> : null}
       <header className="plan__head">
         <h3 className="t-label plan__name">{name}</h3>
@@ -199,7 +199,7 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
             <p className="t-body muted svc-examples__lead">{page.examplesLead}</p>
             <div className="ex-cards">
               {page.examples.map((ex, i) => (
-                <a key={i} className="ex-card" href={withBase(ex.href)} target="_blank" rel="noopener noreferrer">
+                <a key={i} className="ex-card" data-spot href={withBase(ex.href)} target="_blank" rel="noopener noreferrer">
                   <span className="t-label dim ex-card__label">{ex.label}</span>
                   <span className="ex-card__title">
                     {ex.title}
@@ -315,7 +315,7 @@ export function EstudioContent() {
           <ul className="services__list services__list--static">
             {page.beliefs.map((b, i) => (
               <li className="service" key={i}>
-                <div className="service__inner">
+                <div className="service__inner" data-spot>
                   <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
                   <h3 className="t-title service__title">{b.title}</h3>
                   <p className="t-body muted service__body">{b.body}</p>

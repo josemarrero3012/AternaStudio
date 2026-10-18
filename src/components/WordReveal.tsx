@@ -18,10 +18,12 @@ type Props = {
   delay?: number;
   /** false: anima al montar (hero). true: anima al entrar en pantalla. */
   onScroll?: boolean;
+  /** Cuántas palabras finales llevan el degradado de marca. */
+  accent?: number;
 };
 
 /** Titular que aparece palabra a palabra. `\n` en el texto = salto de línea. */
-export function WordReveal({ text, as = "h2", className, id, delay = 0, onScroll = true }: Props) {
+export function WordReveal({ text, as = "h2", className, id, delay = 0, onScroll = true, accent = 0 }: Props) {
   const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -65,17 +67,19 @@ export function WordReveal({ text, as = "h2", className, id, delay = 0, onScroll
     };
   }, [text, delay, onScroll]);
 
+  const lines = text.split("\n").map((line) => line.split(" "));
+  const total = lines.reduce((n, l) => n + l.length, 0);
+  let count = 0;
   return createElement(
     as,
     { ref, className, id },
-    text.split("\n").map((line, li) => {
-      const words = line.split(" ");
+    lines.map((words, li) => {
       return (
         <span key={li} className="reveal-line">
           {words.map((w, wi) => (
             <span key={wi}>
               <span className="reveal-word" data-word>
-                <span>{w}</span>
+                <span className={++count > total - accent ? "reveal-word--accent" : undefined}>{w}</span>
               </span>
               {wi < words.length - 1 ? " " : null}
             </span>

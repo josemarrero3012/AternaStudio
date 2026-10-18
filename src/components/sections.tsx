@@ -99,7 +99,7 @@ export function Hero() {
       <div className="container hero__inner">
         <div className="hero__text">
           <p className="t-label hero__eyebrow muted">{t.hero.eyebrow}</p>
-          <WordReveal as="h1" id="hero-title" className="t-hero hero__title" text={t.hero.headline} onScroll={false} delay={1.05} />
+          <WordReveal as="h1" id="hero-title" className="t-hero hero__title" text={t.hero.headline} onScroll={false} delay={1.05} accent={1} />
         </div>
         <div className="hero__row" ref={row}>
           <div className="hero__support-group">
@@ -136,7 +136,7 @@ export function StudioStatement({ n }: { n?: number }) {
     <section className="section section-lg band-indigo studio" id="estudio" aria-labelledby="studio-title">
       <div className="container studio__inner">
         <p className="t-label studio__eyebrow">{eyebrow(t.studioHome.eyebrow, n)}</p>
-        <WordReveal as="h2" id="studio-title" className="t-display studio__title" text={t.studioHome.title} />
+        <WordReveal as="h2" id="studio-title" className="t-display studio__title" text={t.studioHome.title} accent={1} />
         <div className="studio__body" ref={body}>
           <p className="t-lead" data-r>
             {t.studioHome.body[0]}
@@ -193,7 +193,7 @@ export function Services({ n }: { n?: number }) {
             const slug = card.slug as ServiceSlug;
             return (
               <li className="service" key={slug}>
-                <Link href={`/servicios/${slug}`} className="service__inner">
+                <Link href={`/servicios/${slug}`} className="service__inner" data-spot>
                   <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
                   <h3 className="t-title service__title">{card.title}</h3>
                   <div className="service__body">
@@ -278,7 +278,7 @@ export function Approach({ n }: { n?: number }) {
           </div>
           <ol className="approach__phases">
             {t.approach.items.map((item, i) => (
-              <li className="phase" data-on="false" key={i}>
+              <li className="phase" data-on="false" data-n={String(i + 1).padStart(2, "0")} key={i}>
                 <span className="phase__dot" aria-hidden="true" />
                 <span className="t-index phase__index">{String(i + 1).padStart(2, "0")}</span>
                 <h3 className="phase__title">{item.title}</h3>
@@ -305,7 +305,7 @@ export function FinalCTA({ n }: { n?: number }) {
             {t.common.disciplines.join(" · ")}
           </p>
         </div>
-        <WordReveal as="h2" id="cta-title" className="t-hero final-cta__title" text={t.finalCta.title} />
+        <WordReveal as="h2" id="cta-title" className="t-hero final-cta__title" text={t.finalCta.title} accent={1} />
         <div className="final-cta__copy">
           <p className="t-lead" data-r>
             {t.finalCta.copy[0]}

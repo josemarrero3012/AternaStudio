@@ -103,6 +103,39 @@ export function Cursor() {
   return <div ref={ref} className="cursor" data-big="false" aria-hidden="true" />;
 }
 
+/**
+ * Foco de luz en las tarjetas: un solo listener para toda la página que
+ * pasa la posición del puntero (--mx, --my) al `[data-spot]` que hay debajo.
+ * El brillo lo pinta el CSS.
+ */
+export function Spotlight() {
+  useEffect(() => {
+    if (isCoarsePointer()) return;
+    let raf = 0;
+    let last: PointerEvent | null = null;
+    const apply = () => {
+      raf = 0;
+      const e = last;
+      const card = (e?.target as Element | null)?.closest<HTMLElement>("[data-spot]");
+      if (!e || !card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+      card.style.setProperty("--my", `${e.clientY - r.top}px`);
+    };
+    const onMove = (e: PointerEvent) => {
+      last = e;
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("pointermove", onMove);
+    };
+  }, []);
+
+  return null;
+}
+
 export function SmoothScroll({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
