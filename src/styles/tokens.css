@@ -40,7 +40,7 @@
   --text-ink-mid: #55504a; /* 7:1 sobre papel */
   --text-ink-low: #655f58; /* 5,5:1 sobre papel */
 
-  /* Acentos puntuales (dibujos y detalles, no texto: el magenta da 3,3:1). */
+  /* Acentos puntuales (detalles, no texto: el magenta da 3,3:1). */
   --accent-violet: #8d42e8;
   --accent-magenta: #f02ca8;
   --accent-blue: #2e63d6;
@@ -132,12 +132,6 @@
   --btn-fg: var(--ink);
   --btn-hover-bg: var(--aterna-rose-on-ink);
   --btn-hover-fg: var(--ink);
-
-  /* Ilustraciones sobre tinta */
-  --ill-a: #3d72d8;
-  --ill-b: #a558c4;
-  --ill-c: #ff3d84;
-  --ill-s: #1d1d25;
 }
 
 @media (min-width: 768px) {
@@ -162,10 +156,6 @@
   --hair: var(--paper-hair);
   --hair-strong: var(--paper-hair-strong);
   --field-line: #08080a80;
-  --ill-a: #2e63d6;
-  --ill-b: #a558c4;
-  --ill-c: #ff2073;
-  --ill-s: #e2ddd3;
   /* Sobre papel: botón tinta; al pasar, rosa oscuro con texto papel (6,3:1). */
   --btn-bg: var(--text-ink-hi);
   --btn-fg: var(--paper);

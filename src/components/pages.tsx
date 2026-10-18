@@ -12,8 +12,6 @@ import { site } from "@/lib/site";
 import { CopyEmail } from "./CopyEmail";
 import { whatsappHref } from "./Chrome";
 import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
-import { IllContact, IllLost, IllStudioPage } from "./illustrations";
-import { EstudioArcs } from "./illustrations/StudioDepth";
 import { Approach, FinalCTA, StartingPrice } from "./sections";
 import { WordReveal } from "./WordReveal";
 
@@ -302,14 +300,11 @@ export function EstudioContent() {
       </section>
       <section className="section on-paper estudio-about" aria-label={page.eyebrow}>
         <div className="container estudio__grid">
-          <div className="prose">
-            <p className="t-lead">{page.prose[0]}</p>
+          <p className="t-lead estudio__lead">{page.prose[0]}</p>
+          <div className="prose estudio__prose">
             <p className="t-body muted-strong">{page.prose[1]}</p>
             <p className="t-body muted-strong">{page.prose[2]}</p>
           </div>
-          {/* Capa de arcos y raíces con la misma caja que la ilustración, por detrás. */}
-          <EstudioArcs className="estudio-depth" />
-          <IllStudioPage className="estudio__ill" label={page.prose[0].split(".").slice(0, 2).join(".") + "."} />
         </div>
       </section>
       <section className="section" aria-labelledby="beliefs-title">
@@ -448,7 +443,6 @@ export function ContactoContent() {
               <ArrowExternal />
             </a>
           </div>
-          <IllContact className="contact-grid__ill" />
         </div>
         <ContactForm />
       </div>
@@ -486,7 +480,9 @@ export function NotFoundContent() {
           </Link>
         </div>
       </div>
-      <IllLost className="not-found__ill" />
+      <p className="not-found__code" aria-hidden="true">
+        404
+      </p>
     </section>
   );
 }

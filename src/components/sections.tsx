@@ -19,8 +19,6 @@ import { useReveal } from "@/lib/reveal";
 import { site } from "@/lib/site";
 import { CopyEmail } from "./CopyEmail";
 import { ArrowRight } from "./icons";
-import { IllClosingPlane, IllStudio, serviceIllustrations } from "./illustrations";
-import { StudioArcs, StudioField } from "./illustrations/StudioDepth";
 import { WordReveal } from "./WordReveal";
 
 /** "01 — Estudio": la numeración la pone cada página según su orden real. */
@@ -136,13 +134,9 @@ export function StudioStatement({ n }: { n?: number }) {
   const body = useReveal({ selector: "[data-r]", y: 24, stagger: 0.12 });
   return (
     <section className="section section-lg on-paper studio" id="estudio" aria-labelledby="studio-title">
-      <StudioField className="studio-field" />
       <div className="container studio__inner">
         <p className="t-label studio__eyebrow">{eyebrow(t.studioHome.eyebrow, n)}</p>
         <WordReveal as="h2" id="studio-title" className="t-display studio__title" text={t.studioHome.title} />
-        {/* Capa de arcos con la misma caja que la ilustración, por detrás. */}
-        <StudioArcs className="studio-depth" />
-        <IllStudio className="studio__ill" />
         <div className="studio__body" ref={body}>
           <p className="t-lead" data-r>
             {t.studioHome.body[0]}
@@ -183,7 +177,7 @@ export function StartingPrice({ slug, className }: { slug: ServiceSlug; classNam
   );
 }
 
-/** Home: los cuatro servicios, cada uno con su icono (el único sitio donde aparece) y su página. */
+/** Home: los cuatro servicios, cada uno con su página. */
 export function Services({ n }: { n?: number }) {
   const { t } = useI18n();
   const list = useReveal<HTMLUListElement>({ selector: ".service", y: 24, stagger: 0.1 });
@@ -197,7 +191,6 @@ export function Services({ n }: { n?: number }) {
         <ul className="services__list" ref={list}>
           {t.servicePages.index.cards.map((card, i) => {
             const slug = card.slug as ServiceSlug;
-            const Illus = serviceIllustrations[slug];
             return (
               <li className="service" key={slug}>
                 <Link href={`/servicios/${slug}`} className="service__inner">
@@ -213,7 +206,6 @@ export function Services({ n }: { n?: number }) {
                       </span>
                     </p>
                   </div>
-                  <Illus className="service__ill" />
                 </Link>
               </li>
             );
@@ -314,7 +306,6 @@ export function FinalCTA({ n }: { n?: number }) {
           </p>
         </div>
         <WordReveal as="h2" id="cta-title" className="t-hero final-cta__title" text={t.finalCta.title} />
-        <IllClosingPlane className="final-cta__ill" />
         <div className="final-cta__copy">
           <p className="t-lead" data-r>
             {t.finalCta.copy[0]}

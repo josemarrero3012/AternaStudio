@@ -435,7 +435,7 @@ html.lenis body {
 .check {
   flex: none;
   margin-top: 4px;
-  color: var(--ill-b);
+  color: var(--accent-violet);
 }
 
 /* Cabecera ---------------------------------------------------------------- */
@@ -1006,138 +1006,20 @@ body[data-menu="open"] .whatsapp-widget,
   margin-bottom: var(--s-5);
 }
 
-.studio__ill {
-  width: 100%;
-  max-width: 520px;
-  margin-block: var(--s-8);
-  align-self: center;
-}
-
-/* Profundidad del bloque: capas de líneas detrás del contenido. La sección
-   recorta lo que sale de sus bordes (sin scroll horizontal). */
-.studio {
-  position: relative;
-  overflow: hidden;
-}
-
-.studio__inner,
-.studio__ill {
-  position: relative;
-  z-index: 1;
-}
-
-/* Misma caja que la ilustración: mismo ancho, proporción 1200/664 y los
-   mismos márgenes; el margen inferior negativo la superpone a la imagen
-   (los % de margen se calculan sobre el ancho del contenedor, igual que
-   el ancho de ambas). */
-.studio-depth {
-  position: relative;
-  z-index: 0;
-  align-self: center;
-  width: min(100%, 520px);
-  aspect-ratio: 1200 / 664;
-  margin-top: var(--s-8);
-  margin-bottom: calc(min(100%, 520px) * -664 / 1200 - var(--s-8));
-  pointer-events: none;
-}
-
-.studio-depth svg,
-.studio-field svg {
-  position: absolute;
-  overflow: visible;
-}
-
-.studio-depth svg {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.studio-depth path,
-.studio-field path {
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: round;
-}
-
-.studio-depth__main {
-  stroke-width: 1.5;
-  opacity: 0.3;
-}
-
-.studio-depth__dash {
-  stroke: var(--accent-violet);
-  stroke-width: 1;
-  stroke-dasharray: 2 6;
-  opacity: 0.35;
-}
-
-.studio-depth__cross {
-  stroke: var(--text-ink-hi);
-  stroke-width: 1;
-  opacity: 0.4;
-}
-
-.studio-depth__dot {
-  fill: var(--text-ink-hi);
-  opacity: 0.6;
-}
-
-.studio-depth__dot--violet {
-  fill: var(--accent-violet);
-  opacity: 0.7;
-}
-
-.studio-depth__dot--magenta {
-  fill: var(--accent-magenta);
-  opacity: 0.7;
-}
-
-/* Móvil y tablet: sin microdetalles, que ahí solo meten ruido. */
-.studio-depth__micro {
-  display: none;
-}
-
-.studio-field {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.studio-field path {
-  stroke-width: 1;
-}
-
-/* Arco que entra desde arriba a la derecha, en parte fuera de la vista. */
-.studio-field__top {
-  top: -18%;
-  right: -22%;
-  width: min(70vw, 560px);
-  opacity: 0.16;
-}
-
-/* Arco bajo, ancho, que cruza la base de la sección por debajo del texto. */
-.studio-field__bottom {
-  bottom: -6%;
-  left: 18%;
-  width: 120%;
-  opacity: 0.14;
-}
-
 .studio__body {
+  margin-top: var(--block-y);
   display: flex;
   flex-direction: column;
   gap: var(--s-5);
   max-width: var(--measure);
 }
 
-/* Escritorio: texto a la izquierda (titular y cuerpo seguidos), escena a la
-   derecha, centrada en la altura del bloque. */
+/* Escritorio: titular a la izquierda y cuerpo a la derecha, alineado con el
+   final del titular. */
 @media (min-width: 1024px) {
   .studio__inner {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-template-rows: auto auto 1fr;
     column-gap: var(--gutter);
   }
 
@@ -1146,49 +1028,15 @@ body[data-menu="open"] .whatsapp-widget,
   }
 
   .studio__title {
-    grid-column: 1 / span 6;
+    grid-column: 1 / span 7;
     grid-row: 2;
   }
 
   .studio__body {
-    grid-column: 1 / span 5;
-    grid-row: 3;
-    margin-top: var(--s-8);
-  }
-
-  .studio__ill {
-    grid-column: 7 / span 6;
-    grid-row: 2 / span 2;
-    align-self: center;
-    justify-self: end;
-    max-width: 620px;
-    margin: 0;
-  }
-
-  .studio-depth {
-    grid-column: 7 / span 6;
-    grid-row: 2 / span 2;
-    justify-self: end;
-    width: min(100%, 620px);
-    margin: 0;
-  }
-
-  .studio-depth__micro {
-    display: inline;
-  }
-
-  .studio-field__top {
-    top: -26%;
-    right: -16%;
-    width: 560px;
-    opacity: 0.2;
-  }
-
-  .studio-field__bottom {
-    bottom: -14%;
-    left: 34%;
-    width: 80%;
-    opacity: 0.16;
+    grid-column: 8 / span 5;
+    grid-row: 2;
+    align-self: end;
+    margin-top: 0;
   }
 }
 
@@ -1238,37 +1086,11 @@ body[data-menu="open"] .whatsapp-widget,
   margin-top: var(--s-4);
 }
 
-/* Icono del servicio. Caja fija con object-fit: los cuatro tienen
-   proporciones distintas y así pesan lo mismo. Móvil: bajo el texto. */
-.service__ill {
-  grid-column: 2;
-  width: 160px;
-  height: 104px;
-  margin-top: var(--s-3);
-  object-fit: contain;
-  object-position: left center;
-}
-
 @media (min-width: 768px) {
   .service__meta {
     flex-direction: row;
     align-items: center;
     gap: var(--s-6);
-  }
-
-  /* Tablet: el icono en su columna, a la derecha. */
-  a.service__inner {
-    grid-template-columns: auto minmax(0, 1fr) 180px;
-  }
-
-  .service__ill {
-    grid-column: 3;
-    grid-row: 1 / span 2;
-    align-self: center;
-    width: 180px;
-    height: 116px;
-    margin-top: 0;
-    object-position: center;
   }
 }
 
@@ -1301,27 +1123,6 @@ body[data-menu="open"] .whatsapp-widget,
 
   .service__body {
     grid-area: 1 / 3;
-  }
-
-  /* Con icono: columna propia a la derecha. */
-  a.service__inner {
-    grid-template-columns: auto minmax(0, 5fr) minmax(0, 5fr) 180px;
-    align-items: center;
-  }
-
-  a.service__inner .service__index,
-  a.service__inner .service__title {
-    align-self: start;
-  }
-
-  a.service__inner .service__index {
-    padding-top: 1.1em;
-  }
-
-  .service__ill {
-    grid-area: 1 / 4;
-    width: 180px;
-    height: 120px;
   }
 }
 
@@ -1474,16 +1275,11 @@ body[data-menu="open"] .whatsapp-widget,
   max-width: 17ch;
 }
 
-.final-cta__ill {
-  justify-self: end;
-  width: min(64vw, 260px);
-  margin-block: var(--s-5) var(--s-6);
-}
-
 .final-cta__copy {
   display: flex;
   flex-direction: column;
   gap: var(--s-3);
+  margin-top: var(--block-y);
 }
 
 .final-cta__contact {
@@ -1515,8 +1311,7 @@ body[data-menu="open"] .whatsapp-widget,
   }
 }
 
-/* Escritorio: el dibujo ocupa el hueco a la derecha del titular y su raíz
-   baja hacia el bloque de contacto, que queda justo debajo. */
+/* Escritorio: titular a lo ancho; texto y contacto debajo, en dos columnas. */
 @media (min-width: 1024px) {
   .final-cta__inner {
     grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -1532,14 +1327,6 @@ body[data-menu="open"] .whatsapp-widget,
     grid-column: 1 / span 9;
     grid-row: 2;
     max-width: none;
-  }
-
-  .final-cta__ill {
-    grid-column: 10 / -1;
-    grid-row: 2;
-    align-self: end;
-    width: min(100%, 340px);
-    margin: 0 0 calc(var(--s-6) * -1);
   }
 
   .final-cta__copy {
@@ -2165,115 +1952,27 @@ body[data-menu="open"] .whatsapp-widget,
   gap: var(--block-y);
 }
 
-.estudio__ill {
-  width: 100%;
-  max-width: 560px;
+.estudio__prose {
+  max-width: var(--measure);
 }
 
-/* Profundidad: arcos y raíces detrás de la ilustración. La sección recorta
-   lo que sale de sus bordes. */
-.estudio-about {
-  position: relative;
-  overflow: hidden;
-}
-
-.estudio__grid .prose,
-.estudio__ill {
-  position: relative;
-  z-index: 1;
-}
-
-/* Misma caja que la ilustración (ancho, proporción 1200/608, posición); el
-   margen inferior negativo, que incluye el hueco del flex, la superpone. */
-.estudio-depth {
-  position: relative;
-  z-index: 0;
-  width: min(100%, 560px);
-  aspect-ratio: 1200 / 608;
-  margin-bottom: calc(min(100%, 560px) * -608 / 1200 - var(--block-y));
-  pointer-events: none;
-}
-
-.estudio-depth svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.estudio-depth path {
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: round;
-}
-
-.estudio-depth__main {
-  stroke-width: 1.5;
-  opacity: 0.28;
-}
-
-.estudio-depth__roots {
-  stroke-width: 1;
-  opacity: 0.22;
-}
-
-.estudio-depth__rule {
-  stroke: var(--text-ink-hi);
-  stroke-width: 1;
-  opacity: 0.12;
-}
-
-.estudio-depth__dash {
-  stroke: var(--accent-violet);
-  stroke-width: 1;
-  stroke-dasharray: 2 6;
-  opacity: 0.35;
-}
-
-.estudio-depth__cross {
-  stroke: var(--text-ink-hi);
-  stroke-width: 1;
-  opacity: 0.4;
-}
-
-/* Móvil y tablet: solo el arco y las raíces. */
-.estudio-depth__micro {
-  display: none;
-}
-
+/* Escritorio: la entradilla a la izquierda y el resto del texto a la
+   derecha, más abajo. */
 @media (min-width: 1024px) {
   .estudio__grid {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    align-items: center;
-    gap: var(--gutter);
+    column-gap: var(--gutter);
+    row-gap: 0;
   }
 
-  .estudio__grid .prose {
+  .estudio__lead {
     grid-column: 1 / span 6;
   }
 
-  .estudio__ill {
-    grid-column: 7 / span 6;
-    grid-row: 1;
-    max-width: 640px;
-    justify-self: end;
-  }
-
-  .estudio__grid .prose {
-    grid-row: 1;
-  }
-
-  .estudio-depth {
-    grid-column: 7 / span 6;
-    grid-row: 1;
-    justify-self: end;
-    width: min(100%, 640px);
-    margin: 0;
-  }
-
-  .estudio-depth__micro {
-    display: inline;
+  .estudio__prose {
+    grid-column: 8 / span 5;
+    padding-top: var(--block-y);
   }
 }
 
@@ -2299,10 +1998,6 @@ body[data-menu="open"] .whatsapp-widget,
   flex-direction: column;
   gap: var(--block-y);
   min-width: 0;
-}
-
-.contact-grid__ill {
-  width: min(100%, 420px);
 }
 
 .contact-grid__channels {
@@ -2346,10 +2041,6 @@ body[data-menu="open"] .whatsapp-widget,
     grid-column: 8 / span 5;
     grid-row: 2 / span 2;
     padding-top: var(--s-4);
-  }
-
-  .contact-grid__ill {
-    width: min(100%, 460px);
   }
 }
 
@@ -2519,8 +2210,16 @@ body[data-menu="open"] .whatsapp-widget,
   margin-top: var(--block-y);
 }
 
-.not-found__ill {
-  width: min(80vw, 360px);
+/* El número hace de imagen: grande y con el degradado de marca. */
+.not-found__code {
+  font-family: var(--font-display);
+  font-size: clamp(7rem, 4rem + 18vw, 18rem);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  background: var(--brand-gradient-on-ink);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 @media (min-width: 1024px) {
@@ -2536,9 +2235,9 @@ body[data-menu="open"] .whatsapp-widget,
     grid-column: 1 / span 7;
   }
 
-  .not-found__ill {
-    grid-column: 9 / span 4;
-    width: 100%;
+  .not-found__code {
+    grid-column: 8 / span 5;
+    justify-self: end;
   }
 }
 
@@ -2569,169 +2268,6 @@ body[data-menu="open"] .whatsapp-widget,
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-color: var(--hair-strong);
-}
-
-/* Ilustraciones ------------------------------------------------------------ */
-
-/* :where() deja la especificidad a cero: cada sección decide cómo se
-   muestra. */
-:where(.ill-img) {
-  display: block;
-  height: auto;
-}
-
-.ill-img[data-anim="pending"] {
-  opacity: 0;
-  transform: translateY(16px) scale(0.97);
-}
-
-.ill-img[data-anim="in"] {
-  transition:
-    opacity 0.8s var(--e-out),
-    transform 1.1s var(--e-aterna);
-}
-
-.ill {
-  height: auto;
-  overflow: visible;
-  color: var(--on-surface-hi);
-}
-
-/* --ill-sw, --ill-off y --ill-dash los fija Ill.tsx en unidades del viewBox
-   para que la plumilla mida lo mismo en pantalla a cualquier tamaño. */
-.ill-l,
-.ill-dash {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: var(--ill-sw, 2.6);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.ill-dash {
-  stroke-dasharray: var(--ill-dash, 2 9);
-  opacity: 0.55;
-}
-
-.ill-l.l-a,
-.ill-dash.l-a {
-  stroke: var(--ill-a);
-}
-
-.ill-l.l-b,
-.ill-dash.l-b {
-  stroke: var(--ill-b);
-}
-
-.ill-l.l-c,
-.ill-dash.l-c {
-  stroke: var(--ill-c);
-}
-
-/* Fondo opaco de cada forma: el de la superficie donde vive la ilustración. */
-.ill-bg {
-  fill: var(--ill-surface, var(--surface));
-}
-
-
-.ill-f {
-  stroke: none;
-  transform: translate(var(--ill-off, 6px), var(--ill-off, 6px));
-}
-
-.f-a {
-  fill: var(--ill-a);
-}
-
-.f-b {
-  fill: var(--ill-b);
-}
-
-.f-c {
-  fill: var(--ill-c);
-}
-
-.f-s {
-  fill: var(--ill-s);
-}
-
-.ill-dot,
-.ill-spark {
-  fill: currentColor;
-}
-
-.d-a {
-  fill: var(--ill-a);
-}
-
-.d-b {
-  fill: var(--ill-b);
-}
-
-.d-c {
-  fill: var(--ill-c);
-}
-
-.ill-spark {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: ill-twinkle 3.6s var(--e-inout) infinite;
-}
-
-.ill-spark:nth-of-type(2n) {
-  animation-delay: -1.4s;
-}
-
-@keyframes ill-twinkle {
-  0%,
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(0.6) rotate(45deg);
-    opacity: 0.65;
-  }
-}
-
-/* Entrada: los contornos se dibujan y los rellenos caen a su sitio. */
-.ill[data-anim="pending"] .ill-l {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-}
-
-.ill[data-anim="pending"] .ill-f {
-  opacity: 0;
-  transform: translate(0, 0);
-}
-
-.ill[data-anim="pending"] .ill-bg,
-.ill[data-anim="pending"] .ill-dot,
-.ill[data-anim="pending"] .ill-spark,
-.ill[data-anim="pending"] .ill-dash {
-  opacity: 0;
-}
-
-.ill[data-anim="in"] .ill-l {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 1.5s var(--e-inout);
-}
-
-.ill[data-anim="in"] .ill-f {
-  transition:
-    opacity 0.5s var(--e-out) 0.65s,
-    transform 0.9s var(--e-aterna) 0.65s;
-}
-
-.ill[data-anim="in"] .ill-bg {
-  transition: opacity 0.4s var(--e-out);
-}
-
-.ill[data-anim="in"] .ill-dot,
-.ill[data-anim="in"] .ill-spark,
-.ill[data-anim="in"] .ill-dash {
-  transition: opacity 0.5s var(--e-out) 1s;
 }
 
 /* Movimiento reducido ------------------------------------------------------ */

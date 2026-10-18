@@ -37,34 +37,12 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 | Títulos y descripciones SEO | `metadata` de cada `src/app/**/page.tsx` |
 | Tokens de diseño (color, tipo, espacio, forma, movimiento) | `src/styles/tokens.css` |
 | Estilos de componentes y páginas | `src/app/globals.css` |
-| Ilustraciones | `src/components/illustrations/` |
 | Páginas legales (HTML literal) | `src/content/legal/` |
 | Imagen para redes (OG) | `public/brand/og.png` (se regenera con `scripts/og-image.js`) |
 
-## Ilustraciones
+## Imágenes
 
-El arte original está en `design/illustrations/` (PNG). `node
-scripts/prepare-illustrations.js` lo recorta, le quita el fondo y lo deja
-en WebP en `public/illustrations/`. Para cambiar una ilustración, sustituye
-el PNG con el mismo nombre y vuelve a ejecutar el script.
-
-| Archivo | Dónde aparece | Fondo |
-| --- | --- | --- |
-| `estudio-portada` | Portada, bloque «Estudio» | papel |
-| `estudio-pagina` | `/estudio` | papel |
-| `servicio-web`, `-seo`, `-mantenimiento`, `-asistente-ia` | Portada, lista de servicios | tinta |
-| `contacto` | `/contacto` | tinta |
-| `cierre-avion` | Cierre de página (contacto), al final de casi todas | papel |
-
-Reglas:
-
-- **Cada imagen en un solo sitio.** Los iconos de servicio viven en la lista
-  de la portada; ni las tarjetas de `/servicios` ni las fichas los repiten.
-- Las escenas (fondo crema que el script vuelve transparente) van solo
-  sobre papel. Las imágenes neón (el script las deja como luz sobre fondo
-  transparente) van solo sobre tinta.
-- Exporta los originales a ≥1200 px de ancho para que se vean nítidos en
-  pantallas retina.
-
-La 404 conserva su dibujo SVG hecho en código (`IllLost`, motor en
-`Ill.tsx`).
+La web no usa ilustraciones ni fotos: la única imagen es el vídeo del hero
+(`public/brand/hero-tree-*`), que marca la estética de todo lo demás. La
+profundidad de las secciones se construye con CSS (color, luz, líneas y
+tipografía), no con imágenes.
