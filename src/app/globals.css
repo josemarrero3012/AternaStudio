@@ -1133,6 +1133,66 @@ body[data-menu="open"] .whatsapp-widget,
     align-self: end;
     margin-top: 0;
   }
+
+  .pillars {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+
+/* Tres compromisos del estudio, en vidrio. Cada uno nace de un nodo de luz
+   con su filamento, como las raíces del vídeo. */
+.pillars {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gutter);
+  margin-top: var(--section-y);
+}
+
+.pillar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-6);
+  border: 1px solid var(--hair);
+  border-radius: var(--r-card);
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-card);
+}
+
+.pillar__title {
+  margin-bottom: var(--s-1);
+  font-size: var(--t-card);
+}
+
+.pillar__node {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  margin-bottom: var(--s-4);
+  border-radius: 50%;
+  background-color: var(--orchid);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--orchid) 18%, transparent),
+    0 0 16px 2px color-mix(in srgb, var(--orchid) 60%, transparent);
+}
+
+.pillar__node::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 14px;
+  width: 88px;
+  height: 1px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--violet) 70%, transparent), transparent);
+}
+
+@media (min-width: 768px) {
+  .pillars {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 /* Lista de servicios / creencias ----------------------------------------- */
@@ -1173,6 +1233,20 @@ body[data-menu="open"] .whatsapp-widget,
 .service__body {
   grid-column: 2;
   max-width: 54ch;
+}
+
+/* Tres puntos de «Qué incluye» de la ficha del servicio. */
+.service__includes {
+  display: grid;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+  color: var(--on-surface-mid);
+}
+
+.service__includes li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 /* Precio arriba y llamada debajo en móvil; en línea desde tablet. Antes un
@@ -1466,6 +1540,85 @@ body[data-menu="open"] .whatsapp-widget,
     grid-column: 7 / -1;
     grid-row: 3;
     margin-top: var(--block-y);
+  }
+
+  .final-cta__next {
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+}
+
+/* Qué pasa después de escribirnos (cierre y /contacto). */
+.next-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+
+.final-cta__next {
+  margin-top: var(--section-y);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--hair);
+}
+
+.next-steps__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--s-6) var(--gutter);
+}
+
+.next-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.next-step__index {
+  color: var(--orchid);
+}
+
+.next-step__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.15rem + 0.4vw, 1.5rem);
+  font-weight: 500;
+  font-variation-settings: "opsz" 72;
+  line-height: 1.15;
+}
+
+/* Disponibilidad con un punto que late, como un nodo encendido. */
+.next-steps__availability {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  color: var(--on-surface-hi);
+}
+
+.next-steps__pulse {
+  position: relative;
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--ok-on-ink);
+}
+
+.next-steps__pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-color: var(--ok-on-ink);
+  animation: node-pulse 2.4s var(--e-out) infinite;
+}
+
+@keyframes node-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(3);
+    opacity: 0;
   }
 }
 
@@ -2124,6 +2277,10 @@ body[data-menu="open"] .whatsapp-widget,
   max-width: var(--measure);
 }
 
+.estudio__facts {
+  margin-top: var(--block-y);
+}
+
 /* Escritorio: la entradilla a la izquierda y el resto del texto a la
    derecha, más abajo. */
 @media (min-width: 1024px) {
@@ -2141,6 +2298,11 @@ body[data-menu="open"] .whatsapp-widget,
   .estudio__prose {
     grid-column: 8 / span 5;
     padding-top: var(--block-y);
+  }
+
+  .estudio__facts {
+    grid-column: 1 / -1;
+    margin-top: var(--section-y);
   }
 }
 

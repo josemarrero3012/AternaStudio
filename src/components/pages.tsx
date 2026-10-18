@@ -12,7 +12,7 @@ import { site } from "@/lib/site";
 import { CopyEmail } from "./CopyEmail";
 import { whatsappHref } from "./Chrome";
 import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
-import { Approach, FinalCTA, StartingPrice } from "./sections";
+import { Approach, FinalCTA, NextSteps, StartingPrice } from "./sections";
 import { WordReveal } from "./WordReveal";
 
 // /servicios ----------------------------------------------------------------
@@ -305,6 +305,14 @@ export function EstudioContent() {
             <p className="t-body muted-strong">{page.prose[1]}</p>
             <p className="t-body muted-strong">{page.prose[2]}</p>
           </div>
+          <dl className="detail__facts estudio__facts">
+            {page.facts.map((f) => (
+              <div className="detail__fact" key={f.dt}>
+                <dt className="t-label">{f.dt}</dt>
+                <dd className="t-small">{f.dd}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
       <section className="section" aria-labelledby="beliefs-title">
@@ -443,6 +451,8 @@ export function ContactoContent() {
               <ArrowExternal />
             </a>
           </div>
+          {/* La disponibilidad ya está en la fila de datos de abajo. */}
+          <NextSteps availability={false} />
         </div>
         <ContactForm />
       </div>

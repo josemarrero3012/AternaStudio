@@ -83,7 +83,21 @@ const es = {
       "Aterna es un estudio pequeño a propósito. La ventaja no es el tamaño: es que quien diseña tu web es quien la construye y quien te atiende.",
       "Trabajamos mejor con negocios que tienen algo detrás de la fachada —un lugar, un producto, una forma de hacer las cosas— y una web que todavía no lo demuestra."
     ],
-    "link": "Conocer el estudio"
+    "link": "Conocer el estudio",
+    "pillars": [
+      {
+        "title": "Quien diseña, programa",
+        "body": "La misma persona diseña tu web, la construye y te atiende. Nada se pierde entre equipos."
+      },
+      {
+        "title": "El código es tuyo",
+        "body": "Sin plantillas ni plugins que actualizar cada mes. Se lee, y cualquier otro estudio puede continuarlo."
+      },
+      {
+        "title": "Pocos proyectos a la vez",
+        "body": "No competimos en volumen. Cada proyecto tiene la atención que necesita, de principio a fin."
+      }
+    ]
   },
   "finalCta": {
     "eyebrow": "Contacto",
@@ -92,7 +106,23 @@ const es = {
     "copy": [
       "Cuéntanos qué haces y qué quieres que tu presencia digital consiga.",
       "Respondemos a todo. Incluso si creemos que no somos el estudio adecuado."
-    ]
+    ],
+    "nextTitle": "Qué pasa después",
+    "next": [
+      {
+        "title": "Nos escribes",
+        "body": "Qué haces, qué tienes ahora y para cuándo. No hace falta que traigas un briefing."
+      },
+      {
+        "title": "Te respondemos",
+        "body": "Siempre, aunque sea para decir que no somos el estudio adecuado. Si no encaja, lo decimos pronto."
+      },
+      {
+        "title": "Lo ponemos por escrito",
+        "body": "Miramos qué hay, qué funciona y qué está roto antes de proponer nada."
+      }
+    ],
+    "availability": "Pocos proyectos a la vez. Pregunta y te decimos."
   },
   "mobile": {
     "open": "Menú",
@@ -469,6 +499,24 @@ const es = {
         "Por eso no montamos plantillas y no dependemos de plugins que haya que actualizar cada mes. El código que entregamos es tuyo, se lee, y cualquier otro estudio puede continuarlo.",
         "Elegimos los proyectos por lo que tienen que contar, no por el tamaño del presupuesto: un oficio con historia, un lugar con carácter, un negocio que hace las cosas bien y necesita que la web lo demuestre."
       ],
+      "facts": [
+        {
+          "dt": "A quién",
+          "dd": "Negocios cuya web ya no está a la altura de lo que ofrecen"
+        },
+        {
+          "dt": "Qué hacemos",
+          "dd": "Diseño · Desarrollo · SEO · Asistente IA"
+        },
+        {
+          "dt": "Cómo",
+          "dd": "Código propio, sin plantillas. El código es tuyo."
+        },
+        {
+          "dt": "Disponibilidad",
+          "dd": "Pocos proyectos a la vez. Pregunta y te decimos."
+        }
+      ],
       "beliefsTitle": "En qué creemos",
       "beliefs": [
         {
@@ -607,7 +655,21 @@ const en: Dict = {
       "Aterna is a small studio on purpose. The advantage isn’t the size: it’s that the person who designs your site is the one who builds it and the one who looks after you.",
       "We work best with businesses that have something behind the façade — a place, a product, a way of doing things — and a website that doesn't show it yet."
     ],
-    "link": "About the studio"
+    "link": "About the studio",
+    "pillars": [
+      {
+        "title": "The designer builds it",
+        "body": "The same person designs your site, builds it and looks after you. Nothing gets lost between teams."
+      },
+      {
+        "title": "The code is yours",
+        "body": "No templates, no plugins to update every month. It reads clearly, and any other studio can pick it up."
+      },
+      {
+        "title": "Few projects at once",
+        "body": "We don't compete on volume. Each project gets the attention it needs, from start to finish."
+      }
+    ]
   },
   "finalCta": {
     "eyebrow": "Contact",
@@ -616,7 +678,23 @@ const en: Dict = {
     "copy": [
       "Tell us what you do and what you want your digital presence to achieve.",
       "We reply to everything. Even when we think we're not the right studio."
-    ]
+    ],
+    "nextTitle": "What happens next",
+    "next": [
+      {
+        "title": "You write to us",
+        "body": "What you do, what you have now and by when. You don't need to bring a brief."
+      },
+      {
+        "title": "We reply",
+        "body": "Always, even if it's to say we're not the right studio. If it doesn't fit, we say so early."
+      },
+      {
+        "title": "We put it in writing",
+        "body": "We look at what's there, what works and what's broken before proposing anything."
+      }
+    ],
+    "availability": "Few projects at a time. Ask and we'll tell you."
   },
   "mobile": {
     "open": "Menu",
@@ -992,6 +1070,24 @@ const en: Dict = {
         "The name comes from aeterna. The symbol is a tree with roots inside a closed circle. It's not decoration: it's what we sell — a well-built website is still standing when the studio that made it is no longer watching.",
         "That's why we don't assemble templates and don't depend on plugins that need updating every month. The code we deliver is yours, it reads clearly, and any other studio can pick it up.",
         "We choose projects for what they have to say, not for the size of the budget: a craft with history, a place with character, a business that does things well and needs the website to show it."
+      ],
+      "facts": [
+        {
+          "dt": "Who for",
+          "dd": "Businesses whose website no longer matches what they offer"
+        },
+        {
+          "dt": "What we do",
+          "dd": "Design · Development · SEO · AI assistant"
+        },
+        {
+          "dt": "How",
+          "dd": "Our own code, no templates. The code is yours."
+        },
+        {
+          "dt": "Availability",
+          "dd": "Few projects at a time. Ask and we'll tell you."
+        }
       ],
       "beliefsTitle": "What we believe",
       "beliefs": [

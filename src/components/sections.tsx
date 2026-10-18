@@ -18,7 +18,7 @@ import { formatPrice, pricing, slugToProduct, startingPrice, type ServiceSlug } 
 import { useReveal } from "@/lib/reveal";
 import { site } from "@/lib/site";
 import { CopyEmail } from "./CopyEmail";
-import { ArrowRight } from "./icons";
+import { ArrowRight, Check } from "./icons";
 import { WordReveal } from "./WordReveal";
 
 /** "01 — Estudio": la numeración la pone cada página según su orden real. */
@@ -132,6 +132,7 @@ export function Hero() {
 export function StudioStatement({ n }: { n?: number }) {
   const { t } = useI18n();
   const body = useReveal({ selector: "[data-r]", y: 24, stagger: 0.12 });
+  const pillars = useReveal<HTMLUListElement>({ selector: ".pillar", y: 24, stagger: 0.1 });
   return (
     <section className="section section-lg band-indigo studio" id="estudio" aria-labelledby="studio-title">
       <div className="container studio__inner">
@@ -151,6 +152,15 @@ export function StudioStatement({ n }: { n?: number }) {
             </Link>
           </p>
         </div>
+        <ul className="pillars" ref={pillars}>
+          {t.studioHome.pillars.map((p, i) => (
+            <li className="pillar" key={i}>
+              <span className="pillar__node" aria-hidden="true" />
+              <h3 className="t-title pillar__title">{p.title}</h3>
+              <p className="t-small muted">{p.body}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
@@ -191,6 +201,7 @@ export function Services({ n }: { n?: number }) {
         <ul className="services__list" ref={list}>
           {t.servicePages.index.cards.map((card, i) => {
             const slug = card.slug as ServiceSlug;
+            const includes = t.servicePages[slugToProduct[slug]].includes.slice(0, 3);
             return (
               <li className="service" key={slug}>
                 <Link href={`/servicios/${slug}`} className="service__inner" data-spot>
@@ -198,6 +209,14 @@ export function Services({ n }: { n?: number }) {
                   <h3 className="t-title service__title">{card.title}</h3>
                   <div className="service__body">
                     <p className="t-body muted">{card.body}</p>
+                    <ul className="t-small service__includes">
+                      {includes.map((item, j) => (
+                        <li key={j}>
+                          <Check />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                     <p className="service__meta">
                       <StartingPrice slug={slug} className="t-small" />
                       <span className="link-cta">
@@ -324,7 +343,34 @@ export function FinalCTA({ n }: { n?: number }) {
             <CopyEmail email={site.email} />
           </div>
         </div>
+        <NextSteps className="final-cta__next" />
       </div>
     </section>
+  );
+}
+
+/** Qué pasa después de escribirnos: tres pasos y la disponibilidad. */
+export function NextSteps({ className, availability = true }: { className?: string; availability?: boolean }) {
+  const { t } = useI18n();
+  const list = useReveal<HTMLDivElement>({ selector: ".next-step", y: 20, stagger: 0.1 });
+  return (
+    <div className={`next-steps${className ? ` ${className}` : ""}`} ref={list}>
+      <h3 className="t-label dim">{t.finalCta.nextTitle}</h3>
+      <ol className="next-steps__list">
+        {t.finalCta.next.map((step, i) => (
+          <li className="next-step" key={i}>
+            <span className="t-index next-step__index">{String(i + 1).padStart(2, "0")}</span>
+            <p className="next-step__title">{step.title}</p>
+            <p className="t-small muted">{step.body}</p>
+          </li>
+        ))}
+      </ol>
+      {availability ? (
+        <p className="t-small next-steps__availability">
+          <span className="next-steps__pulse" aria-hidden="true" />
+          {t.finalCta.availability}
+        </p>
+      ) : null}
+    </div>
   );
 }
