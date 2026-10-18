@@ -10,13 +10,37 @@ import { useI18n } from "@/lib/i18n";
 import { formatPrice, pricing, slugToProduct, type ServiceSlug } from "@/lib/pricing";
 import { site } from "@/lib/site";
 import { CopyEmail } from "./CopyEmail";
-import { ArrowExternal, ArrowRight, Check } from "./icons";
+import { whatsappHref } from "./Chrome";
+import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
 import { IllContact, IllLost, IllStudioPage } from "./illustrations";
 import { EstudioArcs } from "./illustrations/StudioDepth";
 import { Approach, FinalCTA, StartingPrice } from "./sections";
 import { WordReveal } from "./WordReveal";
 
 // /servicios ----------------------------------------------------------------
+
+type Card = { slug: string; kicker: string; title: string; body: string; cta: string };
+
+/** Tarjeta de servicio: en /servicios y en «Otros servicios» de cada ficha. */
+function SvcCard({ card, heading = "h2" }: { card: Card; heading?: "h2" | "h3" }) {
+  const slug = card.slug as ServiceSlug;
+  const Heading = heading;
+  return (
+    <Link href={`/servicios/${slug}`} className="svc-card">
+      <p className="t-label dim svc-card__kicker">{card.kicker}</p>
+      <Heading className="svc-card__title">{card.title}</Heading>
+      <p className="t-body muted svc-card__body">{card.body}</p>
+      {/* La modalidad de pago ya la dice el antetítulo: aquí solo el importe. */}
+      <p className="svc-card__price">
+        <StartingPrice slug={slug} />
+      </p>
+      <span className="link-cta svc-card__cta">
+        {card.cta}
+        <ArrowRight />
+      </span>
+    </Link>
+  );
+}
 
 export function ServiciosContent() {
   const { t } = useI18n();
@@ -30,24 +54,9 @@ export function ServiciosContent() {
       </section>
       <section className="container section section--flush-top" aria-label={page.eyebrow}>
         <div className="svc-cards">
-          {page.cards.map((card) => {
-            const slug = card.slug as ServiceSlug;
-            return (
-              <Link key={slug} href={`/servicios/${slug}`} className="svc-card">
-                <p className="t-label dim svc-card__kicker">{card.kicker}</p>
-                <h2 className="svc-card__title">{card.title}</h2>
-                <p className="t-body muted svc-card__body">{card.body}</p>
-                {/* La modalidad de pago ya la dice el antetítulo: aquí solo el importe. */}
-                <p className="svc-card__price">
-                  <StartingPrice slug={slug} />
-                </p>
-                <span className="link-cta svc-card__cta">
-                  {card.cta}
-                  <ArrowRight />
-                </span>
-              </Link>
-            );
-          })}
+          {page.cards.map((card) => (
+            <SvcCard key={card.slug} card={card} />
+          ))}
         </div>
       </section>
       <Approach />
@@ -108,15 +117,43 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
   const product = slugToProduct[slug];
   const page = t.servicePages[product];
   const prices = pricing[product];
+  const cards = t.servicePages.index.cards;
+  const card = cards.find((c) => c.slug === slug)!;
 
   return (
     <>
       <section className="container page-head svc-head">
         <div className="svc-head__intro">
-          <p className="t-label dim page-head__eyebrow">{page.eyebrow}</p>
+          <nav aria-label="Breadcrumb" className="t-label crumbs page-head__eyebrow">
+            <ol>
+              <li>
+                <Link href="/servicios" className="link-underline">
+                  {t.servicePages.index.eyebrow}
+                </Link>
+              </li>
+              <li aria-current="page">{card.title}</li>
+            </ol>
+          </nav>
           <WordReveal as="h1" className="t-display svc-h1" text={page.h1} onScroll={false} delay={0.1} />
         </div>
         <p className="t-lead muted svc-head__lead">{page.lead}</p>
+        {/* Precio de salida y acciones arriba: antes había que bajar hasta los planes. */}
+        <div className="svc-summary">
+          <p className="svc-summary__price">
+            <span className="t-label dim">{card.kicker}</span>
+            <StartingPrice slug={slug} />
+          </p>
+          <div className="svc-summary__actions">
+            <Link href="/contacto" className="btn-primary">
+              {t.cta}
+              <ArrowRight />
+            </Link>
+            <a href="#planes" className="btn-ghost">
+              {t.common.seePlans}
+              <ArrowDown />
+            </a>
+          </div>
+        </div>
       </section>
 
       <section className="container section svc-row svc-row--first" aria-label={t.common.overview}>
@@ -232,6 +269,21 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
         </dl>
       </section>
 
+      <section className="container section other-svcs" aria-labelledby="other-title">
+        <header className="other-svcs__head">
+          <h2 id="other-title" className="t-title">
+            {t.common.otherServices}
+          </h2>
+        </header>
+        <div className="svc-cards svc-cards--three">
+          {cards
+            .filter((c) => c.slug !== slug)
+            .map((c) => (
+              <SvcCard key={c.slug} card={c} heading="h3" />
+            ))}
+        </div>
+      </section>
+
       <FinalCTA />
     </>
   );
@@ -297,8 +349,9 @@ function ContactForm() {
   const [state, setState] = useState<FormState>("idle");
   const sending = state === "sending";
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     setState("sending");
     try {
       const res = await fetch("/contacto.php", {
@@ -307,6 +360,9 @@ function ContactForm() {
         body: JSON.stringify({ name, email, message, consent, company }),
       });
       if (!res.ok) throw new Error("request_failed");
+      // reset() nativo: además de vaciar, olvida que los campos se tocaron y
+      // así no aparecen marcados como inválidos tras un envío correcto.
+      form.reset();
       setState("sent");
       setName("");
       setEmail("");
@@ -321,7 +377,7 @@ function ContactForm() {
   const note = state === "sent" ? t.contactForm.sent : state === "error" ? t.contactForm.error : "";
 
   return (
-    <form className="contact-form" onSubmit={onSubmit}>
+    <form className="contact-form" onSubmit={onSubmit} aria-busy={sending}>
       <div className="contact-form__field">
         <label htmlFor="cf-name">{t.contactForm.name}</label>
         <input id="cf-name" name="name" type="text" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} disabled={sending} />
@@ -385,8 +441,12 @@ export function ContactoContent() {
             <p className="t-lead">{page.prose[0]}</p>
             <p className="t-body muted">{page.prose[1]}</p>
           </div>
-          <div className="contact-grid__email">
+          <div className="contact-grid__channels">
             <CopyEmail email={site.email} />
+            <a href={whatsappHref(t.whatsapp.message)} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+              WhatsApp
+              <ArrowExternal />
+            </a>
           </div>
           <IllContact className="contact-grid__ill" />
         </div>

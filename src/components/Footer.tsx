@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
 import { site } from "@/lib/site";
+import { whatsappHref } from "./Chrome";
+import { ArrowExternal } from "./icons";
 
 export function Footer() {
   const { t } = useI18n();
@@ -20,32 +22,47 @@ export function Footer() {
             {t.common.positioning}.
           </p>
         </div>
-        <nav className="footer__nav" aria-label="Pie de página">
-          <ul>
-            {t.nav.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="t-small link-underline">
-                  {item.label}
-                </Link>
+        <div className="footer__cols">
+          <nav className="footer__col" aria-label={t.servicePages.index.eyebrow}>
+            <p className="t-label dim">{t.servicePages.index.eyebrow}</p>
+            <ul>
+              {t.servicePages.index.cards.map((card) => (
+                <li key={card.slug}>
+                  <Link href={`/servicios/${card.slug}`} className="t-small link-underline">
+                    {card.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <nav className="footer__col" aria-label="Aterna">
+            <p className="t-label dim">Aterna</p>
+            <ul>
+              {t.nav.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="t-small link-underline">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div className="footer__col">
+            <p className="t-label dim">{t.finalCta.eyebrow}</p>
+            <ul>
+              <li>
+                <a href={`mailto:${site.email}`} className="t-small link-underline">
+                  {site.email}
+                </a>
               </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="footer__contact">
-          <a href={`mailto:${site.email}`} className="t-small link-underline">
-            {site.email}
-          </a>
-          <ul className="footer__legal">
-            <li>
-              <Link href="/impressum" className="t-label dim link-underline">Impressum</Link>
-            </li>
-            <li>
-              <Link href="/datenschutz" className="t-label dim link-underline">Datenschutz</Link>
-            </li>
-            <li>
-              <Link href="/legal" className="t-label dim link-underline">Aviso legal y privacidad</Link>
-            </li>
-          </ul>
+              <li>
+                <a href={whatsappHref(t.whatsapp.message)} target="_blank" rel="noopener noreferrer" className="t-small link-underline">
+                  WhatsApp
+                  <ArrowExternal size={13} />
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <div className="container" aria-hidden="true">
@@ -55,6 +72,17 @@ export function Footer() {
         <p className="t-label dim">
           © {new Date().getFullYear()} {site.name}
         </p>
+        <ul className="footer__legal">
+          <li>
+            <Link href="/impressum" className="t-label dim link-underline">Impressum</Link>
+          </li>
+          <li>
+            <Link href="/datenschutz" className="t-label dim link-underline">Datenschutz</Link>
+          </li>
+          <li>
+            <Link href="/legal" className="t-label dim link-underline">Aviso legal y privacidad</Link>
+          </li>
+        </ul>
       </div>
     </footer>
   );
