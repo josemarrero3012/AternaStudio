@@ -13,7 +13,7 @@ import { CopyEmail } from "./CopyEmail";
 import { whatsappHref } from "./Chrome";
 import { BELIEF_GLYPHS } from "./glyphs";
 import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
-import { Approach, FinalCTA, NextSteps, StartingPrice } from "./sections";
+import { FinalCTA, NextSteps, StartingPrice } from "./sections";
 import { ServiceGlyph, ServiceTrace } from "./ServiceTrace";
 import { Trace } from "./Trace";
 import { WordReveal } from "./WordReveal";
@@ -66,7 +66,8 @@ export function ServiciosContent() {
           </div>
         </div>
       </section>
-      <Approach />
+      {/* El método («Cómo trabajamos») vive en la portada: aquí solo el
+          catálogo y el paso siguiente. */}
       <FinalCTA />
     </>
   );
@@ -319,14 +320,6 @@ export function EstudioContent() {
             <p className="t-body muted-strong">{page.prose[1]}</p>
             <p className="t-body muted-strong">{page.prose[2]}</p>
           </div>
-          <dl className="detail__facts estudio__facts">
-            {page.facts.map((f) => (
-              <div className="detail__fact" key={f.dt}>
-                <dt className="t-label">{f.dt}</dt>
-                <dd className="t-small">{f.dd}</dd>
-              </div>
-            ))}
-          </dl>
         </div>
       </section>
       <section className="section" aria-labelledby="beliefs-title">
@@ -456,11 +449,10 @@ export function ContactoContent() {
       <p className="t-label dim page-head__eyebrow">{page.eyebrow}</p>
       <WordReveal as="h1" className="t-hero contacto__title" text={page.h1} onScroll={false} delay={0.1} />
       <div className="contact-grid">
+        {/* Canales y qué pasa después; qué contarnos y que respondemos
+            siempre ya lo dicen los pasos. */}
         <div className="contact-grid__copy">
-          <div className="prose">
-            <p className="t-lead">{page.prose[0]}</p>
-            <p className="t-body muted">{page.prose[1]}</p>
-          </div>
+          <p className="t-lead prose">{page.lead}</p>
           <div className="contact-grid__channels">
             <CopyEmail email={site.email} />
             <a href={whatsappHref(t.whatsapp.message)} target="_blank" rel="noopener noreferrer" className="btn-ghost">
@@ -468,19 +460,10 @@ export function ContactoContent() {
               <ArrowExternal />
             </a>
           </div>
-          {/* La disponibilidad ya está en la fila de datos de abajo. */}
-          <NextSteps availability={false} />
+          <NextSteps />
         </div>
         <ContactForm />
       </div>
-      <dl className="detail__facts">
-        {page.facts.map((f) => (
-          <div className="detail__fact" key={f.dt}>
-            <dt className="t-label">{f.dt}</dt>
-            <dd className="t-small">{f.dd}</dd>
-          </div>
-        ))}
-      </dl>
     </section>
   );
 }

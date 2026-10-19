@@ -6,17 +6,6 @@
 
 import { glyph, ring } from "./Trace";
 
-// «Cada proyecto tiene la atención que necesita»: el filamento llega a un
-// nodo rodeado por un círculo. Lo comparten el pilar y la creencia.
-const FOCUS = glyph(
-  [
-    { d: "M0 20 H61", dur: 1.1 },
-    { d: ring(74, 20, 13), delay: 1, dur: 1 },
-  ],
-  undefined,
-  { x: 74, y: 20, delay: 1.9 },
-);
-
 /** Portada, «Estudio»: los tres compromisos (studioHome.pillars). */
 export const PILLAR_GLYPHS = [
   // «Quien diseña, programa»: dos hebras, diseño y código, que se hacen una.
@@ -40,7 +29,16 @@ export const PILLAR_GLYPHS = [
     ],
     { x: 52, y: 20, delay: 1 },
   ),
-  FOCUS,
+  // «Cada proyecto tiene la atención que necesita»: el filamento llega a un
+  // nodo rodeado por un círculo.
+  glyph(
+    [
+      { d: "M0 20 H61", dur: 1.1 },
+      { d: ring(74, 20, 13), delay: 1, dur: 1 },
+    ],
+    undefined,
+    { x: 74, y: 20, delay: 1.9 },
+  ),
 ];
 
 /** /estudio, «En qué creemos» (pages.estudio.beliefs). */
@@ -83,7 +81,6 @@ export const BELIEF_GLYPHS = [
     ],
     { x: 88, y: 4, delay: 1.8 },
   ),
-  FOCUS,
 ];
 
 /** Cierre y /contacto, «Qué pasa después» (finalCta.next). Tres siluetas

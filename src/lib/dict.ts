@@ -79,10 +79,7 @@ const es = {
   "studioHome": {
     "eyebrow": "Estudio",
     "title": "Un estudio pequeño,\npor decisión.",
-    "body": [
-      "Aterna es un estudio pequeño a propósito. La ventaja no es el tamaño: es que quien diseña tu web es quien la construye y quien te atiende.",
-      "Trabajamos mejor con negocios que tienen algo detrás de la fachada —un lugar, un producto, una forma de hacer las cosas— y una web que todavía no lo demuestra."
-    ],
+    "lead": "No es una limitación: es lo que nos permite trabajar así.",
     "link": "Conocer el estudio",
     "pillars": [
       {
@@ -103,15 +100,12 @@ const es = {
     "eyebrow": "Contacto",
     "mailLabel": "O escríbenos directamente",
     "title": "Si tu web ya no\nrepresenta a tu negocio,\nhablemos.",
-    "copy": [
-      "Cuéntanos qué haces y qué quieres que tu presencia digital consiga.",
-      "Respondemos a todo. Incluso si creemos que no somos el estudio adecuado."
-    ],
+    "lead": "Cuéntanos qué haces y qué quieres que tu presencia digital consiga.",
     "nextTitle": "Qué pasa después",
     "next": [
       {
         "title": "Nos escribes",
-        "body": "Qué haces, qué tienes ahora y para cuándo. No hace falta que traigas un briefing."
+        "body": "Con lo que tengas: qué hay ahora y para cuándo. No hace falta un briefing."
       },
       {
         "title": "Te respondemos",
@@ -119,10 +113,10 @@ const es = {
       },
       {
         "title": "Lo ponemos por escrito",
-        "body": "Miramos qué hay, qué funciona y qué está roto antes de proponer nada."
+        "body": "Una propuesta con qué haríamos, en qué plazo y por cuánto, antes de empezar nada."
       }
     ],
-    "availability": "Pocos proyectos a la vez. Pregunta y te decimos."
+    "availability": "Agenda limitada: pregunta por fechas y te decimos."
   },
   "mobile": {
     "open": "Menú",
@@ -192,8 +186,7 @@ const es = {
       "h1": "Una web a la altura\ndel negocio que ya eres.",
       "lead": "Diseño, dirección de arte y desarrollo a medida. Sin plantillas, sin plugins que mantener. El código es tuyo.",
       "intro": [
-        "La mayoría de las webs se parecen entre sí porque salen del mismo puñado de plantillas. La tuya no. Partimos de qué tiene que conseguir —que te encuentren, que te reserven, que te compren— y a partir de ahí decidimos estructura, dirección de arte y código.",
-        "Trabajamos pocos proyectos a la vez, por decisión: la misma persona que diseña tu web es la que la programa."
+        "La mayoría de las webs se parecen entre sí porque salen del mismo puñado de plantillas. La tuya no. Partimos de qué tiene que conseguir —que te encuentren, que te reserven, que te compren— y a partir de ahí decidimos estructura, dirección de arte y código."
       ],
       "includesTitle": "Qué incluye",
       "includes": [
@@ -202,7 +195,7 @@ const es = {
         "Diseño de la experiencia completa, de escritorio a móvil",
         "Código propio, rápido y accesible (Core Web Vitals como objetivo)",
         "SEO técnico de base y datos estructurados",
-        "Publicación, pruebas y traspaso. El código es tuyo."
+        "Publicación, pruebas y entrega del código"
       ],
       "reportTitle": "",
       "report": "",
@@ -267,7 +260,7 @@ const es = {
       "h1": "Especialistas en SEO\ny en crecimiento orgánico.",
       "lead": "Una web excelente que nadie encuentra sigue teniendo el mismo problema. El SEO es la parte que hace que aparezcas cuando te buscan.",
       "intro": [
-        "No prometemos «primera posición». Prometemos trabajo hecho, medido y contado con claridad. El SEO sube en escalones, no en línea recta, y lo verás mes a mes con datos reales.",
+        "Lo que prometemos es trabajo hecho, medido y contado con claridad. El SEO sube en escalones, no en línea recta, y lo verás mes a mes con datos reales.",
         "Trabajamos el crecimiento orgánico con especial foco en la visibilidad local —para hoteles, bodegas, restaurantes y negocios que se juegan mucho en «cerca de mí»."
       ],
       "includesTitle": "En qué trabajamos cada mes",
@@ -414,7 +407,7 @@ const es = {
       "lead": "Un asistente de voz con IA que atiende las llamadas en nombre de tu negocio, 24 horas al día: resuelve dudas, toma reservas o citas y te pasa el recado.",
       "intro": [
         "Cuando estás con un cliente, en cocina, en obra o con el negocio cerrado, el teléfono sigue sonando. Y quien llama y no obtiene respuesta suele probar con el siguiente de la lista.",
-        "Configuramos un asistente que habla con la voz y el tono de tu negocio, conoce tus horarios, servicios y precios, y sabe cuándo pasarte la llamada a ti. Se presenta como asistente virtual: nada de hacerse pasar por una persona."
+        "Configuramos un asistente que habla con la voz y el tono de tu negocio, conoce tus horarios, servicios y precios, y sabe cuándo pasarte la llamada a ti."
       ],
       "includesTitle": "Qué incluye",
       "includes": [
@@ -493,29 +486,11 @@ const es = {
   "pages": {
     "estudio": {
       "eyebrow": "Estudio",
-      "h1": "Un estudio pequeño, por decisión.",
+      "h1": "Webs hechas para durar.",
       "prose": [
         "El nombre viene de aeterna. El símbolo es un árbol con raíces dentro de un círculo cerrado. No es decoración: es lo que vendemos —una web bien construida sigue en pie cuando el estudio que la hizo ya no está mirando.",
-        "Por eso no montamos plantillas y no dependemos de plugins que haya que actualizar cada mes. El código que entregamos es tuyo, se lee, y cualquier otro estudio puede continuarlo.",
+        "Por eso cuidamos lo que no se ve: código limpio, páginas rápidas y una estructura que se pueda ampliar sin rehacerla.",
         "Elegimos los proyectos por lo que tienen que contar, no por el tamaño del presupuesto: un oficio con historia, un lugar con carácter, un negocio que hace las cosas bien y necesita que la web lo demuestre."
-      ],
-      "facts": [
-        {
-          "dt": "A quién",
-          "dd": "Negocios cuya web ya no está a la altura de lo que ofrecen"
-        },
-        {
-          "dt": "Qué hacemos",
-          "dd": "Diseño · Desarrollo · SEO · Asistente IA"
-        },
-        {
-          "dt": "Cómo",
-          "dd": "Código propio, sin plantillas. El código es tuyo."
-        },
-        {
-          "dt": "Disponibilidad",
-          "dd": "Pocos proyectos a la vez. Pregunta y te decimos."
-        }
       ],
       "beliefsTitle": "En qué creemos",
       "beliefs": [
@@ -530,38 +505,13 @@ const es = {
         {
           "title": "El movimiento con motivo",
           "body": "Una animación tiene que explicar algo: una jerarquía, una continuidad, un cambio de estado. Si solo está para impresionar, sobra y además cuesta batería."
-        },
-        {
-          "title": "Pocos proyectos a la vez",
-          "body": "Un estudio pequeño no compite en volumen. Compite en que la persona que diseñó la web es la misma que la programó y la misma que la defiende delante del cliente."
         }
       ]
     },
     "contacto": {
       "eyebrow": "Contacto",
-      "h1": "Si tu web ya no\nrepresenta a tu negocio,\nhablemos.",
-      "prose": [
-        "Cuéntanos qué haces y qué quieres que tu presencia digital consiga. No hace falta que traigas un briefing.",
-        "Respondemos a todo, aunque sea para decir que no somos el estudio adecuado. Si el proyecto no encaja, lo decimos pronto y sin rodeos."
-      ],
-      "facts": [
-        {
-          "dt": "A quién",
-          "dd": "Negocios cuya web ya no está a la altura de lo que ofrecen"
-        },
-        {
-          "dt": "Qué hacemos",
-          "dd": "Diseño · Desarrollo · SEO · Asistente IA"
-        },
-        {
-          "dt": "Disponibilidad",
-          "dd": "Pocos proyectos a la vez. Pregunta y te decimos."
-        },
-        {
-          "dt": "Qué necesitamos",
-          "dd": "Qué haces, qué tienes ahora y para cuándo."
-        }
-      ]
+      "h1": "Empecemos por\nuna conversación.",
+      "lead": "Escríbenos por el formulario, por email o por WhatsApp, como te resulte más cómodo."
     },
     "notFound": {
       "eyebrow": "Error 404",
@@ -651,10 +601,7 @@ const en: Dict = {
   "studioHome": {
     "eyebrow": "Studio",
     "title": "A small studio,\nby choice.",
-    "body": [
-      "Aterna is a small studio on purpose. The advantage isn’t the size: it’s that the person who designs your site is the one who builds it and the one who looks after you.",
-      "We work best with businesses that have something behind the façade — a place, a product, a way of doing things — and a website that doesn't show it yet."
-    ],
+    "lead": "It isn’t a limitation: it’s what lets us work this way.",
     "link": "About the studio",
     "pillars": [
       {
@@ -675,15 +622,12 @@ const en: Dict = {
     "eyebrow": "Contact",
     "mailLabel": "Or write to us directly",
     "title": "If your website no longer\nrepresents your business,\nlet’s talk.",
-    "copy": [
-      "Tell us what you do and what you want your digital presence to achieve.",
-      "We reply to everything. Even when we think we're not the right studio."
-    ],
+    "lead": "Tell us what you do and what you want your digital presence to achieve.",
     "nextTitle": "What happens next",
     "next": [
       {
         "title": "You write to us",
-        "body": "What you do, what you have now and by when. You don't need to bring a brief."
+        "body": "With whatever you have: what's there now and by when. No brief needed."
       },
       {
         "title": "We reply",
@@ -691,10 +635,10 @@ const en: Dict = {
       },
       {
         "title": "We put it in writing",
-        "body": "We look at what's there, what works and what's broken before proposing anything."
+        "body": "A proposal with what we'd do, how long it takes and what it costs, before anything starts."
       }
     ],
-    "availability": "Few projects at a time. Ask and we'll tell you."
+    "availability": "Limited schedule: ask about dates and we'll tell you."
   },
   "mobile": {
     "open": "Menu",
@@ -764,8 +708,7 @@ const en: Dict = {
       "h1": "A website worthy of\nthe business you already are.",
       "lead": "Design, art direction and custom development. No templates, no plugins to maintain. The code is yours.",
       "intro": [
-        "Most websites look alike because they come from the same handful of templates. Yours won’t. We start from what it needs to achieve —get found, get booked, get bought— and from there we decide structure, art direction and code.",
-        "We take on few projects at a time, by choice: the same person who designs your site is the one who codes it."
+        "Most websites look alike because they come from the same handful of templates. Yours won’t. We start from what it needs to achieve —get found, get booked, get bought— and from there we decide structure, art direction and code."
       ],
       "includesTitle": "What’s included",
       "includes": [
@@ -774,7 +717,7 @@ const en: Dict = {
         "Design of the full experience, desktop to mobile",
         "Our own fast, accessible code (Core Web Vitals as a target)",
         "Baseline technical SEO and structured data",
-        "Launch, testing and handover. The code is yours."
+        "Launch, testing and code handover"
       ],
       "reportTitle": "",
       "report": "",
@@ -839,7 +782,7 @@ const en: Dict = {
       "h1": "SEO and organic growth\nspecialists.",
       "lead": "An excellent website nobody finds still has the same problem. SEO is the part that makes you show up when they search for you.",
       "intro": [
-        "We don’t promise “number one”. We promise work done, measured and told clearly. SEO climbs in steps, not a straight line, and you’ll see it month by month with real data.",
+        "What we promise is work done, measured and told clearly. SEO climbs in steps, not a straight line, and you’ll see it month by month with real data.",
         "We work on organic growth with a strong focus on local visibility —for hotels, wineries, restaurants and businesses with a lot riding on “near me”."
       ],
       "includesTitle": "What we work on each month",
@@ -986,7 +929,7 @@ const en: Dict = {
       "lead": "An AI voice assistant that takes calls on behalf of your business, 24 hours a day: it answers questions, takes bookings or appointments and passes the message on to you.",
       "intro": [
         "When you’re with a client, in the kitchen, on site or closed, the phone keeps ringing. And a caller who gets no answer usually tries the next name on the list.",
-        "We set up an assistant that speaks with your business’s voice and tone, knows your hours, services and prices, and knows when to hand the call to you. It introduces itself as a virtual assistant: no pretending to be a person."
+        "We set up an assistant that speaks with your business’s voice and tone, knows your hours, services and prices, and knows when to hand the call to you."
       ],
       "includesTitle": "What’s included",
       "includes": [
@@ -1065,29 +1008,11 @@ const en: Dict = {
   "pages": {
     "estudio": {
       "eyebrow": "Studio",
-      "h1": "A small studio, by choice.",
+      "h1": "Websites built to last.",
       "prose": [
         "The name comes from aeterna. The symbol is a tree with roots inside a closed circle. It's not decoration: it's what we sell — a well-built website is still standing when the studio that made it is no longer watching.",
-        "That's why we don't assemble templates and don't depend on plugins that need updating every month. The code we deliver is yours, it reads clearly, and any other studio can pick it up.",
+        "That's why we care about what you can't see: clean code, fast pages and a structure that can grow without being rebuilt.",
         "We choose projects for what they have to say, not for the size of the budget: a craft with history, a place with character, a business that does things well and needs the website to show it."
-      ],
-      "facts": [
-        {
-          "dt": "Who for",
-          "dd": "Businesses whose website no longer matches what they offer"
-        },
-        {
-          "dt": "What we do",
-          "dd": "Design · Development · SEO · AI assistant"
-        },
-        {
-          "dt": "How",
-          "dd": "Our own code, no templates. The code is yours."
-        },
-        {
-          "dt": "Availability",
-          "dd": "Few projects at a time. Ask and we'll tell you."
-        }
       ],
       "beliefsTitle": "What we believe",
       "beliefs": [
@@ -1102,38 +1027,13 @@ const en: Dict = {
         {
           "title": "Motion with a reason",
           "body": "An animation has to explain something: a hierarchy, a continuity, a change of state. If it's only there to impress, it's excess — and it costs battery."
-        },
-        {
-          "title": "Few projects at once",
-          "body": "A small studio doesn't compete on volume. It competes on the fact that the person who designed the site is the same one who built it and the same one who defends it in front of the client."
         }
       ]
     },
     "contacto": {
       "eyebrow": "Contact",
-      "h1": "If your website no longer\nrepresents your business,\nlet’s talk.",
-      "prose": [
-        "Tell us what you do and what you want your digital presence to achieve. You don't need to bring a brief.",
-        "We reply to everything, even if it's to say we're not the right studio. If the project doesn't fit, we say so early and plainly."
-      ],
-      "facts": [
-        {
-          "dt": "Who for",
-          "dd": "Businesses whose website no longer matches what they offer"
-        },
-        {
-          "dt": "What we do",
-          "dd": "Design · Development · SEO · AI assistant"
-        },
-        {
-          "dt": "Availability",
-          "dd": "Few projects at a time. Ask and we'll tell you."
-        },
-        {
-          "dt": "What we need",
-          "dd": "What you do, what you have now and by when."
-        }
-      ]
+      "h1": "Let’s start with\na conversation.",
+      "lead": "Write to us through the form, by email or on WhatsApp — whichever suits you."
     },
     "notFound": {
       "eyebrow": "Error 404",

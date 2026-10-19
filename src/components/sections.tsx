@@ -141,12 +141,11 @@ export function StudioStatement({ n }: { n?: number }) {
       <div className="container studio__inner">
         <p className="t-label studio__eyebrow">{eyebrow(t.studioHome.eyebrow, n)}</p>
         <WordReveal as="h2" id="studio-title" className="t-display studio__title" text={t.studioHome.title} accent={1} />
+        {/* La entradilla presenta los pilares; para quién trabajamos ya lo
+            dice el hero y lo amplía /estudio. */}
         <div className="studio__body" ref={body}>
           <p className="t-lead" data-r>
-            {t.studioHome.body[0]}
-          </p>
-          <p className="t-body muted-strong" data-r>
-            {t.studioHome.body[1]}
+            {t.studioHome.lead}
           </p>
           <p data-r>
             <Link href="/estudio" className="btn-ghost">
@@ -326,17 +325,12 @@ export function FinalCTA({ n }: { n?: number }) {
       <div className="container final-cta__inner" ref={tail}>
         <div className="final-cta__marks">
           <p className="t-label final-cta__eyebrow">{eyebrow(t.finalCta.eyebrow, n)}</p>
-          <p className="t-label dim final-cta__disciplines" aria-hidden="true">
-            {t.common.disciplines.join(" · ")}
-          </p>
         </div>
         <WordReveal as="h2" id="cta-title" className="t-hero final-cta__title" text={t.finalCta.title} accent={1} />
+        {/* Una sola entradilla: que respondemos siempre lo cuenta el paso 2. */}
         <div className="final-cta__copy">
           <p className="t-lead" data-r>
-            {t.finalCta.copy[0]}
-          </p>
-          <p className="t-body muted" data-r>
-            {t.finalCta.copy[1]}
+            {t.finalCta.lead}
           </p>
         </div>
         <div className="final-cta__contact" data-r>
@@ -356,7 +350,7 @@ export function FinalCTA({ n }: { n?: number }) {
 }
 
 /** Qué pasa después de escribirnos: tres pasos y la disponibilidad. */
-export function NextSteps({ className, availability = true }: { className?: string; availability?: boolean }) {
+export function NextSteps({ className }: { className?: string }) {
   const { t } = useI18n();
   const list = useReveal<HTMLDivElement>({ selector: ".next-step", y: 20, stagger: 0.1 });
   return (
@@ -372,12 +366,10 @@ export function NextSteps({ className, availability = true }: { className?: stri
           </li>
         ))}
       </ol>
-      {availability ? (
-        <p className="t-small next-steps__availability">
-          <span className="next-steps__pulse" aria-hidden="true" />
-          {t.finalCta.availability}
-        </p>
-      ) : null}
+      <p className="t-small next-steps__availability">
+        <span className="next-steps__pulse" aria-hidden="true" />
+        {t.finalCta.availability}
+      </p>
     </div>
   );
 }

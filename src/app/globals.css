@@ -270,10 +270,10 @@ html.lenis body {
   padding-top: 0;
 }
 
-/* Dos secciones seguidas sobre la misma superficie no suman sus márgenes:
-   quedaban ~260 px de vacío entre Servicios y Método. */
-.services + .approach,
-.section--flush-top + .approach {
+/* Dos secciones seguidas sobre la misma superficie no suman sus márgenes: la
+   banda del estudio arranca en la noche base, como acaba Servicios, y sin
+   esto quedaban ~380 px de vacío entre las dos. */
+.services + .studio {
   padding-top: 0;
 }
 
@@ -1592,8 +1592,7 @@ body[data-menu="open"] .whatsapp-widget,
 
 /* Llamada final (contacto) ---------------------------------------------- */
 
-/* Marcas editoriales en el margen superior: sección a la izquierda,
-   disciplinas a la derecha, sobre un filete. */
+/* Marca editorial en el margen superior, sobre un filete. */
 .final-cta__marks {
   display: flex;
   flex-wrap: wrap;
@@ -1616,10 +1615,6 @@ body[data-menu="open"] .whatsapp-widget,
   height: 6px;
   border-radius: 50%;
   background-color: var(--accent-violet);
-}
-
-.final-cta__disciplines {
-  display: none;
 }
 
 .final-cta__title {
@@ -1654,12 +1649,6 @@ body[data-menu="open"] .whatsapp-widget,
 .final-cta__inner {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-}
-
-@media (min-width: 768px) {
-  .final-cta__disciplines {
-    display: block;
-  }
 }
 
 /* Escritorio: titular a lo ancho; texto y contacto debajo, en dos columnas. */
@@ -2492,10 +2481,6 @@ body[data-menu="open"] .whatsapp-widget,
   max-width: var(--measure);
 }
 
-.estudio__facts {
-  margin-top: var(--block-y);
-}
-
 /* Escritorio: la entradilla a la izquierda y el resto del texto a la
    derecha, más abajo. */
 @media (min-width: 1024px) {
@@ -2513,11 +2498,6 @@ body[data-menu="open"] .whatsapp-widget,
   .estudio__prose {
     grid-column: 8 / span 5;
     padding-top: var(--block-y);
-  }
-
-  .estudio__facts {
-    grid-column: 1 / -1;
-    margin-top: var(--section-y);
   }
 }
 
@@ -2562,8 +2542,7 @@ body[data-menu="open"] .whatsapp-widget,
     column-gap: var(--gutter);
   }
 
-  .contacto > .page-head__eyebrow,
-  .contacto > .detail__facts {
+  .contacto > .page-head__eyebrow {
     grid-column: 1 / -1;
   }
 
@@ -2716,26 +2695,6 @@ body[data-menu="open"] .whatsapp-widget,
 .contact-form__note[data-state="error"] {
   border-color: color-mix(in srgb, var(--rose) 60%, transparent);
   background-color: color-mix(in srgb, var(--rose) 10%, transparent);
-}
-
-.detail__facts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--s-6) var(--gutter);
-  margin-top: var(--section-y);
-  padding-block: var(--s-7);
-  border-block: 1px solid var(--hair);
-}
-
-.detail__fact dt {
-  margin-bottom: var(--s-2);
-  color: var(--on-surface-low);
-}
-
-@media (min-width: 1024px) {
-  .detail__facts {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
 }
 
 /* 404 --------------------------------------------------------------------- */
