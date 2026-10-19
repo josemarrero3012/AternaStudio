@@ -2025,7 +2025,7 @@ body[data-menu="open"] .assistant__orb {
 .service__wire {
   --lead-y: 50%;
   display: flex;
-  width: 100%;
+  width: min(100%, var(--wire-w, 100%));
 }
 
 /* En SEO el trazo arranca abajo, al pie de los escalones. */
