@@ -20,6 +20,7 @@ import { site } from "@/lib/site";
 import { CopyEmail } from "./CopyEmail";
 import { PILLAR_GLYPHS, STEP_GLYPHS } from "./glyphs";
 import { ArrowRight, Check } from "./icons";
+import { ApproachRail } from "./ApproachRail";
 import { ServiceGlyph } from "./ServiceTrace";
 import { useStepWire } from "./StepWire";
 import { Trace } from "./Trace";
@@ -334,8 +335,15 @@ export function Services({ n }: { n?: number }) {
   );
 }
 
+/**
+ * El método. Con movimiento, la sección se fija y las cuatro fases pasan en
+ * horizontal sobre un eje que se dibuja con el scroll (ApproachRail: en la
+ * portada, una sola vez). Con movimiento reducido o sin JavaScript se ve la
+ * línea de siempre: vertical en móvil, horizontal en escritorio, sin fijar.
+ */
 export function Approach({ n }: { n?: number }) {
   const { t } = useI18n();
+  const section = useRef<HTMLElement>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -348,38 +356,34 @@ export function Approach({ n }: { n?: number }) {
       if (fill) fill.style.transform = "none";
       return;
     }
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) if (e.isIntersecting) e.target.setAttribute("data-on", "true");
-      },
-      { threshold: 0.4, rootMargin: "0px 0px -10% 0px" },
-    );
-    phases.forEach((p) => io.observe(p));
+    // Desde 768 px manda la versión horizontal (ApproachRail); en móvil, esta
+    // línea con su relleno al hacer scroll y cada fase encendiéndose.
     registerGsap();
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia(root);
+    mm.add("(max-width: 767px)", () => {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) if (e.isIntersecting) e.target.setAttribute("data-on", "true");
+        },
+        { threshold: 0.4, rootMargin: "0px 0px -10% 0px" },
+      );
+      phases.forEach((p) => io.observe(p));
       if (fill) {
         gsap.fromTo(
           fill,
           { scaleX: 0, scaleY: 0 },
-          {
-            scaleX: 1,
-            scaleY: 1,
-            ease: "none",
-            scrollTrigger: { trigger: root, start: "top 72%", end: "bottom 78%", scrub: 0.6 },
-          },
+          { scaleX: 1, scaleY: 1, ease: "none", scrollTrigger: { trigger: root, start: "top 72%", end: "bottom 78%", scrub: 0.6 } },
         );
       }
-    }, root);
-    return () => {
-      io.disconnect();
-      ctx.revert();
-      ScrollTrigger.refresh();
-    };
+      return () => io.disconnect();
+    });
+    return () => mm.revert();
   }, []);
 
   return (
-    <section className="section band-violet approach" id="metodo" aria-labelledby="approach-title">
-      <div className="container" ref={ref}>
+    <section ref={section} className="section band-violet approach" id="metodo" aria-labelledby="approach-title">
+      <ApproachRail section={section} eyebrow={eyebrow(t.approach.eyebrow, n)} />
+      <div className="container approach__static" ref={ref}>
         <header className="section-head">
           <p className="t-label dim">{eyebrow(t.approach.eyebrow, n)}</p>
           <WordReveal as="h2" id="approach-title" className="t-display" text={t.approach.title} />

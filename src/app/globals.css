@@ -2285,6 +2285,192 @@ body[data-menu="open"] .assistant__orb {
 
 }
 
+/* Método en horizontal (ApproachRail.tsx) ---------------------------------- */
+
+/* Oculta hasta que el JavaScript la activa; entonces sustituye a la línea
+   normal. La sección pierde su relleno: lo pone la pantalla fijada. */
+.rail-pin {
+  display: none;
+}
+
+.approach[data-rail="on"] {
+  padding-block: 0;
+}
+
+.approach[data-rail="on"] > .approach__static {
+  display: none;
+}
+
+.approach[data-rail="on"] .rail-pin {
+  display: flex;
+  align-items: center;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.rail {
+  --rail-h: min(64svh, 560px);
+  --phase-w: clamp(260px, 24vw, 380px);
+  display: flex;
+  align-items: stretch;
+  gap: clamp(48px, 6vw, 120px);
+  width: max-content;
+  height: var(--rail-h);
+  padding-inline: var(--margin) 14vw;
+  will-change: transform;
+}
+
+.rail__intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--s-5);
+  width: clamp(280px, 30vw, 460px);
+}
+
+.rail__title {
+  white-space: pre-line;
+}
+
+/* El árbol del vídeo, como en la entrada de la web. */
+.rail__image {
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  margin-top: var(--s-3);
+  border: 1px solid var(--hair);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+}
+
+.rail__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 72% 40%;
+}
+
+.rail__track {
+  position: relative;
+  display: flex;
+  gap: clamp(40px, 5vw, 96px);
+  height: 100%;
+  padding-left: var(--s-6);
+}
+
+/* El eje: una raíz que se enciende de izquierda a derecha con el scroll. */
+.rail__axis {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--hair);
+}
+
+.rail__axis-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: var(--brand-gradient-h);
+  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--violet) 60%, transparent);
+  transform-origin: left;
+}
+
+.rail-phase {
+  position: relative;
+  flex: none;
+  width: var(--phase-w);
+  height: 100%;
+}
+
+.rail__end {
+  flex: none;
+  width: 1px;
+}
+
+.rail-phase__dot {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
+  border-radius: 50%;
+  background-color: var(--orchid);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--orchid) 18%, transparent),
+    0 0 18px 3px color-mix(in srgb, var(--orchid) 60%, transparent);
+}
+
+/* El tallo va del eje hacia el texto: arriba en las fases impares, abajo en
+   las pares. */
+.rail-phase__stem {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 42%;
+}
+
+.rail-phase[data-side="top"] .rail-phase__stem {
+  bottom: 50%;
+  background: linear-gradient(0deg, var(--orchid), color-mix(in srgb, var(--lavender) 30%, transparent));
+  transform-origin: bottom;
+}
+
+.rail-phase[data-side="bottom"] .rail-phase__stem {
+  top: 50%;
+  background: linear-gradient(180deg, var(--orchid), color-mix(in srgb, var(--lavender) 30%, transparent));
+  transform-origin: top;
+}
+
+.rail-phase__copy {
+  position: absolute;
+  left: var(--s-5);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.rail-phase[data-side="top"] .rail-phase__copy {
+  top: 8%;
+}
+
+.rail-phase[data-side="bottom"] .rail-phase__copy {
+  bottom: 8%;
+}
+
+.rail-phase__index {
+  color: var(--orchid);
+}
+
+.rail-phase__title {
+  font-family: var(--font-display);
+  font-size: var(--t-title);
+  font-weight: 400;
+  font-variation-settings: "opsz" 72;
+  line-height: var(--lh-title);
+  letter-spacing: var(--ls-title);
+}
+
+.rail-phase__body {
+  max-width: 34ch;
+  color: var(--on-surface-mid);
+}
+
+/* Móvil: cada fase ocupa casi la pantalla; el titular y el árbol, apilados. */
+@media (max-width: 767px) {
+  .rail {
+    --rail-h: min(70svh, 600px);
+    --phase-w: 74vw;
+    gap: var(--s-8);
+  }
+
+  .rail__intro {
+    width: 82vw;
+  }
+}
+
 /* Llamada final (contacto) ---------------------------------------------- */
 
 /* Marca editorial en el margen superior, sobre un filete. */
