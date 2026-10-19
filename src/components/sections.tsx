@@ -215,7 +215,11 @@ export function Services({ n }: { n?: number }) {
                   <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
                   <div className="service__head">
                     <h3 className="t-title service__title">{card.title}</h3>
-                    <ServiceGlyph slug={slug} size="lg" className="service__glyph" />
+                    {/* Hilo + icono: ocupan todo el ancho del titular, igual en los cuatro. */}
+                    <div className="service__wire" data-service={slug}>
+                      <span className="service__lead" aria-hidden="true" />
+                      <ServiceGlyph slug={slug} size="lg" className="service__glyph" />
+                    </div>
                   </div>
                   <div className="service__body">
                     <p className="t-body muted">{card.body}</p>

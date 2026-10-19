@@ -189,10 +189,12 @@ export function Trace({ drawing, size, className }: { drawing: Drawing; size: Tr
         draw.disconnect();
         el.dataset.draw = "on";
         if (!flow) return;
+        // --t-base (CSS) puede retrasar el dibujo; el bucle espera a que acabe.
+        const base = parseFloat(getComputedStyle(el).getPropertyValue("--t-base")) || 0.4;
         timer = window.setTimeout(() => {
           anims = runFlow(el, flow);
           if (!visible) anims.forEach((a) => a.pause());
-        }, drawEnd(drawing) * 1000);
+        }, (drawEnd(drawing) - 0.4 + base) * 1000);
       },
       { threshold: 0.6, rootMargin: "0px 0px -8% 0px" },
     );
