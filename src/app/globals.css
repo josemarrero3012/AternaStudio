@@ -890,6 +890,7 @@ body[data-menu="open"] .whatsapp-widget,
   --sw: 1.2;
   --sw-halo: 5;
   --sw-faint: 1;
+  --sw-pulse: 1.9;
   height: auto;
   overflow: visible;
 }
@@ -908,6 +909,7 @@ body[data-menu="open"] .whatsapp-widget,
   --sw: 0.95;
   --sw-halo: 3.6;
   --sw-faint: 0.8;
+  --sw-pulse: 1.5;
   width: 144px;
 }
 
@@ -915,6 +917,7 @@ body[data-menu="open"] .whatsapp-widget,
   --sw: 0.75;
   --sw-halo: 3;
   --sw-faint: 0.65;
+  --sw-pulse: 1.2;
   width: 192px;
 }
 
@@ -949,12 +952,14 @@ body[data-menu="open"] .whatsapp-widget,
 
 /* Pulsos del movimiento continuo (Trace.tsx los anima con stroke-dashoffset):
    un tramo corto y claro con su halo, escondido antes del inicio del trazo
-   hasta que arranca. --len es su largo, en fracciones del trazo. */
+   hasta que arranca. --len es su largo y --off su posición de espera, en
+   fracciones del trazo. Sin calc() con números sueltos: Firefox lo descarta
+   y dejaba el pulso visible al principio de cada trazo. */
 .trace__pulse path {
   fill: none;
   stroke-linecap: round;
   stroke-dasharray: var(--len) 2;
-  stroke-dashoffset: calc(var(--len) + 0.12);
+  stroke-dashoffset: var(--off);
 }
 
 .trace__pulse-halo {
@@ -965,7 +970,7 @@ body[data-menu="open"] .whatsapp-widget,
 
 .trace__pulse-core {
   stroke: color-mix(in srgb, var(--orchid) 55%, #fff);
-  stroke-width: calc(var(--sw) * 1.6);
+  stroke-width: var(--sw-pulse);
 }
 
 .trace__dot {
@@ -1441,6 +1446,7 @@ body[data-menu="open"] .whatsapp-widget,
     --sw: 0.6;
     --sw-halo: 2.4;
     --sw-faint: 0.5;
+    --sw-pulse: 0.95;
     width: 240px;
   }
 }
@@ -2028,8 +2034,8 @@ body[data-menu="open"] .whatsapp-widget,
 }
 
 /* Horizonte: la marca apoyada sobre raíces de luz, como la base del vídeo.
-   Un filamento en la línea base de «Aterna» (medida con la fuente: 0,04em
-   sobre el borde inferior de la caja) y un resplandor que sube por detrás de
+   Un filamento donde acaban las letras de «Aterna» (ver ::after) y un
+   resplandor que sube por detrás de
    las letras. La capa baja 24 px bajo la palabra y se apaga antes del filete
    de .footer__base, que está a 32 px: nunca se corta. */
 .footer__horizon {
@@ -2054,13 +2060,47 @@ body[data-menu="open"] .whatsapp-widget,
   position: relative;
 }
 
+/* El filamento, justo donde acaban las letras (la base está a 0,04em, pero
+   las curvas de «e» y «a» bajan un poco más: a 0,04em se veía flotando por
+   encima). Un destello claro lo recorre de izquierda a derecha y descansa
+   antes de volver, como el pulso de los iconos. */
 .footer__horizon .footer__giant::after {
   content: "";
   position: absolute;
   inset-inline: 0;
-  bottom: 0.04em;
+  bottom: 0.02em;
   height: 1px;
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--lavender) 45%, transparent) 30%, var(--orchid) 68%, transparent);
+  background:
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--orchid) 45%, #fff), transparent) no-repeat,
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--lavender) 45%, transparent) 30%, var(--orchid) 68%, transparent);
+  background-size: 16% 100%, 100% 100%;
+  background-position: -30% 0, 0 0;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--orchid) 70%, transparent));
+  animation: horizon-spark 7s var(--e-inout) infinite;
+}
+
+/* Y el resplandor de detrás respira, muy despacio. */
+.footer__horizon::before {
+  animation: horizon-breathe 9s ease-in-out infinite alternate;
+}
+
+@keyframes horizon-spark {
+  0% {
+    background-position: -30% 0, 0 0;
+  }
+  55%,
+  100% {
+    background-position: 130% 0, 0 0;
+  }
+}
+
+@keyframes horizon-breathe {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .footer__base {

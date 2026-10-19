@@ -244,7 +244,7 @@ export function Trace({ drawing, size, className }: { drawing: Drawing; size: Tr
         </g>
       ))}
       {flow?.pulses?.map((p, i) => (
-        <g key={`p${i}`} className="trace__pulse" style={{ "--len": p.len ?? PULSE } as CSSProperties}>
+        <g key={`p${i}`} className="trace__pulse" style={{ "--len": p.len ?? PULSE, "--off": (p.len ?? PULSE) + PAD } as CSSProperties}>
           <path className="trace__pulse-halo" d={p.d} pathLength={1} />
           <path className="trace__pulse-core" d={p.d} pathLength={1} />
         </g>
