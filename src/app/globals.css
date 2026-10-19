@@ -1434,6 +1434,17 @@ body[data-menu="open"] .whatsapp-widget,
   transition: transform var(--d-micro) var(--e-out);
 }
 
+/* Icono del servicio en la lista de la portada: en escritorio crece para
+   llenar el hueco bajo el titular (×2,5 del lienzo, trazo compensado). */
+@media (min-width: 1024px) {
+  .service__glyph {
+    --sw: 0.6;
+    --sw-halo: 2.4;
+    --sw-faint: 0.5;
+    width: 240px;
+  }
+}
+
 .service__body {
   grid-column: 2;
   max-width: 54ch;
