@@ -277,6 +277,12 @@ html.lenis body {
   padding-top: 0;
 }
 
+/* Tras Servicios, el cierre no suma su margen grande al de la sección
+   anterior: quedaban ~380 px vacíos bajo «Ver todos los servicios». */
+.services + .final-cta {
+  padding-top: var(--block-y);
+}
+
 .hairline {
   height: 1px;
   margin: 0;
