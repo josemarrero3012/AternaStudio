@@ -798,6 +798,32 @@ body[data-menu="open"] .header {
   transform-origin: left;
 }
 
+/* Viene en el HTML tapándolo todo; CURTAIN_SCRIPT la descarta antes de
+   pintar si ya salió en esta sesión o con movimiento reducido. Por si el
+   JavaScript no llegara a levantarla, se desvanece sola a los 4 s. */
+html[data-curtain="skip"] .curtain {
+  display: none;
+}
+
+.curtain {
+  animation: curtain-fallback 0.6s ease 4s forwards;
+}
+
+@keyframes curtain-fallback {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* En móvil, el filete subía con la cortina y cruzaba la pantalla alta y
+   estrecha como un trazo rápido: la cortina sube limpia. */
+@media (max-width: 767px) {
+  .curtain__rule {
+    display: none;
+  }
+}
+
 .cursor {
   position: fixed;
   top: 0;

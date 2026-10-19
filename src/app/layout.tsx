@@ -2,7 +2,7 @@ import { withBase } from "@/lib/base";
 import type { Metadata, Viewport } from "next";
 import { Archivo, Fraunces, Geist_Mono } from "next/font/google";
 import { Assistant } from "@/components/Assistant";
-import { Curtain, Cursor, PageTransition, SkipLink, SmoothScroll, Spotlight, WhatsAppWidget } from "@/components/Chrome";
+import { CURTAIN_SCRIPT, Curtain, Cursor, PageTransition, SkipLink, SmoothScroll, Spotlight, WhatsAppWidget } from "@/components/Chrome";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { JsonLd } from "@/components/JsonLd";
@@ -49,8 +49,14 @@ const organization = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${fraunces.variable} ${archivo.variable} ${geistMono.variable}`}>
+    // data-curtain lo pone CURTAIN_SCRIPT antes de hidratar: no es un desajuste.
+    <html lang="es" className={`${fraunces.variable} ${archivo.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <body>
+        {/* Antes que nada: decide si la cortina de entrada sale (ver Chrome.tsx). */}
+        <script dangerouslySetInnerHTML={{ __html: CURTAIN_SCRIPT }} />
+        <noscript>
+          <style>{".curtain{display:none}"}</style>
+        </noscript>
         <JsonLd data={organization} />
         <LanguageProvider>
           <SkipLink />

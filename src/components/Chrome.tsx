@@ -18,36 +18,43 @@ import {
 } from "@/lib/motion";
 import { site } from "@/lib/site";
 
-const CURTAIN_KEY = "aterna:curtain";
+export const CURTAIN_KEY = "aterna:curtain";
+
+/**
+ * Antes de pintar nada (va en línea al principio del <body>): si la cortina
+ * ya salió en esta sesión o se prefiere menos movimiento, la marca para no
+ * mostrarse. Así la cortina puede venir en el HTML tapando desde el primer
+ * instante: antes aparecía al cargar el JavaScript y dejaba ver un momento
+ * la página estática.
+ */
+export const CURTAIN_SCRIPT = `try{if(sessionStorage.getItem("${CURTAIN_KEY}")||matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.dataset.curtain="skip"}catch(e){document.documentElement.dataset.curtain="skip"}`;
 
 /** Cortina de marca: solo la primera vez por sesión. */
 export function Curtain() {
   const ref = useRef<HTMLDivElement>(null);
-  const [show, setShow] = useState(false);
+  const [gone, setGone] = useState(false);
 
   useEffect(() => {
-    if (prefersReducedMotion()) return;
+    const el = ref.current;
+    if (!el) return;
+    if (document.documentElement.dataset.curtain === "skip") {
+      setGone(true);
+      return;
+    }
     try {
-      if (sessionStorage.getItem(CURTAIN_KEY)) return;
       sessionStorage.setItem(CURTAIN_KEY, "1");
     } catch {}
-    setShow(true);
-  }, []);
-
-  useEffect(() => {
-    if (!show || !ref.current) return;
     registerGsap();
-    const el = ref.current;
     const ctx = gsap.context(() => {
       gsap
-        .timeline({ delay: 0.2, onComplete: () => setShow(false) })
+        .timeline({ delay: 0.2, onComplete: () => setGone(true) })
         .to(el, { yPercent: -100, duration: 0.9, ease: ATERNA_EASE })
         .to(el.querySelector(".curtain__rule"), { scaleX: 0, duration: 0.5, ease: "none" }, "<0.2");
     }, el);
     return () => ctx.revert();
-  }, [show]);
+  }, []);
 
-  if (!show) return null;
+  if (gone) return null;
   return (
     <div ref={ref} className="curtain" aria-hidden="true">
       <span className="curtain__rule brand-rule" />
