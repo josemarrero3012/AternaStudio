@@ -1035,17 +1035,18 @@ body[data-menu="open"] .whatsapp-widget,
   position: absolute;
   inset: 0;
   pointer-events: none;
+  /* Del color de la base, para que el vídeo se funda con la página. */
   background:
-    linear-gradient(0deg, var(--ink) 18%, rgb(5 6 15 / 0.88) 48%, rgb(5 6 15 / 0.65) 68%, rgb(5 6 15 / 0.2) 84%, rgb(5 6 15 / 0) 94%),
-    linear-gradient(180deg, rgb(5 6 15 / 0.8) 0%, rgb(5 6 15 / 0) 20%);
+    linear-gradient(0deg, var(--ink) 18%, color-mix(in srgb, var(--ink) 88%, transparent) 48%, color-mix(in srgb, var(--ink) 65%, transparent) 68%, color-mix(in srgb, var(--ink) 20%, transparent) 84%, transparent 94%),
+    linear-gradient(180deg, color-mix(in srgb, var(--ink) 80%, transparent) 0%, transparent 20%);
 }
 
 @media (min-width: 1024px) {
   .hero__scrim {
     background:
-      linear-gradient(100deg, var(--ink) 0%, rgb(5 6 15 / 0.8) 24%, rgb(5 6 15 / 0.3) 46%, rgb(5 6 15 / 0) 66%),
-      linear-gradient(0deg, var(--ink) 1%, rgb(5 6 15 / 0) 26%),
-      linear-gradient(180deg, rgb(5 6 15 / 0.4) 0%, rgb(5 6 15 / 0) 16%);
+      linear-gradient(100deg, var(--ink) 0%, color-mix(in srgb, var(--ink) 80%, transparent) 24%, color-mix(in srgb, var(--ink) 30%, transparent) 46%, transparent 66%),
+      linear-gradient(0deg, var(--ink) 1%, transparent 26%),
+      linear-gradient(180deg, color-mix(in srgb, var(--ink) 40%, transparent) 0%, transparent 16%);
   }
 }
 

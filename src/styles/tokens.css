@@ -7,17 +7,20 @@
 /* Tokens ------------------------------------------------------------------ */
 
 :root {
-  /* Paleta «noche», sacada del vídeo del hero: fondo azul noche casi negro,
-     raíces índigo y lavanda, destellos violeta y orquídea. Toda la web vive
-     en esta familia; no hay superficies claras. */
-  --night-0: #05060f; /* fondo del vídeo; base de la página */
-  --night-1: #090b1c;
-  --night-2: #0e1129;
-  --night-3: #151a3d;
-  --night-4: #1c2250; /* superficies elevadas */
+  /* Paleta «noche», sacada del vídeo del hero: fondo índigo, raíces índigo
+     y lavanda, destellos violeta y orquídea. Toda la web vive en esta
+     familia; no hay superficies claras. La base es más clara que el negro
+     del vídeo (#05060f): el vídeo se funde con ella en modo «screen», así
+     que su negro pasa a ser este azul. */
+  --night-0: #13163b; /* base de la página */
+  --night-1: #181c46;
+  --night-2: #1e2352;
+  --night-3: #262c62;
+  --night-4: #2f3672; /* superficies elevadas */
 
-  /* Acentos del vídeo. Índigo solo para líneas y luz (3,4:1); el resto
-     sirve también para texto sobre cualquier noche (≥4,5:1). */
+  /* Acentos del vídeo. Índigo solo para líneas y luz (≈3:1); lavanda y
+     orquídea sirven también para texto sobre cualquier noche (≥4,5:1;
+     orquídea, sobre las bandas y el vidrio). */
   --indigo: #4b55d6;
   --lavender: #9aa3ff;
   --violet: #9a5cf0;
@@ -38,8 +41,8 @@
   --ink-hair: #e6e9ff1a;
   --ink-hair-strong: #e6e9ff38;
   --text-hi: #eef0fa;
-  --text-mid: #a9adc8; /* ≥6,8:1 sobre cualquier noche */
-  --text-low: #9195b6; /* ≥5,1:1 sobre cualquier noche */
+  --text-mid: #a9adc8; /* ≥5:1 sobre cualquier noche */
+  --text-low: #a3a7c6; /* ≥4,7:1 sobre cualquier noche */
   --text-support: #c6c9de; /* apoyo del hero, sobre el vídeo */
 
   /* Acentos puntuales (detalles, no texto). */
@@ -136,7 +139,7 @@
   --ok-on-ink: #6fdc9b;
 
   /* Botón principal: relleno claro; al pasar, rosa de marca (texto noche
-     sobre rosa: 6,5:1). */
+     sobre rosa: 5,6:1). */
   --btn-bg: var(--text-hi);
   --btn-fg: var(--ink);
   --btn-hover-bg: var(--rose);
