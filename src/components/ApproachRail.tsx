@@ -2,7 +2,7 @@
 
 // «Cómo trabajamos» en horizontal (adaptado del Timeline de Hyperiux Vault).
 // Al llegar, la sección se fija y, mientras se baja, la pista se desliza a
-// la izquierda: primero el titular y el árbol del vídeo, luego las cuatro
+// la izquierda: primero el titular y el árbol de raíces, luego las cuatro
 // fases, alternando arriba y abajo de un eje que se dibuja con el scroll.
 // Cuando cada fase entra, crece su tallo, se enciende su nodo y su texto
 // sube línea a línea (SplitText). Sin fechas: son las fases del método.
@@ -84,7 +84,7 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
           <p className="t-label dim">{eyebrow}</p>
           <h2 className="t-display rail__title">{t.approach.title}</h2>
           <div className="rail__image">
-            <img src={withBase("/brand/hero-tree-poster-1920.webp")} alt="" draggable={false} />
+            <img src={withBase("/brand/method-roots.webp")} alt="" width={1536} height={1024} loading="lazy" draggable={false} />
           </div>
         </div>
         <div className="rail__track">

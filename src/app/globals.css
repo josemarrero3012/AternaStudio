@@ -2357,21 +2357,22 @@ body[data-menu="open"] .assistant__orb {
   white-space: pre-line;
 }
 
-/* El árbol del vídeo, como en la entrada de la web. */
+/* El árbol de raíces de luz: sin marco, con los bordes fundidos en la
+   banda (máscara radial) y en modo «screen», que deja ver solo la luz,
+   como el vídeo del hero. */
 .rail__image {
-  overflow: hidden;
-  aspect-ratio: 16 / 10;
-  margin-top: var(--s-3);
-  border: 1px solid var(--hair);
-  border-radius: var(--r-card);
-  box-shadow: var(--shadow-card);
+  aspect-ratio: 3 / 2;
+  margin: calc(var(--s-5) * -1) calc(var(--s-6) * -1) 0;
+  -webkit-mask-image: radial-gradient(ellipse 62% 58% at 54% 52%, #000 45%, transparent 100%);
+  mask-image: radial-gradient(ellipse 62% 58% at 54% 52%, #000 45%, transparent 100%);
 }
 
 .rail__image img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 72% 40%;
+  mix-blend-mode: screen;
 }
 
 .rail__track {
