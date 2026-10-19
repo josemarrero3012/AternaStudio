@@ -86,28 +86,40 @@ export const BELIEF_GLYPHS = [
   FOCUS,
 ];
 
-/** Cierre y /contacto, «Qué pasa después» (finalCta.next). */
+/** Cierre y /contacto, «Qué pasa después» (finalCta.next). Tres siluetas
+ * distintas (sobre, bocadillo, documento) unidas por el mismo hilo, que
+ * llega a cada una por la izquierda a media altura: es una sola conversación. */
 export const STEP_GLYPHS = [
-  // «No hace falta que traigas un briefing»: ideas sueltas que se hacen línea.
-  glyph(
-    [{ d: "M28 20 H88", delay: 0.45, dur: 1.1 }],
-    [
-      { x: 5, y: 31, delay: 0 },
-      { x: 13, y: 11, delay: 0.15 },
-      { x: 20, y: 26, delay: 0.3 },
-    ],
-    { x: 88, y: 20, delay: 1.5 },
-  ),
-  // «Te respondemos»: ida y vuelta, como la tecla de retorno.
-  glyph([{ d: "M0 11 H64 C82 11 82 29 64 29 H34", dur: 1.8 }], undefined, { x: 34, y: 29, delay: 1.8 }),
-  // «Lo ponemos por escrito»: tres renglones y el nodo como punto final.
+  // «Nos escribes»: el hilo se pliega en un sobre y el nodo es el sello.
   glyph(
     [
-      { d: "M8 8 H88", dur: 0.8 },
-      { d: "M8 20 H76", delay: 0.5, dur: 0.7 },
-      { d: "M8 32 H52", delay: 1, dur: 0.5 },
+      { d: "M0 20 H48 V32 H88 V8 H48 V20", dur: 1.8 },
+      { d: "M48 8 L68 22 L88 8", delay: 1.6, dur: 0.6 },
     ],
     undefined,
-    { x: 52, y: 32, delay: 1.5 },
+    { x: 68, y: 22, delay: 2.1 },
+  ),
+  // «Te respondemos»: un bocadillo con los tres puntos de «escribiendo»; el
+  // último es la respuesta que llega.
+  glyph(
+    [{ d: "M0 20 H38 L44 16 V12 Q44 6 50 6 H82 Q88 6 88 12 V28 Q88 34 82 34 H50 Q44 34 44 28 V24 L38 20", dur: 1.9 }],
+    [
+      { x: 56, y: 20, delay: 1.9 },
+      { x: 66, y: 20, delay: 2.1 },
+    ],
+    { x: 76, y: 20, delay: 2.3 },
+  ),
+  // «Lo ponemos por escrito»: una página con la esquina doblada, renglones
+  // y el nodo como punto final.
+  glyph(
+    [
+      { d: "M0 20 H54 V37 H82 V11 L75 4 H54 V20", dur: 1.8 },
+      { d: "M75 4 V11 H82", delay: 1.5, dur: 0.3, faint: true },
+      { d: "M59 17 H77", delay: 1.7, dur: 0.3, faint: true },
+      { d: "M59 23 H77", delay: 1.85, dur: 0.3, faint: true },
+      { d: "M59 29 H69", delay: 2, dur: 0.25, faint: true },
+    ],
+    undefined,
+    { x: 73, y: 29, delay: 2.2 },
   ),
 ];
