@@ -1851,6 +1851,31 @@ body[data-menu="open"] .assistant__orb {
   }
 }
 
+/* Cabecera de Servicios: titular y, al lado, el enlace al catálogo. */
+.services__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-5);
+  margin-bottom: var(--block-y);
+}
+
+.services__head > .section-head {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  .services__head {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .services__all {
+    flex: none;
+  }
+}
+
 /* Casos de uso -------------------------------------------------------------- */
 
 .cases__list {

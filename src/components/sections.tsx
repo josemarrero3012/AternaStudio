@@ -281,10 +281,18 @@ export function Services({ n }: { n?: number }) {
   return (
     <section className="section services" id="servicios" aria-labelledby="services-title">
       <div className="container">
-        <header className="section-head">
-          <p className="t-label dim">{eyebrow(t.services.eyebrow, n)}</p>
-          <WordReveal as="h2" id="services-title" className="t-display" text={t.services.title} />
-        </header>
+        {/* Cabecera con el enlace al catálogo a la derecha: antes iba al pie,
+            solo en mucho espacio, y parecía una sección vacía. */}
+        <div className="services__head">
+          <header className="section-head">
+            <p className="t-label dim">{eyebrow(t.services.eyebrow, n)}</p>
+            <WordReveal as="h2" id="services-title" className="t-display" text={t.services.title} />
+          </header>
+          <Link href="/servicios" className="btn-ghost services__all">
+            {t.services.all}
+            <ArrowRight />
+          </Link>
+        </div>
         <ul className="services__list" ref={list}>
           {t.servicePages.index.cards.map((card, i) => {
             const slug = card.slug as ServiceSlug;
@@ -324,12 +332,6 @@ export function Services({ n }: { n?: number }) {
             );
           })}
         </ul>
-        <div className="section-foot">
-          <Link href="/servicios" className="btn-ghost">
-            {t.services.all}
-            <ArrowRight />
-          </Link>
-        </div>
       </div>
     </section>
   );
