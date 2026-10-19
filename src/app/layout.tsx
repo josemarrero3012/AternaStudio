@@ -1,6 +1,7 @@
 import { withBase } from "@/lib/base";
 import type { Metadata, Viewport } from "next";
 import { Archivo, Fraunces, Geist_Mono } from "next/font/google";
+import { Assistant } from "@/components/Assistant";
 import { Curtain, Cursor, PageTransition, SkipLink, SmoothScroll, Spotlight, WhatsAppWidget } from "@/components/Chrome";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
           </SmoothScroll>
           <WhatsAppWidget />
+          <Assistant />
         </LanguageProvider>
       </body>
     </html>

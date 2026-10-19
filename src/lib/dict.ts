@@ -145,6 +145,25 @@ const es = {
     "message": "Hola, quiero más información sobre Aterna Studio.",
     "aria": "Escribir por WhatsApp"
   },
+  "assistant": {
+    "open": "Abrir el asistente de Aterna",
+    "close": "Cerrar el asistente",
+    "title": "Asistente de Aterna",
+    "note": "Responde con lo que dice esta web. Para algo concreto, escríbenos.",
+    "placeholder": "Pregunta lo que quieras…",
+    "send": "Enviar",
+    "labels": ["Pensando", "Buscando", "Leyendo la web", "Redactando"],
+    "answer": "Respuesta",
+    "again": "Otra pregunta",
+    "suggestions": ["¿Cuánto cuesta una web?", "¿Qué incluye el SEO?", "¿Cómo trabajáis?", "¿Cómo os contacto?"],
+    "hello": "¡Hola! Soy el asistente de Aterna. Te cuento lo que hacemos, cuánto cuesta y cómo trabajamos. ¿Qué quieres saber?",
+    "fallback": "Eso no lo encuentro en la web y prefiero no inventármelo. Escríbenos y te respondemos nosotros.",
+    "contactLink": "Escribirnos",
+    "plansIntro": "Planes de {service}:",
+    "custom": "precio personalizado",
+    "studioLink": "Conocer el estudio",
+    "methodLink": "Ver cómo trabajamos"
+  },
   "servicePages": {
     "index": {
       "eyebrow": "Servicios",
@@ -666,6 +685,25 @@ const en: Dict = {
   "whatsapp": {
     "message": "Hi, I'd like more information about Aterna Studio.",
     "aria": "Message on WhatsApp"
+  },
+  "assistant": {
+    "open": "Open the Aterna assistant",
+    "close": "Close the assistant",
+    "title": "Aterna assistant",
+    "note": "It answers with what this website says. For anything specific, write to us.",
+    "placeholder": "Ask anything…",
+    "send": "Send",
+    "labels": ["Thinking", "Searching", "Reading the site", "Writing"],
+    "answer": "Answer",
+    "again": "Another question",
+    "suggestions": ["How much is a website?", "What does SEO include?", "How do you work?", "How do I contact you?"],
+    "hello": "Hi! I'm the Aterna assistant. I can tell you what we do, what it costs and how we work. What would you like to know?",
+    "fallback": "I can't find that on the website and I'd rather not make it up. Write to us and we'll answer ourselves.",
+    "contactLink": "Write to us",
+    "plansIntro": "{service} plans:",
+    "custom": "custom pricing",
+    "studioLink": "About the studio",
+    "methodLink": "See how we work"
   },
   "servicePages": {
     "index": {
