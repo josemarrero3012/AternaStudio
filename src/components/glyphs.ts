@@ -1,8 +1,7 @@
 // Iconos de las listas fijas de la web, en el mismo orden que sus textos en
 // dict.ts (igual en los dos idiomas). Cada uno dibuja la frase clave de su
-// punto con el vocabulario de Trace.tsx: filamento, puntos y nodo. El círculo
-// es siempre «mirar con atención»: la lente de la auditoría y el foco de
-// «Pocos proyectos a la vez».
+// punto con el vocabulario de Trace.tsx: filamento, puntos y nodo. Las
+// ilustraciones de «En qué creemos» van aparte, en BeliefArt.tsx.
 
 import { glyph, ring } from "./Trace";
 
@@ -71,48 +70,6 @@ export const PILLAR_GLYPHS = [
       ],
       beats: [{ target: "node", at: 0.78 }],
     },
-  ),
-];
-
-/** /estudio, «En qué creemos» (pages.estudio.beliefs). */
-export const BELIEF_GLYPHS = [
-  // «Miramos qué hay y qué está roto»: una lupa sobre la línea partida.
-  glyph(
-    [
-      { d: "M0 18 H43", dur: 1 },
-      { d: "M53 18 H88", delay: 0.5, dur: 0.9 },
-      { d: ring(48, 18, 11), delay: 1, dur: 0.9 },
-      { d: "M55.8 25.8 L62 32", delay: 1.8, dur: 0.3 },
-    ],
-    undefined,
-    { x: 88, y: 18, delay: 2 },
-  ),
-  // «Ninguna cifra inventada»: una regla y la marca justo donde cae el dato.
-  glyph(
-    [
-      { d: "M0 32 H88", dur: 1.2 },
-      { d: "M16 32 V27", delay: 0.3, dur: 0.2, faint: true },
-      { d: "M32 32 V27", delay: 0.45, dur: 0.2, faint: true },
-      { d: "M48 32 V27", delay: 0.6, dur: 0.2, faint: true },
-      { d: "M80 32 V27", delay: 0.9, dur: 0.2, faint: true },
-      { d: "M64 32 V10", delay: 1.1, dur: 0.6 },
-    ],
-    undefined,
-    { x: 64, y: 10, delay: 1.6 },
-  ),
-  // «El movimiento con motivo»: la curva de la marca, cubic-bezier(0.16, 1,
-  // 0.3, 1) (--e-aterna), con sus puntos de control como en un editor.
-  glyph(
-    [
-      { d: "M8 36 L20.8 4", dur: 0.5, faint: true },
-      { d: "M8 36 C20.8 4 32 4 88 4", delay: 0.3, dur: 1.6 },
-    ],
-    [
-      { x: 8, y: 36, delay: 0 },
-      { x: 20.8, y: 4, delay: 0.5 },
-      { x: 32, y: 4, delay: 0.7 },
-    ],
-    { x: 88, y: 4, delay: 1.8 },
   ),
 ];
 

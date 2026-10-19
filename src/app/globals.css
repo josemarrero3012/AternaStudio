@@ -1039,11 +1039,11 @@ body[data-menu="open"] .whatsapp-widget,
 
 /* En las filas y tarjetas que reaccionan al puntero, el icono se enciende. */
 @media (hover: hover) {
-  :is(a.service__inner, .services__list--static .service__inner, .svc-card):hover .trace__glow {
+  :is(a.service__inner, .svc-card):hover .trace__glow {
     transform: scale(1.4);
   }
 
-  :is(a.service__inner, .services__list--static .service__inner, .svc-card):hover .trace__halo {
+  :is(a.service__inner, .svc-card):hover .trace__halo {
     opacity: 0.32;
   }
 }
@@ -1489,8 +1489,7 @@ body[data-menu="open"] .whatsapp-widget,
 }
 
 @media (hover: hover) {
-  a.service__inner:hover,
-  .services__list--static .service:hover .service__inner {
+  a.service__inner:hover {
     background-color: var(--glass);
     box-shadow: var(--shadow-card);
     padding-inline: var(--s-5);
@@ -2679,6 +2678,295 @@ body[data-menu="open"] .whatsapp-widget,
   .estudio__prose {
     grid-column: 8 / span 5;
     padding-top: var(--block-y);
+  }
+}
+
+/* En qué creemos: manifiesto. Una raíz de luz baja por la sección (en móvil
+   por la izquierda, en escritorio por el centro) con un nodo por creencia;
+   en escritorio cada creencia alterna de lado, ilustración frente a texto. */
+.manifesto {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-y);
+  --root-x: 3px;
+}
+
+.manifesto::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: var(--root-x);
+  width: 1px;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--lavender) 45%, transparent) 12%, color-mix(in srgb, var(--violet) 55%, transparent) 88%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--violet) 40%, transparent);
+}
+
+.belief {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-6);
+  padding-inline-start: var(--s-7);
+}
+
+/* Nodo de la raíz, a la altura del centro de la ilustración. */
+.belief::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--root-x) - 3px);
+  top: var(--node-y, 50%);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--orchid);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--orchid) 18%, transparent),
+    0 0 16px 2px color-mix(in srgb, var(--orchid) 60%, transparent);
+}
+
+.belief__stage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--s-6) var(--s-5);
+  border: 1px solid var(--hair);
+  border-radius: var(--r-card);
+  background:
+    radial-gradient(closest-side, color-mix(in srgb, var(--violet) 14%, transparent), transparent),
+    var(--glass);
+  box-shadow: var(--shadow-card);
+}
+
+.belief__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  max-width: 46ch;
+}
+
+.belief__index {
+  color: var(--orchid);
+}
+
+@media (max-width: 1023px) {
+  .belief {
+    --node-y: 25%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .manifesto {
+    --root-x: 50%;
+  }
+
+  .belief {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: calc(var(--s-10) * 1.5);
+    align-items: center;
+    padding-inline-start: 0;
+  }
+
+  /* Creencias pares: el texto a la izquierda, la ilustración a la derecha. */
+  .belief:nth-child(even) .belief__stage {
+    order: 2;
+  }
+
+  .belief:nth-child(even) .belief__copy {
+    justify-self: end;
+    text-align: right;
+    align-items: flex-end;
+  }
+}
+
+/* Ilustraciones (BeliefArt.tsx). Trazo fino y nodo orquídea, como los
+   iconos; el rosa marca lo roto y lo falso. Cada una tiene su bucle. */
+.belief-art {
+  width: min(100%, 260px);
+  height: auto;
+  overflow: visible;
+}
+
+.belief-art__line {
+  fill: none;
+  stroke: color-mix(in srgb, var(--lavender) 75%, transparent);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.belief-art__line--faint {
+  stroke-opacity: 0.4;
+  stroke-width: 0.8;
+}
+
+.belief-art__dot {
+  fill: var(--lavender);
+  fill-opacity: 0.8;
+}
+
+.belief-art__flaw {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.belief-art__flaw--gap {
+  fill: var(--rose);
+  opacity: 0;
+}
+
+.belief-art__flaw--ghost {
+  fill: none;
+  stroke: var(--rose);
+  stroke-width: 0.9;
+  stroke-dasharray: 3 3;
+  opacity: 0;
+  transform-origin: bottom;
+}
+
+.belief-art__bar {
+  fill: color-mix(in srgb, var(--lavender) 70%, transparent);
+  transform-box: fill-box;
+  transform-origin: bottom;
+}
+
+.belief-art__bar--lit {
+  fill: var(--orchid);
+}
+
+.belief-art__rider {
+  fill: var(--orchid);
+  offset-rotate: 0deg;
+  filter: drop-shadow(0 0 4px var(--orchid));
+}
+
+.belief-art__slider {
+  fill: color-mix(in srgb, var(--orchid) 55%, #fff);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .belief-art__lens {
+    animation: art-lens 5s var(--e-inout) infinite;
+  }
+
+  .belief-art__flaw--gap {
+    animation: art-gap 5s linear infinite;
+  }
+
+  .belief-art__bar {
+    animation: art-bar 5s var(--e-aterna) infinite;
+  }
+
+  .belief-art__flaw--ghost {
+    animation: art-ghost 5s ease infinite;
+  }
+
+  .belief-art__rider {
+    animation: art-ride 3.4s var(--e-aterna) infinite;
+  }
+
+  .belief-art__slider {
+    animation: art-slide 3.4s var(--e-aterna) infinite;
+  }
+
+  /* Solo en pantalla. */
+  .belief-art:not([data-live="on"]) * {
+    animation-play-state: paused;
+  }
+}
+
+/* Sin movimiento: la rotura y la curva quedan señaladas, quietas. */
+@media (prefers-reduced-motion: reduce) {
+  .belief-art__lens {
+    transform: translateX(50px);
+  }
+
+  .belief-art__flaw--gap {
+    opacity: 1;
+  }
+
+  .belief-art__rider {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes art-lens {
+  0% {
+    transform: translateX(0);
+  }
+  35%,
+  55% {
+    transform: translateX(50px);
+  }
+  90%,
+  100% {
+    transform: translateX(118px);
+  }
+}
+
+@keyframes art-gap {
+  0%,
+  33% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  40%,
+  52% {
+    opacity: 1;
+    transform: scale(1.6);
+  }
+  60%,
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+
+@keyframes art-bar {
+  0% {
+    transform: scaleY(0);
+  }
+  30%,
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes art-ghost {
+  0%,
+  30% {
+    opacity: 0;
+    transform: scaleY(0.4);
+  }
+  45% {
+    opacity: 0.9;
+    transform: scaleY(1);
+  }
+  62%,
+  100% {
+    opacity: 0;
+    transform: scaleY(0.4);
+  }
+}
+
+@keyframes art-ride {
+  0%,
+  8% {
+    offset-distance: 0%;
+  }
+  70%,
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes art-slide {
+  0%,
+  8% {
+    transform: translateX(0);
+  }
+  70%,
+  100% {
+    transform: translateX(124px);
   }
 }
 

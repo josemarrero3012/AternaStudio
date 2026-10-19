@@ -7,15 +7,15 @@ import { withBase } from "@/lib/base";
 import Link from "next/link";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { useReveal } from "@/lib/reveal";
 import { formatPrice, pricing, slugToProduct, type ServiceSlug } from "@/lib/pricing";
 import { site } from "@/lib/site";
+import { BeliefArt } from "./BeliefArt";
 import { CopyEmail } from "./CopyEmail";
 import { whatsappHref } from "./Chrome";
-import { BELIEF_GLYPHS } from "./glyphs";
 import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
 import { FinalCTA, NextSteps, StartingPrice } from "./sections";
 import { ServiceGlyph, ServiceTrace } from "./ServiceTrace";
-import { Trace } from "./Trace";
 import { WordReveal } from "./WordReveal";
 
 // /servicios ----------------------------------------------------------------
@@ -307,6 +307,7 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
 export function EstudioContent() {
   const { t } = useI18n();
   const page = t.pages.estudio;
+  const manifesto = useReveal<HTMLOListElement>({ selector: ".belief", y: 32, stagger: 0.12 });
   return (
     <>
       <section className="container page-head">
@@ -327,20 +328,22 @@ export function EstudioContent() {
           <header className="section-head">
             <WordReveal as="h2" id="beliefs-title" className="t-display" text={page.beliefsTitle} />
           </header>
-          <ul className="services__list services__list--static">
+          {/* Manifiesto: una raíz de luz baja por el centro y las creencias
+              alternan de lado, con su ilustración en un escenario propio. */}
+          <ol className="manifesto" ref={manifesto}>
             {page.beliefs.map((b, i) => (
-              <li className="service" key={i}>
-                <div className="service__inner" data-spot>
-                  <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
-                  <div className="service__head">
-                    <h3 className="t-title service__title">{b.title}</h3>
-                    {BELIEF_GLYPHS[i] ? <Trace drawing={BELIEF_GLYPHS[i]} size="glyph" /> : null}
-                  </div>
-                  <p className="t-body muted service__body">{b.body}</p>
+              <li className="belief" key={i}>
+                <div className="belief__stage">
+                  <BeliefArt index={i} />
+                </div>
+                <div className="belief__copy">
+                  <span className="t-index belief__index">{String(i + 1).padStart(2, "0")}</span>
+                  <h3 className="t-title belief__title">{b.title}</h3>
+                  <p className="t-body muted belief__body">{b.body}</p>
                 </div>
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       </section>
       <FinalCTA />
