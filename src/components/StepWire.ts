@@ -21,6 +21,8 @@ const REST = 1.6;
 /** Largo del pulso y margen para que su punta redonda no asome (px). */
 const DASH = 56;
 const PAD = 6;
+/** Velocidad a la que se tiende el hilo la primera vez (px/s). */
+const WIRE_SPEED = 320;
 
 type Segment = { x1: number; y1: number; x2: number; y2: number };
 type Run = Segment & { t: number };
@@ -35,7 +37,7 @@ function add<K extends keyof SVGElementTagNameMap>(parent: Element, tag: K, attr
 const pathOf = ({ x1, y1, x2, y2 }: Segment) => `M${x1} ${y1} L${x2} ${y2}`;
 
 /** Dibuja el hilo y, si `moving`, crea las animaciones del pulso y los latidos. */
-function build(root: HTMLElement, wire: SVGSVGElement, id: string, moving: boolean): Animation[] {
+function build(root: HTMLElement, wire: SVGSVGElement, id: string, moving: boolean, intro: boolean): Animation[] {
   wire.replaceChildren();
   const box = root.getBoundingClientRect();
   if (!box.width) return [];
@@ -87,7 +89,12 @@ function build(root: HTMLElement, wire: SVGSVGElement, id: string, moving: boole
 
   // El hilo: en fila, cada tramo sale encendido del icono anterior y se
   // apaga al llegar al siguiente, como los propios iconos.
+  // La primera vez (`intro`) cada tramo se tiende de izquierda a derecha (o
+  // de arriba abajo), uno tras otro, mientras se dibujan los iconos; el pulso
+  // arranca cuando el hilo está completo.
+  const anims: Animation[] = [];
   const defs = add(wire, "defs", {});
+  let tended = 0;
   wires.forEach((w, i) => {
     let stroke = "currentColor";
     if (row) {
@@ -96,14 +103,27 @@ function build(root: HTMLElement, wire: SVGSVGElement, id: string, moving: boole
       add(grad, "stop", { offset: 1, class: "next-steps__wire-to" });
       stroke = `url(#${id}-${i})`;
     }
-    add(wire, "path", { d: pathOf(w), class: "next-steps__wire-halo", stroke });
-    add(wire, "path", { d: pathOf(w), class: "next-steps__wire-line", stroke });
+    const length = Math.hypot(w.x2 - w.x1, w.y2 - w.y1);
+    const dur = Math.min(1400, Math.max(600, (length / WIRE_SPEED) * 1000));
+    for (const cls of ["next-steps__wire-halo", "next-steps__wire-line"]) {
+      const path = add(wire, "path", { d: pathOf(w), class: cls, stroke });
+      if (!intro) continue;
+      path.style.strokeDasharray = String(length);
+      anims.push(
+        path.animate([{ strokeDashoffset: length }, { strokeDashoffset: 0 }], {
+          duration: dur,
+          delay: tended,
+          easing: "cubic-bezier(0.65, 0, 0.35, 1)",
+          fill: "both",
+        }),
+      );
+    }
+    if (intro) tended += dur;
   });
-  if (!moving || !beats.length) return [];
+  if (!moving || !beats.length) return anims;
 
   const cycle = Math.max(...beats.map((b) => b.t)) + REST;
-  const opts: KeyframeAnimationOptions = { duration: cycle * 1000, iterations: Infinity };
-  const anims: Animation[] = [];
+  const opts: KeyframeAnimationOptions = { duration: cycle * 1000, iterations: Infinity, delay: tended };
 
   for (const r of runs) {
     const length = Math.hypot(r.x2 - r.x1, r.y2 - r.y1);
@@ -155,20 +175,21 @@ export function useStepWire(ref: RefObject<HTMLElement | null>, id: string) {
     let timer: number | undefined;
     let frame = 0;
 
-    const render = () => {
+    const render = (intro = false) => {
       anims.forEach((a) => a.cancel());
-      anims = build(root, wire, id, !still);
+      anims = build(root, wire, id, !still, intro && !still);
       if (!visible) anims.forEach((a) => a.pause());
     };
-    // El hilo se tiende cuando los iconos ya están dibujados (Trace.tsx).
+    // El hilo empieza a tenderse mientras los iconos se dibujan (Trace.tsx):
+    // sale del primero cuando su silueta está casi cerrada.
     const start = () => {
       if (!still && root.querySelector('svg.trace:not([data-draw="on"])')) {
-        timer = window.setTimeout(start, 500);
+        timer = window.setTimeout(start, 300);
         return;
       }
       root.dataset.wire = "on";
       if (!still) root.dataset.flow = "on";
-      render();
+      render(true);
     };
     const view = new IntersectionObserver(
       (entries) => {
@@ -176,7 +197,7 @@ export function useStepWire(ref: RefObject<HTMLElement | null>, id: string) {
         visible = e.isIntersecting;
         if (visible && !on && e.intersectionRatio >= 0.25) {
           on = true;
-          timer = window.setTimeout(start, still ? 0 : 2600);
+          timer = window.setTimeout(start, still ? 0 : 1500);
         }
         anims.forEach((a) => (visible ? a.play() : a.pause()));
       },
@@ -185,7 +206,7 @@ export function useStepWire(ref: RefObject<HTMLElement | null>, id: string) {
     const resize = new ResizeObserver(() => {
       if (!root.dataset.wire) return;
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(render);
+      frame = requestAnimationFrame(() => render());
     });
     view.observe(root);
     resize.observe(root);
