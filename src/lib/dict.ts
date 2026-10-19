@@ -49,6 +49,40 @@ const es = {
     "tagline": "Diseñadas para que te encuentren. Construidas para convertir.",
     "secondary": "Ver servicios"
   },
+  "cases": {
+    "eyebrow": "Casos de uso",
+    "title": "Problemas reales,\nresueltos a medida.",
+    "lead": "Cada caso cuenta un negocio, lo que le frenaba y qué hicimos. Solo publicamos casos reales.",
+    "pending": "Pendiente",
+    "problem": "El reto",
+    "solution": "Qué hicimos",
+    "items": [
+      {
+        "sector": "Sector pendiente",
+        "title": "Caso pendiente de publicar",
+        "problem": "Pendiente: qué le pasaba al negocio y por qué su web no le ayudaba.",
+        "solution": "Pendiente: qué hicimos y qué cambió, con datos reales.",
+        "services": [],
+        "pending": true
+      },
+      {
+        "sector": "Sector pendiente",
+        "title": "Caso pendiente de publicar",
+        "problem": "Pendiente: qué le pasaba al negocio y por qué su web no le ayudaba.",
+        "solution": "Pendiente: qué hicimos y qué cambió, con datos reales.",
+        "services": [],
+        "pending": true
+      },
+      {
+        "sector": "Sector pendiente",
+        "title": "Caso pendiente de publicar",
+        "problem": "Pendiente: qué le pasaba al negocio y por qué su web no le ayudaba.",
+        "solution": "Pendiente: qué hicimos y qué cambió, con datos reales.",
+        "services": [],
+        "pending": true
+      }
+    ] as { sector: string; title: string; problem: string; solution: string; services: string[]; pending: boolean }[]
+  },
   "services": {
     "eyebrow": "Qué hacemos",
     "title": "Cuatro servicios,\nun solo estudio.",
@@ -79,7 +113,7 @@ const es = {
   "studioHome": {
     "eyebrow": "Estudio",
     "title": "Un estudio pequeño,\npor decisión.",
-    "lead": "No es una limitación: es lo que nos permite trabajar así.",
+    "lead": "Aterna es un estudio digital independiente. Ser pequeños no es una limitación: es lo que nos permite trabajar así.",
     "link": "Conocer el estudio",
     "pillars": [
       {
@@ -590,6 +624,40 @@ const en: Dict = {
     "tagline": "Designed to be found. Built to convert.",
     "secondary": "See services"
   },
+  "cases": {
+    "eyebrow": "Use cases",
+    "title": "Real problems,\nsolved to measure.",
+    "lead": "Each case tells a business, what was holding it back and what we did. We only publish real cases.",
+    "pending": "Pending",
+    "problem": "The challenge",
+    "solution": "What we did",
+    "items": [
+      {
+        "sector": "Sector pending",
+        "title": "Case pending publication",
+        "problem": "Pending: what was happening to the business and why its website wasn't helping.",
+        "solution": "Pending: what we did and what changed, with real data.",
+        "services": [],
+        "pending": true
+      },
+      {
+        "sector": "Sector pending",
+        "title": "Case pending publication",
+        "problem": "Pending: what was happening to the business and why its website wasn't helping.",
+        "solution": "Pending: what we did and what changed, with real data.",
+        "services": [],
+        "pending": true
+      },
+      {
+        "sector": "Sector pending",
+        "title": "Case pending publication",
+        "problem": "Pending: what was happening to the business and why its website wasn't helping.",
+        "solution": "Pending: what we did and what changed, with real data.",
+        "services": [],
+        "pending": true
+      }
+    ]
+  },
   "services": {
     "eyebrow": "What we do",
     "title": "Four services,\none studio.",
@@ -620,7 +688,7 @@ const en: Dict = {
   "studioHome": {
     "eyebrow": "Studio",
     "title": "A small studio,\nby choice.",
-    "lead": "It isn’t a limitation: it’s what lets us work this way.",
+    "lead": "Aterna is an independent digital studio. Being small isn’t a limitation: it’s what lets us work this way.",
     "link": "About the studio",
     "pillars": [
       {

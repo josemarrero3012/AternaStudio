@@ -194,6 +194,63 @@ export function StartingPrice({ slug, className }: { slug: ServiceSlug; classNam
   );
 }
 
+/**
+ * Home: casos de uso. Cada tarjeta cuenta un negocio, su reto y qué
+ * hicimos, con enlaces a los servicios usados. Mientras un caso no sea real
+ * lleva `pending` y se ve como un hueco por rellenar (borde discontinuo y
+ * etiqueta «Pendiente»): no se inventan clientes ni resultados.
+ */
+export function Cases({ n }: { n?: number }) {
+  const { t } = useI18n();
+  const c = t.cases;
+  const list = useReveal<HTMLUListElement>({ selector: ".case", y: 24, stagger: 0.1 });
+  const names: Record<string, string> = Object.fromEntries(t.servicePages.index.cards.map((card) => [card.slug, card.title]));
+  return (
+    <section className="section cases" id="casos" aria-labelledby="cases-title">
+      <div className="container">
+        <header className="section-head">
+          <p className="t-label dim">{eyebrow(c.eyebrow, n)}</p>
+          <WordReveal as="h2" id="cases-title" className="t-display" text={c.title} />
+          <p className="t-lead muted">{c.lead}</p>
+        </header>
+        <ul className="cases__list" ref={list}>
+          {c.items.map((item, i) => (
+            <li className="case" key={i} data-pending={item.pending ? "" : undefined}>
+              <div className="case__top">
+                <span className="t-index case__index">{String(i + 1).padStart(2, "0")}</span>
+                {item.pending ? <span className="t-label case__badge">{c.pending}</span> : null}
+              </div>
+              <p className="t-label dim">{item.sector}</p>
+              <h3 className="case__title">{item.title}</h3>
+              <dl className="case__story">
+                <div>
+                  <dt className="t-label dim">{c.problem}</dt>
+                  <dd className="t-small muted">{item.problem}</dd>
+                </div>
+                <div>
+                  <dt className="t-label dim">{c.solution}</dt>
+                  <dd className="t-small muted">{item.solution}</dd>
+                </div>
+              </dl>
+              {item.services.length ? (
+                <ul className="case__services">
+                  {item.services.map((s) => (
+                    <li key={s}>
+                      <Link href={`/servicios/${s}`} className="case__chip">
+                        {names[s] ?? s}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
 /** Home: los cuatro servicios, cada uno con su página. */
 export function Services({ n }: { n?: number }) {
   const { t } = useI18n();

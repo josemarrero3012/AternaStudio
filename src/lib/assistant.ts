@@ -192,6 +192,17 @@ export function knowledge(t: Dict, locale: Locale): Entry[] {
     out.push({ keys: `creemos ${b.title} ${b.body}`, text: `${b.title}. ${b.body}`, href: "/estudio", link: a.studioLink });
   }
 
+  // Casos de uso, solo los publicados (los pendientes son huecos sin datos).
+  for (const c of t.cases.items) {
+    if (c.pending) continue;
+    out.push({
+      keys: `caso casos ejemplo cliente ${c.sector} ${c.title} ${c.problem} ${c.solution}`,
+      text: `${c.title} (${c.sector}). ${c.problem} ${c.solution}`,
+      href: "/#casos",
+      link: t.cases.eyebrow,
+    });
+  }
+
   // Cómo trabajamos.
   out.push({
     topic: "method",

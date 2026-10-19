@@ -1,22 +1,21 @@
 "use client";
 
-import { Approach, FinalCTA, Hero, Services, StudioStatement } from "@/components/sections";
+import { Approach, Cases, FinalCTA, Hero, Services, StudioStatement } from "@/components/sections";
 
 // Metadatos de la home: los del layout.
 //
-// El recorrido responde a las preguntas en el orden en que se las hace quien
-// llega: qué hacéis (servicios, justo después de la promesa del hero), quién
-// sois (el estudio: «Cuatro servicios, un solo estudio» da paso a «Un estudio
-// pequeño, por decisión»), cómo trabajáis (el método) y cómo empezamos (el
-// contacto, cuyo primer paso continúa el método).
+// Al entrar, la portada cuenta primero quiénes somos (el estudio), después
+// cómo trabajamos (el método) y luego casos de uso; con eso ya presentado,
+// el catálogo de servicios y el contacto.
 export default function Home() {
   return (
     <>
       <Hero />
-      <Services n={1} />
-      <StudioStatement n={2} />
-      <Approach n={3} />
-      <FinalCTA n={4} />
+      <StudioStatement n={1} />
+      <Approach n={2} />
+      <Cases n={3} />
+      <Services n={4} />
+      <FinalCTA n={5} />
     </>
   );
 }

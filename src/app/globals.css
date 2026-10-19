@@ -270,10 +270,10 @@ html.lenis body {
   padding-top: 0;
 }
 
-/* Dos secciones seguidas sobre la misma superficie no suman sus márgenes: la
-   banda del estudio arranca en la noche base, como acaba Servicios, y sin
-   esto quedaban ~380 px de vacío entre las dos. */
-.services + .studio {
+/* Dos secciones seguidas sobre la misma superficie no suman sus márgenes:
+   Casos de uso y Servicios van las dos sobre la noche base y, sin esto,
+   quedaba el doble de vacío entre ellas. */
+.cases + .services {
   padding-top: 0;
 }
 
@@ -1841,6 +1841,114 @@ body[data-menu="open"] .assistant__orb {
 
 @media (min-width: 768px) {
   .pillars {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Casos de uso -------------------------------------------------------------- */
+
+.cases__list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gutter);
+}
+
+.case {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-6);
+  border: 1px solid var(--hair);
+  border-radius: var(--r-card);
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-card);
+}
+
+.case__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--s-2);
+}
+
+.case__index {
+  color: var(--orchid);
+}
+
+.case__title {
+  font-family: var(--font-display);
+  font-size: var(--t-card);
+  font-weight: 400;
+  font-variation-settings: "opsz" 72;
+  line-height: 1.1;
+  letter-spacing: var(--ls-title);
+}
+
+.case__story {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  margin-top: var(--s-3);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--hair);
+}
+
+.case__story dt {
+  margin-bottom: var(--s-1);
+}
+
+.case__services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: auto;
+  padding-top: var(--s-3);
+}
+
+.case__chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border: 1px solid var(--hair-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--t-small);
+  transition: border-color var(--d-micro) var(--e-out);
+}
+
+@media (hover: hover) {
+  .case__chip:hover {
+    border-color: color-mix(in srgb, var(--orchid) 60%, transparent);
+  }
+}
+
+/* Hueco por rellenar: se ve a propósito como un borrador. */
+.case[data-pending] {
+  border-style: dashed;
+  border-color: var(--hair-strong);
+  background: color-mix(in srgb, var(--night-1) 50%, transparent);
+  box-shadow: none;
+}
+
+.case[data-pending] :is(.case__title, dd) {
+  opacity: 0.7;
+}
+
+.case__badge {
+  padding: 3px 10px;
+  border: 1px dashed color-mix(in srgb, var(--orchid) 60%, transparent);
+  border-radius: var(--r-pill);
+  color: var(--orchid);
+}
+
+@media (min-width: 768px) {
+  .cases__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .cases__list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
