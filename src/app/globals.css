@@ -883,17 +883,39 @@ body[data-menu="open"] .whatsapp-widget,
    cada trazo con su retardo (--t-delay) y su duración (--t-dur); con
    movimiento reducido se ven enteros desde el principio. Sin vector-effect:
    el trazo escala con el dibujo y la animación se comporta igual en todos
-   los navegadores. Los degradados van dentro de cada SVG, con su id. */
+   los navegadores. Los degradados van dentro de cada SVG, con su id.
+   Grosores en variables (--sw*): al ampliar un icono se reducen en el lienzo
+   para que en pantalla el trazo siga siendo fino. */
 .trace {
+  --sw: 1.2;
+  --sw-halo: 5;
+  --sw-faint: 1;
   height: auto;
   overflow: visible;
 }
 
-/* Iconos: lienzo de 96 × 40 a tamaño real, con el mismo grosor de trazo que
-   el dibujo grande en escritorio. */
-.trace--glyph {
+/* Iconos: lienzo de 96 × 40. A tamaño real (glyph) tienen el mismo trazo
+   que el dibujo grande en escritorio; md y lg lo amplían ×1,5 y ×2. */
+.trace--icon {
   flex: none;
+}
+
+.trace--glyph {
   width: 96px;
+}
+
+.trace--md {
+  --sw: 0.95;
+  --sw-halo: 3.6;
+  --sw-faint: 0.8;
+  width: 144px;
+}
+
+.trace--lg {
+  --sw: 0.75;
+  --sw-halo: 3;
+  --sw-faint: 0.65;
+  width: 192px;
 }
 
 .trace__line,
@@ -905,11 +927,11 @@ body[data-menu="open"] .whatsapp-widget,
 }
 
 .trace__line {
-  stroke-width: 1.2;
+  stroke-width: var(--sw);
 }
 
 .trace__halo {
-  stroke-width: 5;
+  stroke-width: var(--sw-halo);
   opacity: 0.16;
   transition:
     stroke-dashoffset var(--t-dur, 2.4s) var(--e-inout) calc(0.4s + var(--t-delay, 0s)),
@@ -922,7 +944,28 @@ body[data-menu="open"] .whatsapp-widget,
 }
 
 .trace__faint .trace__line {
-  stroke-width: 1;
+  stroke-width: var(--sw-faint);
+}
+
+/* Pulsos del movimiento continuo (Trace.tsx los anima con stroke-dashoffset):
+   un tramo corto y claro con su halo, escondido antes del inicio del trazo
+   hasta que arranca. --len es su largo, en fracciones del trazo. */
+.trace__pulse path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: var(--len) 2;
+  stroke-dashoffset: calc(var(--len) + 0.12);
+}
+
+.trace__pulse-halo {
+  stroke: var(--orchid);
+  stroke-width: var(--sw-halo);
+  opacity: 0.3;
+}
+
+.trace__pulse-core {
+  stroke: color-mix(in srgb, var(--orchid) 55%, #fff);
+  stroke-width: calc(var(--sw) * 1.6);
 }
 
 .trace__dot {
@@ -936,6 +979,8 @@ body[data-menu="open"] .whatsapp-widget,
 
 .trace__dot,
 .trace__node {
+  transform-box: fill-box;
+  transform-origin: center;
   transition: opacity var(--d-cine) var(--e-out) calc(0.4s + var(--t-delay, 0s));
 }
 
@@ -954,7 +999,7 @@ body[data-menu="open"] .whatsapp-widget,
 
 /* En un icono el arranque del trazo también se lee: no nace del todo en la
    nada. */
-.trace--glyph .trace__from {
+.trace--icon .trace__from {
   stop-opacity: 0.2;
 }
 
@@ -1326,8 +1371,17 @@ body[data-menu="open"] .whatsapp-widget,
   font-size: var(--t-card);
 }
 
-.pillar__glyph {
-  margin-bottom: var(--s-2);
+/* Escenario del icono en las tarjetas (pilares y servicios): centrado, a
+   doble tamaño, con una luz suave detrás y un filete que lo separa del
+   texto. */
+.pillar__stage,
+.svc-card__stage {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--s-4) var(--s-6);
+  margin-bottom: var(--s-3);
+  border-bottom: 1px solid var(--hair);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--violet) 14%, transparent), transparent);
 }
 
 @media (min-width: 768px) {
@@ -1700,24 +1754,108 @@ body[data-menu="open"] .whatsapp-widget,
   border-top: 1px solid var(--hair);
 }
 
+/* Los pasos, unidos por un hilo (StepWire.ts, en el SVG .next-steps__wire,
+   encima de la lista). En columna el hilo baja por la izquierda: el texto se
+   aparta y cada icono arranca sobre él. Desde 600 px de ancho disponible
+   (no de ventana: en /contacto la lista va en media columna), en fila. */
+.next-steps__flow {
+  position: relative;
+  container-type: inline-size;
+}
+
 .next-steps__list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--s-6) var(--gutter);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-7) var(--gutter);
 }
 
 .next-step {
   display: flex;
   flex-direction: column;
   gap: var(--s-2);
+  padding-inline-start: var(--s-5);
 }
 
 .next-step__glyph {
   margin-bottom: var(--s-2);
+  margin-inline-start: calc(var(--s-5) * -1);
+}
+
+@container (min-width: 600px) {
+  .next-steps__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .next-step {
+    padding-inline-start: 0;
+  }
+
+  .next-step__glyph {
+    margin-inline-start: 0;
+  }
+}
+
+.next-steps__wire {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  color: color-mix(in srgb, var(--lavender) 40%, transparent);
+  opacity: 0;
+  transition: opacity var(--d-cine) var(--e-out);
+}
+
+.next-steps__flow[data-wire="on"] > .next-steps__wire {
+  opacity: 1;
+}
+
+.next-steps__wire-line,
+.next-steps__wire-halo,
+.next-steps__pulse-core,
+.next-steps__pulse-halo {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.next-steps__wire-line {
+  stroke-width: 1.2;
+}
+
+.next-steps__wire-halo {
+  stroke-width: 5;
+  opacity: 0.16;
+}
+
+.next-steps__wire-from {
+  stop-color: var(--orchid);
+  stop-opacity: 0.7;
+}
+
+.next-steps__wire-to {
+  stop-color: var(--lavender);
+  stop-opacity: 0.2;
+}
+
+.next-steps__pulse-core {
+  stroke: color-mix(in srgb, var(--orchid) 55%, #fff);
+  stroke-width: 2;
+}
+
+.next-steps__pulse-halo {
+  stroke: var(--orchid);
+  stroke-width: 6;
+  opacity: 0.3;
 }
 
 .next-step__index {
   color: var(--orchid);
+}
+
+/* Con el pulso en marcha, los números esperan apagados a que llegue. */
+.next-steps__flow[data-flow="on"] .next-step__index {
+  color: var(--text-low);
 }
 
 .next-step__title {
@@ -1973,14 +2111,6 @@ body[data-menu="open"] .whatsapp-widget,
     transform var(--d-std) var(--e-out);
 }
 
-
-/* Antetítulo a la izquierda y el icono del servicio a la derecha. */
-.svc-card__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s-4);
-}
 
 .svc-card__title {
   font-family: var(--font-display);

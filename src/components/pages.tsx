@@ -28,10 +28,10 @@ function SvcCard({ card, heading = "h2" }: { card: Card; heading?: "h2" | "h3" }
   const Heading = heading;
   return (
     <Link href={`/servicios/${slug}`} className="svc-card" data-spot>
-      <div className="svc-card__top">
-        <p className="t-label dim svc-card__kicker">{card.kicker}</p>
-        <ServiceGlyph slug={slug} />
+      <div className="svc-card__stage">
+        <ServiceGlyph slug={slug} size="lg" />
       </div>
+      <p className="t-label dim svc-card__kicker">{card.kicker}</p>
       <Heading className="svc-card__title">{card.title}</Heading>
       <p className="t-body muted svc-card__body">{card.body}</p>
       {/* La modalidad de pago ya la dice el antetítulo: aquí solo el importe. */}

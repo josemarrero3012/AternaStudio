@@ -4,7 +4,7 @@
 
 import { withBase } from "@/lib/base";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { useI18n } from "@/lib/i18n";
 import {
   ATERNA_EASE,
@@ -21,6 +21,7 @@ import { CopyEmail } from "./CopyEmail";
 import { PILLAR_GLYPHS, STEP_GLYPHS } from "./glyphs";
 import { ArrowRight, Check } from "./icons";
 import { ServiceGlyph } from "./ServiceTrace";
+import { useStepWire } from "./StepWire";
 import { Trace } from "./Trace";
 import { WordReveal } from "./WordReveal";
 
@@ -157,7 +158,11 @@ export function StudioStatement({ n }: { n?: number }) {
         <ul className="pillars" ref={pillars}>
           {t.studioHome.pillars.map((p, i) => (
             <li className="pillar" key={i}>
-              {PILLAR_GLYPHS[i] ? <Trace drawing={PILLAR_GLYPHS[i]} size="glyph" className="pillar__glyph" /> : null}
+              {PILLAR_GLYPHS[i] ? (
+                <div className="pillar__stage">
+                  <Trace drawing={PILLAR_GLYPHS[i]} size="lg" />
+                </div>
+              ) : null}
               <h3 className="t-title pillar__title">{p.title}</h3>
               <p className="t-small muted">{p.body}</p>
             </li>
@@ -210,7 +215,7 @@ export function Services({ n }: { n?: number }) {
                   <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
                   <div className="service__head">
                     <h3 className="t-title service__title">{card.title}</h3>
-                    <ServiceGlyph slug={slug} />
+                    <ServiceGlyph slug={slug} size="md" />
                   </div>
                   <div className="service__body">
                     <p className="t-body muted">{card.body}</p>
@@ -349,23 +354,29 @@ export function FinalCTA({ n }: { n?: number }) {
   );
 }
 
-/** Qué pasa después de escribirnos: tres pasos y la disponibilidad. */
+/** Qué pasa después de escribirnos: tres pasos unidos por un hilo y la disponibilidad. */
 export function NextSteps({ className }: { className?: string }) {
   const { t } = useI18n();
   const list = useReveal<HTMLDivElement>({ selector: ".next-step", y: 20, stagger: 0.1 });
+  const flow = useRef<HTMLDivElement>(null);
+  useStepWire(flow, `wire${useId().replace(/[^\w-]/g, "")}`);
   return (
     <div className={`next-steps${className ? ` ${className}` : ""}`} ref={list}>
       <h3 className="t-label dim">{t.finalCta.nextTitle}</h3>
-      <ol className="next-steps__list">
-        {t.finalCta.next.map((step, i) => (
-          <li className="next-step" key={i}>
-            {STEP_GLYPHS[i] ? <Trace drawing={STEP_GLYPHS[i]} size="glyph" className="next-step__glyph" /> : null}
-            <span className="t-index next-step__index">{String(i + 1).padStart(2, "0")}</span>
-            <p className="next-step__title">{step.title}</p>
-            <p className="t-small muted">{step.body}</p>
-          </li>
-        ))}
-      </ol>
+      <div className="next-steps__flow" ref={flow}>
+        <ol className="next-steps__list">
+          {t.finalCta.next.map((step, i) => (
+            <li className="next-step" key={i}>
+              {STEP_GLYPHS[i] ? <Trace drawing={STEP_GLYPHS[i]} size="glyph" className="next-step__glyph" /> : null}
+              <span className="t-index next-step__index">{String(i + 1).padStart(2, "0")}</span>
+              <p className="next-step__title">{step.title}</p>
+              <p className="t-small muted">{step.body}</p>
+            </li>
+          ))}
+        </ol>
+        {/* Encima de la lista: el pulso pasa por delante de los iconos. Lo dibuja useStepWire. */}
+        <svg className="next-steps__wire" aria-hidden="true" focusable="false" />
+      </div>
       <p className="t-small next-steps__availability">
         <span className="next-steps__pulse" aria-hidden="true" />
         {t.finalCta.availability}
