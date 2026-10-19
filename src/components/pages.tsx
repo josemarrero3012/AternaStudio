@@ -11,9 +11,11 @@ import { formatPrice, pricing, slugToProduct, type ServiceSlug } from "@/lib/pri
 import { site } from "@/lib/site";
 import { CopyEmail } from "./CopyEmail";
 import { whatsappHref } from "./Chrome";
+import { BELIEF_GLYPHS } from "./glyphs";
 import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
 import { Approach, FinalCTA, NextSteps, StartingPrice } from "./sections";
-import { ServiceTrace } from "./ServiceTrace";
+import { ServiceGlyph, ServiceTrace } from "./ServiceTrace";
+import { Trace } from "./Trace";
 import { WordReveal } from "./WordReveal";
 
 // /servicios ----------------------------------------------------------------
@@ -26,7 +28,10 @@ function SvcCard({ card, heading = "h2" }: { card: Card; heading?: "h2" | "h3" }
   const Heading = heading;
   return (
     <Link href={`/servicios/${slug}`} className="svc-card" data-spot>
-      <p className="t-label dim svc-card__kicker">{card.kicker}</p>
+      <div className="svc-card__top">
+        <p className="t-label dim svc-card__kicker">{card.kicker}</p>
+        <ServiceGlyph slug={slug} />
+      </div>
       <Heading className="svc-card__title">{card.title}</Heading>
       <p className="t-body muted svc-card__body">{card.body}</p>
       {/* La modalidad de pago ya la dice el antetítulo: aquí solo el importe. */}
@@ -334,7 +339,10 @@ export function EstudioContent() {
               <li className="service" key={i}>
                 <div className="service__inner" data-spot>
                   <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
-                  <h3 className="t-title service__title">{b.title}</h3>
+                  <div className="service__head">
+                    <h3 className="t-title service__title">{b.title}</h3>
+                    {BELIEF_GLYPHS[i] ? <Trace drawing={BELIEF_GLYPHS[i]} size="glyph" /> : null}
+                  </div>
                   <p className="t-body muted service__body">{b.body}</p>
                 </div>
               </li>

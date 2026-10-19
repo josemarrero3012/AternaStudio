@@ -875,6 +875,129 @@ body[data-menu="open"] .whatsapp-widget,
   }
 }
 
+/* Dibujos de luz ------------------------------------------------------------ */
+
+/* Trace.tsx: el dibujo de cada ficha de servicio y los iconos del resto de
+   la web. Solo trazo, puntos y un nodo, como las raíces del vídeo. Con
+   movimiento se dibujan una vez al entrar en pantalla (stroke-dashoffset),
+   cada trazo con su retardo (--t-delay) y su duración (--t-dur); con
+   movimiento reducido se ven enteros desde el principio. Sin vector-effect:
+   el trazo escala con el dibujo y la animación se comporta igual en todos
+   los navegadores. Los degradados van dentro de cada SVG, con su id. */
+.trace {
+  height: auto;
+  overflow: visible;
+}
+
+/* Iconos: lienzo de 96 × 40 a tamaño real, con el mismo grosor de trazo que
+   el dibujo grande en escritorio. */
+.trace--glyph {
+  flex: none;
+  width: 96px;
+}
+
+.trace__line,
+.trace__halo {
+  fill: none;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset var(--t-dur, 2.4s) var(--e-inout) calc(0.4s + var(--t-delay, 0s));
+}
+
+.trace__line {
+  stroke-width: 1.2;
+}
+
+.trace__halo {
+  stroke-width: 5;
+  opacity: 0.16;
+  transition:
+    stroke-dashoffset var(--t-dur, 2.4s) var(--e-inout) calc(0.4s + var(--t-delay, 0s)),
+    opacity var(--d-std) var(--e-out);
+}
+
+/* Trazos secundarios: las marcas de una regla, el tirador de una curva. */
+.trace__faint {
+  opacity: 0.5;
+}
+
+.trace__faint .trace__line {
+  stroke-width: 1;
+}
+
+.trace__dot {
+  fill: var(--lavender);
+  fill-opacity: 0.8;
+}
+
+.trace__node {
+  fill: var(--orchid);
+}
+
+.trace__dot,
+.trace__node {
+  transition: opacity var(--d-cine) var(--e-out) calc(0.4s + var(--t-delay, 0s));
+}
+
+.trace__glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity var(--d-cine) var(--e-out) calc(0.4s + var(--t-delay, 0s)),
+    transform var(--d-std) var(--e-out);
+}
+
+.trace__from {
+  stop-color: var(--lavender);
+  stop-opacity: 0;
+}
+
+/* En un icono el arranque del trazo también se lee: no nace del todo en la
+   nada. */
+.trace--glyph .trace__from {
+  stop-opacity: 0.2;
+}
+
+.trace__mid {
+  stop-color: var(--lavender);
+  stop-opacity: 0.7;
+}
+
+.trace__to {
+  stop-color: var(--orchid);
+}
+
+.trace__glow-from {
+  stop-color: var(--orchid);
+  stop-opacity: 0.55;
+}
+
+.trace__glow-to {
+  stop-color: var(--orchid);
+  stop-opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .trace:not([data-draw="on"]) :is(.trace__line, .trace__halo) {
+    stroke-dashoffset: 1;
+  }
+
+  .trace:not([data-draw="on"]) :is(.trace__dot, .trace__glow, .trace__node) {
+    opacity: 0;
+  }
+}
+
+/* En las filas y tarjetas que reaccionan al puntero, el icono se enciende. */
+@media (hover: hover) {
+  :is(a.service__inner, .services__list--static .service__inner, .svc-card):hover .trace__glow {
+    transform: scale(1.4);
+  }
+
+  :is(a.service__inner, .services__list--static .service__inner, .svc-card):hover .trace__halo {
+    opacity: 0.32;
+  }
+}
+
 /* Hero -------------------------------------------------------------------- */
 
 .hero {
@@ -1175,8 +1298,8 @@ body[data-menu="open"] .whatsapp-widget,
   }
 }
 
-/* Tres compromisos del estudio, en vidrio. Cada uno nace de un nodo de luz
-   con su filamento, como las raíces del vídeo. */
+/* Tres compromisos del estudio, en vidrio. Cada uno abre con su icono de luz
+   (glyphs.ts), como las raíces del vídeo. */
 .pillars {
   display: grid;
   grid-template-columns: 1fr;
@@ -1202,26 +1325,8 @@ body[data-menu="open"] .whatsapp-widget,
   font-size: var(--t-card);
 }
 
-.pillar__node {
-  position: relative;
-  width: 7px;
-  height: 7px;
-  margin-bottom: var(--s-4);
-  border-radius: 50%;
-  background-color: var(--orchid);
-  box-shadow:
-    0 0 0 4px color-mix(in srgb, var(--orchid) 18%, transparent),
-    0 0 16px 2px color-mix(in srgb, var(--orchid) 60%, transparent);
-}
-
-.pillar__node::after {
-  content: "";
-  position: absolute;
-  top: 3px;
-  left: 14px;
-  width: 88px;
-  height: 1px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--violet) 70%, transparent), transparent);
+.pillar__glyph {
+  margin-bottom: var(--s-2);
 }
 
 @media (min-width: 768px) {
@@ -1259,6 +1364,15 @@ body[data-menu="open"] .whatsapp-widget,
   padding-top: 0.6em;
   color: var(--on-surface-low);
   transition: color var(--d-micro) var(--e-out);
+}
+
+/* Titular y su icono en la misma celda: el icono llena el hueco que queda
+   bajo el titular cuando el texto de al lado es más alto. */
+.service__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-5);
 }
 
 .service__title {
@@ -1608,6 +1722,10 @@ body[data-menu="open"] .whatsapp-widget,
   gap: var(--s-2);
 }
 
+.next-step__glyph {
+  margin-bottom: var(--s-2);
+}
+
 .next-step__index {
   color: var(--orchid);
 }
@@ -1866,6 +1984,14 @@ body[data-menu="open"] .whatsapp-widget,
 }
 
 
+/* Antetítulo a la izquierda y el icono del servicio a la derecha. */
+.svc-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+}
+
 .svc-card__title {
   font-family: var(--font-display);
   font-size: var(--t-card);
@@ -2024,16 +2150,9 @@ body[data-menu="open"] .whatsapp-widget,
   gap: var(--s-6);
 }
 
-/* Dibujo de cada ficha (ServiceTrace.tsx), bajo «El servicio». Solo trazo,
-   puntos y un nodo, como las raíces del vídeo. Con movimiento se dibuja una
-   vez al entrar en pantalla (stroke-dashoffset), cada trazo con su retardo
-   (--t-delay) y su duración (--t-dur); con movimiento reducido se ve entero
-   desde el principio. Sin vector-effect: el trazo escala con el dibujo y la
-   animación se comporta igual en todos los navegadores. */
+/* Dibujo de cada ficha (ServiceTrace.tsx), bajo «El servicio». */
 .svc-trace {
   width: 220px;
-  height: auto;
-  overflow: visible;
 }
 
 @media (min-width: 768px) {
@@ -2041,78 +2160,6 @@ body[data-menu="open"] .whatsapp-widget,
     width: min(100%, 300px);
   }
 }
-
-.svc-trace__line,
-.svc-trace__halo {
-  fill: none;
-  stroke: url(#svc-trace-line);
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  transition: stroke-dashoffset var(--t-dur, 2.4s) var(--e-inout) calc(0.4s + var(--t-delay, 0s));
-}
-
-.svc-trace__line {
-  stroke-width: 1.2;
-}
-
-.svc-trace__halo {
-  stroke-width: 5;
-  opacity: 0.16;
-}
-
-.svc-trace__dot {
-  fill: var(--lavender);
-  fill-opacity: 0.8;
-}
-
-.svc-trace__glow {
-  fill: url(#svc-trace-glow);
-}
-
-.svc-trace__node {
-  fill: var(--orchid);
-}
-
-.svc-trace__dot,
-.svc-trace__glow,
-.svc-trace__node {
-  transition: opacity var(--d-cine) var(--e-out) calc(0.4s + var(--t-delay, 0s));
-}
-
-.svc-trace__from {
-  stop-color: var(--lavender);
-  stop-opacity: 0;
-}
-
-.svc-trace__mid {
-  stop-color: var(--lavender);
-  stop-opacity: 0.7;
-}
-
-.svc-trace__to {
-  stop-color: var(--orchid);
-}
-
-.svc-trace__glow-from {
-  stop-color: var(--orchid);
-  stop-opacity: 0.55;
-}
-
-.svc-trace__glow-to {
-  stop-color: var(--orchid);
-  stop-opacity: 0;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .svc-trace:not([data-draw="on"]) :is(.svc-trace__line, .svc-trace__halo) {
-    stroke-dashoffset: 1;
-  }
-
-  .svc-trace:not([data-draw="on"]) :is(.svc-trace__dot, .svc-trace__glow, .svc-trace__node) {
-    opacity: 0;
-  }
-}
-
 
 .svc-prose {
   display: flex;

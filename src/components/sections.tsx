@@ -18,7 +18,10 @@ import { formatPrice, pricing, slugToProduct, startingPrice, type ServiceSlug } 
 import { useReveal } from "@/lib/reveal";
 import { site } from "@/lib/site";
 import { CopyEmail } from "./CopyEmail";
+import { PILLAR_GLYPHS, STEP_GLYPHS } from "./glyphs";
 import { ArrowRight, Check } from "./icons";
+import { ServiceGlyph } from "./ServiceTrace";
+import { Trace } from "./Trace";
 import { WordReveal } from "./WordReveal";
 
 /** "01 — Estudio": la numeración la pone cada página según su orden real. */
@@ -155,7 +158,7 @@ export function StudioStatement({ n }: { n?: number }) {
         <ul className="pillars" ref={pillars}>
           {t.studioHome.pillars.map((p, i) => (
             <li className="pillar" key={i}>
-              <span className="pillar__node" aria-hidden="true" />
+              {PILLAR_GLYPHS[i] ? <Trace drawing={PILLAR_GLYPHS[i]} size="glyph" className="pillar__glyph" /> : null}
               <h3 className="t-title pillar__title">{p.title}</h3>
               <p className="t-small muted">{p.body}</p>
             </li>
@@ -206,7 +209,10 @@ export function Services({ n }: { n?: number }) {
               <li className="service" key={slug}>
                 <Link href={`/servicios/${slug}`} className="service__inner" data-spot>
                   <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
-                  <h3 className="t-title service__title">{card.title}</h3>
+                  <div className="service__head">
+                    <h3 className="t-title service__title">{card.title}</h3>
+                    <ServiceGlyph slug={slug} />
+                  </div>
                   <div className="service__body">
                     <p className="t-body muted">{card.body}</p>
                     <ul className="t-small service__includes">
@@ -359,6 +365,7 @@ export function NextSteps({ className, availability = true }: { className?: stri
       <ol className="next-steps__list">
         {t.finalCta.next.map((step, i) => (
           <li className="next-step" key={i}>
+            {STEP_GLYPHS[i] ? <Trace drawing={STEP_GLYPHS[i]} size="glyph" className="next-step__glyph" /> : null}
             <span className="t-index next-step__index">{String(i + 1).padStart(2, "0")}</span>
             <p className="next-step__title">{step.title}</p>
             <p className="t-small muted">{step.body}</p>
