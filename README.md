@@ -1,48 +1,35 @@
-# Aterna Studio — web
+# Web de Aterna Studio
 
-Código fuente de aternastudio.com. Es Next.js con exportación estática:
-`npm run build` genera la carpeta `out/` y esa carpeta es la web que se
-sube a Hostinger. No hace falta Node.js en el servidor.
+Aquí está el código de la web de Aterna Studio, un estudio digital que hace webs a medida, SEO, mantenimiento y asistentes con IA. Me estoy encargando de mejorarla.
 
-**Demo en vivo:** https://josemarrero3012.github.io/AternaStudio/
+Se puede ver aquí: https://josemarrero3012.github.io/AternaStudio/
 
-## Uso
+## Qué he hecho hasta ahora
+
+- Saqué la paleta de colores del vídeo de la portada y después la aclaré, de casi negro a un azul índigo.
+- Añadí iconos animados en SVG a lo largo de la web y una pequeña animación para cada servicio.
+- Reorganicé el contenido para que cada idea salga una sola vez y las secciones no repitan lo mismo.
+- Preparé la publicación automática en GitHub Pages, para tener una demo que se actualiza con cada cambio.
+
+## Cómo está organizada
+
+Quería que cambiar algo fuera fácil sin tener que buscar por todo el código, así que cada cosa tiene su sitio:
+
+- Todos los textos, en español y en inglés, están en un solo archivo: `src/lib/dict.ts`.
+- Los precios de los servicios, en `src/lib/pricing.ts`.
+- Los colores, las tipografías y los espacios, en `src/styles/tokens.css`.
+
+La web no usa fotos ni ilustraciones. La única imagen es el vídeo del árbol de la portada, y la profundidad del resto de secciones está hecha con CSS: color, luz, líneas y tipografía.
+
+## Con qué está hecha
+
+Next.js y React con TypeScript, y GSAP para algunas animaciones. Se exporta como web estática, así que el servidor no necesita Node: basta con subir la carpeta que se genera. El formulario de contacto envía el correo con un pequeño script en PHP (en la demo de GitHub Pages no envía, porque ahí no hay PHP).
+
+## Probarla en local
 
 ```bash
 npm install
-npm run dev     # desarrollo en http://localhost:3000
-npm run build   # genera out/ (lo que se publica)
+npm run dev
 ```
 
-Para publicar, sube el **contenido** de `out/` a `public_html/`. Incluye
-`.htaccess`, `contacto.php`, `php/` (PHPMailer) y los ejemplos de `ejemplos/`.
-
-> `public/php/mail-config.php` (credenciales SMTP) **no está en git**. Si
-> clonas el repo, cópialo desde el servidor antes de compilar.
-
-### Demo en GitHub Pages
-
-Cada push a `main` ejecuta `.github/workflows/pages.yml`, que compila con
-`NEXT_PUBLIC_BASE_PATH=/AternaStudio` y publica `out/`. En la demo el
-formulario de contacto no envía (no hay PHP en Pages). Para compilar así en
-local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
-
-## Dónde está cada cosa
-
-| Qué | Dónde |
-| --- | --- |
-| Textos ES/EN (todos) | `src/lib/dict.ts` |
-| Precios | `src/lib/pricing.ts` |
-| Datos de contacto, URL | `src/lib/site.ts` |
-| Títulos y descripciones SEO | `metadata` de cada `src/app/**/page.tsx` |
-| Tokens de diseño (color, tipo, espacio, forma, movimiento) | `src/styles/tokens.css` |
-| Estilos de componentes y páginas | `src/app/globals.css` |
-| Páginas legales (HTML literal) | `src/content/legal/` |
-| Imagen para redes (OG) | `public/brand/og.jpg` (se regenera con `scripts/og-image.js`) |
-
-## Imágenes
-
-La web no usa ilustraciones ni fotos: la única imagen es el vídeo del hero
-(`public/brand/hero-tree-*`), que marca la estética de todo lo demás. La
-profundidad de las secciones se construye con CSS (color, luz, líneas y
-tipografía), no con imágenes.
+Y se abre en http://localhost:3000. Cómo se publica y dónde está cada cosa lo tengo explicado en [docs/DESARROLLO.md](docs/DESARROLLO.md).
