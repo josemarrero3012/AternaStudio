@@ -2,20 +2,16 @@
 
 Aquí está el código de la web de Aterna Studio, un estudio digital que hace webs a medida, SEO, mantenimiento y asistentes con IA. Me estoy encargando de mejorarla.
 
-Se puede ver aquí: https://josemarrero3012.github.io/AternaStudio/
+## Las dos versiones
 
-## Versiones en prueba
+La web tiene dos versiones, cada una en su rama y con su propia demo:
 
-Además de la web actual, tengo tres propuestas publicadas en su propia ruta para compararlas:
+- **La web que se publica**, en la rama `main`: https://josemarrero3012.github.io/AternaStudio/
+  Es la que se sube primero. Todavía no tenemos casos de éxito publicados, así que no los enseña.
+- **La web con casos de éxito**, en la rama `casos-de-exito`: https://josemarrero3012.github.io/AternaStudio/casos/
+  La misma web con la sección «Casos de éxito», con [Calma Café](https://josemarrero3012.github.io/AternaStudio/casos/trabajo/calma-cafe) y [The Fragrance Bar](https://josemarrero3012.github.io/AternaStudio/casos/trabajo/the-fragrance-bar). Es para cuando formalicemos esos dos proyectos; hasta entonces es una vista previa, así que esas páginas no se indexan.
 
-- **V1**, en la rama `v1-cohesion`: https://josemarrero3012.github.io/AternaStudio/v1/
-  En «Cómo trabajamos» cambié la imagen del árbol por una mesa de trabajo con tres piezas: lo escrito, la dirección y el código, que no se enciende hasta llegar a «Construir». Las fases enlazan con su servicio y el método tiene enlace en el pie y en /estudio. La portada no enseña los casos de uso mientras estén vacíos.
-- **V2**, en la rama `v2-portfolio`: https://josemarrero3012.github.io/AternaStudio/v2/
-  Todo lo de la V1 y además la sección «Trabajo», con dos prototipos que hice: [Calma Café](https://josemarrero3012.github.io/AternaStudio/v2/trabajo/calma-cafe) y [The Fragrance Bar](https://josemarrero3012.github.io/AternaStudio/v2/trabajo/the-fragrance-bar). Es una vista previa para el equipo, así que esas páginas no se indexan.
-- **V3**, en la rama `v3-raiz`: https://josemarrero3012.github.io/AternaStudio/v3/
-  La V1 con otra idea para «Cómo trabajamos»: en vez de la mesa, el titular queda sobre una línea de luz de la que cuelgan raíces con lo que se decide antes del código (qué hay, qué falta, el tono). Esa línea cruza la pantalla y se convierte en el eje de las fases.
-
-Cada vez que subo una de estas ramas, la demo se vuelve a publicar sola.
+Cada vez que subo una de las dos ramas, su demo se vuelve a publicar sola.
 
 ## Qué he hecho hasta ahora
 
@@ -23,6 +19,7 @@ Cada vez que subo una de estas ramas, la demo se vuelve a publicar sola.
 - Añadí iconos animados en SVG a lo largo de la web y una pequeña animación para cada servicio.
 - Reorganicé el contenido para que cada idea salga una sola vez y las secciones no repitan lo mismo.
 - Preparé la publicación automática en GitHub Pages, para tener una demo que se actualiza con cada cambio.
+- En «Cómo trabajamos» cambié la imagen por una raíz de luz: el titular queda sobre una línea de la que cuelgan raíces con lo que se decide antes del código, y esa línea se convierte en el eje de las fases. Al bajar, la luz avanza por el eje y enciende cada fase cuando llega a ella.
 
 ## Cómo está organizada
 
