@@ -259,9 +259,8 @@ export function Services({ n }: { n?: number }) {
   const { t } = useI18n();
   const list = useReveal<HTMLUListElement>({ selector: ".service", y: 24, stagger: 0.1 });
 
-  // Hilo + icono, a la medida de su propio titular (su línea más larga): el
-  // CSS los deja algo más cortos que él y centrados debajo. Se rehace con el
-  // tamaño y el idioma.
+  // El icono va centrado bajo su propio titular (su línea más larga, no la
+  // columna). Se rehace con el tamaño y el idioma.
   useEffect(() => {
     const el = list.current;
     if (!el) return;
@@ -307,9 +306,8 @@ export function Services({ n }: { n?: number }) {
                   <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
                   <div className="service__head">
                     <h3 className="t-title service__title">{card.title}</h3>
-                    {/* Hilo + icono: ocupan todo el ancho del titular, igual en los cuatro. */}
+                    {/* El icono, un solo trazo centrado bajo el titular. */}
                     <div className="service__wire" data-service={slug}>
-                      <span className="service__lead" data-trace-lead aria-hidden="true" />
                       <ServiceGlyph slug={slug} size="lg" className="service__glyph" />
                     </div>
                   </div>

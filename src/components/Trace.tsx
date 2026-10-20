@@ -119,52 +119,11 @@ export function beatAt(at: number, rest: Keyframe, peak: Keyframe): Keyframe[] {
 
 const SCALE_1: Keyframe = { transform: "scale(1)" };
 
-/**
- * El hilo que lleva al dibujo (un elemento justo antes del SVG con
- * `data-trace-lead`, como en la lista de servicios): su destello va en el
- * mismo bucle que el dibujo, al final de cada vuelta, y sale del hilo justo
- * cuando el primer pulso entra en el dibujo. Así se ve una sola estela, no
- * dos con relojes distintos. Va a la velocidad del primer pulso, sin pisar
- * el final del bucle anterior.
- */
-function leadSpark(svg: SVGSVGElement, flow: Flow, opts: KeyframeAnimationOptions): Animation | null {
-  const lead = svg.previousElementSibling as HTMLElement | null;
-  const first = flow.pulses?.[0];
-  if (!lead || lead.dataset.traceLead === undefined || !first) return null;
-  const path = svg.querySelector<SVGPathElement>(".trace__pulse path");
-  const box = svg.viewBox.baseVal;
-  const scale = box.width ? svg.getBoundingClientRect().width / box.width : 1;
-  const firstPx = (path?.getTotalLength() ?? 0) * scale;
-  const speed = firstPx / Math.max(0.05, (first.to - first.from) * flow.dur);
-  // Lo que ocupa el resto del bucle: el destello solo cabe en el hueco final.
-  const busy = Math.max(
-    ...(flow.pulses ?? []).map((p) => p.to),
-    ...(flow.beats ?? []).map((b) => b.at),
-    flow.voice?.to ?? 0,
-  );
-  const natural = speed > 0 ? (lead.getBoundingClientRect().width * 1.25) / speed / flow.dur : 0.3;
-  const share = Math.max(0.12, Math.min(natural, 1 - busy - 0.04));
-  const y = getComputedStyle(lead).getPropertyValue("--lead-y").trim() || "50%";
-  // El destello mide el 18 % del hilo: a -30 % está fuera por la izquierda y
-  // a 122 % acaba de salir por la derecha, donde empieza el dibujo.
-  const at = (x: string) => `${x} ${y}, 0 ${y}`;
-  return lead.animate(
-    [
-      { offset: 0, backgroundPosition: at("-30%") },
-      { offset: 1 - share, backgroundPosition: at("-30%") },
-      { offset: 1, backgroundPosition: at("122%") },
-    ],
-    opts,
-  );
-}
-
 /** Arranca el movimiento continuo de un dibujo ya dibujado. */
 function runFlow(svg: SVGSVGElement, flow: Flow): Animation[] {
   // Cada dibujo empieza con un desfase propio: así no laten todos a la vez.
   const opts: KeyframeAnimationOptions = { duration: flow.dur * 1000, iterations: Infinity, delay: Math.random() * 800 };
   const anims: Animation[] = [];
-  const spark = leadSpark(svg, flow, opts);
-  if (spark) anims.push(spark);
   const pulses = svg.querySelectorAll(".trace__pulse");
   flow.pulses?.forEach((p, i) => {
     const kf = travel(p.len ?? PULSE, 1, PAD, p.from, p.to);

@@ -2061,11 +2061,9 @@ body[data-menu="open"] .assistant__orb {
   }
 }
 
-/* Hilo que lleva al icono: nace en la nada bajo la primera letra y entra en
-   el icono a la altura de su trazo, de modo que hilo + icono ocupan todo el
-   ancho del titular y miden lo mismo en las cuatro filas. Se tiende primero
-   y el icono se dibuja después (--t-base retrasa sus trazos); luego un
-   destello lo recorre en bucle hacia el icono. */
+/* El icono bajo el titular: un solo trazo, que nace en la nada por la
+   izquierda, centrado bajo la línea más larga del titular. Antes un hilo
+   aparte llevaba hasta él y se notaba la unión de los dos tramos. */
 .service__head {
   align-items: stretch;
 }
@@ -2074,45 +2072,10 @@ body[data-menu="open"] .assistant__orb {
   align-self: flex-start;
 }
 
-/* Hilo + icono: el 78 % del ancho de su titular, centrados bajo él. */
 .service__wire {
-  --lead-y: 50%;
   display: flex;
-  width: min(100%, calc(var(--title-w, 100%) * 0.78));
-  margin-inline-start: calc(var(--title-w, 0px) * 0.11);
-}
-
-/* En SEO el trazo arranca abajo, al pie de los escalones. */
-.service__wire[data-service="seo"] {
-  --lead-y: 90%;
-}
-
-.service__wire .trace {
-  --t-base: 1s;
-}
-
-.service__lead {
-  flex: 1;
-  min-width: 0;
-  background:
-    linear-gradient(90deg, transparent, color-mix(in srgb, var(--orchid) 50%, #fff), transparent) no-repeat,
-    linear-gradient(90deg, transparent, color-mix(in srgb, var(--lavender) 22%, transparent)) no-repeat;
-  background-size: 18% 2px, 100% 1.5px;
-  background-position: -30% var(--lead-y), 0 var(--lead-y);
-  transform-origin: left;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .service__lead {
-    transform: scaleX(0);
-    transition: transform 1s var(--e-inout) 0.2s;
-  }
-
-  /* El destello que recorre el hilo lo anima Trace.tsx, en el mismo bucle
-     que el icono: así llega al icono justo cuando su pulso arranca. */
-  .service__wire:has(.trace[data-draw="on"]) .service__lead {
-    transform: none;
-  }
+  justify-content: center;
+  width: min(100%, var(--title-w, 100%));
 }
 
 .service__body {
