@@ -1,0 +1,19 @@
+name: Publicar versión de prueba
+
+# Pages solo publica desde main: al subir esta rama, se relanza el despliegue
+# de main, que compila también las ramas de prueba en su propia ruta
+# (/AternaStudio/v1 y /AternaStudio/v2, ver pages.yml en main).
+on:
+  push:
+    branches: [v1-cohesion, v2-portfolio, v3-raiz]
+
+permissions:
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh workflow run pages.yml --ref main --repo "${{ github.repository }}"
+        env:
+          GH_TOKEN: ${{ github.token }}

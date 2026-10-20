@@ -32,7 +32,7 @@ function SvcCard({ card, heading = "h2" }: { card: Card; heading?: "h2" | "h3" }
         <ServiceGlyph slug={slug} size="lg" />
       </div>
       <p className="t-label dim svc-card__kicker">{card.kicker}</p>
-      <Heading className="svc-card__title">{card.title}</Heading>
+      <Heading className="t-card svc-card__title">{card.title}</Heading>
       <p className="t-body muted svc-card__body">{card.body}</p>
       {/* La modalidad de pago ya la dice el antetítulo: aquí solo el importe. */}
       <p className="svc-card__price">
@@ -213,7 +213,7 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
               {page.examples.map((ex, i) => (
                 <a key={i} className="ex-card" data-spot href={withBase(ex.href)} target="_blank" rel="noopener noreferrer">
                   <span className="t-label dim ex-card__label">{ex.label}</span>
-                  <span className="ex-card__title">
+                  <span className="t-card ex-card__title">
                     {ex.title}
                     <ArrowExternal />
                   </span>
@@ -344,6 +344,13 @@ export function EstudioContent() {
               </li>
             ))}
           </ol>
+          {/* Lo que creemos, aplicado: el método está en la portada. */}
+          <div className="section-foot">
+            <Link href="/#metodo" className="btn-ghost">
+              {t.approach.link}
+              <ArrowRight />
+            </Link>
+          </div>
         </div>
       </section>
       <FinalCTA />

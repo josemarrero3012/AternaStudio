@@ -21,6 +21,7 @@ import { CopyEmail } from "./CopyEmail";
 import { PILLAR_GLYPHS, STEP_GLYPHS } from "./glyphs";
 import { ArrowRight, Check } from "./icons";
 import { ApproachRail } from "./ApproachRail";
+import { MethodRoot } from "./MethodRoot";
 import { ServiceGlyph } from "./ServiceTrace";
 import { useStepWire } from "./StepWire";
 import { Trace } from "./Trace";
@@ -199,7 +200,8 @@ export function StartingPrice({ slug, className }: { slug: ServiceSlug; classNam
  * Home: casos de uso. Cada tarjeta cuenta un negocio, su reto y qué
  * hicimos, con enlaces a los servicios usados. Mientras un caso no sea real
  * lleva `pending` y se ve como un hueco por rellenar (borde discontinuo y
- * etiqueta «Pendiente»): no se inventan clientes ni resultados.
+ * etiqueta «Pendiente»): no se inventan clientes ni resultados. La portada
+ * no muestra la sección hasta que haya al menos un caso real (app/page.tsx).
  */
 export function Cases({ n }: { n?: number }) {
   const { t } = useI18n();
@@ -222,7 +224,7 @@ export function Cases({ n }: { n?: number }) {
                 {item.pending ? <span className="t-label case__badge">{c.pending}</span> : null}
               </div>
               <p className="t-label dim">{item.sector}</p>
-              <h3 className="case__title">{item.title}</h3>
+              <h3 className="t-card case__title">{item.title}</h3>
               <dl className="case__story">
                 <div>
                   <dt className="t-label dim">{c.problem}</dt>
@@ -257,19 +259,20 @@ export function Services({ n }: { n?: number }) {
   const { t } = useI18n();
   const list = useReveal<HTMLUListElement>({ selector: ".service", y: 24, stagger: 0.1 });
 
-  // Hilo + icono miden lo mismo en las cuatro filas: el ancho medio de los
-  // titulares (su línea más larga), no el de la columna, que en pantallas
-  // anchas sobresalía por la derecha. Se rehace con el tamaño y el idioma.
+  // El icono va centrado bajo su propio titular (su línea más larga, no la
+  // columna). Se rehace con el tamaño y el idioma.
   useEffect(() => {
     const el = list.current;
     if (!el) return;
     const measure = () => {
-      const widths = Array.from(el.querySelectorAll(".service__title")).map((title) => {
+      el.querySelectorAll<HTMLElement>(".service__head").forEach((head) => {
+        const title = head.querySelector(".service__title");
+        if (!title) return;
         const range = document.createRange();
         range.selectNodeContents(title);
-        return Math.max(0, ...Array.from(range.getClientRects(), (r) => r.width));
+        const width = Math.max(0, ...Array.from(range.getClientRects(), (r) => r.width));
+        head.style.setProperty("--title-w", `${width}px`);
       });
-      if (widths.length) el.style.setProperty("--wire-w", `${widths.reduce((a, b) => a + b, 0) / widths.length}px`);
     };
     measure();
     // Con la fuente definitiva los titulares cambian de ancho.
@@ -303,9 +306,8 @@ export function Services({ n }: { n?: number }) {
                   <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
                   <div className="service__head">
                     <h3 className="t-title service__title">{card.title}</h3>
-                    {/* Hilo + icono: ocupan todo el ancho del titular, igual en los cuatro. */}
+                    {/* El icono, un solo trazo centrado bajo el titular. */}
                     <div className="service__wire" data-service={slug}>
-                      <span className="service__lead" aria-hidden="true" />
                       <ServiceGlyph slug={slug} size="lg" className="service__glyph" />
                     </div>
                   </div>
@@ -345,6 +347,7 @@ export function Services({ n }: { n?: number }) {
  */
 export function Approach({ n }: { n?: number }) {
   const { t } = useI18n();
+  const ctas: Record<string, string> = Object.fromEntries(t.servicePages.index.cards.map((card) => [card.slug, card.cta]));
   const section = useRef<HTMLElement>(null);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -390,6 +393,7 @@ export function Approach({ n }: { n?: number }) {
           <p className="t-label dim">{eyebrow(t.approach.eyebrow, n)}</p>
           <WordReveal as="h2" id="approach-title" className="t-display" text={t.approach.title} />
         </header>
+        <MethodRoot variant="static" />
         <div className="approach__track">
           <div className="approach__line" aria-hidden="true">
             <span className="approach__line-fill" />
@@ -401,6 +405,12 @@ export function Approach({ n }: { n?: number }) {
                 <span className="t-index phase__index">{String(i + 1).padStart(2, "0")}</span>
                 <h3 className="phase__title">{item.title}</h3>
                 <p className="t-small phase__body">{item.body}</p>
+                {item.service ? (
+                  <Link href={`/servicios/${item.service}`} className="link-cta phase__link">
+                    {ctas[item.service]}
+                    <ArrowRight />
+                  </Link>
+                ) : null}
               </li>
             ))}
           </ol>

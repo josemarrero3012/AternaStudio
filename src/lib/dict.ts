@@ -102,13 +102,17 @@ const es = {
       },
       {
         "title": "Construir",
-        "body": "Diseño y código avanzan juntos, no uno detrás del otro. La web toma forma desde el principio."
+        "body": "Diseño y código avanzan juntos, no uno detrás del otro. La web toma forma desde el principio.",
+        "service": "web"
       },
       {
         "title": "Crecer",
-        "body": "Publicamos, medimos y mejoramos. SEO, contenido y visibilidad para que la web no se quede quieta el día del lanzamiento."
+        "body": "Publicamos, medimos y mejoramos. SEO, contenido y visibilidad para que la web no se quede quieta el día del lanzamiento.",
+        "service": "seo"
       }
-    ]
+    ] as { title: string; body: string; service?: string }[],
+    "link": "Ver cómo trabajamos",
+    "root": ["Qué hay", "Qué falta", "El tono"]
   },
   "studioHome": {
     "eyebrow": "Estudio",
@@ -677,13 +681,17 @@ const en: Dict = {
       },
       {
         "title": "Build",
-        "body": "Design and code move together, not one behind the other. The site takes shape from the start."
+        "body": "Design and code move together, not one behind the other. The site takes shape from the start.",
+        "service": "web"
       },
       {
         "title": "Grow",
-        "body": "We publish, measure and improve. SEO, content and visibility, so the site doesn't go quiet the day it launches."
+        "body": "We publish, measure and improve. SEO, content and visibility, so the site doesn't go quiet the day it launches.",
+        "service": "seo"
       }
-    ]
+    ],
+    "link": "See how we work",
+    "root": ["What's there", "What's missing", "The tone"]
   },
   "studioHome": {
     "eyebrow": "Studio",
