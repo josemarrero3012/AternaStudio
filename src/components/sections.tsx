@@ -309,7 +309,7 @@ export function Services({ n }: { n?: number }) {
                     <h3 className="t-title service__title">{card.title}</h3>
                     {/* Hilo + icono: ocupan todo el ancho del titular, igual en los cuatro. */}
                     <div className="service__wire" data-service={slug}>
-                      <span className="service__lead" aria-hidden="true" />
+                      <span className="service__lead" data-trace-lead aria-hidden="true" />
                       <ServiceGlyph slug={slug} size="lg" className="service__glyph" />
                     </div>
                   </div>

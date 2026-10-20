@@ -2108,19 +2108,10 @@ body[data-menu="open"] .assistant__orb {
     transition: transform 1s var(--e-inout) 0.2s;
   }
 
+  /* El destello que recorre el hilo lo anima Trace.tsx, en el mismo bucle
+     que el icono: así llega al icono justo cuando su pulso arranca. */
   .service__wire:has(.trace[data-draw="on"]) .service__lead {
     transform: none;
-    animation: lead-spark 4.4s linear 3.4s infinite;
-  }
-}
-
-@keyframes lead-spark {
-  0% {
-    background-position: -30% var(--lead-y), 0 var(--lead-y);
-  }
-  45%,
-  100% {
-    background-position: 130% var(--lead-y), 0 var(--lead-y);
   }
 }
 
