@@ -26,6 +26,7 @@ import { useI18n } from "@/lib/i18n";
 import { ScrollTrigger, gsap, registerGsap } from "@/lib/motion";
 import { ArrowRight } from "./icons";
 import { MethodRoot } from "./MethodRoot";
+import { Rootlets } from "./Rootlets";
 
 export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElement | null>; eyebrow: string }) {
   const { t, locale } = useI18n();
@@ -63,6 +64,7 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
       const axis = rail.querySelector<HTMLElement>(".rail__axis");
       const head = rail.querySelector<HTMLElement>(".rail__axis-head");
       const railPhases = Array.from(root.querySelectorAll<HTMLElement>(".rail-phase"));
+      const end = rail.querySelector<HTMLElement>(".rail__end");
       gsap.fromTo(
         ".rail__axis-fill",
         { scaleX: 0 },
@@ -82,6 +84,11 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
               const lit = tip >= phase.offsetLeft - 1;
               if ((phase.dataset.lit === "true") !== lit) phase.dataset.lit = String(lit);
             });
+            // Al final del eje, la línea echa raíces.
+            if (end) {
+              const lit = this.progress() > 0.985;
+              if ((end.dataset.lit === "true") !== lit) end.dataset.lit = String(lit);
+            }
           },
         },
       );
@@ -118,6 +125,7 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
           phase.setAttribute("data-on", "false");
           phase.setAttribute("data-lit", "false");
         });
+        end?.setAttribute("data-lit", "false");
       };
     });
 
@@ -149,10 +157,21 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
               <span className="rail-phase__glow" aria-hidden="true" />
               <span className="rail-phase__dot" />
               <span className="rail-phase__ring" aria-hidden="true" />
+              {/* Bajo el eje, donde la fase no tiene texto, cuelgan raíces. */}
+              {i % 2 ? null : <Rootlets shape="hang" trigger="lit" className="rail-phase__roots" />}
               <div className="rail-phase__copy">
                 <span className="rail-phase__index">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="rail-phase__title">{item.title}</h3>
-                <p className="t-small rail-phase__body">{item.body}</p>
+                {/* SplitText reescribe el contenido de estos dos por debajo
+                    de React: al cambiar de idioma React actualizaba nodos
+                    que ya no estaban en la página y, al deshacer el corte,
+                    volvía el texto anterior (idiomas mezclados). Con la
+                    clave del idioma se montan de nuevo y se vuelven a partir. */}
+                <h3 className="rail-phase__title" key={`t-${locale}`}>
+                  {item.title}
+                </h3>
+                <p className="t-small rail-phase__body" key={`b-${locale}`}>
+                  {item.body}
+                </p>
                 {item.service ? (
                   <Link href={`/servicios/${item.service}`} className="link-cta rail-phase__link">
                     {ctas[item.service]}
@@ -162,7 +181,9 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
               </div>
             </div>
           ))}
-          <span className="rail__end" />
+          <span className="rail__end" data-lit="false">
+            <Rootlets shape="fan" trigger="lit" className="rail__end-roots" />
+          </span>
         </div>
       </div>
     </div>

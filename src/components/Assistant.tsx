@@ -12,7 +12,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { answer, type Reply } from "@/lib/assistant";
+import { answer, replyFor, type Reply, type ReplyId } from "@/lib/assistant";
 import { useI18n } from "@/lib/i18n";
 import { prefersReducedMotion } from "@/lib/motion";
 
@@ -111,7 +111,7 @@ export function Assistant() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [value, setValue] = useState("");
   const [asked, setAsked] = useState("");
-  const [reply, setReply] = useState<Reply | null>(null);
+  const [replyId, setReplyId] = useState<ReplyId | null>(null);
   const [label, setLabel] = useState(0);
   const [overFooter, setOverFooter] = useState(false);
   const orbRef = useRef<HTMLButtonElement>(null);
@@ -173,10 +173,10 @@ export function Assistant() {
     setValue("");
     setLabel(0);
     setPhase("think");
-    const result = answer(q, t, locale);
+    const id = answer(q, t, locale);
     timer.current = window.setTimeout(
       () => {
-        setReply(result);
+        setReplyId(id);
         setPhase("answered");
         answerRef.current?.focus({ preventScroll: true });
       },
@@ -190,12 +190,15 @@ export function Assistant() {
   };
 
   const again = () => {
-    setReply(null);
+    setReplyId(null);
     setAsked("");
     setPhase("idle");
     inputRef.current?.focus({ preventScroll: true });
   };
 
+  // La respuesta se calcula con el idioma actual: si se cambia de idioma con
+  // una respuesta en pantalla, la respuesta cambia con él.
+  const reply: Reply | null = phase === "answered" && replyId !== null ? replyFor(replyId, t, locale) : null;
   const words = reply?.text.split(/\s+/).filter(Boolean) ?? [];
 
   return (

@@ -8,7 +8,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { dict, type Dict, type Locale } from "./dict";
+import { LOCALES, dict, type Dict, type Locale } from "./dict";
 
 type I18n = { locale: Locale; setLocale: (l: Locale) => void; t: Dict };
 
@@ -19,7 +19,7 @@ const listeners = new Set<() => void>();
 function read(): Locale {
   try {
     const v = localStorage.getItem(KEY);
-    if (v === "es" || v === "en") return v;
+    if ((LOCALES as readonly string[]).includes(v ?? "")) return v as Locale;
   } catch {}
   return "es";
 }

@@ -4,8 +4,9 @@ import { withBase } from "@/lib/base";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { LOCALES } from "@/lib/dict";
+import { createPortal } from "react-dom";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { LOCALES, LOCALE_NAMES } from "@/lib/dict";
 import { useI18n } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import { ArrowRight } from "./icons";
@@ -13,7 +14,7 @@ import { ArrowRight } from "./icons";
 function LangToggle({ className = "" }: { className?: string }) {
   const { locale, setLocale, t } = useI18n();
   return (
-    <div className={`lang-toggle ${className}`.trim()} role="group" aria-label="Idioma / Language">
+    <div className={`lang-toggle ${className}`.trim()} role="group" aria-label={t.a11y.language}>
       {LOCALES.map((l) => {
         const active = locale === l;
         return (
@@ -23,7 +24,8 @@ function LangToggle({ className = "" }: { className?: string }) {
             className="lang-toggle__btn t-label"
             data-active={active}
             aria-pressed={active}
-            aria-label={t.langName[l]}
+            aria-label={LOCALE_NAMES[l]}
+            lang={l}
             onClick={() => setLocale(l)}
           >
             {l.toUpperCase()}
@@ -34,15 +36,39 @@ function LangToggle({ className = "" }: { className?: string }) {
   );
 }
 
+/**
+ * Menú móvil. El panel se monta en <body> (portal), fuera de la cabecera:
+ * cuando la cabecera lleva el desenfoque de fondo (al hacer scroll),
+ * backdrop-filter la convierte en el bloque contenedor de sus hijos fijos y
+ * el panel nacía encerrado en su franja; al quitarse el filtro saltaba a
+ * pantalla completa a mitad de la animación. Por eso se entrecortaba según
+ * la sección. Ahora solo se anima opacidad y transform de una capa propia,
+ * la cabecera (marca y botón) queda por encima y el fondo no se mueve.
+ */
 function MobileMenu() {
   const pathname = usePathname();
   const { t } = useI18n();
   // Guardamos la ruta en la que se abrió: al navegar, el menú se cierra solo.
   const [openAt, setOpenAt] = useState<string | null>(null);
   const open = openAt === pathname;
+  const mounted = useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
   const panel = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
   const close = useCallback(() => setOpenAt(null), []);
+
+  // En el mismo fotograma que el panel: la cabecera sube por encima de él y
+  // pierde el desenfoque antes de que empiece la transición.
+  useLayoutEffect(() => {
+    if (!open) return;
+    document.body.dataset.menu = "open";
+    return () => {
+      delete document.body.dataset.menu;
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -53,8 +79,8 @@ function MobileMenu() {
         return;
       }
       if (e.key !== "Tab" || !panel.current) return;
-      const items = panel.current.querySelectorAll<HTMLElement>("a, button");
-      if (!items.length) return;
+      // El botón de cerrar está en la cabecera: entra en el ciclo del foco.
+      const items = [toggle.current, ...panel.current.querySelectorAll<HTMLElement>("a, button")].filter(Boolean) as HTMLElement[];
       const first = items[0];
       const last = items[items.length - 1];
       if (e.shiftKey && document.activeElement === first) {
@@ -65,17 +91,67 @@ function MobileMenu() {
         first.focus();
       }
     };
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    document.body.dataset.menu = "open";
+    // La página de detrás no se mueve. Sin overflow: hidden en <body>, que
+    // obligaba a recalcular toda la página justo al empezar la animación:
+    // se cortan el gesto y la rueda salvo dentro del panel, si tiene scroll.
+    const el = panel.current;
+    const block = (e: Event) => {
+      if (el && el.scrollHeight > el.clientHeight && el.contains(e.target as Node)) return;
+      if (e.cancelable) e.preventDefault();
+    };
     document.addEventListener("keydown", onKey);
-    panel.current?.querySelector<HTMLElement>("a")?.focus();
+    document.addEventListener("touchmove", block, { passive: false });
+    document.addEventListener("wheel", block, { passive: false });
+    const focus = window.setTimeout(() => el?.querySelector<HTMLElement>("a")?.focus({ preventScroll: true }), 60);
     return () => {
-      document.body.style.overflow = prevOverflow;
-      delete document.body.dataset.menu;
+      window.clearTimeout(focus);
       document.removeEventListener("keydown", onKey);
+      document.removeEventListener("touchmove", block);
+      document.removeEventListener("wheel", block);
     };
   }, [open, close]);
+
+  const menu = (
+    <div
+      id="menu-panel"
+      ref={panel}
+      className="menu-panel"
+      data-open={open}
+      data-lenis-prevent
+      role="dialog"
+      aria-modal={open}
+      aria-label={t.a11y.menu}
+      inert={!open}
+    >
+      <nav className="menu-panel__nav" aria-label={t.a11y.nav}>
+        <ul>
+          {t.nav.map((item, i) => (
+            <li key={item.href} style={{ "--i": i } as CSSProperties}>
+              <Link
+                href={item.href}
+                className="t-display"
+                aria-current={pathname.startsWith(item.href) ? "page" : undefined}
+                onClick={close}
+              >
+                <span className="menu-panel__index t-index">{String(i + 1).padStart(2, "0")}</span>
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <LangToggle />
+      </nav>
+      <div className="menu-panel__foot">
+        <Link href="/contacto" className="btn-primary" onClick={close}>
+          {t.cta}
+          <ArrowRight />
+        </Link>
+        <a href={`mailto:${site.email}`} className="t-small link-underline muted">
+          {site.email}
+        </a>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -85,50 +161,18 @@ function MobileMenu() {
         className="menu-toggle t-label"
         aria-expanded={open}
         aria-controls="menu-panel"
+        data-open={open}
         onClick={() => setOpenAt((p) => (p === pathname ? null : pathname))}
       >
-        {open ? t.mobile.close : t.mobile.open}
+        <span className="menu-toggle__label">{open ? t.mobile.close : t.mobile.open}</span>
+        <span className="menu-toggle__icon" aria-hidden="true" />
       </button>
-      <div
-        id="menu-panel"
-        ref={panel}
-        className="menu-panel"
-        data-open={open}
-        data-lenis-prevent
-        role="dialog"
-        aria-modal={open}
-        aria-label="Navegación"
-        inert={!open}
-      >
-        <nav className="menu-panel__nav" aria-label="Principal, móvil">
-          <ul>
-            {t.nav.map((item, i) => (
-              <li key={item.href} style={{ transitionDelay: `${90 * i + 120}ms` }}>
-                <Link
-                  href={item.href}
-                  className="t-display"
-                  aria-current={pathname.startsWith(item.href) ? "page" : undefined}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <LangToggle />
-        </nav>
-        <div className="menu-panel__foot">
-          <Link href="/contacto" className="btn-primary">
-            {t.cta}
-            <ArrowRight />
-          </Link>
-          <a href={`mailto:${site.email}`} className="t-small link-underline muted">
-            {site.email}
-          </a>
-        </div>
-      </div>
+      {mounted ? createPortal(menu, document.body) : null}
     </>
   );
 }
+
+const noopSubscribe = () => () => {};
 
 export function Header() {
   const pathname = usePathname();
@@ -155,11 +199,11 @@ export function Header() {
   return (
     <header className="header" data-scrolled={scrolled}>
       <div className="container header__inner">
-        <Link href="/" className="header__brand" aria-label={`${site.name} — inicio`}>
+        <Link href="/" className="header__brand" aria-label={`${site.name} — ${t.a11y.home}`}>
           <Image src={withBase("/brand/aterna-symbol.webp")} alt="" width={319} height={320} priority className="header__symbol" />
           <Image src={withBase("/brand/aterna-wordmark.webp")} alt={site.name} width={917} height={256} priority className="header__wordmark" />
         </Link>
-        <nav className="header__nav" aria-label="Principal">
+        <nav className="header__nav" aria-label={t.a11y.nav}>
           <ul>
             {t.nav.map((item) => (
               <li key={item.href}>

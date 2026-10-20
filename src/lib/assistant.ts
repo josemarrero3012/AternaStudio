@@ -16,6 +16,13 @@ import { site } from "./site";
 
 export type Reply = { text: string; href?: string; link?: string };
 
+/**
+ * Qué ficha respondió: su posición en la base de conocimiento, o el saludo y
+ * el «no lo sé». Las fichas salen en el mismo orden en todos los idiomas, así
+ * que la misma respuesta se puede volver a leer en otro idioma.
+ */
+export type ReplyId = number | "hello" | "fallback";
+
 type Entry = Reply & {
   /** Palabras clave (se normalizan al construir). */
   keys: string;
@@ -36,7 +43,9 @@ const norm = (s: string) =>
 const STOP = new Set(
   (
     "a al algo como con cual cuales de del el ella en es esta este esto hay la las lo los me mi mis no o os para pero por que se si sin su sus te tu un una uno unos y ya yo vosotros nosotros quiero puedo puedes podeis teneis tiene tienen hace haceis " +
-    "a an and are be can do does for how i in is it me my of on or the to what which with you your we our us"
+    "a an and are be can do does for how i in is it me my of on or the to what which with you your we our us " +
+    "de het een en of is zijn ik je jij jullie u we wij mijn jouw uw ons onze wat welke hoe met voor van in op aan te er dat die dit kan kunnen wil heb hebben doet doen " +
+    "der die das den dem des ein eine einen einem und oder ist sind ich du sie wir ihr mein meine ihre unser was welche wie mit fur von in auf an zu es dass kann konnen mochte habe haben macht machen"
   ).split(" "),
 );
 
@@ -108,6 +117,71 @@ const SYN: Record<string, string[]> = {
   hello: ["hola"],
   hi: ["hola"],
   buenas: ["hola"],
+  // Neerlandés.
+  kost: ["precio"],
+  kosten: ["precio"],
+  prijs: ["precio"],
+  prijzen: ["precio"],
+  pakket: ["precio"],
+  pakketten: ["precio"],
+  tarief: ["precio"],
+  offerte: ["precio", "contacto"],
+  betalen: ["precio"],
+  gevonden: ["seo"],
+  vindbaarheid: ["seo"],
+  onderhoud: ["mantenimiento"],
+  domein: ["mantenimiento"],
+  telefoon: ["asistente"],
+  gesprekken: ["asistente"],
+  bellen: ["asistente"],
+  stem: ["asistente"],
+  mail: ["contacto"],
+  bereiken: ["contacto"],
+  bereik: ["contacto"],
+  contacteren: ["contacto"],
+  schrijven: ["contacto"],
+  beginnen: ["contacto"],
+  duurt: ["plazo"],
+  weken: ["plazo"],
+  tijd: ["plazo"],
+  werken: ["metodo"],
+  werkwijze: ["metodo"],
+  stappen: ["metodo"],
+  hallo: ["hola"],
+  hoi: ["hola"],
+  // Alemán (sin diéresis: norm() las quita).
+  preis: ["precio"],
+  preise: ["precio"],
+  kostet: ["precio"],
+  paket: ["precio"],
+  pakete: ["precio"],
+  angebot: ["precio", "contacto"],
+  bezahlen: ["precio"],
+  webseite: ["web"],
+  seite: ["web"],
+  gefunden: ["seo"],
+  sichtbarkeit: ["seo"],
+  wartung: ["mantenimiento"],
+  domain: ["mantenimiento"],
+  telefon: ["asistente"],
+  anrufe: ["asistente"],
+  anruf: ["asistente"],
+  stimme: ["asistente"],
+  ki: ["asistente"],
+  kontakt: ["contacto"],
+  erreichen: ["contacto"],
+  erreiche: ["contacto"],
+  kontaktieren: ["contacto"],
+  melden: ["contacto"],
+  schreiben: ["contacto"],
+  anfangen: ["contacto"],
+  dauert: ["plazo"],
+  wochen: ["plazo"],
+  zeit: ["plazo"],
+  arbeiten: ["metodo"],
+  ablauf: ["metodo"],
+  schritte: ["metodo"],
+  guten: ["hola"],
 };
 
 /** Raíz sencilla: «servicios» y «servicio» cuentan igual. */
@@ -125,10 +199,10 @@ function tokens(s: string) {
 
 /** Palabras con las que se pregunta por cada servicio. */
 const SERVICE_KEYS: Record<ServiceSlug, string> = {
-  web: "web pagina diseno desarrollo crear rediseno tienda reservas codigo",
-  seo: "seo google posicionamiento crecimiento organico encontrar aparecer busqueda local",
-  mantenimiento: "mantenimiento soporte hosting dominio copias actualizaciones seguridad",
-  "asistente-ia": "asistente telefono llamadas ia inteligencia artificial voz recepcion",
+  web: "web pagina diseno desarrollo crear rediseno tienda reservas codigo website webdesign webseite ontwerp",
+  seo: "seo google posicionamiento crecimiento organico encontrar aparecer busqueda local vindbaarheid sichtbarkeit",
+  mantenimiento: "mantenimiento soporte hosting dominio copias actualizaciones seguridad maintenance onderhoud wartung",
+  "asistente-ia": "asistente telefono llamadas ia inteligencia artificial voz recepcion telefoon telefon ki",
 };
 
 /** Todo lo que el asistente sabe, en el idioma de la web. */
@@ -226,16 +300,30 @@ export function knowledge(t: Dict, locale: Locale): Entry[] {
 
 const cache = new WeakMap<Dict, { entries: Entry[]; sets: Set<string>[] }>();
 
-/** La mejor respuesta de la web para `question`. */
-export function answer(question: string, t: Dict, locale: Locale): Reply {
+function base(t: Dict, locale: Locale) {
   let kb = cache.get(t);
   if (!kb) {
     const entries = knowledge(t, locale);
     kb = { entries, sets: entries.map((e) => tokens(e.keys)) };
     cache.set(t, kb);
   }
+  return kb;
+}
+
+/** La respuesta `id` en el idioma de `t`. */
+export function replyFor(id: ReplyId, t: Dict, locale: Locale): Reply {
+  if (id === "hello") return { text: t.assistant.hello };
+  const entry = typeof id === "number" ? base(t, locale).entries[id] : undefined;
+  if (!entry) return { text: t.assistant.fallback, href: "/contacto", link: t.assistant.contactLink };
+  const { text, href, link } = entry;
+  return { text, href, link };
+}
+
+/** Qué ficha de la web responde mejor a `question`. */
+export function answer(question: string, t: Dict, locale: Locale): ReplyId {
+  const kb = base(t, locale);
   const q = tokens(question);
-  if (!q.size) return { text: t.assistant.hello };
+  if (!q.size) return "hello";
   const wantsPrice = q.has("precio");
   const wantsContact = q.has("contacto");
   const wantsMethod = q.has("metodo");
@@ -262,7 +350,6 @@ export function answer(question: string, t: Dict, locale: Locale): Reply {
     }
   });
 
-  if (best < 0 || score < 1.5) return { text: t.assistant.fallback, href: "/contacto", link: t.assistant.contactLink };
-  const { text, href, link } = kb.entries[best];
-  return { text, href, link };
+  if (best < 0 || score < 1.5) return "fallback";
+  return best;
 }

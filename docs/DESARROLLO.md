@@ -31,7 +31,7 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 
 | Qué | Dónde |
 | --- | --- |
-| Textos ES/EN (todos) | `src/lib/dict.ts` |
+| Textos ES/EN/NL/DE (todos) | `src/lib/dict.ts` |
 | Precios | `src/lib/pricing.ts` |
 | Datos de contacto, URL | `src/lib/site.ts` |
 | Títulos y descripciones SEO | `metadata` de cada `src/app/**/page.tsx` |

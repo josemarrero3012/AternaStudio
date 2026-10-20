@@ -20,12 +20,15 @@ Cada vez que subo una de las dos ramas, su demo se vuelve a publicar sola.
 - Reorganicé el contenido para que cada idea salga una sola vez y las secciones no repitan lo mismo.
 - Preparé la publicación automática en GitHub Pages, para tener una demo que se actualiza con cada cambio.
 - En «Cómo trabajamos» cambié la imagen por una raíz de luz: el titular queda sobre una línea de la que cuelgan raíces con lo que se decide antes del código, y esa línea se convierte en el eje de las fases. Al bajar, la luz avanza por el eje y enciende cada fase cuando llega a ella.
+- Añadí el neerlandés y el alemán, y arreglé que al cambiar de idioma algunas frases se quedaran en el anterior.
+- Rehíce el menú del móvil para que se abra igual de suave esté donde esté la página.
+- Llevé las raíces a más sitios sin llenar la web: cuelgan del eje del método, crecen donde acaba y sostienen la palabra «Aterna» del pie.
 
 ## Cómo está organizada
 
 Quería que cambiar algo fuera fácil sin tener que buscar por todo el código, así que cada cosa tiene su sitio:
 
-- Todos los textos, en español y en inglés, están en un solo archivo: `src/lib/dict.ts`.
+- Todos los textos, en español, inglés, neerlandés y alemán, están en un solo archivo: `src/lib/dict.ts`.
 - Los precios de los servicios, en `src/lib/pricing.ts`.
 - Los colores, las tipografías y los espacios, en `src/styles/tokens.css`.
 

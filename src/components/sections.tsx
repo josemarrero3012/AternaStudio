@@ -22,6 +22,7 @@ import { PILLAR_GLYPHS, STEP_GLYPHS } from "./glyphs";
 import { ArrowRight, Check } from "./icons";
 import { ApproachRail } from "./ApproachRail";
 import { MethodRoot } from "./MethodRoot";
+import { Rootlets } from "./Rootlets";
 import { ServiceGlyph } from "./ServiceTrace";
 import { useStepWire } from "./StepWire";
 import { Trace } from "./Trace";
@@ -354,33 +355,82 @@ export function Approach({ n }: { n?: number }) {
   useEffect(() => {
     const root = ref.current;
     if (!root) return;
-    const phases = Array.from(root.querySelectorAll(".phase"));
+    const track = root.querySelector<HTMLElement>(".approach__track");
+    const line = root.querySelector<HTMLElement>(".approach__line");
     const fill = root.querySelector<HTMLElement>(".approach__line-fill");
+    const head = root.querySelector<HTMLElement>(".approach__line-head");
+    const phases = Array.from(root.querySelectorAll<HTMLElement>(".phase"));
+    const light = (p: HTMLElement, on: boolean) => {
+      p.dataset.on = String(on);
+      p.dataset.lit = String(on);
+    };
     if (prefersReducedMotion()) {
-      phases.forEach((p) => p.setAttribute("data-on", "true"));
+      phases.forEach((p) => light(p, true));
       if (fill) fill.style.transform = "none";
       return;
     }
     // Desde 768 px manda la versión horizontal (ApproachRail); en móvil, esta
-    // línea con su relleno al hacer scroll y cada fase encendiéndose.
+    // línea vertical. La luz arranca cuando «01» llega a un cuarto de
+    // pantalla desde arriba y desde ahí baja a esa misma altura, la de
+    // lectura: cada fase (punto y números) se enciende cuando la luz llega a
+    // su punto y se apaga si se vuelve atrás. Antes arrancaba con la sección
+    // aún abajo y encendía las fases antes de leerlas.
     registerGsap();
     const mm = gsap.matchMedia(root);
     mm.add("(max-width: 767px)", () => {
-      const io = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) if (e.isIntersecting) e.target.setAttribute("data-on", "true");
+      if (!track || !line || !fill) return;
+      // Dónde cae sobre la línea (px desde su arranque) el punto de cada fase
+      // y el nacimiento de cada raicilla: la luz los enciende al pasar.
+      const roots = phases.map((p) => p.querySelector<HTMLElement>(".phase__roots"));
+      let marks: number[] = [];
+      let rootMarks: number[] = [];
+      const measure = () => {
+        const top = line.offsetTop;
+        marks = phases.map((p) => {
+          const dot = p.querySelector<HTMLElement>(".phase__dot");
+          return p.offsetTop + (dot ? dot.offsetTop + dot.offsetHeight / 2 : 0) - top;
+        });
+        rootMarks = phases.map((p, i) => p.offsetTop + (roots[i]?.offsetTop ?? 0) - top);
+      };
+      measure();
+      const tween = gsap.fromTo(
+        fill,
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: track,
+            start: "top 25%",
+            end: "bottom 25%",
+            scrub: 0.4,
+            invalidateOnRefresh: true,
+            onRefresh: measure,
+          },
+          onUpdate() {
+            const progress = this.progress();
+            const tip = progress * line.offsetHeight;
+            if (head) {
+              head.style.transform = `translate3d(0, ${tip}px, 0)`;
+              head.style.opacity = progress > 0.001 && progress < 0.999 ? "1" : "0";
+            }
+            phases.forEach((p, i) => {
+              const lit = progress > 0.001 && tip >= marks[i] - 2;
+              if ((p.dataset.lit === "true") !== lit) light(p, lit);
+              const r = roots[i];
+              const grown = progress > 0.001 && (tip >= rootMarks[i] - 2 || progress > 0.995);
+              if (r && (r.dataset.lit === "true") !== grown) r.dataset.lit = String(grown);
+            });
+          },
         },
-        { threshold: 0.4, rootMargin: "0px 0px -10% 0px" },
       );
-      phases.forEach((p) => io.observe(p));
-      if (fill) {
-        gsap.fromTo(
-          fill,
-          { scaleX: 0, scaleY: 0 },
-          { scaleX: 1, scaleY: 1, ease: "none", scrollTrigger: { trigger: root, start: "top 72%", end: "bottom 78%", scrub: 0.6 } },
-        );
-      }
-      return () => io.disconnect();
+      return () => {
+        tween.scrollTrigger?.kill();
+        tween.kill();
+        phases.forEach((p) => light(p, false));
+        roots.forEach((r) => r?.setAttribute("data-lit", "false"));
+        if (head) head.style.opacity = "0";
+      };
     });
     return () => mm.revert();
   }, []);
@@ -397,10 +447,11 @@ export function Approach({ n }: { n?: number }) {
         <div className="approach__track">
           <div className="approach__line" aria-hidden="true">
             <span className="approach__line-fill" />
+            <span className="approach__line-head" />
           </div>
           <ol className="approach__phases">
             {t.approach.items.map((item, i) => (
-              <li className="phase" data-on="false" data-n={String(i + 1).padStart(2, "0")} key={i}>
+              <li className="phase" data-on="false" data-lit="false" data-n={String(i + 1).padStart(2, "0")} key={i}>
                 <span className="phase__dot" aria-hidden="true" />
                 <span className="t-index phase__index">{String(i + 1).padStart(2, "0")}</span>
                 <h3 className="phase__title">{item.title}</h3>
@@ -411,6 +462,9 @@ export function Approach({ n }: { n?: number }) {
                     <ArrowRight />
                   </Link>
                 ) : null}
+                {/* Móvil: una raicilla sale de la línea en el hueco tras la
+                    fase; en la última, donde acaba la línea, echa raíces. */}
+                <Rootlets shape={i === t.approach.items.length - 1 ? "tail" : "side"} trigger="lit" className="phase__roots" />
               </li>
             ))}
           </ol>
