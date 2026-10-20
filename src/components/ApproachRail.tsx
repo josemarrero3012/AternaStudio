@@ -2,10 +2,12 @@
 
 // «Cómo trabajamos» en horizontal (adaptado del Timeline de Hyperiux Vault).
 // Al llegar, la sección se fija y, mientras se baja, la pista se desliza a
-// la izquierda: primero el titular y el árbol de raíces, luego las cuatro
+// la izquierda: primero el titular y la mesa de trabajo, luego las cuatro
 // fases, alternando arriba y abajo de un eje que se dibuja con el scroll.
 // Cuando cada fase entra, crece su tallo, se enciende su nodo y su texto
 // sube línea a línea (SplitText). Sin fechas: son las fases del método.
+// Cada fase que ya ha entrado lleva data-on, como las de la línea estática:
+// con eso se enciende el código de la mesa al llegar a «Construir».
 //
 // Desde 768 px (en móvil, la línea vertical se lee mejor). Es el contenido real cuando está activa (la línea normal se oculta), así
 // que no va con aria-hidden. Solo con movimiento: hasta que se activa
@@ -13,14 +15,17 @@
 // está oculta y se ve la línea normal de Approach, que es también la de
 // movimiento reducido. Se usa una vez, en la portada.
 
+import Link from "next/link";
 import { useEffect, type RefObject } from "react";
 import { SplitText } from "gsap/SplitText";
-import { withBase } from "@/lib/base";
 import { useI18n } from "@/lib/i18n";
 import { ScrollTrigger, gsap, registerGsap } from "@/lib/motion";
+import { ArrowRight } from "./icons";
+import { MethodDesk } from "./MethodDesk";
 
 export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElement | null>; eyebrow: string }) {
   const { t, locale } = useI18n();
+  const ctas: Record<string, string> = Object.fromEntries(t.servicePages.index.cards.map((card) => [card.slug, card.cta]));
 
   useEffect(() => {
     const root = section.current;
@@ -56,17 +61,28 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
           type: "lines",
           mask: "lines",
         }).lines;
-        gsap
+        const link = phase.querySelector(".rail-phase__link");
+        const tl = gsap
           .timeline({
-            scrollTrigger: { trigger: phase, containerAnimation: move, start: "left 90%", end: "left 62%", scrub: 0.6 },
+            scrollTrigger: {
+              trigger: phase,
+              containerAnimation: move,
+              start: "left 90%",
+              end: "left 62%",
+              scrub: 0.6,
+              onEnter: () => phase.setAttribute("data-on", "true"),
+              onLeaveBack: () => phase.setAttribute("data-on", "false"),
+            },
           })
           .from(phase.querySelector(".rail-phase__stem"), { scaleY: 0, ease: "none" })
           .from(phase.querySelector(".rail-phase__dot"), { scale: 0, ease: "back.out(2)" }, "<")
           .from(lines, { yPercent: 110, stagger: 0.08, ease: "power2.out" }, "<0.15");
+        if (link) tl.from(link, { autoAlpha: 0, y: 8, ease: "power2.out" }, ">-0.1");
       });
 
       return () => {
         delete root.dataset.rail;
+        root.querySelectorAll(".rail-phase").forEach((phase) => phase.setAttribute("data-on", "false"));
       };
     });
 
@@ -83,22 +99,26 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
         <div className="rail__intro">
           <p className="t-label dim">{eyebrow}</p>
           <h2 className="t-display rail__title">{t.approach.title}</h2>
-          <div className="rail__image">
-            <img src={withBase("/brand/method-roots.webp")} alt="" width={1536} height={1024} loading="lazy" draggable={false} />
-          </div>
+          <MethodDesk />
         </div>
         <div className="rail__track">
           <span className="rail__axis">
             <span className="rail__axis-fill" />
           </span>
           {t.approach.items.map((item, i) => (
-            <div className="rail-phase" data-side={i % 2 ? "bottom" : "top"} key={i}>
+            <div className="rail-phase" data-side={i % 2 ? "bottom" : "top"} data-on="false" key={i}>
               <span className="rail-phase__stem" />
               <span className="rail-phase__dot" />
               <div className="rail-phase__copy">
                 <span className="t-index rail-phase__index">{String(i + 1).padStart(2, "0")}</span>
                 <h3 className="rail-phase__title">{item.title}</h3>
                 <p className="t-small rail-phase__body">{item.body}</p>
+                {item.service ? (
+                  <Link href={`/servicios/${item.service}`} className="link-cta rail-phase__link">
+                    {ctas[item.service]}
+                    <ArrowRight />
+                  </Link>
+                ) : null}
               </div>
             </div>
           ))}

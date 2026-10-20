@@ -327,6 +327,17 @@ html.lenis body {
   font-variation-settings: "opsz" 72;
 }
 
+/* Titular de tarjeta (casos, servicios, ejemplos, trabajo): uno solo para
+   que no diverjan. */
+.t-card {
+  font-family: var(--font-display);
+  font-size: var(--t-card);
+  font-weight: 400;
+  font-variation-settings: "opsz" 72;
+  line-height: 1.1;
+  letter-spacing: var(--ls-title);
+}
+
 .t-lead {
   max-width: var(--measure);
   font-family: var(--font-ui);
@@ -1908,15 +1919,6 @@ body[data-menu="open"] .assistant__orb {
   color: var(--orchid);
 }
 
-.case__title {
-  font-family: var(--font-display);
-  font-size: var(--t-card);
-  font-weight: 400;
-  font-variation-settings: "opsz" 72;
-  line-height: 1.1;
-  letter-spacing: var(--ls-title);
-}
-
 .case__story {
   display: flex;
   flex-direction: column;
@@ -2261,14 +2263,19 @@ body[data-menu="open"] .assistant__orb {
   color: var(--on-surface-low);
 }
 
+/* Titular de fase: igual en la línea estática y en el rail. */
+.phase__title,
+.rail-phase__link {
+  align-self: flex-start;
+  min-height: 36px;
+}
+
 .phase__title {
   margin-bottom: var(--s-3);
-  font-family: var(--font-display);
-  font-size: var(--t-title);
-  font-weight: 400;
-  font-variation-settings: "opsz" 72;
-  line-height: var(--lh-title);
-  letter-spacing: var(--ls-title);
+}
+
+.phase__link {
+  margin-top: var(--s-2);
 }
 
 .phase__body {
@@ -2308,6 +2315,223 @@ body[data-menu="open"] .assistant__orb {
     transform: none;
   }
 
+}
+
+/* Mesa de trabajo (MethodDesk.tsx) ------------------------------------------
+   «No empezamos por el código»: lo escrito y la dirección, en vidrio; el
+   código, en borrador (borde discontinuo) hasta que la fase 03 se enciende.
+   Sin imagen: filetes, nodos y la tipografía y los colores de la propia
+   marca. */
+.desk {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3);
+  max-width: 520px;
+  margin-bottom: var(--block-y);
+}
+
+.desk__tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-width: 0;
+  padding: var(--s-4);
+  border: 1px solid var(--hair);
+  border-radius: var(--r-card);
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-card);
+}
+
+.desk__label {
+  color: var(--on-surface-mid);
+}
+
+.desk__n {
+  color: var(--orchid);
+}
+
+/* 01 · Por escrito: tres renglones que se trazan y se marcan. */
+.desk__lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.desk__lines li {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) 12px;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.desk__rule {
+  height: 1px;
+  background-image: var(--brand-gradient-h);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--violet) 60%, transparent);
+  transform-origin: left;
+}
+
+.desk__line {
+  color: var(--on-surface-hi);
+}
+
+.desk__check {
+  width: 12px;
+  height: 10px;
+  fill: none;
+  stroke: var(--orchid);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--orchid) 70%, transparent));
+}
+
+.desk__check path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+/* Con movimiento: se dibuja al entrar (MethodDesk pone data-anim y data-in). */
+.desk[data-anim] .desk__rule {
+  transform: scaleX(0);
+  transition: transform var(--d-std) var(--e-aterna) calc(var(--i) * 0.18s + 0.1s);
+}
+
+.desk[data-anim] .desk__line {
+  opacity: 0.35;
+  transition: opacity var(--d-std) var(--e-out) calc(var(--i) * 0.18s + 0.2s);
+}
+
+.desk[data-anim] .desk__check path {
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--d-std) var(--e-out) calc(var(--i) * 0.18s + 0.4s);
+}
+
+.desk[data-in] .desk__rule {
+  transform: none;
+}
+
+.desk[data-in] .desk__line {
+  opacity: 1;
+}
+
+.desk[data-in] .desk__check path {
+  stroke-dashoffset: 0;
+}
+
+/* 02 · Dirección: la tipografía y la paleta de Aterna. */
+.desk__specimen {
+  width: fit-content;
+  padding-bottom: 0.08em;
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 1.9rem + 1.1vw, 3rem);
+  font-weight: 400;
+  font-variation-settings: "opsz" 144;
+  line-height: 1;
+  background-image: var(--brand-gradient-on-ink);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.desk__swatches {
+  display: flex;
+  gap: 6px;
+}
+
+.desk__swatches i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--hair-strong);
+}
+
+/* 03 · Código: a lo ancho, en borrador hasta la fase 03. */
+.desk__tile--code {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--s-4);
+  padding-block: var(--s-3);
+  border-style: dashed;
+  border-color: var(--hair-strong);
+  background: color-mix(in srgb, var(--night-1) 50%, transparent);
+  box-shadow: none;
+  transition:
+    border-color var(--d-std) var(--e-out),
+    background-color var(--d-std) var(--e-out),
+    box-shadow var(--d-std) var(--e-out);
+}
+
+.desk__code {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--on-surface-low);
+  opacity: 0.5;
+  transition:
+    color var(--d-std) var(--e-out),
+    opacity var(--d-std) var(--e-out),
+    text-shadow var(--d-std) var(--e-out);
+}
+
+.desk__state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-inline-start: auto;
+  color: var(--on-surface-low);
+}
+
+.desk__state::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--on-surface-low);
+  transition:
+    background-color var(--d-std) var(--e-out),
+    box-shadow var(--d-std) var(--e-out);
+}
+
+.desk__state-on {
+  display: none;
+}
+
+/* «Construir» encendida (la 3.ª fase, en la línea estática o en el rail). */
+.approach:has(.phase:nth-child(3)[data-on="true"], .rail-phase:nth-of-type(3)[data-on="true"]) .desk__tile--code {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--orchid) 50%, transparent);
+  background-color: var(--glass);
+  box-shadow:
+    var(--shadow-card),
+    0 0 28px -8px color-mix(in srgb, var(--violet) 70%, transparent);
+}
+
+.approach:has(.phase:nth-child(3)[data-on="true"], .rail-phase:nth-of-type(3)[data-on="true"]) .desk__code {
+  color: var(--orchid);
+  opacity: 1;
+  text-shadow: 0 0 14px color-mix(in srgb, var(--orchid) 60%, transparent);
+}
+
+.approach:has(.phase:nth-child(3)[data-on="true"], .rail-phase:nth-of-type(3)[data-on="true"]) .desk__state {
+  color: var(--on-surface-hi);
+}
+
+.approach:has(.phase:nth-child(3)[data-on="true"], .rail-phase:nth-of-type(3)[data-on="true"]) .desk__state::before {
+  background-color: var(--orchid);
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--orchid) 60%, transparent);
+}
+
+.approach:has(.phase:nth-child(3)[data-on="true"], .rail-phase:nth-of-type(3)[data-on="true"]) .desk__state-off {
+  display: none;
+}
+
+.approach:has(.phase:nth-child(3)[data-on="true"], .rail-phase:nth-of-type(3)[data-on="true"]) .desk__state-on {
+  display: inline;
 }
 
 /* Método en horizontal (ApproachRail.tsx) ---------------------------------- */
@@ -2357,22 +2581,9 @@ body[data-menu="open"] .assistant__orb {
   white-space: pre-line;
 }
 
-/* El árbol de raíces de luz: sin marco, con los bordes fundidos en la
-   banda (máscara radial) y en modo «screen», que deja ver solo la luz,
-   como el vídeo del hero. */
-.rail__image {
-  aspect-ratio: 3 / 2;
-  margin: calc(var(--s-5) * -1) calc(var(--s-6) * -1) 0;
-  -webkit-mask-image: radial-gradient(ellipse 62% 58% at 54% 52%, #000 45%, transparent 100%);
-  mask-image: radial-gradient(ellipse 62% 58% at 54% 52%, #000 45%, transparent 100%);
-}
-
-.rail__image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  mix-blend-mode: screen;
+/* La mesa de trabajo (MethodDesk.tsx): lo que hay antes del código. */
+.rail__intro .desk {
+  margin: var(--s-2) 0 0;
 }
 
 .rail__track {
@@ -2484,7 +2695,7 @@ body[data-menu="open"] .assistant__orb {
   color: var(--on-surface-mid);
 }
 
-/* Móvil: cada fase ocupa casi la pantalla; el titular y el árbol, apilados. */
+/* Móvil: cada fase ocupa casi la pantalla; el titular y la mesa, apilados. */
 @media (max-width: 767px) {
   .rail {
     --rail-h: min(70svh, 600px);
@@ -2999,14 +3210,6 @@ body[data-menu="open"] .assistant__orb {
 }
 
 
-.svc-card__title {
-  font-family: var(--font-display);
-  font-size: var(--t-card);
-  font-weight: 400;
-  font-variation-settings: "opsz" 72;
-  line-height: 1.08;
-  letter-spacing: var(--ls-title);
-}
 
 .svc-card__body {
   flex: 1;
@@ -3227,10 +3430,6 @@ body[data-menu="open"] .assistant__orb {
   display: inline-flex;
   align-items: center;
   gap: var(--s-2);
-  font-family: var(--font-display);
-  font-size: var(--t-card);
-  font-variation-settings: "opsz" 72;
-  line-height: 1.1;
   color: var(--on-surface-hi);
 }
 

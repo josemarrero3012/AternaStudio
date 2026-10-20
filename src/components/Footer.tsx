@@ -38,13 +38,21 @@ export function Footer() {
           <nav className="footer__col" aria-label="Aterna">
             <p className="t-label dim">Aterna</p>
             <ul>
-              {t.nav.map((item) => (
+              {/* El método vive en la portada: su enlace va tras Estudio. */}
+              {t.nav.flatMap((item) => [
                 <li key={item.href}>
                   <Link href={item.href} className="t-small link-underline">
                     {item.label}
                   </Link>
-                </li>
-              ))}
+                </li>,
+                item.href === "/estudio" ? (
+                  <li key="/#metodo">
+                    <Link href="/#metodo" className="t-small link-underline">
+                      {t.approach.eyebrow}
+                    </Link>
+                  </li>
+                ) : null,
+              ])}
             </ul>
           </nav>
           <div className="footer__col">

@@ -21,6 +21,7 @@ import { CopyEmail } from "./CopyEmail";
 import { PILLAR_GLYPHS, STEP_GLYPHS } from "./glyphs";
 import { ArrowRight, Check } from "./icons";
 import { ApproachRail } from "./ApproachRail";
+import { MethodDesk } from "./MethodDesk";
 import { ServiceGlyph } from "./ServiceTrace";
 import { useStepWire } from "./StepWire";
 import { Trace } from "./Trace";
@@ -199,7 +200,8 @@ export function StartingPrice({ slug, className }: { slug: ServiceSlug; classNam
  * Home: casos de uso. Cada tarjeta cuenta un negocio, su reto y qué
  * hicimos, con enlaces a los servicios usados. Mientras un caso no sea real
  * lleva `pending` y se ve como un hueco por rellenar (borde discontinuo y
- * etiqueta «Pendiente»): no se inventan clientes ni resultados.
+ * etiqueta «Pendiente»): no se inventan clientes ni resultados. La portada
+ * no muestra la sección hasta que haya al menos un caso real (app/page.tsx).
  */
 export function Cases({ n }: { n?: number }) {
   const { t } = useI18n();
@@ -222,7 +224,7 @@ export function Cases({ n }: { n?: number }) {
                 {item.pending ? <span className="t-label case__badge">{c.pending}</span> : null}
               </div>
               <p className="t-label dim">{item.sector}</p>
-              <h3 className="case__title">{item.title}</h3>
+              <h3 className="t-card case__title">{item.title}</h3>
               <dl className="case__story">
                 <div>
                   <dt className="t-label dim">{c.problem}</dt>
@@ -345,6 +347,7 @@ export function Services({ n }: { n?: number }) {
  */
 export function Approach({ n }: { n?: number }) {
   const { t } = useI18n();
+  const ctas: Record<string, string> = Object.fromEntries(t.servicePages.index.cards.map((card) => [card.slug, card.cta]));
   const section = useRef<HTMLElement>(null);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -390,6 +393,7 @@ export function Approach({ n }: { n?: number }) {
           <p className="t-label dim">{eyebrow(t.approach.eyebrow, n)}</p>
           <WordReveal as="h2" id="approach-title" className="t-display" text={t.approach.title} />
         </header>
+        <MethodDesk />
         <div className="approach__track">
           <div className="approach__line" aria-hidden="true">
             <span className="approach__line-fill" />
@@ -401,6 +405,12 @@ export function Approach({ n }: { n?: number }) {
                 <span className="t-index phase__index">{String(i + 1).padStart(2, "0")}</span>
                 <h3 className="phase__title">{item.title}</h3>
                 <p className="t-small phase__body">{item.body}</p>
+                {item.service ? (
+                  <Link href={`/servicios/${item.service}`} className="link-cta phase__link">
+                    {ctas[item.service]}
+                    <ArrowRight />
+                  </Link>
+                ) : null}
               </li>
             ))}
           </ol>
