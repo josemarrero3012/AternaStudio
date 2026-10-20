@@ -18,8 +18,9 @@ Quería que cambiar algo fuera fácil sin tener que buscar por todo el código, 
 - Todos los textos, en español y en inglés, están en un solo archivo: `src/lib/dict.ts`.
 - Los precios de los servicios, en `src/lib/pricing.ts`.
 - Los colores, las tipografías y los espacios, en `src/styles/tokens.css`.
+- Los proyectos de «Trabajo» (enlaces, capturas y con qué están hechos), en `src/lib/work.ts`.
 
-La web no usa fotos ni ilustraciones. La única imagen es el vídeo del árbol de la portada, y la profundidad del resto de secciones está hecha con CSS: color, luz, líneas y tipografía.
+La web no usa fotos ni ilustraciones. La única imagen es el vídeo del árbol de la portada, y la profundidad del resto de secciones está hecha con CSS: color, luz, líneas y tipografía. La excepción son las capturas de los proyectos de «Trabajo», que van dentro de un marco de navegador hecho también con CSS. Las saco con `node scripts/work-shots.js`.
 
 ## Con qué está hecha
 
