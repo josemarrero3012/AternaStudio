@@ -1,11 +1,11 @@
-name: Publicar versión de prueba
+name: Publicar la versión con casos de éxito
 
 # Pages solo publica desde main: al subir esta rama, se relanza el despliegue
-# de main, que compila también las ramas de prueba en su propia ruta
-# (/AternaStudio/v1 y /AternaStudio/v2, ver pages.yml en main).
+# de main, que compila también la versión con casos de éxito en su ruta
+# (/AternaStudio/casos, ver pages.yml en main).
 on:
   push:
-    branches: [v1-cohesion, v2-portfolio, v3-raiz]
+    branches: [casos-de-exito]
 
 permissions:
   actions: write
