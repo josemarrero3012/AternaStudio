@@ -2321,225 +2321,167 @@ body[data-menu="open"] .assistant__orb {
 
 }
 
-/* Mesa de trabajo (MethodDesk.tsx) ------------------------------------------
-   «No empezamos por el código»: lo escrito y la dirección, en vidrio; el
-   código, en borrador (borde discontinuo) hasta que la fase 03 se enciende.
-   Sin imagen: filetes, nodos y la tipografía y los colores de la propia
-   marca. */
-.desk {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--s-3);
-  max-width: 520px;
+/* Raíz de luz (MethodRoot.tsx) ----------------------------------------------
+   «No empezamos por el código»: el titular, sobre la tierra; debajo, lo que
+   no se ve. La línea del suelo nace en un nodo y, en el rail, cruza el hueco
+   y empalma con el eje de las fases. */
+.root {
+  position: relative;
+  max-width: 560px;
   margin-bottom: var(--block-y);
 }
 
-.desk__tile {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-  min-width: 0;
-  padding: var(--s-4);
-  border: 1px solid var(--hair);
-  border-radius: var(--r-card);
-  background: var(--glass);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: var(--shadow-card);
+.root__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  fill: none;
 }
 
-.desk__label {
-  color: var(--on-surface-mid);
+.root__line {
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--violet) 70%, transparent));
 }
 
-.desk__n {
-  color: var(--orchid);
+.root__line--faint {
+  stroke-width: 0.8;
+  opacity: 0.6;
+  filter: none;
 }
 
-/* 01 · Por escrito: tres renglones que se trazan y se marcan. */
-.desk__lines {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-2);
+.root__dot {
+  fill: var(--lavender);
+  opacity: 0.5;
 }
 
-.desk__lines li {
-  display: grid;
-  grid-template-columns: 14px minmax(0, 1fr) 12px;
-  align-items: center;
-  gap: var(--s-2);
+.root__tip {
+  fill: var(--orchid);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--orchid) 80%, transparent));
 }
 
-.desk__rule {
+.root__ground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 1px;
-  background-image: var(--brand-gradient-h);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--violet) 60%, transparent);
+  background-image: linear-gradient(90deg, var(--orchid), var(--violet) 45%, color-mix(in srgb, var(--indigo) 80%, transparent));
+  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--violet) 60%, transparent);
   transform-origin: left;
 }
 
-.desk__line {
-  color: var(--on-surface-hi);
+/* En el rail, el suelo sigue por el hueco hasta el eje de las fases. */
+.root[data-variant="rail"] .root__ground {
+  right: calc(var(--rail-gap) * -1);
 }
 
-.desk__check {
-  width: 12px;
-  height: 10px;
-  fill: none;
-  stroke: var(--orchid);
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--orchid) 70%, transparent));
+.root__seed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
+  border-radius: 50%;
+  background-color: var(--orchid);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--orchid) 18%, transparent),
+    0 0 18px 3px color-mix(in srgb, var(--orchid) 60%, transparent);
 }
 
-.desk__check path {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
+.root__label {
+  position: absolute;
+  color: var(--on-surface-mid);
+  white-space: nowrap;
+  transform: translate(-50%, 12px);
 }
 
-/* Con movimiento: se dibuja al entrar (MethodDesk pone data-anim y data-in). */
-.desk[data-anim] .desk__rule {
+/* Con movimiento: el nodo se enciende, el suelo se tiende y las raíces
+   bajan; luego las puntas laten y un pulso recorre el suelo hacia el eje. */
+.root[data-anim] .root__seed {
+  transform: scale(0);
+  transition: transform var(--d-std) var(--e-aterna);
+}
+
+.root[data-anim] .root__ground {
   transform: scaleX(0);
-  transition: transform var(--d-std) var(--e-aterna) calc(var(--i) * 0.18s + 0.1s);
+  transition: transform 1.1s var(--e-aterna) 0.15s;
 }
 
-.desk[data-anim] .desk__line {
-  opacity: 0.35;
-  transition: opacity var(--d-std) var(--e-out) calc(var(--i) * 0.18s + 0.2s);
-}
-
-.desk[data-anim] .desk__check path {
+.root[data-anim] .root__line {
+  stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  transition: stroke-dashoffset var(--d-std) var(--e-out) calc(var(--i) * 0.18s + 0.4s);
+  transition: stroke-dashoffset 1.6s var(--e-out) var(--d);
 }
 
-.desk[data-in] .desk__rule {
+.root[data-anim] :is(.root__dot, .root__tip, .root__label) {
+  opacity: 0;
+  transition: opacity 0.6s var(--e-out) var(--d);
+}
+
+.root[data-in] :is(.root__seed, .root__ground) {
   transform: none;
 }
 
-.desk[data-in] .desk__line {
-  opacity: 1;
-}
-
-.desk[data-in] .desk__check path {
+.root[data-in] .root__line {
   stroke-dashoffset: 0;
 }
 
-/* 02 · Dirección: la tipografía y la paleta de Aterna. */
-.desk__specimen {
-  width: fit-content;
-  padding-bottom: 0.08em;
-  font-family: var(--font-display);
-  font-size: clamp(2.25rem, 1.9rem + 1.1vw, 3rem);
-  font-weight: 400;
-  font-variation-settings: "opsz" 144;
-  line-height: 1;
-  background-image: var(--brand-gradient-on-ink);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.desk__fonts {
-  letter-spacing: 0.1em;
-}
-
-.desk__swatches {
-  display: flex;
-  gap: 6px;
-}
-
-.desk__swatches i {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px var(--hair-strong);
-}
-
-/* 03 · Código: a lo ancho, en borrador hasta la fase 03. */
-.desk__tile--code {
-  grid-column: 1 / -1;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  column-gap: var(--s-4);
-  padding-block: var(--s-3);
-  border-style: dashed;
-  border-color: var(--hair-strong);
-  background: color-mix(in srgb, var(--night-1) 50%, transparent);
-  box-shadow: none;
-  transition:
-    border-color var(--d-std) var(--e-out),
-    background-color var(--d-std) var(--e-out),
-    box-shadow var(--d-std) var(--e-out);
-}
-
-.desk__code {
-  font-family: var(--font-mono);
-  font-size: 1.25rem;
-  line-height: 1;
-  color: var(--on-surface-low);
+.root[data-in] .root__dot {
   opacity: 0.5;
-  transition:
-    color var(--d-std) var(--e-out),
-    opacity var(--d-std) var(--e-out),
-    text-shadow var(--d-std) var(--e-out);
 }
 
-.desk__state {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-2);
-  margin-inline-start: auto;
-  color: var(--on-surface-low);
-}
-
-.desk__state::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--on-surface-low);
-  transition:
-    background-color var(--d-std) var(--e-out),
-    box-shadow var(--d-std) var(--e-out);
-}
-
-.desk__state-on {
-  display: none;
-}
-
-/* «Construir» encendida (la 3.ª fase, en la línea estática o en el rail). */
-.approach:has(.phase:nth-child(3)[data-on="true"], .rail-phase:nth-of-type(3)[data-on="true"]) .desk__tile--code {
-  border-style: solid;
-  border-color: color-mix(in srgb, var(--orchid) 50%, transparent);
-  background-color: var(--glass);
-  box-shadow:
-    var(--shadow-card),
-    0 0 28px -8px color-mix(in srgb, var(--violet) 70%, transparent);
-}
-
-.approach:has(.phase:nth-child(3)[data-on="true"], .rail-phase:nth-of-type(3)[data-on="true"]) .desk__code {
-  color: var(--orchid);
+.root[data-in] :is(.root__tip, .root__label) {
   opacity: 1;
-  text-shadow: 0 0 14px color-mix(in srgb, var(--orchid) 60%, transparent);
 }
 
-.approach:has(.phase:nth-child(3)[data-on="true"], .rail-phase:nth-of-type(3)[data-on="true"]) .desk__state {
-  color: var(--on-surface-hi);
+@media (prefers-reduced-motion: no-preference) {
+  .root[data-in] .root__tip {
+    animation: root-beat 3.6s ease-in-out calc(var(--d) + 0.8s) infinite;
+  }
+
+  .root[data-in] .root__ground::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -96px;
+    width: 96px;
+    height: 3px;
+    border-radius: 2px;
+    background-image: linear-gradient(90deg, transparent, var(--text-hi), transparent);
+    filter: blur(0.5px);
+    animation: root-pulse 5.5s var(--e-inout) 2.2s infinite;
+  }
 }
 
-.approach:has(.phase:nth-child(3)[data-on="true"], .rail-phase:nth-of-type(3)[data-on="true"]) .desk__state::before {
-  background-color: var(--orchid);
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--orchid) 60%, transparent);
+@keyframes root-beat {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
-.approach:has(.phase:nth-child(3)[data-on="true"], .rail-phase:nth-of-type(3)[data-on="true"]) .desk__state-off {
-  display: none;
-}
+@keyframes root-pulse {
+  0% {
+    left: -96px;
+    opacity: 0;
+  }
 
-.approach:has(.phase:nth-child(3)[data-on="true"], .rail-phase:nth-of-type(3)[data-on="true"]) .desk__state-on {
-  display: inline;
+  10% {
+    opacity: 1;
+  }
+
+  55%,
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
 }
 
 /* Método en horizontal (ApproachRail.tsx) ---------------------------------- */
@@ -2568,30 +2510,38 @@ body[data-menu="open"] .assistant__orb {
 .rail {
   --rail-h: min(64svh, 560px);
   --phase-w: clamp(260px, 24vw, 380px);
+  --rail-gap: clamp(48px, 6vw, 120px);
   display: flex;
   align-items: stretch;
-  gap: clamp(48px, 6vw, 120px);
+  gap: var(--rail-gap);
   width: max-content;
   height: var(--rail-h);
   padding-inline: var(--margin) 14vw;
   will-change: transform;
 }
 
+/* Dos mitades: el titular encima del eje y la raíz debajo, colgando de él. */
 .rail__intro {
+  display: grid;
+  /* Mitades exactas aunque el titular sea alto: crece hacia arriba. */
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  width: clamp(280px, 30vw, 460px);
+}
+
+.rail__head {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   gap: var(--s-5);
-  width: clamp(280px, 30vw, 460px);
+  padding-bottom: var(--s-6);
 }
 
 .rail__title {
   white-space: pre-line;
 }
 
-/* La mesa de trabajo (MethodDesk.tsx): lo que hay antes del código. */
-.rail__intro .desk {
-  margin: var(--s-2) 0 0;
+.rail__intro .root {
+  margin: 0;
 }
 
 .rail__track {
@@ -2699,7 +2649,7 @@ body[data-menu="open"] .assistant__orb {
   color: var(--on-surface-mid);
 }
 
-/* Móvil: cada fase ocupa casi la pantalla; el titular y la mesa, apilados. */
+/* Móvil: cada fase ocupa casi la pantalla; el titular y la raíz, apilados. */
 @media (max-width: 767px) {
   .rail {
     --rail-h: min(70svh, 600px);

@@ -5,7 +5,7 @@ name: Publicar versión de prueba
 # (/AternaStudio/v1 y /AternaStudio/v2, ver pages.yml en main).
 on:
   push:
-    branches: [v1-cohesion, v2-portfolio]
+    branches: [v1-cohesion, v2-portfolio, v3-raiz]
 
 permissions:
   actions: write

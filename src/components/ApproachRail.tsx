@@ -2,12 +2,13 @@
 
 // «Cómo trabajamos» en horizontal (adaptado del Timeline de Hyperiux Vault).
 // Al llegar, la sección se fija y, mientras se baja, la pista se desliza a
-// la izquierda: primero el titular y la mesa de trabajo, luego las cuatro
+// la izquierda: primero el titular sobre su raíz de luz, luego las cuatro
 // fases, alternando arriba y abajo de un eje que se dibuja con el scroll.
 // Cuando cada fase entra, crece su tallo, se enciende su nodo y su texto
 // sube línea a línea (SplitText). Sin fechas: son las fases del método.
-// Cada fase que ya ha entrado lleva data-on, como las de la línea estática:
-// con eso se enciende el código de la mesa al llegar a «Construir».
+// La línea del suelo de la raíz cruza el hueco y empalma con el eje: la raíz
+// y el método son la misma línea (MethodRoot). Cada fase que ya ha entrado
+// lleva data-on, como las de la línea estática.
 //
 // Desde 768 px (en móvil, la línea vertical se lee mejor). Es el contenido real cuando está activa (la línea normal se oculta), así
 // que no va con aria-hidden. Solo con movimiento: hasta que se activa
@@ -21,7 +22,7 @@ import { SplitText } from "gsap/SplitText";
 import { useI18n } from "@/lib/i18n";
 import { ScrollTrigger, gsap, registerGsap } from "@/lib/motion";
 import { ArrowRight } from "./icons";
-import { MethodDesk } from "./MethodDesk";
+import { MethodRoot } from "./MethodRoot";
 
 export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElement | null>; eyebrow: string }) {
   const { t, locale } = useI18n();
@@ -97,9 +98,11 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
     <div className="rail-pin">
       <div className="rail">
         <div className="rail__intro">
-          <p className="t-label dim">{eyebrow}</p>
-          <h2 className="t-display rail__title">{t.approach.title}</h2>
-          <MethodDesk />
+          <div className="rail__head">
+            <p className="t-label dim">{eyebrow}</p>
+            <h2 className="t-display rail__title">{t.approach.title}</h2>
+          </div>
+          <MethodRoot variant="rail" />
         </div>
         <div className="rail__track">
           <span className="rail__axis">

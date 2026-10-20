@@ -21,7 +21,7 @@ import { CopyEmail } from "./CopyEmail";
 import { PILLAR_GLYPHS, STEP_GLYPHS } from "./glyphs";
 import { ArrowRight, Check } from "./icons";
 import { ApproachRail } from "./ApproachRail";
-import { MethodDesk } from "./MethodDesk";
+import { MethodRoot } from "./MethodRoot";
 import { ServiceGlyph } from "./ServiceTrace";
 import { useStepWire } from "./StepWire";
 import { Trace } from "./Trace";
@@ -393,7 +393,7 @@ export function Approach({ n }: { n?: number }) {
           <p className="t-label dim">{eyebrow(t.approach.eyebrow, n)}</p>
           <WordReveal as="h2" id="approach-title" className="t-display" text={t.approach.title} />
         </header>
-        <MethodDesk />
+        <MethodRoot variant="static" />
         <div className="approach__track">
           <div className="approach__line" aria-hidden="true">
             <span className="approach__line-fill" />

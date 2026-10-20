@@ -112,22 +112,7 @@ const es = {
       }
     ] as { title: string; body: string; service?: string }[],
     "link": "Ver cómo trabajamos",
-    "desk": {
-      "label": "Lo que hay antes del código",
-      "brief": {
-        "label": "Por escrito",
-        "lines": ["Qué hay", "Qué funciona", "Qué está roto"]
-      },
-      "direction": {
-        "label": "Dirección",
-        "fonts": "Fraunces · Archivo"
-      },
-      "code": {
-        "label": "Código",
-        "off": "Llega en la fase 03",
-        "on": "Ahora sí"
-      }
-    }
+    "root": ["Qué hay", "Qué falta", "El tono"]
   },
   "studioHome": {
     "eyebrow": "Estudio",
@@ -706,22 +691,7 @@ const en: Dict = {
       }
     ],
     "link": "See how we work",
-    "desk": {
-      "label": "What comes before the code",
-      "brief": {
-        "label": "In writing",
-        "lines": ["What's there", "What works", "What's broken"]
-      },
-      "direction": {
-        "label": "Direction",
-        "fonts": "Fraunces · Archivo"
-      },
-      "code": {
-        "label": "Code",
-        "off": "Arrives in phase 03",
-        "on": "Now it's time"
-      }
-    }
+    "root": ["What's there", "What's missing", "The tone"]
   },
   "studioHome": {
     "eyebrow": "Studio",
