@@ -277,6 +277,16 @@ html.lenis body {
   padding-top: 0;
 }
 
+/* Entre «Estudio» y el método quedaba demasiado vacío: el cierre grande
+   del estudio más la entrada del método (o el centrado del rail fijado). */
+.studio {
+  padding-bottom: var(--section-y);
+}
+
+.studio + .approach:not([data-rail="on"]) {
+  padding-top: calc(var(--section-y) * 0.6);
+}
+
 /* Tras Servicios, el cierre no suma su margen grande al de la sección
    anterior: quedaban ~380 px vacíos bajo «Ver todos los servicios». */
 .services + .final-cta {
@@ -2030,15 +2040,24 @@ body[data-menu="open"] .assistant__orb {
   transition: transform var(--d-micro) var(--e-out);
 }
 
-/* Icono del servicio en la lista de la portada: en escritorio crece para
-   llenar el hueco bajo el titular (×2,5 del lienzo, trazo compensado). */
+/* Icono del servicio en la lista de la portada: contenido, para que el
+   titular mande (trazo compensado a cada tamaño). */
+.service__glyph {
+  --sw: 0.95;
+  --sw-halo: 3.6;
+  --sw-faint: 0.8;
+  --sw-pulse: 1.5;
+  flex: none;
+  width: 144px;
+}
+
 @media (min-width: 1024px) {
   .service__glyph {
-    --sw: 0.6;
-    --sw-halo: 2.4;
-    --sw-faint: 0.5;
-    --sw-pulse: 0.95;
-    width: 240px;
+    --sw: 0.78;
+    --sw-halo: 3.1;
+    --sw-faint: 0.66;
+    --sw-pulse: 1.25;
+    width: 184px;
   }
 }
 
@@ -2055,10 +2074,12 @@ body[data-menu="open"] .assistant__orb {
   align-self: flex-start;
 }
 
+/* Hilo + icono: el 78 % del ancho de su titular, centrados bajo él. */
 .service__wire {
   --lead-y: 50%;
   display: flex;
-  width: min(100%, var(--wire-w, 100%));
+  width: min(100%, calc(var(--title-w, 100%) * 0.78));
+  margin-inline-start: calc(var(--title-w, 0px) * 0.11);
 }
 
 /* En SEO el trazo arranca abajo, al pie de los escalones. */

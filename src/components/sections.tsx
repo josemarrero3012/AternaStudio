@@ -259,19 +259,21 @@ export function Services({ n }: { n?: number }) {
   const { t } = useI18n();
   const list = useReveal<HTMLUListElement>({ selector: ".service", y: 24, stagger: 0.1 });
 
-  // Hilo + icono miden lo mismo en las cuatro filas: el ancho medio de los
-  // titulares (su línea más larga), no el de la columna, que en pantallas
-  // anchas sobresalía por la derecha. Se rehace con el tamaño y el idioma.
+  // Hilo + icono, a la medida de su propio titular (su línea más larga): el
+  // CSS los deja algo más cortos que él y centrados debajo. Se rehace con el
+  // tamaño y el idioma.
   useEffect(() => {
     const el = list.current;
     if (!el) return;
     const measure = () => {
-      const widths = Array.from(el.querySelectorAll(".service__title")).map((title) => {
+      el.querySelectorAll<HTMLElement>(".service__head").forEach((head) => {
+        const title = head.querySelector(".service__title");
+        if (!title) return;
         const range = document.createRange();
         range.selectNodeContents(title);
-        return Math.max(0, ...Array.from(range.getClientRects(), (r) => r.width));
+        const width = Math.max(0, ...Array.from(range.getClientRects(), (r) => r.width));
+        head.style.setProperty("--title-w", `${width}px`);
       });
-      if (widths.length) el.style.setProperty("--wire-w", `${widths.reduce((a, b) => a + b, 0) / widths.length}px`);
     };
     measure();
     // Con la fuente definitiva los titulares cambian de ancho.
