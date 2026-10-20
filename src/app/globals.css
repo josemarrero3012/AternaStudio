@@ -2678,8 +2678,8 @@ body[data-menu="open"] .assistant__orb {
   bottom: 3%;
 }
 
-/* El número de la fase, grande y con la luz del vídeo; brilla cuando la
-   estrella llega a su nodo (RailPulse). */
+/* El número de la fase, grande y con la luz del vídeo. Espera apagado y se
+   enciende cuando la luz del eje llega a su nodo (data-lit). */
 .rail-phase__index {
   width: fit-content;
   padding-bottom: 0.06em;
@@ -2693,24 +2693,31 @@ body[data-menu="open"] .assistant__orb {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  filter: saturate(0.2) brightness(0.65);
+  transition: filter var(--d-cine) var(--e-out);
 }
 
-/* La estrella: una estela fina con la cabeza encendida. */
-.rail__pulse {
+.rail-phase[data-lit="true"] .rail-phase__index {
+  filter: saturate(1) brightness(1.15) drop-shadow(0 0 14px rgb(215 124 245 / 0.55));
+}
+
+/* La cabeza de la luz del eje: avanza con el scroll en la punta del
+   relleno (ApproachRail la mueve). */
+.rail__axis-head {
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 0;
-  z-index: 1;
-  width: 150px;
+  width: 120px;
   height: 2px;
-  margin-top: -0.5px;
+  margin: -1px 0 0 -120px;
   border-radius: 2px;
   background-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--lavender) 70%, transparent) 70%, var(--text-hi));
   opacity: 0;
   pointer-events: none;
+  transition: opacity var(--d-std) var(--e-out);
 }
 
-.rail__pulse::after {
+.rail__axis-head::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -2725,8 +2732,8 @@ body[data-menu="open"] .assistant__orb {
     0 0 22px 6px color-mix(in srgb, var(--orchid) 60%, transparent);
 }
 
-/* Lo que se enciende en cada nodo: un halo y un anillo que se abre. Solo en
-   las fases que ya han entrado. */
+/* Lo que se enciende en el nodo cuando llega la luz: un halo que se queda
+   y un anillo que se abre una vez. */
 .rail-phase__glow,
 .rail-phase__ring {
   position: absolute;
@@ -2742,6 +2749,7 @@ body[data-menu="open"] .assistant__orb {
   height: 64px;
   margin: -32px 0 0 -32px;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--orchid) 70%, transparent), transparent);
+  transition: opacity var(--d-cine) var(--e-out);
 }
 
 .rail-phase__ring {
@@ -2752,8 +2760,24 @@ body[data-menu="open"] .assistant__orb {
   box-shadow: 0 0 12px color-mix(in srgb, var(--orchid) 70%, transparent);
 }
 
-.rail-phase[data-on="false"] :is(.rail-phase__glow, .rail-phase__ring) {
-  visibility: hidden;
+.rail-phase[data-lit="true"] .rail-phase__glow {
+  opacity: 1;
+}
+
+.rail-phase[data-lit="true"] .rail-phase__ring {
+  animation: rail-ring 1s var(--e-out);
+}
+
+@keyframes rail-ring {
+  0% {
+    opacity: 1;
+    transform: scale(0.5);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(2);
+  }
 }
 
 .rail-phase__link {

@@ -7,8 +7,10 @@
 // Cuando cada fase entra, crece su tallo, se enciende su nodo y su texto
 // sube línea a línea (SplitText). Sin fechas: son las fases del método.
 // La línea del suelo de la raíz cruza el hueco y empalma con el eje: la raíz
-// y el método son la misma línea (MethodRoot). Por ella viaja una estrella
-// que enciende cada nodo al llegar (RailPulse). Cada fase que ya ha entrado
+// y el método son la misma línea (MethodRoot). La luz del eje avanza con el
+// scroll y lleva una cabeza encendida: cuando llega al nodo de una fase, la
+// fase se enciende (data-lit: número, halo y anillo) y se apaga si se vuelve
+// atrás. Cada fase que ya ha entrado
 // lleva data-on, como las de la línea estática.
 //
 // Desde 768 px (en móvil, la línea vertical se lee mejor). Es el contenido real cuando está activa (la línea normal se oculta), así
@@ -24,7 +26,6 @@ import { useI18n } from "@/lib/i18n";
 import { ScrollTrigger, gsap, registerGsap } from "@/lib/motion";
 import { ArrowRight } from "./icons";
 import { MethodRoot } from "./MethodRoot";
-import { startRailPulse } from "./RailPulse";
 
 export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElement | null>; eyebrow: string }) {
   const { t, locale } = useI18n();
@@ -57,7 +58,33 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
         ease: "none",
         scrollTrigger: { ...scroll, pin: true, anticipatePin: 1 },
       });
-      gsap.fromTo(".rail__axis-fill", { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: scroll });
+      // La luz del eje y su cabeza. Con el progreso real de la luz (ya
+      // suavizado por el scrub) se decide qué fases ha alcanzado.
+      const axis = rail.querySelector<HTMLElement>(".rail__axis");
+      const head = rail.querySelector<HTMLElement>(".rail__axis-head");
+      const railPhases = Array.from(root.querySelectorAll<HTMLElement>(".rail-phase"));
+      gsap.fromTo(
+        ".rail__axis-fill",
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          ease: "none",
+          scrollTrigger: scroll,
+          onUpdate() {
+            const width = axis?.offsetWidth ?? 0;
+            const tip = this.progress() * width;
+            if (head) {
+              head.style.transform = `translateX(${tip}px)`;
+              head.style.opacity = this.progress() > 0.001 && this.progress() < 0.999 ? "1" : "0";
+            }
+            // El nodo de cada fase está en su borde izquierdo (left: 0 en la pista).
+            railPhases.forEach((phase) => {
+              const lit = tip >= phase.offsetLeft - 1;
+              if ((phase.dataset.lit === "true") !== lit) phase.dataset.lit = String(lit);
+            });
+          },
+        },
+      );
 
       root.querySelectorAll<HTMLElement>(".rail-phase").forEach((phase) => {
         const lines = SplitText.create(phase.querySelectorAll(".rail-phase__title, .rail-phase__body"), {
@@ -85,12 +112,12 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
         if (link) tl.from(link, { autoAlpha: 0, y: 8, ease: "power2.out" }, ">-0.1");
       });
 
-      const stopPulse = startRailPulse(rail);
-
       return () => {
-        stopPulse();
         delete root.dataset.rail;
-        root.querySelectorAll(".rail-phase").forEach((phase) => phase.setAttribute("data-on", "false"));
+        root.querySelectorAll(".rail-phase").forEach((phase) => {
+          phase.setAttribute("data-on", "false");
+          phase.setAttribute("data-lit", "false");
+        });
       };
     });
 
@@ -104,7 +131,6 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
   return (
     <div className="rail-pin">
       <div className="rail">
-        <span className="rail__pulse" aria-hidden="true" />
         <div className="rail__intro">
           <div className="rail__head">
             <p className="t-label dim">{eyebrow}</p>
@@ -115,9 +141,10 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
         <div className="rail__track">
           <span className="rail__axis">
             <span className="rail__axis-fill" />
+            <span className="rail__axis-head" />
           </span>
           {t.approach.items.map((item, i) => (
-            <div className="rail-phase" data-side={i % 2 ? "bottom" : "top"} data-on="false" key={i}>
+            <div className="rail-phase" data-side={i % 2 ? "bottom" : "top"} data-on="false" data-lit="false" key={i}>
               <span className="rail-phase__stem" />
               <span className="rail-phase__glow" aria-hidden="true" />
               <span className="rail-phase__dot" />
