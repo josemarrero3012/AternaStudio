@@ -27,6 +27,21 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_BASE_PATH: /AternaStudio
+      # Versiones de prueba, cada una en su ruta: v1-cohesion en
+      # /AternaStudio/v1 y v2-portfolio en /AternaStudio/v2. La raíz sigue
+      # siendo main. Si una rama no existe, se salta.
+      - name: Versiones de prueba
+        run: |
+          for pair in "v1:v1-cohesion" "v2:v2-portfolio"; do
+            dir="${pair%%:*}"; branch="${pair#*:}"
+            if ! git fetch --depth 1 origin "$branch"; then
+              echo "No existe $branch: se salta."
+              continue
+            fi
+            git worktree add "../$dir" FETCH_HEAD
+            (cd "../$dir" && npm ci && NEXT_PUBLIC_BASE_PATH="/AternaStudio/$dir" npm run build)
+            mv "../$dir/out" "out/$dir"
+          done
       - run: touch out/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
