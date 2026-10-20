@@ -1,6 +1,8 @@
 "use client";
 
-// «Trabajo»: los proyectos, presentados con las piezas de la propia web.
+// «Casos de éxito» (sección «Trabajo»): los proyectos, presentados con las
+// piezas de la propia web. Si work.badge (dict.ts) lleva texto, cada caso
+// muestra esa insignia (por ejemplo, «Prototipo»).
 // Cada uno va en un marco de navegador hecho con CSS (no es una imagen): la
 // captura de la página entera baja despacio al pasar el puntero, un móvil
 // asoma por la esquina y su firma se dibuja con Trace, como los servicios.
@@ -98,7 +100,7 @@ function WorkRow({ item, index, heading }: { item: Item; index: number; heading:
       <div className="work-row__copy">
         <div className="work-row__top">
           <span className="t-index work-row__index">{String(index + 1).padStart(2, "0")}</span>
-          <span className="t-label work-badge">{t.work.badge}</span>
+          {t.work.badge ? <span className="t-label work-badge">{t.work.badge}</span> : null}
         </div>
         <p className="t-label dim">{item.sector}</p>
         <Heading className="t-title work-row__title">{item.name}</Heading>
@@ -297,7 +299,7 @@ export function WorkCaseContent({ slug }: { slug: WorkSlug }) {
         </nav>
         <div className="work-head__title">
           <WordReveal as="h1" className="t-display" text={item.name} onScroll={false} delay={0.1} />
-          <span className="t-label work-badge">{t.work.badge}</span>
+          {t.work.badge ? <span className="t-label work-badge">{t.work.badge}</span> : null}
         </div>
         <p className="t-lead muted work-head__lead">{item.summary}</p>
         <dl className="work-meta">
