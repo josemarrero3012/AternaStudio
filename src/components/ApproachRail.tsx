@@ -79,6 +79,8 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
           })
           .from(phase.querySelector(".rail-phase__stem"), { scaleY: 0, ease: "none" })
           .from(phase.querySelector(".rail-phase__dot"), { scale: 0, ease: "back.out(2)" }, "<")
+          // El número sale con su fase: antes asomaba solo, sin tallo ni texto.
+          .from(phase.querySelector(".rail-phase__index"), { autoAlpha: 0, yPercent: 30, ease: "power2.out" }, "<0.1")
           .from(lines, { yPercent: 110, stagger: 0.08, ease: "power2.out" }, "<0.15");
         if (link) tl.from(link, { autoAlpha: 0, y: 8, ease: "power2.out" }, ">-0.1");
       });
