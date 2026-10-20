@@ -28,11 +28,12 @@ jobs:
         env:
           NEXT_PUBLIC_BASE_PATH: /AternaStudio
       # Versiones de prueba, cada una en su ruta: v1-cohesion en
-      # /AternaStudio/v1 y v2-portfolio en /AternaStudio/v2. La raíz sigue
-      # siendo main. Si una rama no existe, se salta.
+      # /AternaStudio/v1, v2-portfolio en /AternaStudio/v2 y v3-raiz en
+      # /AternaStudio/v3. La raíz sigue siendo main. Si una rama no existe,
+      # se salta.
       - name: Versiones de prueba
         run: |
-          for pair in "v1:v1-cohesion" "v2:v2-portfolio"; do
+          for pair in "v1:v1-cohesion" "v2:v2-portfolio" "v3:v3-raiz"; do
             dir="${pair%%:*}"; branch="${pair#*:}"
             if ! git fetch --depth 1 origin "$branch"; then
               echo "No existe $branch: se salta."

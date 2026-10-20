@@ -6,14 +6,16 @@ Se puede ver aquí: https://josemarrero3012.github.io/AternaStudio/
 
 ## Versiones en prueba
 
-Además de la web actual, tengo dos propuestas publicadas en su propia ruta para compararlas:
+Además de la web actual, tengo tres propuestas publicadas en su propia ruta para compararlas:
 
 - **V1**, en la rama `v1-cohesion`: https://josemarrero3012.github.io/AternaStudio/v1/
   En «Cómo trabajamos» cambié la imagen del árbol por una mesa de trabajo con tres piezas: lo escrito, la dirección y el código, que no se enciende hasta llegar a «Construir». Las fases enlazan con su servicio y el método tiene enlace en el pie y en /estudio. La portada no enseña los casos de uso mientras estén vacíos.
 - **V2**, en la rama `v2-portfolio`: https://josemarrero3012.github.io/AternaStudio/v2/
   Todo lo de la V1 y además la sección «Trabajo», con dos prototipos que hice: [Calma Café](https://josemarrero3012.github.io/AternaStudio/v2/trabajo/calma-cafe) y [The Fragrance Bar](https://josemarrero3012.github.io/AternaStudio/v2/trabajo/the-fragrance-bar). Es una vista previa para el equipo, así que esas páginas no se indexan.
+- **V3**, en la rama `v3-raiz`: https://josemarrero3012.github.io/AternaStudio/v3/
+  La V1 con otra idea para «Cómo trabajamos»: en vez de la mesa, el titular queda sobre una línea de luz de la que cuelgan raíces con lo que se decide antes del código (qué hay, qué falta, el tono). Esa línea cruza la pantalla y se convierte en el eje de las fases.
 
-Cada vez que subo una de las dos ramas, la demo se vuelve a publicar sola.
+Cada vez que subo una de estas ramas, la demo se vuelve a publicar sola.
 
 ## Qué he hecho hasta ahora
 
