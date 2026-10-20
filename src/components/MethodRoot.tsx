@@ -6,7 +6,9 @@
 // en tres de sus puntas, lo que se decide antes del código. En el rail, la
 // línea del suelo cruza el hueco y se convierte en el eje de las fases: la
 // raíz y el método son la misma línea. Mismo vocabulario que Trace.tsx
-// (filamento, puntos, nodo), pero a la medida de la sección.
+// (filamento, puntos, nodo), pero a la medida de la sección. Alrededor,
+// raicillas muy finas, un resplandor de tierra bajo el suelo y motas de luz
+// que suben despacio desde las raíces.
 //
 // Sin movimiento (o sin JavaScript) se ve ya dibujada.
 
@@ -22,6 +24,23 @@ const ROOTS: { d: string; delay: number; faint?: boolean }[] = [
   { d: "M252 0 C254 38 282 66 276 114 C272 150 292 170 288 200", delay: 0.6 },
   { d: "M268 52 C246 70 232 92 236 124", delay: 0.95, faint: true },
   { d: "M372 0 C370 30 352 50 358 92", delay: 0.75 },
+  // Raicillas: más finas y tenues, salen de las raíces principales.
+  { d: "M18 112 C4 128 -2 150 6 172", delay: 1.1, faint: true },
+  { d: "M88 160 C104 176 112 196 108 214", delay: 1.2, faint: true },
+  { d: "M196 0 C198 22 186 40 190 66", delay: 0.9, faint: true },
+  { d: "M280 140 C300 150 312 166 312 184", delay: 1.25, faint: true },
+  { d: "M420 0 C421 18 432 30 430 50", delay: 1, faint: true },
+];
+
+/** Motas de luz: dónde nacen (% del lienzo), cuándo y cuánto tardan en subir. */
+const MOTES = [
+  { x: 6, y: 62, d: 0, dur: 7 },
+  { x: 21, y: 78, d: 2.4, dur: 8.5 },
+  { x: 33, y: 50, d: 4.1, dur: 6.5 },
+  { x: 47, y: 30, d: 1.2, dur: 7.5 },
+  { x: 60, y: 70, d: 3.3, dur: 9 },
+  { x: 74, y: 44, d: 5.2, dur: 7 },
+  { x: 86, y: 26, d: 0.8, dur: 8 },
 ];
 
 /** Puntas con etiqueta (x, y en el lienzo) y puntas sin ella. */
@@ -87,6 +106,13 @@ export function MethodRoot({ variant }: { variant: "rail" | "static" }) {
           <circle key={i} className="root__tip" cx={p.x} cy={p.y} r={2.4} style={{ "--d": `${1.5 + i * 0.15}s` } as CSSProperties} />
         ))}
       </svg>
+      {MOTES.map((m, i) => (
+        <span
+          key={i}
+          className="root__mote"
+          style={{ left: `${m.x}%`, top: `${m.y}%`, "--d": `${m.d}s`, "--dur": `${m.dur}s` } as CSSProperties}
+        />
+      ))}
       {/* Las etiquetas, en HTML para que el texto se lea nítido a cualquier tamaño. */}
       {t.approach.root.map((label, i) => (
         <span

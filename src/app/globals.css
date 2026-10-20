@@ -2331,6 +2331,27 @@ body[data-menu="open"] .assistant__orb {
   margin-bottom: var(--block-y);
 }
 
+/* Resplandor de tierra: la luz de las raíces, bajo el suelo. */
+.root::before {
+  content: "";
+  position: absolute;
+  inset: 0 -10% 10% -6%;
+  background: radial-gradient(ellipse 60% 70% at 40% 0%, color-mix(in srgb, var(--violet) 22%, transparent), transparent 70%);
+  pointer-events: none;
+}
+
+.root__mote {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px;
+  border-radius: 50%;
+  background-color: var(--lavender);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--lavender) 70%, transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
 .root__svg {
   display: block;
   width: 100%;
@@ -2442,7 +2463,12 @@ body[data-menu="open"] .assistant__orb {
     animation: root-beat 3.6s ease-in-out calc(var(--d) + 0.8s) infinite;
   }
 
-  .root[data-in] .root__ground::after {
+  .root[data-in] .root__mote {
+    animation: root-mote var(--dur) ease-in-out var(--d) infinite;
+  }
+
+  /* En el rail la estrella la lleva RailPulse por todo el eje. */
+  .root[data-variant="static"][data-in] .root__ground::after {
     content: "";
     position: absolute;
     top: -1px;
@@ -2464,6 +2490,22 @@ body[data-menu="open"] .assistant__orb {
 
   50% {
     opacity: 1;
+  }
+}
+
+@keyframes root-mote {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+
+  25% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(10px, -110px);
   }
 }
 
@@ -2514,6 +2556,7 @@ body[data-menu="open"] .assistant__orb {
   display: flex;
   align-items: stretch;
   gap: var(--rail-gap);
+  position: relative;
   width: max-content;
   height: var(--rail-h);
   padding-inline: var(--margin) 14vw;
@@ -2628,15 +2671,89 @@ body[data-menu="open"] .assistant__orb {
 }
 
 .rail-phase[data-side="top"] .rail-phase__copy {
-  top: 8%;
+  top: 3%;
 }
 
 .rail-phase[data-side="bottom"] .rail-phase__copy {
-  bottom: 8%;
+  bottom: 3%;
 }
 
+/* El número de la fase, grande y con la luz del vídeo; brilla cuando la
+   estrella llega a su nodo (RailPulse). */
 .rail-phase__index {
-  color: var(--orchid);
+  width: fit-content;
+  padding-bottom: 0.06em;
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 1.6rem + 1.6vw, 3.5rem);
+  font-weight: 400;
+  font-variation-settings: "opsz" 144;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  background-image: var(--brand-gradient-on-ink);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* La estrella: una estela fina con la cabeza encendida. */
+.rail__pulse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 150px;
+  height: 2px;
+  margin-top: -0.5px;
+  border-radius: 2px;
+  background-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--lavender) 70%, transparent) 70%, var(--text-hi));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rail__pulse::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow:
+    0 0 8px 2px color-mix(in srgb, var(--lavender) 90%, transparent),
+    0 0 22px 6px color-mix(in srgb, var(--orchid) 60%, transparent);
+}
+
+/* Lo que se enciende en cada nodo: un halo y un anillo que se abre. Solo en
+   las fases que ya han entrado. */
+.rail-phase__glow,
+.rail-phase__ring {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rail-phase__glow {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--orchid) 70%, transparent), transparent);
+}
+
+.rail-phase__ring {
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 1px solid var(--orchid);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--orchid) 70%, transparent);
+}
+
+.rail-phase[data-on="false"] :is(.rail-phase__glow, .rail-phase__ring) {
+  visibility: hidden;
 }
 
 .rail-phase__link {
