@@ -4,6 +4,17 @@ Aquí está el código de la web de Aterna Studio, un estudio digital que hace w
 
 Se puede ver aquí: https://josemarrero3012.github.io/AternaStudio/
 
+## Versiones en prueba
+
+Además de la web actual, tengo dos propuestas publicadas en su propia ruta para compararlas:
+
+- **V1**, en la rama `v1-cohesion`: https://josemarrero3012.github.io/AternaStudio/v1/
+  En «Cómo trabajamos» cambié la imagen del árbol por una mesa de trabajo con tres piezas: lo escrito, la dirección y el código, que no se enciende hasta llegar a «Construir». Las fases enlazan con su servicio y el método tiene enlace en el pie y en /estudio. La portada no enseña los casos de uso mientras estén vacíos.
+- **V2**, en la rama `v2-portfolio`: https://josemarrero3012.github.io/AternaStudio/v2/
+  Todo lo de la V1 y además la sección «Trabajo», con dos prototipos que hice: [Calma Café](https://josemarrero3012.github.io/AternaStudio/v2/trabajo/calma-cafe) y [The Fragrance Bar](https://josemarrero3012.github.io/AternaStudio/v2/trabajo/the-fragrance-bar). Es una vista previa para el equipo, así que esas páginas no se indexan.
+
+Cada vez que subo una de las dos ramas, la demo se vuelve a publicar sola.
+
 ## Qué he hecho hasta ahora
 
 - Saqué la paleta de colores del vídeo de la portada y después la aclaré, de casi negro a un azul índigo.
