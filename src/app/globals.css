@@ -2265,9 +2265,13 @@ body[data-menu="open"] .assistant__orb {
 
 /* Titular de fase: igual en la línea estática y en el rail. */
 .phase__title,
-.rail-phase__link {
-  align-self: flex-start;
-  min-height: 36px;
+.rail-phase__title {
+  font-family: var(--font-display);
+  font-size: var(--t-title);
+  font-weight: 400;
+  font-variation-settings: "opsz" 72;
+  line-height: var(--lh-title);
+  letter-spacing: var(--ls-title);
 }
 
 .phase__title {
@@ -2434,6 +2438,10 @@ body[data-menu="open"] .assistant__orb {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.desk__fonts {
+  letter-spacing: 0.1em;
 }
 
 .desk__swatches {
@@ -2681,13 +2689,9 @@ body[data-menu="open"] .assistant__orb {
   color: var(--orchid);
 }
 
-.rail-phase__title {
-  font-family: var(--font-display);
-  font-size: var(--t-title);
-  font-weight: 400;
-  font-variation-settings: "opsz" 72;
-  line-height: var(--lh-title);
-  letter-spacing: var(--ls-title);
+.rail-phase__link {
+  align-self: flex-start;
+  min-height: 36px;
 }
 
 .rail-phase__body {
