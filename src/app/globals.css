@@ -2778,6 +2778,542 @@ body[data-menu="open"] .assistant__orb {
   }
 }
 
+/* Trabajo (Work.tsx) ------------------------------------------------------- */
+
+/* Cabecera: titular y, al lado, el enlace a /trabajo (como Servicios). */
+.work__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-5);
+  margin-bottom: var(--block-y);
+}
+
+.work__head .section-head {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  .work__head {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .work__all {
+    flex: none;
+  }
+}
+
+/* Marco de navegador: no es una imagen, es vidrio con tres filetes y la
+   dirección en una píldora mono. */
+.frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--hair-strong);
+  border-radius: 12px;
+  background-color: var(--night-1);
+  box-shadow: var(--shadow-card);
+  transition:
+    border-color var(--d-std) var(--e-out),
+    box-shadow var(--d-std) var(--e-out);
+}
+
+.frame__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  height: 34px;
+  padding-inline: var(--s-3);
+  border-bottom: 1px solid var(--hair);
+  background-color: color-mix(in srgb, var(--night-3) 75%, transparent);
+}
+
+.frame__dots {
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+
+.frame__dots i {
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--hair-strong);
+  border-radius: 50%;
+}
+
+.frame__url {
+  min-width: 0;
+  max-width: 60%;
+  margin-inline: auto;
+  padding: 3px 14px;
+  overflow: hidden;
+  border-radius: var(--r-pill);
+  background-color: color-mix(in srgb, var(--night-0) 70%, transparent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--on-surface-low);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* La ventana: 1440 × 900, como las capturas. */
+.frame__view {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background-color: var(--night-1);
+}
+
+.frame__view > img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* La página entera baja hasta el final al pasar el puntero (Work.tsx pone
+   el recorrido y la duración según el alto de la captura). */
+.shot {
+  transform: translateY(0);
+  transition: transform var(--shot-dur, 6s) var(--e-inout);
+}
+
+.work-row__media:hover .shot,
+.work-row:focus-within .shot,
+.work-hero__media:hover .shot {
+  transform: translateY(var(--shot-travel, 0));
+}
+
+/* Móvil: el mismo vidrio, con esquinas de teléfono. */
+.phone {
+  overflow: hidden;
+  padding: 5px;
+  border: 1px solid var(--hair-strong);
+  border-radius: 24px;
+  background-color: var(--night-0);
+  box-shadow:
+    var(--shadow-card),
+    0 30px 60px -30px #000000cc;
+}
+
+.phone > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 19px;
+}
+
+/* Insignia «Prototipo»: la misma píldora que «Pendiente», pero firme. */
+.work-badge {
+  padding: 3px 10px;
+  border: 1px solid color-mix(in srgb, var(--orchid) 60%, transparent);
+  border-radius: var(--r-pill);
+  background-color: color-mix(in srgb, var(--orchid) 10%, transparent);
+  color: var(--orchid);
+}
+
+/* Escaparate: el marco a un lado y la historia al otro, alternando. */
+.work-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(72px, 9vw, 144px);
+}
+
+.work-row {
+  display: grid;
+  gap: var(--s-9);
+}
+
+.work-row__media {
+  position: relative;
+  display: block;
+  margin-inline-end: 4%;
+}
+
+.work-row__phone {
+  position: absolute;
+  right: -4%;
+  bottom: -12%;
+  width: 24%;
+  transition: transform var(--d-std) var(--e-aterna);
+}
+
+@media (hover: hover) {
+  .work-row__media:hover .frame {
+    border-color: color-mix(in srgb, var(--orchid) 45%, transparent);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .work-row__media:hover .work-row__phone {
+    transform: translateY(-8px);
+  }
+}
+
+.work-row__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-4);
+}
+
+.work-row__top {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.work-row__index {
+  color: var(--orchid);
+}
+
+/* Datos: cada uno con su nodo encendido, como las fases del método. */
+.work-facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  width: 100%;
+  margin-top: var(--s-2);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--hair);
+}
+
+.work-facts li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  color: var(--on-surface-hi);
+}
+
+.work-facts li::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--orchid);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--orchid) 18%, transparent),
+    0 0 10px color-mix(in srgb, var(--orchid) 60%, transparent);
+}
+
+.work-row__glyph {
+  margin-block: var(--s-2);
+}
+
+.work-row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--s-6);
+}
+
+@media (min-width: 1024px) {
+  .work-row {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: center;
+    column-gap: clamp(48px, 5vw, 96px);
+  }
+
+  .work-row[data-flip] {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+
+  .work-row[data-flip] .work-row__media {
+    order: 2;
+    margin-inline: 4% 0;
+  }
+
+  .work-row[data-flip] .work-row__phone {
+    right: auto;
+    left: -4%;
+  }
+
+  .work-row__phone {
+    width: 22%;
+  }
+}
+
+/* /trabajo/<slug> ------------------------------------------------------------ */
+
+.work-head__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--s-4) var(--s-5);
+}
+
+.work-head__title .work-badge {
+  margin-bottom: 0.6em;
+}
+
+.work-head__lead {
+  max-width: var(--measure);
+  margin-top: var(--s-5);
+}
+
+/* Ficha: sector, stack, servicios y los dos enlaces de salida. */
+.work-meta {
+  display: grid;
+  gap: var(--s-5);
+  margin-top: var(--block-y);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--hair);
+}
+
+.work-meta dd {
+  margin-top: var(--s-2);
+}
+
+.work-meta__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.work-meta__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-5);
+}
+
+@media (min-width: 1024px) {
+  .work-meta {
+    grid-template-columns: repeat(3, auto) 1fr;
+    align-items: end;
+    column-gap: var(--s-9);
+  }
+
+  .work-meta__links {
+    justify-self: end;
+  }
+}
+
+.work-hero {
+  padding-bottom: var(--section-y);
+}
+
+.work-hero__media {
+  position: relative;
+  margin-inline-end: 6%;
+}
+
+.work-hero__phone {
+  position: absolute;
+  right: -5%;
+  bottom: -9%;
+  width: 19%;
+}
+
+.work-story {
+  display: grid;
+  gap: var(--s-8);
+}
+
+.work-story__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-8);
+}
+
+.work-story__list dd {
+  max-width: var(--measure);
+  margin-top: var(--s-3);
+}
+
+@media (min-width: 1024px) {
+  .work-story {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    align-items: start;
+  }
+}
+
+/* Lo que tiene: cuatro piezas de vidrio, como los pilares. */
+.work-features {
+  display: grid;
+  gap: var(--gutter);
+}
+
+.work-feature {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-6);
+  border: 1px solid var(--hair);
+  border-radius: var(--r-card);
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-card);
+}
+
+.work-feature__index {
+  color: var(--orchid);
+}
+
+@media (min-width: 768px) {
+  .work-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.work-gallery__title {
+  margin-bottom: var(--s-5);
+}
+
+.work-gallery {
+  display: grid;
+  gap: var(--gutter);
+  align-items: end;
+}
+
+.work-gallery__phone {
+  width: min(100%, 280px);
+  justify-self: center;
+}
+
+@media (min-width: 768px) {
+  .work-gallery {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  }
+}
+
+/* Vista en vivo: la web real a escala, solo si se pide. */
+.live {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+
+.live__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+}
+
+.live__devices {
+  display: inline-flex;
+  padding: 4px;
+  border: 1px solid var(--hair-strong);
+  border-radius: var(--r-pill);
+  background: var(--glass);
+}
+
+.live__device {
+  min-height: 36px;
+  padding-inline: var(--s-4);
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  font: inherit;
+  font-size: var(--t-small);
+  color: var(--on-surface-mid);
+  cursor: pointer;
+  transition:
+    background-color var(--d-micro) var(--e-out),
+    color var(--d-micro) var(--e-out);
+}
+
+.live__device[aria-pressed="true"] {
+  background-color: var(--text-hi);
+  color: var(--ink);
+}
+
+.live__stage {
+  display: flex;
+  justify-content: center;
+}
+
+/* Escritorio a 1280 × 800 y móvil a 390 × 760, reducidos al ancho que haya. */
+.live__frame {
+  width: min(100%, 1280px);
+}
+
+.live__phone {
+  width: min(100%, 390px);
+}
+
+.live__viewport {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1280 / 800;
+  background-color: var(--night-1);
+}
+
+.live__phone .live__viewport {
+  aspect-ratio: 390 / 760;
+}
+
+.live__phone .live__viewport {
+  border-radius: 19px;
+}
+
+.live__viewport iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  background-color: #fff;
+  transform-origin: 0 0;
+}
+
+.live__poster {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.live__poster img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  filter: brightness(0.45) saturate(0.8);
+}
+
+.live__open {
+  position: relative;
+}
+
+/* Siguiente proyecto: una fila grande enlazada. */
+.work-next__link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding-block: var(--s-8);
+  border-block: 1px solid var(--hair);
+}
+
+.work-next__name {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-4);
+}
+
+@media (hover: hover) {
+  .work-next__link:hover .arrow {
+    transform: var(--arrow-nudge);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shot,
+  .work-row__phone {
+    transition: none;
+  }
+
+  .work-row__media:hover .shot,
+  .work-row:focus-within .shot,
+  .work-hero__media:hover .shot {
+    transform: none;
+  }
+}
+
 /* Llamada final (contacto) ---------------------------------------------- */
 
 /* Marca editorial en el margen superior, sobre un filete. */

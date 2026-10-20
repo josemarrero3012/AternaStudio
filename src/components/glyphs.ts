@@ -3,7 +3,7 @@
 // punto con el vocabulario de Trace.tsx: filamento, puntos y nodo. Las
 // ilustraciones de «En qué creemos» van aparte, en BeliefArt.tsx.
 
-import { glyph, ring } from "./Trace";
+import { glyph, ring, type Drawing } from "./Trace";
 
 /** Portada, «Estudio»: los tres compromisos (studioHome.pillars). Van grandes
  * en su tarjeta y se mueven en bucle (`flow`, ver Trace.tsx). */
@@ -119,3 +119,58 @@ export const STEP_PORTS = [
   { in: 38, node: 76, out: 88 },
   { in: 54, node: 73, out: 82 },
 ];
+
+/** «Trabajo»: la firma de cada proyecto, con el mismo vocabulario. Se
+ * dibujan grandes en su fila y en la cabecera del caso. */
+export const WORK_GLYPHS: Record<string, Drawing> = {
+  // Calma Café: el hilo llega a la mesa y sube como el vapor de una taza;
+  // una voluta se queda en el aire y la otra lleva al nodo.
+  "calma-cafe": glyph(
+    [
+      { d: "M0 32 H40", dur: 1 },
+      { d: "M40 32 C50 32 46 20 54 16 C60 13 58 6 64 4", delay: 0.9, dur: 0.8 },
+      { d: "M40 32 C56 32 60 20 72 20 H88", delay: 0.9, dur: 1 },
+    ],
+    [{ x: 64, y: 4, delay: 1.7 }],
+    { x: 88, y: 20, delay: 1.9 },
+    {
+      dur: 4,
+      pulses: [
+        { d: "M0 32 H40", from: 0, to: 0.26, len: 0.3 },
+        { d: "M40 32 C50 32 46 20 54 16 C60 13 58 6 64 4", from: 0.26, to: 0.5, len: 0.35 },
+        { d: "M40 32 C56 32 60 20 72 20 H88", from: 0.28, to: 0.6, len: 0.3 },
+      ],
+      beats: [
+        { target: 0, at: 0.5 },
+        { target: "node", at: 0.6 },
+      ],
+    },
+  ),
+  // The Fragrance Bar: las tres notas de un perfume. El hilo sube en tres
+  // escalones —fondo, corazón, salida— y la salida es el nodo.
+  "the-fragrance-bar": glyph(
+    [
+      { d: "M0 34 H30", dur: 0.9 },
+      { d: "M30 34 C40 34 40 24 50 24 C60 24 60 14 70 14 C80 14 80 6 88 6", delay: 0.8, dur: 1.2 },
+    ],
+    [
+      { x: 30, y: 34, delay: 0.9 },
+      { x: 50, y: 24, delay: 1.3 },
+      { x: 70, y: 14, delay: 1.7 },
+    ],
+    { x: 88, y: 6, delay: 2 },
+    {
+      dur: 4.2,
+      pulses: [
+        { d: "M0 34 H30", from: 0, to: 0.22, len: 0.3 },
+        { d: "M30 34 C40 34 40 24 50 24 C60 24 60 14 70 14 C80 14 80 6 88 6", from: 0.22, to: 0.66, len: 0.22 },
+      ],
+      beats: [
+        { target: 0, at: 0.23 },
+        { target: 1, at: 0.38 },
+        { target: 2, at: 0.53 },
+        { target: "node", at: 0.66 },
+      ],
+    },
+  ),
+};

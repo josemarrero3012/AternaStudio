@@ -33,6 +33,7 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 | --- | --- |
 | Textos ES/EN (todos) | `src/lib/dict.ts` |
 | Precios | `src/lib/pricing.ts` |
+| Proyectos de «Trabajo» (enlaces, capturas, stack) | `src/lib/work.ts` (textos en `dict.ts` → `work`) |
 | Datos de contacto, URL | `src/lib/site.ts` |
 | Títulos y descripciones SEO | `metadata` de cada `src/app/**/page.tsx` |
 | Tokens de diseño (color, tipo, espacio, forma, movimiento) | `src/styles/tokens.css` |
@@ -46,3 +47,8 @@ La web no usa ilustraciones ni fotos: la única imagen es el vídeo del hero
 (`public/brand/hero-tree-*`), que marca la estética de todo lo demás. La
 profundidad de las secciones se construye con CSS (color, luz, líneas y
 tipografía), no con imágenes.
+
+Excepción: las capturas de los proyectos de «Trabajo» (`public/work/`). Se
+regeneran con `node scripts/work-shots.js`, que abre Edge sin ventana y
+fotografía cada web con «reducir movimiento». Esa sección es una vista
+previa para el equipo: sus páginas van con noindex y fuera del sitemap.

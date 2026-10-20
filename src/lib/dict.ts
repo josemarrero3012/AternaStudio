@@ -13,6 +13,10 @@ const es = {
       "href": "/servicios"
     },
     {
+      "label": "Trabajo",
+      "href": "/trabajo"
+    },
+    {
       "label": "Estudio",
       "href": "/estudio"
     },
@@ -82,6 +86,86 @@ const es = {
         "pending": true
       }
     ] as { sector: string; title: string; problem: string; solution: string; services: string[]; pending: boolean }[]
+  },
+  "work": {
+    "eyebrow": "Trabajo",
+    "title": "Dos webs,\nhechas de verdad.",
+    "lead": "Dos prototipos completos que diseñamos y construimos para negocios de Canarias. Todavía sin cifras de resultados, así que no las ponemos: lo que sí puedes ver es la web entera y su código.",
+    "badge": "Prototipo",
+    "more": "Ver el caso",
+    "live": "Abrir la web",
+    "code": "Ver el código",
+    "all": "Todo el trabajo",
+    "next": "Siguiente proyecto",
+    "stack": "Con qué está hecha",
+    "services": "Servicios",
+    "problem": "El reto",
+    "solution": "Qué hicimos",
+    "featuresTitle": "Lo que tiene",
+    "galleryTitle": "En escritorio y en el móvil",
+    "previewTitle": "Pruébala aquí mismo",
+    "previewLead": "La web real, cargada desde GitHub Pages. Solo se abre si la pides.",
+    "previewOpen": "Cargar la vista en vivo",
+    "desktop": "Escritorio",
+    "mobile": "Móvil",
+    "frameLabel": "Vista en vivo de {name}",
+    "shotAlt": "Captura de la web de {name}",
+    "items": [
+      {
+        "slug": "calma-cafe",
+        "name": "Calma Café",
+        "sector": "Hostelería · Maspalomas",
+        "summary": "Brunch y café en Maspalomas, con la carta completa en cuatro idiomas y al día sin copiarla a mano.",
+        "facts": ["4 idiomas", "~130 platos con alérgenos", "Carta sincronizada cada mañana"],
+        "problem": "Un café con mucha carta y clientela de todas partes. La carta tenía que estar entera, en el idioma de quien la mira y al día, sin que nadie tuviera que copiarla a mano cada vez que cambia un precio.",
+        "solution": "Cuatro páginas en Astro —Inicio, Carta, Calma y Visítanos— en español, inglés, alemán y neerlandés. La carta se importa de la carta digital oficial del local y se publica sola cada mañana, antes de que abra el café.",
+        "features": [
+          {
+            "title": "La carta se actualiza sola",
+            "body": "Cada mañana GitHub Actions la vuelve a importar. Si la oficial falla o llega a medias, no se publica nada: mejor la de ayer que una carta rota."
+          },
+          {
+            "title": "Cuatro idiomas",
+            "body": "Español, inglés, alemán y neerlandés: los de quien pasa por Maspalomas."
+          },
+          {
+            "title": "Abierto o cerrado",
+            "body": "Un aviso con la hora de Canarias, para no llegar con la persiana bajada."
+          },
+          {
+            "title": "Alérgenos con cuidado",
+            "body": "La carta oficial solo los tenía en unos 30 platos. Se completaron los que se sabían con seguridad, y la web avisa del resto."
+          }
+        ]
+      },
+      {
+        "slug": "the-fragrance-bar",
+        "name": "The Fragrance Bar",
+        "sector": "Perfumería nicho · Las Palmas de Gran Canaria",
+        "summary": "Perfumería de casas de autor en Triana: catálogo, una ficha olfativa por fragancia y una tienda de prueba.",
+        "facts": ["~110 páginas desde un archivo de datos", "Catálogo con filtros", "Cesta y pedido de prueba"],
+        "problem": "Tres tiendas, ocho casas de autor y decenas de fragancias. Hacía falta un catálogo que se recorriera como la propia barra —por casa y por familia olfativa— y que creciera sin rehacer la web.",
+        "solution": "HTML, CSS y JavaScript sin framework, con Vite. Casas y fragancias viven en un archivo de datos: de ahí salen unas 110 páginas, el catálogo y el sitemap. Todo el contenido llega en el HTML, así que se lee aunque falle el JavaScript.",
+        "features": [
+          {
+            "title": "Una ficha por fragancia",
+            "body": "Tamaños, precio y las notas de salida, corazón y fondo de cada perfume."
+          },
+          {
+            "title": "Catálogo con filtros",
+            "body": "Buscador y filtros por casa y por familia olfativa."
+          },
+          {
+            "title": "Cesta y «Tu lista»",
+            "body": "Pedido de prueba con recogida o envío, y favoritos que se mandan por WhatsApp. Los precios son de ejemplo y la web lo avisa."
+          },
+          {
+            "title": "Tres tiendas, en hora",
+            "body": "Horario de cada tienda y aviso de abierto o cerrado, festivos incluidos."
+          }
+        ]
+      }
+    ]
   },
   "services": {
     "eyebrow": "Qué hacemos",
@@ -592,6 +676,10 @@ const en: Dict = {
       "href": "/servicios"
     },
     {
+      "label": "Work",
+      "href": "/trabajo"
+    },
+    {
       "label": "Studio",
       "href": "/estudio"
     },
@@ -659,6 +747,86 @@ const en: Dict = {
         "solution": "Pending: what we did and what changed, with real data.",
         "services": [],
         "pending": true
+      }
+    ]
+  },
+  "work": {
+    "eyebrow": "Work",
+    "title": "Two sites,\nbuilt for real.",
+    "lead": "Two complete prototypes we designed and built for businesses in the Canary Islands. No results figures yet, so we don't show any: what you can see is the whole site and its code.",
+    "badge": "Prototype",
+    "more": "See the case",
+    "live": "Open the site",
+    "code": "See the code",
+    "all": "All work",
+    "next": "Next project",
+    "stack": "Built with",
+    "services": "Services",
+    "problem": "The challenge",
+    "solution": "What we did",
+    "featuresTitle": "What it has",
+    "galleryTitle": "On desktop and on mobile",
+    "previewTitle": "Try it right here",
+    "previewLead": "The real site, loaded from GitHub Pages. It only opens if you ask for it.",
+    "previewOpen": "Load the live preview",
+    "desktop": "Desktop",
+    "mobile": "Mobile",
+    "frameLabel": "Live preview of {name}",
+    "shotAlt": "Screenshot of the {name} website",
+    "items": [
+      {
+        "slug": "calma-cafe",
+        "name": "Calma Café",
+        "sector": "Hospitality · Maspalomas",
+        "summary": "Brunch and coffee in Maspalomas, with the full menu in four languages and kept up to date without copying it by hand.",
+        "facts": ["4 languages", "~130 dishes with allergens", "Menu synced every morning"],
+        "problem": "A café with a long menu and guests from everywhere. The menu had to be complete, in the visitor's language and up to date, without anyone retyping it every time a price changes.",
+        "solution": "Four pages in Astro —Home, Menu, Calma and Visit us— in Spanish, English, German and Dutch. The menu is imported from the café's official digital menu and publishes itself every morning, before opening.",
+        "features": [
+          {
+            "title": "The menu updates itself",
+            "body": "Every morning GitHub Actions imports it again. If the official one fails or comes back half-empty, nothing is published: yesterday's menu beats a broken one."
+          },
+          {
+            "title": "Four languages",
+            "body": "Spanish, English, German and Dutch: the languages of people passing through Maspalomas."
+          },
+          {
+            "title": "Open or closed",
+            "body": "A notice on Canary Islands time, so nobody turns up to a closed shutter."
+          },
+          {
+            "title": "Careful with allergens",
+            "body": "The official menu only listed them for about 30 dishes. The ones that could be known for sure were filled in, and the site flags the rest."
+          }
+        ]
+      },
+      {
+        "slug": "the-fragrance-bar",
+        "name": "The Fragrance Bar",
+        "sector": "Niche perfumery · Las Palmas de Gran Canaria",
+        "summary": "A perfumery of independent houses in Triana: catalogue, a scent profile for every fragrance and a test shop.",
+        "facts": ["~110 pages from one data file", "Filterable catalogue", "Test basket and checkout"],
+        "problem": "Three shops, eight perfume houses and dozens of fragrances. It needed a catalogue you could browse like the bar itself —by house and by scent family— and that could grow without rebuilding the site.",
+        "solution": "HTML, CSS and JavaScript with no framework, built with Vite. Houses and fragrances live in one data file: about 110 pages, the catalogue and the sitemap come out of it. All content ships in the HTML, so it reads even if JavaScript fails.",
+        "features": [
+          {
+            "title": "A page per fragrance",
+            "body": "Sizes, price and the top, heart and base notes of every perfume."
+          },
+          {
+            "title": "Filterable catalogue",
+            "body": "Search plus filters by house and by scent family."
+          },
+          {
+            "title": "Basket and «Your list»",
+            "body": "Test order with pickup or delivery, and favourites you can send by WhatsApp. Prices are examples and the site says so."
+          },
+          {
+            "title": "Three shops, on time",
+            "body": "Opening hours for each shop and an open or closed notice, public holidays included."
+          }
+        ]
       }
     ]
   },
