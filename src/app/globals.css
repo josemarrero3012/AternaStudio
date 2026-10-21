@@ -690,6 +690,9 @@ html.lenis body {
 }
 
 .lang-toggle__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 36px;
   min-height: 36px;
   padding: 6px 8px;

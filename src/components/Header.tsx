@@ -2,34 +2,41 @@
 
 import { withBase } from "@/lib/base";
 import Image from "next/image";
-import Link from "next/link";
+import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
-import { LOCALES, LOCALE_NAMES } from "@/lib/dict";
-import { useI18n } from "@/lib/i18n";
+import { LOCALES, LOCALE_NAMES, localePath, stripLocale } from "@/lib/dict";
+import { Link, useI18n } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import { ArrowRight } from "./icons";
 
+/**
+ * Cada idioma es un enlace a la misma página en ese idioma: así Google
+ * también llega a las cuatro versiones desde cualquiera de ellas.
+ */
 function LangToggle({ className = "" }: { className?: string }) {
-  const { locale, setLocale, t } = useI18n();
+  const { locale, t, lost } = useI18n();
+  const pathname = stripLocale(usePathname());
+  const path = lost ? "/" : pathname;
   return (
     <div className={`lang-toggle ${className}`.trim()} role="group" aria-label={t.a11y.language}>
       {LOCALES.map((l) => {
         const active = locale === l;
         return (
-          <button
+          <NextLink
             key={l}
-            type="button"
+            href={localePath(path, l)}
+            scroll={false}
             className="lang-toggle__btn t-label"
             data-active={active}
-            aria-pressed={active}
+            aria-current={active ? "true" : undefined}
             aria-label={LOCALE_NAMES[l]}
+            hrefLang={l}
             lang={l}
-            onClick={() => setLocale(l)}
           >
             {l.toUpperCase()}
-          </button>
+          </NextLink>
         );
       })}
     </div>
@@ -130,7 +137,7 @@ function MobileMenu() {
               <Link
                 href={item.href}
                 className="t-display"
-                aria-current={pathname.startsWith(item.href) ? "page" : undefined}
+                aria-current={stripLocale(pathname).startsWith(item.href) ? "page" : undefined}
                 onClick={close}
               >
                 <span className="menu-panel__index t-index">{String(i + 1).padStart(2, "0")}</span>
@@ -210,7 +217,7 @@ export function Header() {
                 <Link
                   href={item.href}
                   className="t-small link-underline"
-                  aria-current={pathname.startsWith(item.href) ? "page" : undefined}
+                  aria-current={stripLocale(pathname).startsWith(item.href) ? "page" : undefined}
                 >
                   {item.label}
                 </Link>

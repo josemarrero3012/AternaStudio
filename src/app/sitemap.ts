@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
-import { site } from "@/lib/site";
+import { LOCALES } from "@/lib/dict";
+import { absoluteUrl, languageAlternates } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
 const routes: [string, number][] = [
-  ["", 1],
+  ["/", 1],
   ["/servicios", 0.8],
   ["/servicios/web", 0.7],
   ["/servicios/seo", 0.7],
@@ -14,12 +15,17 @@ const routes: [string, number][] = [
   ["/contacto", 0.6],
 ];
 
+// Cada ruta en los cuatro idiomas, y cada entrada con sus versiones
+// (hreflang), como pide Google para webs multilingües.
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
-  return routes.map(([path, priority]) => ({
-    url: `${site.url}${path}`,
-    lastModified,
-    changeFrequency: "monthly",
-    priority,
-  }));
+  return routes.flatMap(([path, priority]) =>
+    LOCALES.map((locale) => ({
+      url: absoluteUrl(path, locale),
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority,
+      alternates: { languages: languageAlternates(path) },
+    })),
+  );
 }

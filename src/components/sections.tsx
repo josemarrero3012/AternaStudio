@@ -3,9 +3,8 @@
 // Secciones compartidas entre páginas.
 
 import { withBase } from "@/lib/base";
-import Link from "next/link";
 import { useEffect, useId, useRef } from "react";
-import { useI18n } from "@/lib/i18n";
+import { Link, useI18n } from "@/lib/i18n";
 import {
   ATERNA_EASE,
   DURATION,
