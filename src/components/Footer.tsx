@@ -16,7 +16,7 @@ export function Footer() {
       <hr className="brand-rule" />
       <div className="container footer__inner">
         <div className="footer__brand">
-          <Image src={withBase("/brand/aterna-lockup.webp")} alt={site.name} width={808} height={320} className="footer__lockup" />
+          <Image src={withBase("/brand/aterna-lockup-light.webp")} alt={site.name} width={808} height={320} className="footer__lockup" />
           <p className="t-small muted">
             {t.hero.eyebrow}.
             <br />
