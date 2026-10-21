@@ -196,7 +196,7 @@ const es = {
     "send": "Enviar",
     "labels": ["Pensando", "Buscando", "Leyendo la web", "Redactando"],
     "answer": "Respuesta",
-    "again": "Otra pregunta",
+    "restart": "Empezar de nuevo",
     "suggestions": ["¿Cuánto cuesta una web?", "¿Qué incluye el SEO?", "¿Cómo trabajáis?", "¿Cómo os contacto?"],
     "hello": "¡Hola! Soy el asistente de Aterna. Te cuento lo que hacemos, cuánto cuesta y cómo trabajamos. ¿Qué quieres saber?",
     "fallback": "Eso no lo encuentro en la web y prefiero no inventármelo. Escríbenos y te respondemos nosotros.",
@@ -204,7 +204,69 @@ const es = {
     "plansIntro": "Planes de {service}:",
     "custom": "precio personalizado",
     "studioLink": "Conocer el estudio",
-    "methodLink": "Ver cómo trabajamos"
+    "methodLink": "Ver cómo trabajamos",
+    "plansLabel": "Planes de {service}",
+    "contactLabel": "¿Cómo os contacto?",
+    "nearest": "Quizá te sirva alguna de estas:",
+    "askWhatsApp": "Preguntar por WhatsApp",
+    "question": "Hola, tengo una pregunta: {q}",
+    "flow": {
+      "start": "Ayúdame a elegir",
+      "need": {
+        "q": "¿Qué te hace falta?",
+        "options": [
+          {
+            "label": "Una web nueva o renovar la mía",
+            "service": "web"
+          },
+          {
+            "label": "Que me encuentren en Google",
+            "service": "seo"
+          },
+          {
+            "label": "Que alguien cuide mi web",
+            "service": "mantenimiento"
+          },
+          {
+            "label": "Atender las llamadas",
+            "service": "asistente-ia"
+          },
+          {
+            "label": "Aún no lo sé",
+            "service": ""
+          }
+        ]
+      },
+      "sector": {
+        "q": "¿A qué se dedica tu negocio?",
+        "options": [
+          "Restaurante o cafetería",
+          "Tienda",
+          "Salud o bienestar",
+          "Servicios profesionales",
+          "Otra cosa"
+        ]
+      },
+      "when": {
+        "q": "¿Para cuándo lo necesitas?",
+        "options": [
+          "Lo antes posible",
+          "En los próximos meses",
+          "Solo estoy mirando"
+        ]
+      },
+      "summary": "Te encaja esto: {service}, {price}. Te dejo el mensaje preparado: mándalo por WhatsApp o por el formulario y te contestamos con una propuesta.",
+      "summaryUnsure": "Lo vemos juntos. Te dejo el mensaje preparado: mándalo por WhatsApp o por el formulario y te contamos qué haríamos en tu caso.",
+      "intro": "Hola, vengo del asistente de la web.",
+      "fields": {
+        "service": "Me interesa",
+        "sector": "Sector",
+        "when": "Plazo"
+      },
+      "unsure": "aún no lo sé",
+      "whatsapp": "Enviar por WhatsApp",
+      "form": "Usar el formulario"
+    }
   },
   "servicePages": {
     "index": {
@@ -777,7 +839,7 @@ const en: Dict = {
     "send": "Send",
     "labels": ["Thinking", "Searching", "Reading the site", "Writing"],
     "answer": "Answer",
-    "again": "Another question",
+    "restart": "Start over",
     "suggestions": ["How much is a website?", "What does SEO include?", "How do you work?", "How do I contact you?"],
     "hello": "Hi! I'm the Aterna assistant. I can tell you what we do, what it costs and how we work. What would you like to know?",
     "fallback": "I can't find that on the website and I'd rather not make it up. Write to us and we'll answer ourselves.",
@@ -785,7 +847,69 @@ const en: Dict = {
     "plansIntro": "{service} plans:",
     "custom": "custom pricing",
     "studioLink": "About the studio",
-    "methodLink": "See how we work"
+    "methodLink": "See how we work",
+    "plansLabel": "{service} plans",
+    "contactLabel": "How do I contact you?",
+    "nearest": "One of these might help:",
+    "askWhatsApp": "Ask on WhatsApp",
+    "question": "Hi, I have a question: {q}",
+    "flow": {
+      "start": "Help me choose",
+      "need": {
+        "q": "What do you need?",
+        "options": [
+          {
+            "label": "A new website or a redesign",
+            "service": "web"
+          },
+          {
+            "label": "To be found on Google",
+            "service": "seo"
+          },
+          {
+            "label": "Someone to look after my site",
+            "service": "mantenimiento"
+          },
+          {
+            "label": "Help answering calls",
+            "service": "asistente-ia"
+          },
+          {
+            "label": "I'm not sure yet",
+            "service": ""
+          }
+        ]
+      },
+      "sector": {
+        "q": "What does your business do?",
+        "options": [
+          "Restaurant or café",
+          "Shop",
+          "Health or wellbeing",
+          "Professional services",
+          "Something else"
+        ]
+      },
+      "when": {
+        "q": "When do you need it?",
+        "options": [
+          "As soon as possible",
+          "In the next few months",
+          "Just looking"
+        ]
+      },
+      "summary": "This is the one for you: {service}, {price}. Here's the message ready to go: send it on WhatsApp or through the form and we'll reply with a proposal.",
+      "summaryUnsure": "Let's work it out together. Here's the message ready to go: send it on WhatsApp or through the form and we'll tell you what we'd do in your case.",
+      "intro": "Hi, I'm writing from the assistant on your website.",
+      "fields": {
+        "service": "Interested in",
+        "sector": "Sector",
+        "when": "Timing"
+      },
+      "unsure": "not sure yet",
+      "whatsapp": "Send on WhatsApp",
+      "form": "Use the form"
+    }
   },
   "servicePages": {
     "index": {
@@ -1356,7 +1480,7 @@ const nl: Dict = {
     "send": "Versturen",
     "labels": ["Nadenken", "Zoeken", "De website lezen", "Schrijven"],
     "answer": "Antwoord",
-    "again": "Nog een vraag",
+    "restart": "Opnieuw beginnen",
     "suggestions": ["Wat kost een website?", "Wat houdt SEO in?", "Hoe werken jullie?", "Hoe neem ik contact op?"],
     "hello": "Hoi! Ik ben de assistent van Aterna. Ik vertel je wat we doen, wat het kost en hoe we werken. Wat wil je weten?",
     "fallback": "Dat vind ik niet op de website en ik verzin liever niets. Schrijf ons, dan antwoorden we zelf.",
@@ -1364,7 +1488,69 @@ const nl: Dict = {
     "plansIntro": "Pakketten voor {service}:",
     "custom": "prijs op maat",
     "studioLink": "Maak kennis met de studio",
-    "methodLink": "Bekijk hoe we werken"
+    "methodLink": "Bekijk hoe we werken",
+    "plansLabel": "Pakketten voor {service}",
+    "contactLabel": "Hoe neem ik contact op?",
+    "nearest": "Misschien heb je hier iets aan:",
+    "askWhatsApp": "Vragen via WhatsApp",
+    "question": "Hallo, ik heb een vraag: {q}",
+    "flow": {
+      "start": "Help me kiezen",
+      "need": {
+        "q": "Wat heb je nodig?",
+        "options": [
+          {
+            "label": "Een nieuwe website of een vernieuwing",
+            "service": "web"
+          },
+          {
+            "label": "Gevonden worden in Google",
+            "service": "seo"
+          },
+          {
+            "label": "Iemand die mijn website onderhoudt",
+            "service": "mantenimiento"
+          },
+          {
+            "label": "Telefoontjes laten beantwoorden",
+            "service": "asistente-ia"
+          },
+          {
+            "label": "Weet ik nog niet",
+            "service": ""
+          }
+        ]
+      },
+      "sector": {
+        "q": "Wat voor bedrijf heb je?",
+        "options": [
+          "Restaurant of café",
+          "Winkel",
+          "Zorg of welzijn",
+          "Zakelijke dienstverlening",
+          "Iets anders"
+        ]
+      },
+      "when": {
+        "q": "Wanneer heb je het nodig?",
+        "options": [
+          "Zo snel mogelijk",
+          "In de komende maanden",
+          "Ik kijk alleen even rond"
+        ]
+      },
+      "summary": "Dit past bij je: {service}, {price}. Het bericht staat klaar: stuur het via WhatsApp of het formulier en we reageren met een voorstel.",
+      "summaryUnsure": "Dan bekijken we het samen. Het bericht staat klaar: stuur het via WhatsApp of het formulier en we vertellen je wat we in jouw geval zouden doen.",
+      "intro": "Hallo, ik kom via de assistent op jullie website.",
+      "fields": {
+        "service": "Interesse in",
+        "sector": "Sector",
+        "when": "Wanneer"
+      },
+      "unsure": "weet ik nog niet",
+      "whatsapp": "Versturen via WhatsApp",
+      "form": "Het formulier gebruiken"
+    }
   },
   "servicePages": {
     "index": {
@@ -1935,7 +2121,7 @@ const de: Dict = {
     "send": "Senden",
     "labels": ["Denkt nach", "Sucht", "Liest die Website", "Formuliert"],
     "answer": "Antwort",
-    "again": "Weitere Frage",
+    "restart": "Neu beginnen",
     "suggestions": ["Was kostet eine Website?", "Was umfasst SEO?", "Wie arbeiten Sie?", "Wie erreiche ich Sie?"],
     "hello": "Hallo! Ich bin der Aterna-Assistent. Ich erzähle Ihnen, was wir tun, was es kostet und wie wir arbeiten. Was möchten Sie wissen?",
     "fallback": "Das finde ich nicht auf der Website, und ich erfinde lieber nichts. Schreiben Sie uns, dann antworten wir selbst.",
@@ -1943,7 +2129,69 @@ const de: Dict = {
     "plansIntro": "Pakete für {service}:",
     "custom": "individueller Preis",
     "studioLink": "Das Studio kennenlernen",
-    "methodLink": "So arbeiten wir"
+    "methodLink": "So arbeiten wir",
+    "plansLabel": "Pakete für {service}",
+    "contactLabel": "Wie erreiche ich Sie?",
+    "nearest": "Vielleicht hilft Ihnen eine davon:",
+    "askWhatsApp": "Per WhatsApp fragen",
+    "question": "Hallo, ich habe eine Frage: {q}",
+    "flow": {
+      "start": "Hilfe bei der Auswahl",
+      "need": {
+        "q": "Was brauchen Sie?",
+        "options": [
+          {
+            "label": "Eine neue Website oder ein Relaunch",
+            "service": "web"
+          },
+          {
+            "label": "Bei Google gefunden werden",
+            "service": "seo"
+          },
+          {
+            "label": "Jemand, der meine Website betreut",
+            "service": "mantenimiento"
+          },
+          {
+            "label": "Anrufe annehmen lassen",
+            "service": "asistente-ia"
+          },
+          {
+            "label": "Weiß ich noch nicht",
+            "service": ""
+          }
+        ]
+      },
+      "sector": {
+        "q": "In welcher Branche sind Sie tätig?",
+        "options": [
+          "Restaurant oder Café",
+          "Laden",
+          "Gesundheit oder Wellness",
+          "Dienstleistungen für Unternehmen",
+          "Etwas anderes"
+        ]
+      },
+      "when": {
+        "q": "Bis wann brauchen Sie es?",
+        "options": [
+          "So bald wie möglich",
+          "In den nächsten Monaten",
+          "Ich schaue mich nur um"
+        ]
+      },
+      "summary": "Das passt zu Ihnen: {service}, {price}. Die Nachricht ist vorbereitet: Schicken Sie sie per WhatsApp oder über das Formular, und wir melden uns mit einem Vorschlag.",
+      "summaryUnsure": "Dann schauen wir es uns gemeinsam an. Die Nachricht ist vorbereitet: Schicken Sie sie per WhatsApp oder über das Formular, und wir sagen Ihnen, was wir in Ihrem Fall tun würden.",
+      "intro": "Hallo, ich schreibe über den Assistenten auf Ihrer Website.",
+      "fields": {
+        "service": "Interesse an",
+        "sector": "Branche",
+        "when": "Zeitrahmen"
+      },
+      "unsure": "weiß ich noch nicht",
+      "whatsapp": "Per WhatsApp senden",
+      "form": "Formular verwenden"
+    }
   },
   "servicePages": {
     "index": {

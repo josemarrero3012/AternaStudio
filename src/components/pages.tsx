@@ -4,7 +4,7 @@
 // LanguageProvider): cada idioma se exporta ya traducido.
 
 import { withBase } from "@/lib/base";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useI18n } from "@/lib/i18n";
 import { useReveal } from "@/lib/reveal";
 import { formatPrice, pricing, slugToProduct, type ServiceSlug } from "@/lib/pricing";
@@ -393,6 +393,12 @@ function ContactForm() {
   const [company, setCompany] = useState(""); // trampa para bots
   const [state, setState] = useState<FormState>("idle");
   const sending = state === "sending";
+
+  // El asistente puede traer el mensaje ya escrito (/contacto?mensaje=…).
+  useEffect(() => {
+    const draft = new URLSearchParams(window.location.search).get("mensaje");
+    if (draft) setMessage(draft.slice(0, 2000));
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

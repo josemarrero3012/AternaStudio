@@ -40,6 +40,8 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 | Tokens de diseño (color, tipo, espacio, forma, movimiento) | `src/styles/tokens.css` |
 | Estilos de componentes y páginas | `src/app/globals.css` |
 | Páginas legales (HTML literal) | `src/content/legal/` |
+| Asistente (respuestas, flujo guiado) | `src/lib/assistant.ts`, `src/components/Assistant.tsx` |
+| Modelo del asistente en el navegador | `src/lib/semantic.ts`, `public/semantic/worker.js` |
 | Imagen para redes (OG) | `public/brand/og.jpg` (se regenera con `scripts/og-image.js`) |
 
 ## Idiomas
@@ -66,3 +68,28 @@ La web no usa ilustraciones ni fotos: la única imagen es el vídeo del hero
 (`public/brand/hero-tree-*`), que marca la estética de todo lo demás. La
 profundidad de las secciones se construye con CSS (color, luz, líneas y
 tipografía), no con imágenes.
+
+## Asistente
+
+El orbe de la esquina responde con los textos de la web (`dict.ts` y
+`pricing.ts`): si cambias un texto o un precio, el asistente lo sabe sin
+tocar nada más. No usa ninguna API.
+
+- **Búsqueda por palabras** (`src/lib/assistant.ts`): sinónimos en los
+  cuatro idiomas, erratas, raíces y peso por rareza. Funciona en todos los
+  dispositivos.
+- **Modelo en el navegador** (`src/lib/semantic.ts`): en ordenador con buena
+  conexión, al acercarse al asistente se carga un modelo pequeño
+  (paraphrase-multilingual-MiniLM-L12-v2, unos 118 MB, más 14 MB del motor)
+  que entiende preguntas dichas con otras palabras. Lo descarga
+  `scripts/fetch-semantic.mjs` en `public/semantic/` antes de cada
+  `npm run build` (no está en git) y lo sirve la propia web. Si no se pudo
+  descargar, la web se compila igual y el asistente usa solo las palabras.
+  Al publicar, la carpeta `out/semantic/` se sube con el resto.
+- **Ayúdame a elegir**: tres preguntas con botones que dejan el mensaje
+  escrito para WhatsApp o para el formulario (`/contacto?mensaje=…`).
+- **Comprobación**: `npx tsx scripts/assistant-check.ts` pregunta una lista
+  de preguntas reales en los cuatro idiomas. En cada PR que toque el
+  asistente o los textos lo lanza `.github/workflows/assistant.yml`, también
+  con el modelo.
+

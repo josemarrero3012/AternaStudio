@@ -1363,12 +1363,57 @@ body[data-menu="open"] .assistant__orb {
   border-top: 1px solid var(--hair);
 }
 
-.assistant__again {
-  font-size: var(--t-small);
+/* «Ayúdame a elegir»: la misma píldora, con el borde y el fondo de la marca. */
+.assistant__chip--flow {
+  border-color: color-mix(in srgb, var(--orchid) 55%, transparent);
+  background-color: color-mix(in srgb, var(--violet) 18%, transparent);
+}
+
+.assistant__chip:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Preguntas que siguen: alineadas con las respuestas, algo más discretas. */
+.assistant__chips--next .assistant__chip:not(.assistant__chip--flow) {
   color: var(--text-mid);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--hair-strong);
+}
+
+.assistant__hint {
+  color: var(--text-mid);
+}
+
+/* El mensaje que se va a mandar, tal cual. */
+.assistant__draft {
+  margin: 0;
+  padding: var(--s-3);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--night-0) 55%, transparent);
+  color: var(--text-mid);
+  font: inherit;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.assistant__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-4);
+}
+
+.assistant__btn.btn-primary {
+  min-height: 40px;
+  padding: 0 18px;
+}
+
+.assistant__btn.btn-ghost {
+  min-height: 40px;
+}
+
+.assistant__btn.btn-ghost::after {
+  bottom: 8px;
 }
 
 /* Campo: la píldora del MorphOrb, con el borde de la marca al escribir. */
