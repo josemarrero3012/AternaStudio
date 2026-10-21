@@ -2,11 +2,11 @@
 
 import { withBase } from "@/lib/base";
 import Image from "next/image";
-import Link from "next/link";
-import { useI18n } from "@/lib/i18n";
+import { Link, useI18n } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import { whatsappHref } from "./Chrome";
 import { ArrowExternal } from "./icons";
+import { Rootlets } from "./Rootlets";
 
 export function Footer() {
   const { t } = useI18n();
@@ -15,7 +15,7 @@ export function Footer() {
       <hr className="brand-rule" />
       <div className="container footer__inner">
         <div className="footer__brand">
-          <Image src={withBase("/brand/aterna-lockup.webp")} alt={site.name} width={808} height={320} className="footer__lockup" />
+          <Image src={withBase("/brand/aterna-lockup-light.webp")} alt={site.name} width={808} height={320} className="footer__lockup" />
           <p className="t-small muted">
             {t.hero.eyebrow}.
             <br />
@@ -75,6 +75,8 @@ export function Footer() {
       </div>
       <div className="container footer__horizon" aria-hidden="true">
         <p className="footer__giant">Aterna</p>
+        {/* La marca, apoyada sobre sus raíces. */}
+        <Rootlets shape="horizon" className="footer__roots" />
       </div>
       <div className="container footer__base">
         <p className="t-label dim">

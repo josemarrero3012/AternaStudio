@@ -1,4 +1,4 @@
-import type { Locale } from "./dict";
+import { LOCALE_TAGS, type Locale } from "./dict";
 
 export type Price = {
   amount: number;
@@ -51,10 +51,11 @@ export type ServiceSlug = keyof typeof slugToProduct;
 
 /**
  * Importe con la convención de cada idioma: "1490 €" en español (símbolo
- * detrás, como en los textos) y "€1,490" en inglés.
+ * detrás, como en los textos), "€1,490" en inglés, "€ 1.490" en neerlandés
+ * y "1.490 €" en alemán.
  */
 export function formatPrice(amount: number, locale: Locale) {
-  return new Intl.NumberFormat(locale === "es" ? "es-ES" : "en-GB", {
+  return new Intl.NumberFormat(LOCALE_TAGS[locale], {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: 0,

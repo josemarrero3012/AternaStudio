@@ -1,12 +1,11 @@
 "use client";
 
-// Contenido de cada página. Son componentes de cliente porque los textos
-// cambian con el selector de idioma; el HTML exportado sale en español.
+// Contenido de cada página. Los textos salen del idioma de la ruta (ver
+// LanguageProvider): cada idioma se exporta ya traducido.
 
 import { withBase } from "@/lib/base";
-import Link from "next/link";
-import { useState } from "react";
-import { useI18n } from "@/lib/i18n";
+import { useEffect, useState } from "react";
+import { Link, useI18n } from "@/lib/i18n";
 import { useReveal } from "@/lib/reveal";
 import { formatPrice, pricing, slugToProduct, type ServiceSlug } from "@/lib/pricing";
 import { site } from "@/lib/site";
@@ -14,9 +13,34 @@ import { BeliefArt } from "./BeliefArt";
 import { CopyEmail } from "./CopyEmail";
 import { whatsappHref } from "./Chrome";
 import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
-import { FinalCTA, NextSteps, StartingPrice } from "./sections";
+import { Approach, Cases, FinalCTA, Hero, NextSteps, Services, StartingPrice, StudioStatement } from "./sections";
 import { ServiceGlyph, ServiceTrace } from "./ServiceTrace";
+import { WorkSection } from "./Work";
 import { WordReveal } from "./WordReveal";
+
+// / -------------------------------------------------------------------------
+
+// Al entrar, la portada cuenta primero quiénes somos (el estudio), después
+// cómo trabajamos (el método) y lo que hemos hecho con él (trabajo); con eso
+// ya presentado, el catálogo de servicios y el contacto. Los casos de uso
+// solo salen cuando hay alguno real: tres huecos «Pendiente» en la portada
+// restaban más de lo que contaban. La numeración se ajusta sola.
+export function HomeContent() {
+  const { t } = useI18n();
+  const withCases = t.cases.items.some((item) => !item.pending);
+  const k = withCases ? 1 : 0;
+  return (
+    <>
+      <Hero />
+      <StudioStatement n={1} />
+      <Approach n={2} />
+      <WorkSection n={3} />
+      {withCases ? <Cases n={4} /> : null}
+      <Services n={4 + k} />
+      <FinalCTA n={5 + k} />
+    </>
+  );
+}
 
 // /servicios ----------------------------------------------------------------
 
@@ -371,6 +395,12 @@ function ContactForm() {
   const [company, setCompany] = useState(""); // trampa para bots
   const [state, setState] = useState<FormState>("idle");
   const sending = state === "sending";
+
+  // El asistente puede traer el mensaje ya escrito (/contacto?mensaje=…).
+  useEffect(() => {
+    const draft = new URLSearchParams(window.location.search).get("mensaje");
+    if (draft) setMessage(draft.slice(0, 2000));
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

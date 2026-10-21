@@ -9,6 +9,7 @@ import {
   prefersReducedMotion,
   registerGsap,
 } from "@/lib/motion";
+import { onIntro } from "@/lib/intro";
 
 type Props = {
   text: string;
@@ -16,8 +17,11 @@ type Props = {
   className?: string;
   id?: string;
   delay?: number;
-  /** false: anima al montar (hero). true: anima al entrar en pantalla. */
-  onScroll?: boolean;
+  /**
+   * true: anima al entrar en pantalla. false: al montar. "intro": cuando
+   * empieza la entrada de la portada (lib/intro.ts), y `delay` cuenta desde ahí.
+   */
+  onScroll?: boolean | "intro";
   /** Cuántas palabras finales llevan el degradado de marca. */
   accent?: number;
 };
@@ -32,7 +36,9 @@ export function WordReveal({ text, as = "h2", className, id, delay = 0, onScroll
     const words = el.querySelectorAll("[data-word] > span");
     if (!words.length || prefersReducedMotion()) return;
     registerGsap();
-    gsap.set(words, { yPercent: 110, opacity: 0 });
+    // y: 0 explícito: el hero viene ya oculto por CSS (ver globals.css) y
+    // GSAP, al leer ese transform, lo guardaría como desplazamiento en px.
+    gsap.set(words, { y: 0, yPercent: 110, opacity: 0 });
     let tween: gsap.core.Tween | null = null;
     const play = () => {
       tween = gsap.to(words, {
@@ -46,7 +52,10 @@ export function WordReveal({ text, as = "h2", className, id, delay = 0, onScroll
       });
     };
     let io: IntersectionObserver | null = null;
-    if (onScroll) {
+    let off = () => {};
+    if (onScroll === "intro") {
+      off = onIntro(play);
+    } else if (onScroll) {
       io = new IntersectionObserver(
         (entries) => {
           if (entries.some((e) => e.isIntersecting)) {
@@ -61,6 +70,7 @@ export function WordReveal({ text, as = "h2", className, id, delay = 0, onScroll
       play();
     }
     return () => {
+      off();
       io?.disconnect();
       tween?.kill();
       gsap.set(words, { clearProps: "transform,opacity,willChange" });
