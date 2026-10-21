@@ -3463,6 +3463,55 @@ body[data-menu="open"] .assistant__orb {
   animation: horizon-spark 7s var(--e-inout) infinite;
 }
 
+/* Savia: el color de las raíces sube por las letras desde el filamento y se
+   apaga hacia arriba, con más luz a la derecha, donde cuelgan las raíces.
+   Capas (de arriba abajo): el pulso de savia, la luz de la derecha, la savia
+   y, debajo, el tono casi fundido de siempre. Al llegar al pie la palabra
+   espera apagada y, cuando las raíces acaban de dibujarse, la savia sube
+   (--sap); después un pulso la recorre de abajo arriba de vez en cuando. */
+@property --sap {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+
+.footer__horizon .footer__giant {
+  background:
+    linear-gradient(0deg, transparent 0%, color-mix(in srgb, var(--orchid) 40%, #fff 10%) 50%, transparent 100%) no-repeat,
+    radial-gradient(42% 90% at 72% 100%, color-mix(in srgb, var(--orchid) 55%, transparent), transparent) no-repeat,
+    linear-gradient(0deg, color-mix(in srgb, var(--orchid) 42%, transparent) 0%, color-mix(in srgb, var(--violet) 30%, transparent) 30%, color-mix(in srgb, var(--indigo) 14%, transparent) 72%, color-mix(in srgb, var(--lavender) 6%, transparent) 100%) no-repeat,
+    linear-gradient(180deg, color-mix(in srgb, var(--lavender) 14%, transparent), color-mix(in srgb, var(--indigo) 4%, transparent));
+  background-size: 100% 36%, 100% var(--sap), 100% var(--sap), 100% 100%;
+  background-position: 0 140%, 0 100%, 0 100%, 0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Apagada mientras las raíces esperan; sube (solo hacia arriba) al dibujarse. */
+.footer__horizon:has(.rootlets[data-anim]:not([data-in])) .footer__giant {
+  --sap: 0%;
+}
+
+.footer__horizon:has(.rootlets[data-in]) .footer__giant {
+  transition: --sap 2.4s var(--e-out) 0.9s;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .footer__horizon .footer__giant {
+    animation: giant-sap 11s var(--e-inout) 3.5s infinite;
+  }
+}
+
+@keyframes giant-sap {
+  0% {
+    background-position: 0 140%, 0 100%, 0 100%, 0 0;
+  }
+  45%,
+  100% {
+    background-position: 0 -60%, 0 100%, 0 100%, 0 0;
+  }
+}
+
 /* Y el resplandor de detrás respira, muy despacio. */
 .footer__horizon::before {
   animation: horizon-breathe 9s ease-in-out infinite alternate;
