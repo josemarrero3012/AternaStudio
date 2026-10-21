@@ -1,12 +1,11 @@
 "use client";
 
-// Contenido de cada página. Son componentes de cliente porque los textos
-// cambian con el selector de idioma; el HTML exportado sale en español.
+// Contenido de cada página. Los textos salen del idioma de la ruta (ver
+// LanguageProvider): cada idioma se exporta ya traducido.
 
 import { withBase } from "@/lib/base";
-import Link from "next/link";
 import { useState } from "react";
-import { useI18n } from "@/lib/i18n";
+import { Link, useI18n } from "@/lib/i18n";
 import { useReveal } from "@/lib/reveal";
 import { formatPrice, pricing, slugToProduct, type ServiceSlug } from "@/lib/pricing";
 import { site } from "@/lib/site";
@@ -14,9 +13,32 @@ import { BeliefArt } from "./BeliefArt";
 import { CopyEmail } from "./CopyEmail";
 import { whatsappHref } from "./Chrome";
 import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
-import { FinalCTA, NextSteps, StartingPrice } from "./sections";
+import { Approach, Cases, FinalCTA, Hero, NextSteps, Services, StartingPrice, StudioStatement } from "./sections";
 import { ServiceGlyph, ServiceTrace } from "./ServiceTrace";
 import { WordReveal } from "./WordReveal";
+
+// / -------------------------------------------------------------------------
+
+// Al entrar, la portada cuenta primero quiénes somos (el estudio), después
+// cómo trabajamos (el método) y luego casos de uso; con eso ya presentado,
+// el catálogo de servicios y el contacto. Los casos solo salen cuando hay
+// alguno real: tres huecos «Pendiente» en la portada restaban más de lo que
+// contaban. La numeración se ajusta sola.
+export function HomeContent() {
+  const { t } = useI18n();
+  const withCases = t.cases.items.some((item) => !item.pending);
+  const k = withCases ? 1 : 0;
+  return (
+    <>
+      <Hero />
+      <StudioStatement n={1} />
+      <Approach n={2} />
+      {withCases ? <Cases n={3} /> : null}
+      <Services n={3 + k} />
+      <FinalCTA n={4 + k} />
+    </>
+  );
+}
 
 // /servicios ----------------------------------------------------------------
 

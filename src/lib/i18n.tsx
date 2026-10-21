@@ -1,55 +1,35 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useSyncExternalStore,
-  type ReactNode,
-} from "react";
-import { LOCALES, dict, type Dict, type Locale } from "./dict";
+import NextLink from "next/link";
+import { createContext, useContext, useEffect, type ComponentProps, type ReactNode } from "react";
+import { DEFAULT_LOCALE, dict, localePath, type Dict, type Locale } from "./dict";
 
-type I18n = { locale: Locale; setLocale: (l: Locale) => void; t: Dict };
+type I18n = { locale: Locale; t: Dict; href: (path: string) => string; lost: boolean };
 
 const Ctx = createContext<I18n | null>(null);
-const KEY = "aterna-lang";
-const listeners = new Set<() => void>();
 
-function read(): Locale {
-  try {
-    const v = localStorage.getItem(KEY);
-    if ((LOCALES as readonly string[]).includes(v ?? "")) return v as Locale;
-  } catch {}
-  return "es";
-}
-
-function subscribe(cb: () => void) {
-  listeners.add(cb);
-  window.addEventListener("storage", cb);
-  return () => {
-    listeners.delete(cb);
-    window.removeEventListener("storage", cb);
-  };
-}
-
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  // En el servidor (export estático) siempre se renderiza en español.
-  const locale = useSyncExternalStore(subscribe, read, () => "es" as const);
-
+/**
+ * El idioma lo da la URL: español en la raíz, el resto bajo /en, /nl y /de.
+ * Cada versión se exporta ya traducida, así que Google indexa las cuatro.
+ */
+export function LanguageProvider({
+  locale = DEFAULT_LOCALE,
+  lost = false,
+  children,
+}: {
+  locale?: Locale;
+  /** En la 404: el selector de idioma lleva a la portada de cada idioma. */
+  lost?: boolean;
+  children: ReactNode;
+}) {
+  // Entre /en, /nl y /de se navega sin recargar y el layout es el mismo:
+  // el atributo lang del documento sigue al idioma de la página.
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
 
-  const setLocale = useCallback((l: Locale) => {
-    try {
-      localStorage.setItem(KEY, l);
-    } catch {}
-    listeners.forEach((cb) => cb());
-  }, []);
-
   return (
-    <Ctx.Provider value={{ locale, setLocale, t: dict[locale] }}>
+    <Ctx.Provider value={{ locale, t: dict[locale], href: (path) => localePath(path, locale), lost }}>
       {children}
     </Ctx.Provider>
   );
@@ -59,4 +39,10 @@ export function useI18n() {
   const ctx = useContext(Ctx);
   if (!ctx) throw new Error("useI18n debe usarse dentro de <LanguageProvider>");
   return ctx;
+}
+
+/** next/link que mantiene el idioma actual: href="/contacto" lleva a /en/contacto en inglés. */
+export function Link({ href, ...props }: Omit<ComponentProps<typeof NextLink>, "href"> & { href: string }) {
+  const { href: localize } = useI18n();
+  return <NextLink href={localize(href)} {...props} />;
 }

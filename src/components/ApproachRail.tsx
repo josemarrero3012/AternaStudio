@@ -19,10 +19,9 @@
 // está oculta y se ve la línea normal de Approach, que es también la de
 // movimiento reducido. Se usa una vez, en la portada.
 
-import Link from "next/link";
 import { useEffect, type RefObject } from "react";
 import { SplitText } from "gsap/SplitText";
-import { useI18n } from "@/lib/i18n";
+import { Link, useI18n } from "@/lib/i18n";
 import { ScrollTrigger, gsap, registerGsap } from "@/lib/motion";
 import { ArrowRight } from "./icons";
 import { MethodRoot } from "./MethodRoot";

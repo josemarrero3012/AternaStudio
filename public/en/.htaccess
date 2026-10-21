@@ -1,0 +1,3 @@
+# Las direcciones que no existen bajo /en/ muestran la 404 en este idioma.
+# Las demás reglas (URLs limpias) vienen del .htaccess de la raíz.
+ErrorDocument 404 /en/404.html

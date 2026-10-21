@@ -2,8 +2,7 @@
 
 import { withBase } from "@/lib/base";
 import Image from "next/image";
-import Link from "next/link";
-import { useI18n } from "@/lib/i18n";
+import { Link, useI18n } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import { whatsappHref } from "./Chrome";
 import { ArrowExternal } from "./icons";

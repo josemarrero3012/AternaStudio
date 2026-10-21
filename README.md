@@ -22,6 +22,7 @@ Cada vez que subo una de las dos ramas, su demo se vuelve a publicar sola.
 - En «Cómo trabajamos» cambié la imagen por una raíz de luz: el titular queda sobre una línea de la que cuelgan raíces con lo que se decide antes del código, y esa línea se convierte en el eje de las fases. Al bajar, la luz avanza por el eje y enciende cada fase cuando llega a ella.
 - Añadí el neerlandés y el alemán, y arreglé que al cambiar de idioma algunas frases se quedaran en el anterior.
 - Rehíce el menú del móvil para que se abra igual de suave esté donde esté la página.
+- Di a cada idioma sus propias direcciones (`/en`, `/nl` y `/de`, con el español en la raíz) para que Google indexe las cuatro versiones, cada una con su título, su descripción y los enlaces `hreflang` que las relacionan.
 - Llevé las raíces a más sitios sin llenar la web: cuelgan del eje del método, crecen donde acaba y sostienen la palabra «Aterna» del pie.
 
 ## Cómo está organizada

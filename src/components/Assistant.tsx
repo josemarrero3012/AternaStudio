@@ -9,11 +9,10 @@
 // (lib/assistant.ts), sin servidor. Esc o el botón de cerrar lo cierran y el
 // foco vuelve al orbe. Con movimiento reducido no hay giro ni aparición.
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { answer, replyFor, type Reply, type ReplyId } from "@/lib/assistant";
-import { useI18n } from "@/lib/i18n";
+import { Link, useI18n } from "@/lib/i18n";
 import { prefersReducedMotion } from "@/lib/motion";
 
 type Phase = "idle" | "think" | "answered";
