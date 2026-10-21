@@ -37,7 +37,7 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     tagline: "Estudio digital independiente",
     home: {
       description:
-        "Aterna es un estudio digital independiente de webs premium y crecimiento orgánico. Diseñamos, construimos y hacemos crecer webs a medida para negocios que quieren estar a la altura de lo que hacen: diseño y dirección de arte, desarrollo propio y SEO.",
+        "Aterna es un estudio digital independiente de diseño web a medida y SEO. Diseñamos y programamos webs premium, sin plantillas, y trabajamos su crecimiento orgánico para que te encuentren.",
     },
     servicios: {
       title: "Servicios",
@@ -47,7 +47,7 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     estudio: {
       title: "Estudio",
       description:
-        "Aterna es un estudio digital independiente para negocios que aún no tienen web, o necesitan una que esté a la altura. Pocos proyectos, hechos enteros.",
+        "Aterna es un estudio digital independiente para negocios que aún no tienen web o necesitan una mejor. Aceptamos pocos proyectos y los hacemos de principio a fin.",
     },
     contacto: {
       title: "Contacto",
@@ -61,12 +61,12 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     seo: {
       title: "SEO y crecimiento orgánico",
       description:
-        "SEO y crecimiento orgánico con foco local, para hoteles, bodegas y restaurantes. Trabajo mensual, medido y reportado con honestidad. Desde 390 €/mes.",
+        "SEO y crecimiento orgánico con foco local, para hoteles, bodegas y restaurantes. Trabajo mensual con un informe claro de lo que cambia. Desde 390 €/mes.",
     },
     mantenimiento: {
       title: "Mantenimiento y soporte",
       description:
-        "Mantenimiento web: hosting, copias, actualizaciones, seguridad y soporte. Tu web siempre rápida, segura y al día. Desde 59 €/mes.",
+        "Mantenimiento web: hosting, copias, actualizaciones, seguridad y soporte. Nos ocupamos de que tu web siga rápida y segura. Desde 59 €/mes.",
     },
     "asistente-ia": {
       title: "Asistente telefónico con IA 24/7",
@@ -79,7 +79,7 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     tagline: "Independent digital studio",
     home: {
       description:
-        "Aterna is an independent digital studio for premium websites and organic growth. We design, build and grow bespoke websites for businesses that want to live up to what they do: design and art direction, in-house development and SEO.",
+        "Aterna is an independent digital studio for bespoke web design and SEO. We design and build premium websites without templates, and work on their organic growth so people find you.",
     },
     servicios: {
       title: "Services",
@@ -89,7 +89,7 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     estudio: {
       title: "Studio",
       description:
-        "Aterna is an independent digital studio for businesses that don't have a website yet, or need one that lives up to them. Few projects, done in full.",
+        "Aterna is an independent digital studio for businesses that don’t have a website yet or need a better one. We take on few projects and see each one through from start to finish.",
     },
     contacto: {
       title: "Contact",
@@ -103,12 +103,12 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     seo: {
       title: "SEO & organic growth",
       description:
-        "SEO and organic growth with a local focus, for hotels, wineries and restaurants. Monthly work, measured and reported honestly. From €390/month.",
+        "SEO and organic growth with a local focus, for hotels, wineries and restaurants. Monthly work with a clear report on what changes. From €390/month.",
     },
     mantenimiento: {
       title: "Maintenance & support",
       description:
-        "Website maintenance: hosting, backups, updates, security and support. Your site always fast, secure and up to date. From €59/month.",
+        "Website maintenance: hosting, backups, updates, security and support. We keep your site fast and secure. From €59/month.",
     },
     "asistente-ia": {
       title: "24/7 AI phone assistant",
@@ -121,7 +121,7 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     tagline: "Onafhankelijke digitale studio",
     home: {
       description:
-        "Aterna is een onafhankelijke digitale studio voor premium websites en organische groei. We ontwerpen, bouwen en laten websites op maat groeien voor bedrijven die willen laten zien wat ze waard zijn: design en art direction, eigen ontwikkeling en SEO.",
+        "Aterna is een onafhankelijke digitale studio voor webdesign op maat en SEO. We ontwerpen en bouwen premium websites zonder templates en werken aan hun organische groei, zodat mensen je vinden.",
     },
     servicios: {
       title: "Diensten",
@@ -131,7 +131,7 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     estudio: {
       title: "Studio",
       description:
-        "Aterna is een onafhankelijke digitale studio voor bedrijven die nog geen website hebben, of een nodig hebben die bij hen past. Weinig projecten, helemaal afgemaakt.",
+        "Aterna is een onafhankelijke digitale studio voor bedrijven die nog geen website hebben of een betere nodig hebben. We nemen weinig projecten aan en doen ze van begin tot eind.",
     },
     contacto: {
       title: "Contact",
@@ -145,12 +145,12 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     seo: {
       title: "SEO en organische groei",
       description:
-        "SEO en organische groei met lokale focus, voor hotels, wijnhuizen en restaurants. Maandelijks werk, gemeten en eerlijk gerapporteerd. Vanaf € 390 per maand.",
+        "SEO en organische groei met lokale focus, voor hotels, wijnhuizen en restaurants. Maandelijks werk met een helder verslag van wat er verandert. Vanaf € 390 per maand.",
     },
     mantenimiento: {
       title: "Onderhoud en support",
       description:
-        "Website-onderhoud: hosting, back-ups, updates, beveiliging en support. Je website altijd snel, veilig en up-to-date. Vanaf € 59 per maand.",
+        "Website-onderhoud: hosting, back-ups, updates, beveiliging en support. Wij zorgen dat je website snel en veilig blijft. Vanaf € 59 per maand.",
     },
     "asistente-ia": {
       title: "AI-telefoonassistent 24/7",
@@ -163,7 +163,7 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     tagline: "Unabhängiges Digitalstudio",
     home: {
       description:
-        "Aterna ist ein unabhängiges Digitalstudio für Premium-Websites und organisches Wachstum. Wir gestalten, entwickeln und skalieren maßgeschneiderte Websites für Unternehmen, die so gut auftreten wollen, wie sie arbeiten: Design und Art Direction, eigene Entwicklung und SEO.",
+        "Aterna ist ein unabhängiges Digitalstudio für Webdesign nach Maß und SEO. Wir gestalten und entwickeln Premium-Websites ohne Templates und arbeiten an ihrem organischen Wachstum, damit man Sie findet.",
     },
     servicios: {
       title: "Leistungen",
@@ -173,7 +173,7 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     estudio: {
       title: "Studio",
       description:
-        "Aterna ist ein unabhängiges Digitalstudio für Unternehmen, die noch keine Website haben oder eine brauchen, die zu ihnen passt. Wenige Projekte, ganz umgesetzt.",
+        "Aterna ist ein unabhängiges Digitalstudio für Unternehmen, die noch keine Website haben oder eine bessere brauchen. Wir nehmen wenige Projekte an und betreuen sie von Anfang bis Ende.",
     },
     contacto: {
       title: "Kontakt",
@@ -187,12 +187,12 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     seo: {
       title: "SEO und organisches Wachstum",
       description:
-        "SEO und organisches Wachstum mit lokalem Fokus, für Hotels, Weingüter und Restaurants. Monatliche Arbeit, gemessen und ehrlich berichtet. Ab 390 €/Monat.",
+        "SEO und organisches Wachstum mit lokalem Fokus, für Hotels, Weingüter und Restaurants. Monatliche Arbeit mit einem klaren Bericht, was sich ändert. Ab 390 €/Monat.",
     },
     mantenimiento: {
       title: "Wartung und Support",
       description:
-        "Website-Wartung: Hosting, Backups, Updates, Sicherheit und Support. Ihre Website immer schnell, sicher und aktuell. Ab 59 €/Monat.",
+        "Website-Wartung: Hosting, Backups, Updates, Sicherheit und Support. Wir sorgen dafür, dass Ihre Website schnell und sicher bleibt. Ab 59 €/Monat.",
     },
     "asistente-ia": {
       title: "KI-Telefonassistent 24/7",
