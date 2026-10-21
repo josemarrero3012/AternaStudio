@@ -2298,15 +2298,17 @@ body[data-menu="open"] .assistant__orb {
   opacity: 1;
 }
 
+/* Centrado sobre la línea: está a 3 px del borde y mide 1 px (centro a
+   3,5 px); el punto se mueve la mitad de su ancho para quedar encima. */
 .phase__dot {
   position: absolute;
   top: 0.55em;
-  inset-inline-start: calc(var(--s-7) * -1);
+  inset-inline-start: calc(var(--s-7) * -1 + 3.5px);
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background-color: var(--on-surface-low);
-  transform: translateX(-3px);
+  transform: translateX(-50%);
   transition:
     background-color var(--d-std) var(--e-out),
     box-shadow var(--d-std) var(--e-out);
@@ -2726,7 +2728,7 @@ body[data-menu="open"] .assistant__orb {
    tras cada fase; la última, donde la línea acaba. */
 .phase__roots {
   top: 100%;
-  left: calc(var(--s-7) * -1 + 0.5px);
+  left: calc(var(--s-7) * -1 + 3.5px);
 }
 
 .phase:last-child .phase__roots {
