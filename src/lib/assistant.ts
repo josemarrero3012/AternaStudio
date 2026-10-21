@@ -481,7 +481,7 @@ const ENOUGH = 1.4;
  * palabras ya aciertan.
  */
 const SEM_FLOOR = 0.3;
-const SEM_WEIGHT = 4.5;
+const SEM_WEIGHT = 3.5;
 
 /**
  * Puntúa cada ficha para `question`, de mayor a menor. `semantic`, si llega,
