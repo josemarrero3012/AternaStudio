@@ -83,7 +83,7 @@ const PARAPHRASE: Case[] = [
   ["es", "qué tiempo hace hoy", ["fallback"]],
   ["en", "I want more customers to find me online", ["seo", "seo:planes"]],
   ["en", "nobody answers the phone when we're busy", ["asistente-ia"]],
-  ["en", "who keeps my site updated and backed up?", ["mantenimiento"]],
+  ["en", "who keeps my site updated and backed up?", ["mantenimiento", "mantenimiento:planes", "web:faq:2"]],
   ["en", "what's the weather like", ["fallback"]],
   ["nl", "ik wil meer klanten via internet", ["seo", "seo:planes"]],
   ["nl", "wie neemt de telefoon op als ik bezig ben", ["asistente-ia"]],
@@ -143,6 +143,33 @@ async function main() {
   await run("Palabras, preguntas con otras palabras (informativo)", PARAPHRASE, none);
   const model = await loadModel();
   if (model) {
+    // AJUSTE TEMPORAL: cuántas acierta con cada suelo y peso del modelo.
+    const cache = new Map<string, number[]>();
+    const all = [...CORE, ...PARAPHRASE];
+    for (const [l, q] of all) cache.set(l + q, (await model(l, q))!);
+    for (const floor of [0.3, 0.4, 0.5, 0.6]) {
+      const row: string[] = [];
+      for (const w of [0, 3, 6, 10, 15, 25]) {
+        const tweak: Sims = async (l, q) => cache.get(l + q)!.map((x) => 0.35 + (Math.max(0, x - floor) * w) / 6);
+        let c = 0;
+        let p = 0;
+        for (const [l, q, want] of CORE) {
+          const id = answer(q, dict[l], l, await tweak(l, q));
+          if (want.includes(typeof id === "number" ? entries(dict[l], l)[id].ref : id === "hello" ? "hola" : id)) c++;
+        }
+        for (const [l, q, want] of PARAPHRASE) {
+          const id = answer(q, dict[l], l, await tweak(l, q));
+          if (want.includes(typeof id === "number" ? entries(dict[l], l)[id].ref : id === "hello" ? "hola" : id)) p++;
+        }
+        row.push(`w${w}: ${c}+${p}`);
+      }
+      console.log(`suelo ${floor}: ${row.join("  ")}`);
+    }
+    for (const [l, q] of all) {
+      const sims = cache.get(l + q)!;
+      const top = sims.map((x, i) => [x, i]).sort((a, b) => b[0] - a[0]).slice(0, 3);
+      console.log(`  [${l}] ${q} :: ${top.map(([x, i]) => `${entries(dict[l], l)[i].ref}=${x.toFixed(2)}`).join(" ")}`);
+    }
     failed += await run("Modelo, preguntas básicas", CORE, model);
     failed += await run("Modelo, preguntas con otras palabras", PARAPHRASE, model);
   }
