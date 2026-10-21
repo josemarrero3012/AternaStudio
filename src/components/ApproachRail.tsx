@@ -92,6 +92,21 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
         },
       );
 
+      // Dónde está el borde izquierdo de una fase cuando la pista aún no se
+      // ha movido (en px desde el borde izquierdo de la ventana).
+      const restLeft = (phase: HTMLElement) => phase.getBoundingClientRect().left - Number(gsap.getProperty(rail, "x"));
+      // Cada fase aparece entre el 90 % y el 62 % de la ventana. En pantallas
+      // anchas alguna fase ya está en esa franja antes de que empiece el
+      // desplazamiento: salía a medias (número y tallo sí, texto cortado por
+      // la máscara). Esa fase espera entera y aparece desde donde está en
+      // cuanto se empieza a mover la pista.
+      const reveal = (phase: HTMLElement) => {
+        const vw = window.innerWidth;
+        const x = restLeft(phase);
+        const from = x >= vw * 0.62 && x < vw * 0.9 ? x : vw * 0.9;
+        return { start: `left ${from}px`, end: `left ${from - vw * 0.28}px` };
+      };
+
       root.querySelectorAll<HTMLElement>(".rail-phase").forEach((phase) => {
         const lines = SplitText.create(phase.querySelectorAll(".rail-phase__title, .rail-phase__body"), {
           type: "lines",
@@ -103,8 +118,8 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
             scrollTrigger: {
               trigger: phase,
               containerAnimation: move,
-              start: "left 90%",
-              end: "left 62%",
+              start: () => reveal(phase).start,
+              end: () => reveal(phase).end,
               scrub: 0.6,
               onEnter: () => phase.setAttribute("data-on", "true"),
               onLeaveBack: () => phase.setAttribute("data-on", "false"),
