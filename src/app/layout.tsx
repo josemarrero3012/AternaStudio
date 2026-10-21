@@ -55,7 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Antes que nada: decide si la cortina de entrada sale (ver Chrome.tsx). */}
         <script dangerouslySetInnerHTML={{ __html: CURTAIN_SCRIPT }} />
         <noscript>
-          <style>{".curtain{display:none}"}</style>
+          <style>{".curtain{display:none}.hero__still{opacity:1}"}</style>
         </noscript>
         <JsonLd data={organization} />
         <LanguageProvider>

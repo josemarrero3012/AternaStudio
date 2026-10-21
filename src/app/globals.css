@@ -1649,6 +1649,45 @@ body[data-menu="open"] .assistant__orb {
   filter: contrast(1.08) saturate(1.1) brightness(1.12);
 }
 
+/* Imagen fija (el árbol ya crecido): solo si no hay vídeo — movimiento
+   reducido, ahorro de datos, navegador que no deja reproducir o red muy
+   lenta (ver Hero en sections.tsx). Entra fundida. El vídeo empieza en
+   negro, del color de la página, así que mientras espera no se ve nada. */
+.hero__still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 72% 40%;
+  mix-blend-mode: screen;
+  filter: contrast(1.08) saturate(1.1) brightness(1.12);
+  opacity: 0;
+  transition: opacity 1.2s var(--e-out);
+}
+
+.hero__media[data-state="still"] .hero__still {
+  opacity: 1;
+}
+
+.hero__media[data-state="still"] .hero__video {
+  visibility: hidden;
+}
+
+/* Con movimiento, el titular y la fila de apoyo vienen ocultos desde el
+   primer pintado (data-motion lo pone CURTAIN_SCRIPT antes de pintar): antes
+   se veían un instante y desaparecían al llegar el JavaScript para entrar
+   animados. Los muestra la entrada (WordReveal y Hero). */
+html[data-motion="on"] .hero__title .reveal-word > span {
+  opacity: 0;
+  transform: translateY(110%);
+}
+
+html[data-motion="on"] .hero__row {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
 /* En móvil el texto ocupa todo el ancho: oscurecemos más la mitad inferior. */
 .hero__scrim {
   position: absolute;

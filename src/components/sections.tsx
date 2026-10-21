@@ -15,6 +15,7 @@ import {
   registerGsap,
 } from "@/lib/motion";
 import { formatPrice, pricing, slugToProduct, startingPrice, type ServiceSlug } from "@/lib/pricing";
+import { heroReady, onIntro } from "@/lib/intro";
 import { useReveal } from "@/lib/reveal";
 import { site } from "@/lib/site";
 import { CopyEmail } from "./CopyEmail";
@@ -35,6 +36,26 @@ function eyebrow(text: string, n?: number) {
 
 /** Pantallas que necesitan el vídeo de 2560 px. */
 const WIDE = "(min-width: 1440px), (min-resolution: 2dppx) and (min-width: 1000px)";
+/** Pantallas altas: el recorte vertical. */
+const TALL = "(max-aspect-ratio: 3/4)";
+
+/**
+ * La versión del vídeo para esta pantalla, decidida aquí y no solo con
+ * <source media>, que no todos los navegadores respetan en <video> (algunos
+ * se quedaban con la primera fuente: el recorte vertical en escritorio).
+ * Siempre MP4 (H.264): se decodifica por hardware en todos los navegadores
+ * y, a igual tamaño, lleva más calidad que el WebM.
+ */
+function heroSrc() {
+  const size = matchMedia(TALL).matches ? "portrait" : matchMedia(WIDE).matches ? "2560" : "1920";
+  return withBase(`/brand/hero-tree-${size}.mp4`);
+}
+
+/** Quien pide ahorrar datos no se descarga el vídeo: ve la imagen fija. */
+function saveData() {
+  const c = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+  return Boolean(c?.saveData);
+}
 
 export function Hero() {
   const { t } = useI18n();
@@ -42,21 +63,131 @@ export function Hero() {
   const video = useRef<HTMLVideoElement>(null);
   const row = useRef<HTMLDivElement>(null);
 
+  // El vídeo. Empieza en negro y el árbol crece: su primer fotograma es del
+  // color de la página, así que mientras carga no se ve nada «parado». Antes
+  // llevaba de póster el árbol ya crecido y, según la red, se veía quieto y
+  // luego saltaba a negro para empezar a crecer.
+  useEffect(() => {
+    const el = media.current;
+    const v = video.current;
+    if (!el || !v) return;
+    // La imagen fija: con movimiento reducido, ahorro de datos o si el
+    // navegador no deja reproducir (p. ej. modo de bajo consumo del iPhone).
+    const still = () => {
+      el.dataset.state = "still";
+      v.pause();
+      heroReady();
+    };
+    if (prefersReducedMotion() || saveData()) {
+      still();
+      return;
+    }
+    v.muted = true;
+    v.defaultMuted = true;
+    v.playsInline = true;
+
+    const src = heroSrc();
+    if (!v.currentSrc.endsWith(src)) {
+      v.src = src;
+      v.load();
+    }
+    let started = false;
+    let visible = true;
+    // Puede arrancar sin cortes: la cortina ya puede subir.
+    const onReady = () => heroReady();
+    if (v.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) onReady();
+    v.addEventListener("canplay", onReady);
+    v.addEventListener("error", still);
+    // Con <source>, el error llega en cada fuente: si ya no queda ninguna, fija.
+    const sources = Array.from(v.querySelectorAll("source"));
+    const onSourceError = () => {
+      if (v.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) still();
+    };
+    sources.forEach((source) => source.addEventListener("error", onSourceError));
+    const onPlaying = () => {
+      // Calentamiento (ver abajo): ya ha arrancado; se para en el primer
+      // fotograma hasta que empiece la entrada.
+      if (!started) {
+        v.pause();
+        v.currentTime = 0;
+        heroReady();
+        return;
+      }
+      el.dataset.state = "playing";
+    };
+    v.addEventListener("playing", onPlaying);
+    const play = () => {
+      v.play().catch((err: DOMException) => {
+        // Bloqueado por el navegador: la imagen fija. Si solo se interrumpió
+        // (pausa al salir de pantalla), no pasa nada.
+        if (err?.name === "NotAllowedError" || err?.name === "NotSupportedError") still();
+      });
+    };
+    // Calentamiento tras la cortina: algunos navegadores (Safari en iPhone)
+    // no cargan el vídeo hasta que se le da a play. Se le da, se para en
+    // cuanto arranca y espera tapado; si el navegador no deja, imagen fija.
+    if (document.documentElement.dataset.curtain !== "skip" && document.documentElement.dataset.intro !== "on") play();
+    // Al empezar la entrada, desde el primer fotograma.
+    let slow = 0;
+    const off = onIntro(() => {
+      started = true;
+      if (v.currentTime > 0) v.currentTime = 0;
+      if (visible) play();
+      // Red muy lenta: si a los 5 s sigue sin arrancar, imagen fija y deja
+      // de descargar (que no aparezca más tarde a destiempo).
+      slow = window.setTimeout(() => {
+        if (!visible || el.dataset.state !== "wait") return;
+        still();
+        v.removeAttribute("src");
+        sources.forEach((source) => source.remove());
+        v.load();
+      }, 5000);
+    });
+    // Solo se reproduce mientras se ve (batería y CPU).
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (!started) return;
+      if (visible) play();
+      else v.pause();
+    });
+    io.observe(v);
+
+    // Si se gira el móvil y cambia la proporción, la versión que toca,
+    // desde el mismo punto.
+    const tall = matchMedia(TALL);
+    const onTurn = () => {
+      const next = heroSrc();
+      if (v.currentSrc.endsWith(next)) return;
+      const at = v.currentTime;
+      v.src = next;
+      v.addEventListener(
+        "loadedmetadata",
+        () => {
+          v.currentTime = at;
+          if (started && visible) play();
+        },
+        { once: true },
+      );
+      v.load();
+    };
+    tall.addEventListener("change", onTurn);
+
+    return () => {
+      off();
+      window.clearTimeout(slow);
+      io.disconnect();
+      tall.removeEventListener("change", onTurn);
+      v.removeEventListener("canplay", onReady);
+      v.removeEventListener("error", still);
+      v.removeEventListener("playing", onPlaying);
+      sources.forEach((source) => source.removeEventListener("error", onSourceError));
+    };
+  }, []);
+
   useEffect(() => {
     if (prefersReducedMotion()) return;
     registerGsap();
-    // El vídeo solo se reproduce mientras se ve: fuera de pantalla se pausa
-    // (batería y CPU).
-    const v = video.current;
-    let io: IntersectionObserver | null = null;
-    if (v) {
-      v.muted = true;
-      io = new IntersectionObserver(([e]) => {
-        if (e.isIntersecting) v.play().catch(() => {});
-        else v.pause();
-      });
-      io.observe(v);
-    }
+    let off = () => {};
     const ctx = gsap.context(() => {
       if (media.current) {
         gsap.to(media.current, {
@@ -65,13 +196,17 @@ export function Hero() {
           scrollTrigger: { trigger: media.current, start: "top top", end: "+=520", scrub: 0.6 },
         });
       }
+      // La fila de apoyo, después del titular, contando desde la entrada.
       if (row.current) {
-        gsap.set(row.current, { opacity: 0, y: 16 });
-        gsap.to(row.current, { opacity: 1, y: 0, duration: DURATION.cine, ease: ATERNA_EASE, delay: 1.35 });
+        const el = row.current;
+        gsap.set(el, { opacity: 0, y: 16 });
+        off = onIntro(() => {
+          gsap.to(el, { opacity: 1, y: 0, duration: DURATION.cine, ease: ATERNA_EASE, delay: 1.15 });
+        });
       }
     });
     return () => {
-      io?.disconnect();
+      off();
       ctx.revert();
       ScrollTrigger.refresh();
     };
@@ -79,26 +214,17 @@ export function Hero() {
 
   return (
     <section className="hero" aria-labelledby="hero-title">
-      <div className="hero__media" ref={media} aria-hidden="true">
-        <video
-          ref={video}
-          className="hero__video"
-          poster={withBase("/brand/hero-tree-poster-1920.webp")}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-        >
-          {/* Escalado con Real-ESRGAN desde el 720p original. El navegador
-              elige la primera que encaja: recorte vertical en pantallas
-              altas, 2560 px en pantallas grandes o retina, 1920 px en el
-              resto. Nombres nuevos a propósito: .htaccess cachea los vídeos
-              un año como inmutables. */}
-          <source media="(max-aspect-ratio: 3/4)" src={withBase("/brand/hero-tree-portrait.webm")} type="video/webm" />
-          <source media="(max-aspect-ratio: 3/4)" src={withBase("/brand/hero-tree-portrait.mp4")} type="video/mp4" />
-          <source media={WIDE} src={withBase("/brand/hero-tree-2560.webm")} type="video/webm" />
+      <div className="hero__media" ref={media} data-state="wait" aria-hidden="true">
+        {/* Si no hay vídeo: el árbol ya crecido, que aparece fundido. */}
+        <img className="hero__still" src={withBase("/brand/hero-tree-poster-1920.webp")} alt="" decoding="async" />
+        <video ref={video} className="hero__video" muted loop playsInline preload="auto">
+          {/* Escalado con Real-ESRGAN desde el 720p original. Estas fuentes
+              son para empezar a cargar antes del JavaScript en los
+              navegadores que respetan media; después heroSrc() confirma la
+              versión. Nombres nuevos a propósito: .htaccess cachea los
+              vídeos un año como inmutables. */}
+          <source media={TALL} src={withBase("/brand/hero-tree-portrait.mp4")} type="video/mp4" />
           <source media={WIDE} src={withBase("/brand/hero-tree-2560.mp4")} type="video/mp4" />
-          <source src={withBase("/brand/hero-tree-1920.webm")} type="video/webm" />
           <source src={withBase("/brand/hero-tree-1920.mp4")} type="video/mp4" />
         </video>
         <div className="hero__scrim" />
@@ -106,7 +232,7 @@ export function Hero() {
       <div className="container hero__inner">
         <div className="hero__text">
           <p className="t-label hero__eyebrow muted">{t.hero.eyebrow}</p>
-          <WordReveal as="h1" id="hero-title" className="t-hero hero__title" text={t.hero.headline} onScroll={false} delay={1.05} accent={1} />
+          <WordReveal as="h1" id="hero-title" className="t-hero hero__title" text={t.hero.headline} onScroll="intro" delay={0.85} accent={1} />
         </div>
         <div className="hero__row" ref={row}>
           <div className="hero__support-group">
