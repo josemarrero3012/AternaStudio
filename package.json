@@ -5,6 +5,7 @@
   "description": "Web de Aterna Studio (Next.js, exportación estática para Hostinger).",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/fetch-semantic.mjs",
     "build": "next build",
     "start": "npx serve out",
     "typecheck": "tsc --noEmit"

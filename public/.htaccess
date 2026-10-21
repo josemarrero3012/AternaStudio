@@ -17,10 +17,20 @@
   </FilesMatch>
 </IfModule>
 
+# Modelo del asistente (public/semantic): el motor es WebAssembly y el
+# navegador solo lo compila al vuelo si llega con su tipo. Un mes de caché
+# para el motor y el modelo: pesan mucho y casi nunca cambian.
+AddType application/wasm .wasm
+<IfModule mod_headers.c>
+  <FilesMatch "\.(wasm|onnx)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+</IfModule>
+
 # Compresión de texto (HTML, CSS, JS, JSON, SVG). Las imágenes y los vídeos
 # ya van comprimidos. Si el servidor no tiene el módulo, no hace nada.
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json image/svg+xml
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json image/svg+xml application/wasm
 </IfModule>
 
 # Next.js exporta cada ruta como <ruta>.html, PERO cuando una ruta tiene
