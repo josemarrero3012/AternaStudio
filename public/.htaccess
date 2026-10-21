@@ -6,13 +6,13 @@
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Frame-Options "SAMEORIGIN"
 
-  <FilesMatch "^(aterna-symbol|aterna-wordmark|aterna-mark|aterna-lockup|icon|apple-icon|og)\.(webp|png|jpg)$">
+  <FilesMatch "^(aterna-symbol-light|aterna-wordmark-light|aterna-mark|aterna-lockup|icon|apple-icon|og)\.(webp|png|jpg)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
   # El vídeo y la imagen del hero, un año: la segunda visita ya no los
   # descarga y el vídeo arranca al instante. Si cambian, cambian de nombre.
-  <FilesMatch "^hero-tree-.+\.(mp4|webm|webp)$">
+  <FilesMatch "^hero-tree-.+\.(mp4|webp)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 </IfModule>
