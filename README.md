@@ -1,17 +1,27 @@
 # Web de Aterna Studio
 
-Aquí está el código de la web de Aterna Studio, un estudio digital que hace webs a medida, SEO, mantenimiento y asistentes con IA. Me estoy encargando de mejorarla.
+Aquí está el código de la web de Aterna Studio, un estudio digital que hace webs a medida, SEO, mantenimiento y asistentes con IA.
 
-## Las dos versiones
+**De momento la web está terminada.** Lo que hay en `main` es la versión final.
 
-La web tiene dos versiones, cada una en su rama y con su propia demo:
+**Web oficial:** https://aternastudio.com
+(La misma versión, en la demo de GitHub Pages: https://josemarrero3012.github.io/AternaStudio/)
 
-- **La web que se publica**, en la rama `main`: https://josemarrero3012.github.io/AternaStudio/
-  Es la que se sube primero. Todavía no tenemos casos de éxito publicados, así que no los enseña.
-- **La web con casos de éxito**, en la rama `casos-de-exito`: https://josemarrero3012.github.io/AternaStudio/casos/
-  La misma web con la sección «Casos de éxito», con [Calma Café](https://josemarrero3012.github.io/AternaStudio/casos/trabajo/calma-cafe) y [The Fragrance Bar](https://josemarrero3012.github.io/AternaStudio/casos/trabajo/the-fragrance-bar). Es para cuando formalicemos esos dos proyectos; hasta entonces es una vista previa, así que esas páginas no se indexan.
+**Vista previa con casos de éxito:** https://josemarrero3012.github.io/AternaStudio/casos/
+Es la web oficial más la sección «Casos de éxito», con [Calma Café](https://josemarrero3012.github.io/AternaStudio/casos/trabajo/calma-cafe) y [The Fragrance Bar](https://josemarrero3012.github.io/AternaStudio/casos/trabajo/the-fragrance-bar). Vive en la rama `casos-de-exito` y es para cuando formalicemos esos dos proyectos; hasta entonces esas páginas no se indexan.
 
-Cada vez que subo una de las dos ramas, su demo se vuelve a publicar sola.
+## Para subirla
+
+Los pasos para compilarla y subirla a Hostinger, lo que no está en el repositorio (la contraseña del correo del formulario) y cómo comprobar que todo funciona están en [docs/DESPLIEGUE.md](docs/DESPLIEGUE.md). En resumen:
+
+```bash
+npm ci
+npm run build   # deja la web en out/
+```
+
+y se sube el contenido de `out/` a `public_html/`, archivos con punto incluidos.
+
+Las dos demos de GitHub Pages se vuelven a publicar solas cada vez que se sube algo a `main` o a `casos-de-exito`.
 
 ## Qué he hecho hasta ahora
 
@@ -24,6 +34,11 @@ Cada vez que subo una de las dos ramas, su demo se vuelve a publicar sola.
 - Rehíce el menú del móvil para que se abra igual de suave esté donde esté la página.
 - Di a cada idioma sus propias direcciones (`/en`, `/nl` y `/de`, con el español en la raíz) para que Google indexe las cuatro versiones, cada una con su título, su descripción y los enlaces `hreflang` que las relacionan.
 - Llevé las raíces a más sitios sin llenar la web: cuelgan del eje del método, crecen donde acaba y sostienen la palabra «Aterna» del pie.
+- Añadí las páginas legales que pide una empresa registrada en Alemania (Impressum, Datenschutzerklärung y el aviso legal en español).
+- Usé una versión clara del logo para que se lea bien sobre el fondo oscuro, también en el pie.
+- Cada idioma tiene su propia página 404.
+- Reescribí los textos de los cuatro idiomas para que suenen más naturales.
+- El asistente de la esquina responde con los textos de la web sin ninguna API: busca por palabras en cualquier dispositivo y, en ordenador, carga un modelo pequeño que se sirve desde la propia web. También tiene «Ayúdame a elegir», que deja el mensaje escrito para WhatsApp o para el formulario.
 
 ## Cómo está organizada
 
@@ -46,4 +61,4 @@ npm install
 npm run dev
 ```
 
-Y se abre en http://localhost:3000. Cómo se publica y dónde está cada cosa lo tengo explicado en [docs/DESARROLLO.md](docs/DESARROLLO.md).
+Y se abre en http://localhost:3000. Dónde está cada cosa lo explico en [docs/DESARROLLO.md](docs/DESARROLLO.md), y cómo se sube a Hostinger, en [docs/DESPLIEGUE.md](docs/DESPLIEGUE.md).
