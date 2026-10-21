@@ -475,8 +475,13 @@ export function labelFor(id: number, t: Dict, locale: Locale) {
 
 /** Por debajo de esto, la ficha no responde a la pregunta. */
 const ENOUGH = 1.4;
-/** Similitud del modelo a partir de la cual la ficha ya habla de lo mismo. */
-const SEM_FLOOR = 0.35;
+/**
+ * Similitud del modelo a partir de la cual cuenta, y cuánto. Ajustado con
+ * scripts/assistant-check.ts: más peso empieza a estropear preguntas que las
+ * palabras ya aciertan.
+ */
+const SEM_FLOOR = 0.3;
+const SEM_WEIGHT = 4.5;
 
 /**
  * Puntúa cada ficha para `question`, de mayor a menor. `semantic`, si llega,
@@ -513,10 +518,10 @@ export function rank(question: string, t: Dict, locale: Locale, semantic?: Array
     if (topic === "method" && wantsMethod) s += 1.5;
     if (entry.service && named.size) s += named.has(entry.service) ? 1.5 : -1;
     if (topic === "hello") s += q.length > 2 ? -1 : has("hola") ? 1 : 0;
-    // El modelo suma lo que entiende por encima del ruido: a 0,35 nada, a
-    // 0,75 casi lo mismo que una pregunta que acierta dos palabras clave.
+    // El modelo suma lo que entiende por encima del ruido: a 0,3 nada, a
+    // 0,8 más o menos lo que dos palabras clave acertadas.
     const sim = semantic?.[i];
-    if (sim !== undefined) s += Math.max(0, sim - SEM_FLOOR) * 6;
+    if (sim !== undefined) s += Math.max(0, sim - SEM_FLOOR) * SEM_WEIGHT;
     return { id: i, score: s };
   });
   return { empty: !q.length, scores: scores.sort((x, y) => y.score - x.score) };
