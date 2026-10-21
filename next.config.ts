@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
   trailingSlash: false,
   // En GitHub Pages la web vive en /AternaStudio (ver .github/workflows).
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || undefined,
+  // Hay dos layouts raíz (español en la raíz, /en, /nl y /de en app/[lang]):
+  // la 404 global va aparte, en app/global-not-found.tsx.
+  experimental: { globalNotFound: true },
 };
 
 export default nextConfig;

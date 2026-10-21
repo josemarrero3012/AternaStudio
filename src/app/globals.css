@@ -138,9 +138,9 @@ html.lenis body {
   height: auto;
 }
 
-.lenis.lenis-stopped {
-  overflow: clip;
-}
+/* Lenis solo se detiene con el menú móvil abierto, y el menú ya bloquea el
+   gesto y la rueda (Header.tsx). Sin overflow: clip: cambiar el overflow
+   de <html> recalculaba toda la página justo al empezar la animación. */
 
 .lenis [data-lenis-prevent] {
   overscroll-behavior: contain;
@@ -621,14 +621,6 @@ html.lenis body {
   opacity: 1;
 }
 
-/* backdrop-filter convierte la cabecera en el bloque contenedor de sus hijos
-   fijos: con el menú abierto tras hacer scroll, el panel quedaba encerrado
-   en una franja de la altura de la cabecera. */
-body[data-menu="open"] .header {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-
 .header__inner {
   display: flex;
   align-items: center;
@@ -698,6 +690,9 @@ body[data-menu="open"] .header {
 }
 
 .lang-toggle__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 36px;
   min-height: 36px;
   padding: 6px 8px;
@@ -724,6 +719,9 @@ body[data-menu="open"] .header {
 .menu-toggle {
   position: relative;
   z-index: calc(var(--z-menu) + 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   min-width: 44px;
   min-height: 44px;
   margin-inline-start: auto;
@@ -732,6 +730,58 @@ body[data-menu="open"] .header {
   cursor: pointer;
 }
 
+/* Dos trazos que se cruzan al abrir. */
+.menu-toggle__icon {
+  position: relative;
+  width: 18px;
+  height: 8px;
+}
+
+.menu-toggle__icon::before,
+.menu-toggle__icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  border-radius: 1px;
+  background-color: currentColor;
+  transition: transform var(--d-std) var(--e-aterna);
+}
+
+.menu-toggle__icon::before {
+  top: 0;
+}
+
+.menu-toggle__icon::after {
+  bottom: 0;
+}
+
+.menu-toggle[data-open="true"] .menu-toggle__icon::before {
+  transform: translateY(3.25px) rotate(45deg);
+}
+
+.menu-toggle[data-open="true"] .menu-toggle__icon::after {
+  transform: translateY(-3.25px) rotate(-45deg);
+}
+
+/* Con el menú abierto, la cabecera (marca y botón) queda sobre el panel, sin
+   fondo ni desenfoque: el panel ya es el fondo. Sin transición, para que el
+   cambio caiga en el mismo fotograma en que empieza la del panel. */
+body[data-menu="open"] .header {
+  z-index: calc(var(--z-menu) + 1);
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transition: none;
+}
+
+body[data-menu="open"] .header::after {
+  opacity: 0;
+}
+
+/* El panel vive en <body> (portal, ver Header.tsx). Capa propia y solo
+   opacidad y transform: nada que obligue a recalcular la página. */
 .menu-panel {
   position: fixed;
   inset: 0;
@@ -739,11 +789,17 @@ body[data-menu="open"] .header {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 96px var(--margin) var(--s-10);
+  gap: var(--s-8);
+  padding: calc(var(--header-h) + var(--s-6)) var(--margin) max(var(--s-10), env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background-color: var(--ink);
+  background-image: radial-gradient(120% 60% at 100% 0%, color-mix(in srgb, var(--violet) 16%, transparent), transparent 70%);
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-2%);
+  transform: translate3d(0, -12px, 0);
+  will-change: opacity, transform;
+  contain: layout paint;
   transition:
     opacity var(--d-std) var(--e-out),
     transform var(--d-std) var(--e-aterna),
@@ -760,28 +816,53 @@ body[data-menu="open"] .header {
 .menu-panel__nav li {
   border-top: 1px solid var(--ink-hair);
   opacity: 0;
-  transform: translateY(14px);
+  transform: translate3d(0, 14px, 0);
   transition:
-    opacity var(--d-std) var(--e-out),
-    transform var(--d-std) var(--e-aterna);
+    opacity var(--d-micro) var(--e-out),
+    transform var(--d-micro) var(--e-out);
 }
 
+.menu-panel__nav li:last-child {
+  border-bottom: 1px solid var(--ink-hair);
+}
+
+/* Escalonado solo al abrir; al cerrar se van todas a la vez. */
 .menu-panel[data-open="true"] .menu-panel__nav li {
   opacity: 1;
   transform: none;
+  transition:
+    opacity var(--d-std) var(--e-out) calc(80ms * var(--i) + 90ms),
+    transform var(--d-cine) var(--e-aterna) calc(80ms * var(--i) + 90ms);
 }
 
 .menu-panel__nav a {
-  display: block;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-4);
   padding-block: var(--s-4);
+}
+
+.menu-panel__index {
+  color: var(--on-surface-low);
 }
 
 .menu-panel__nav a[aria-current="page"] {
   color: var(--orchid);
 }
 
+.menu-panel__nav a[aria-current="page"] .menu-panel__index {
+  color: inherit;
+}
+
 .menu-panel .lang-toggle {
   margin-top: var(--s-5);
+  opacity: 0;
+  transition: opacity var(--d-micro) var(--e-out);
+}
+
+.menu-panel[data-open="true"] .lang-toggle {
+  opacity: 1;
+  transition: opacity var(--d-std) var(--e-out) 0.36s;
 }
 
 .menu-panel .lang-toggle__btn {
@@ -798,6 +879,20 @@ body[data-menu="open"] .header {
   flex-direction: column;
   align-items: flex-start;
   gap: var(--s-5);
+  opacity: 0;
+  transition: opacity var(--d-micro) var(--e-out);
+}
+
+.menu-panel[data-open="true"] .menu-panel__foot {
+  opacity: 1;
+  transition: opacity var(--d-std) var(--e-out) 0.42s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-panel,
+  .menu-panel__nav li {
+    transform: none;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -1268,12 +1363,57 @@ body[data-menu="open"] .assistant__orb {
   border-top: 1px solid var(--hair);
 }
 
-.assistant__again {
-  font-size: var(--t-small);
+/* «Ayúdame a elegir»: la misma píldora, con el borde y el fondo de la marca. */
+.assistant__chip--flow {
+  border-color: color-mix(in srgb, var(--orchid) 55%, transparent);
+  background-color: color-mix(in srgb, var(--violet) 18%, transparent);
+}
+
+.assistant__chip:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Preguntas que siguen: alineadas con las respuestas, algo más discretas. */
+.assistant__chips--next .assistant__chip:not(.assistant__chip--flow) {
   color: var(--text-mid);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--hair-strong);
+}
+
+.assistant__hint {
+  color: var(--text-mid);
+}
+
+/* El mensaje que se va a mandar, tal cual. */
+.assistant__draft {
+  margin: 0;
+  padding: var(--s-3);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--night-0) 55%, transparent);
+  color: var(--text-mid);
+  font: inherit;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.assistant__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-4);
+}
+
+.assistant__btn.btn-primary {
+  min-height: 40px;
+  padding: 0 18px;
+}
+
+.assistant__btn.btn-ghost {
+  min-height: 40px;
+}
+
+.assistant__btn.btn-ghost::after {
+  bottom: 8px;
 }
 
 /* Campo: la píldora del MorphOrb, con el borde de la marca al escribir. */
@@ -1555,6 +1695,45 @@ body[data-menu="open"] .assistant__orb {
   object-position: 72% 40%;
   mix-blend-mode: screen;
   filter: contrast(1.08) saturate(1.1) brightness(1.12);
+}
+
+/* Imagen fija (el árbol ya crecido): solo si no hay vídeo — movimiento
+   reducido, ahorro de datos, navegador que no deja reproducir o red muy
+   lenta (ver Hero en sections.tsx). Entra fundida. El vídeo empieza en
+   negro, del color de la página, así que mientras espera no se ve nada. */
+.hero__still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 72% 40%;
+  mix-blend-mode: screen;
+  filter: contrast(1.08) saturate(1.1) brightness(1.12);
+  opacity: 0;
+  transition: opacity 1.2s var(--e-out);
+}
+
+.hero__media[data-state="still"] .hero__still {
+  opacity: 1;
+}
+
+.hero__media[data-state="still"] .hero__video {
+  visibility: hidden;
+}
+
+/* Con movimiento, el titular y la fila de apoyo vienen ocultos desde el
+   primer pintado (data-motion lo pone CURTAIN_SCRIPT antes de pintar): antes
+   se veían un instante y desaparecían al llegar el JavaScript para entrar
+   animados. Los muestra la entrada (WordReveal y Hero). */
+html[data-motion="on"] .hero__title .reveal-word > span {
+  opacity: 0;
+  transform: translateY(110%);
+}
+
+html[data-motion="on"] .hero__row {
+  opacity: 0;
+  transform: translateY(16px);
 }
 
 /* En móvil el texto ocupa todo el ancho: oscurecemos más la mitad inferior. */
@@ -2171,6 +2350,24 @@ body[data-menu="open"] .assistant__orb {
   transform-origin: top;
 }
 
+/* Cabeza de la luz (móvil): un punto encendido en la punta del relleno. */
+.approach__line-head {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background-color: var(--text-hi);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--orchid) 35%, transparent),
+    0 0 18px 4px color-mix(in srgb, var(--orchid) 70%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--d-micro) var(--e-out);
+}
+
 .approach__phases {
   display: flex;
   flex-direction: column;
@@ -2188,15 +2385,17 @@ body[data-menu="open"] .assistant__orb {
   opacity: 1;
 }
 
+/* Centrado sobre la línea: está a 3 px del borde y mide 1 px (centro a
+   3,5 px); el punto se mueve la mitad de su ancho para quedar encima. */
 .phase__dot {
   position: absolute;
   top: 0.55em;
-  inset-inline-start: calc(var(--s-7) * -1);
+  inset-inline-start: calc(var(--s-7) * -1 + 3.5px);
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background-color: var(--on-surface-low);
-  transform: translateX(-3px);
+  transform: translateX(-50%);
   transition:
     background-color var(--d-std) var(--e-out),
     box-shadow var(--d-std) var(--e-out);
@@ -2224,7 +2423,9 @@ body[data-menu="open"] .assistant__orb {
   color: transparent;
   -webkit-text-stroke: 1px color-mix(in srgb, var(--lavender) 22%, transparent);
   pointer-events: none;
-  transition: -webkit-text-stroke-color var(--d-std) var(--e-out);
+  transition:
+    -webkit-text-stroke-color var(--d-std) var(--e-out),
+    filter var(--d-std) var(--e-out);
 }
 
 .phase[data-on="true"]::before {
@@ -2236,6 +2437,20 @@ body[data-menu="open"] .assistant__orb {
   display: block;
   margin-bottom: var(--s-3);
   color: var(--on-surface-low);
+  transition:
+    color var(--d-std) var(--e-out),
+    text-shadow var(--d-std) var(--e-out);
+}
+
+/* La luz llega a la fase: se encienden el número y el número fantasma. */
+.phase[data-lit="true"] .phase__index {
+  color: var(--orchid);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--orchid) 70%, transparent);
+}
+
+.phase[data-lit="true"]::before {
+  -webkit-text-stroke-color: color-mix(in srgb, var(--orchid) 75%, transparent);
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--violet) 70%, transparent));
 }
 
 /* Titular de fase: igual en la línea estática y en el rail. */
@@ -2269,6 +2484,10 @@ body[data-menu="open"] .assistant__orb {
     inset-inline: 0;
     width: auto;
     height: 1px;
+  }
+
+  .approach__line-head {
+    display: none;
   }
 
   .approach__line-fill {
@@ -2499,6 +2718,143 @@ body[data-menu="open"] .assistant__orb {
     left: 100%;
     opacity: 0;
   }
+}
+
+/* Raicillas (Rootlets.tsx) ---------------------------------------------------
+   Piezas pequeñas de la misma raíz de luz, colgadas de las líneas que ya
+   hay: el eje del método y el horizonte del pie. Cada pieza mide en px lo
+   mismo que su lienzo (salvo «side») y el margen deja su origen sobre la
+   línea. */
+.rootlets {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+.rootlets svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+}
+
+.rootlets[data-shape="hang"] {
+  width: 104px;
+  height: 170px;
+  margin-left: -34px;
+}
+
+/* A tres cuartos: cabe en el hueco entre fases sin tocar el texto. */
+.rootlets[data-shape="side"] {
+  width: 39px;
+  height: 58.5px;
+  margin-left: -3px;
+}
+
+.rootlets[data-shape="fan"] {
+  width: 128px;
+  height: 100px;
+  margin-left: -64px;
+}
+
+.rootlets[data-shape="tail"] {
+  width: 84px;
+  height: 100px;
+  margin-left: -20px;
+}
+
+.rootlets__line {
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--violet) 70%, transparent));
+}
+
+.rootlets__line--faint {
+  stroke-width: 0.7;
+  opacity: 0.55;
+  filter: none;
+}
+
+.rootlets__tip {
+  fill: var(--orchid);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--orchid) 80%, transparent));
+}
+
+/* Con movimiento esperan apagadas y se dibujan al encenderse: por sí mismas
+   (data-in al entrar en pantalla, data-lit cuando llega la luz) o con su
+   fase (data-lit en el padre). Al apagarse se recogen rápido. */
+.rootlets[data-anim] .rootlets__line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.5s var(--e-out);
+}
+
+.rootlets[data-anim] .rootlets__tip {
+  opacity: 0;
+  transition: opacity 0.3s var(--e-out);
+}
+
+:is(.rootlets[data-in], .rootlets[data-lit="true"], [data-lit="true"] > .rootlets)[data-anim] .rootlets__line {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1.5s var(--e-out) var(--d);
+}
+
+:is(.rootlets[data-in], .rootlets[data-lit="true"], [data-lit="true"] > .rootlets)[data-anim] .rootlets__tip {
+  opacity: 1;
+  transition: opacity 0.6s var(--e-out) var(--d);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(.rootlets[data-in], .rootlets[data-lit="true"], [data-lit="true"] > .rootlets)[data-anim] .rootlets__tip {
+    animation: root-beat 3.6s ease-in-out calc(var(--d) + 0.8s) infinite;
+  }
+}
+
+/* En la línea vertical del método (móvil): nacen de la línea, en el hueco
+   tras cada fase; la última, donde la línea acaba. */
+.phase__roots {
+  top: 100%;
+  left: calc(var(--s-7) * -1 + 3.5px);
+}
+
+.phase:last-child .phase__roots {
+  top: calc(100% - 6px);
+}
+
+@media (min-width: 1024px) {
+  .phase__roots {
+    display: none;
+  }
+}
+
+/* En el rail: bajo el nodo de las fases de arriba y al final del eje. */
+.rail-phase__roots {
+  top: 50%;
+  left: 0;
+}
+
+.rail__end {
+  position: relative;
+}
+
+.rail__end-roots {
+  top: 50%;
+  left: 0;
+}
+
+/* Del horizonte del pie: a todo el ancho, desde el filamento. */
+.footer__horizon {
+  padding-bottom: clamp(36px, 5vw, 72px);
+}
+
+.footer__roots {
+  inset-inline: 0;
+  overflow: hidden;
+  top: calc(100% - clamp(36px, 5vw, 72px) - min(0.74vw, 0.69rem));
+  height: clamp(64px, 8vw, 128px);
+  -webkit-mask-image: linear-gradient(180deg, #000 40%, transparent);
+  mask-image: linear-gradient(180deg, #000 40%, transparent);
 }
 
 /* Método en horizontal (ApproachRail.tsx) ---------------------------------- */
@@ -3730,6 +4086,55 @@ body[data-menu="open"] .assistant__orb {
   background-position: -30% 0, 0 0;
   filter: drop-shadow(0 0 4px color-mix(in srgb, var(--orchid) 70%, transparent));
   animation: horizon-spark 7s var(--e-inout) infinite;
+}
+
+/* Savia: el color de las raíces sube por las letras desde el filamento y se
+   apaga hacia arriba, con más luz a la derecha, donde cuelgan las raíces.
+   Capas (de arriba abajo): el pulso de savia, la luz de la derecha, la savia
+   y, debajo, el tono casi fundido de siempre. Al llegar al pie la palabra
+   espera apagada y, cuando las raíces acaban de dibujarse, la savia sube
+   (--sap); después un pulso la recorre de abajo arriba de vez en cuando. */
+@property --sap {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+
+.footer__horizon .footer__giant {
+  background:
+    linear-gradient(0deg, transparent 0%, color-mix(in srgb, var(--orchid) 40%, #fff 10%) 50%, transparent 100%) no-repeat,
+    radial-gradient(42% 90% at 72% 100%, color-mix(in srgb, var(--orchid) 55%, transparent), transparent) no-repeat,
+    linear-gradient(0deg, color-mix(in srgb, var(--orchid) 42%, transparent) 0%, color-mix(in srgb, var(--violet) 30%, transparent) 30%, color-mix(in srgb, var(--indigo) 14%, transparent) 72%, color-mix(in srgb, var(--lavender) 6%, transparent) 100%) no-repeat,
+    linear-gradient(180deg, color-mix(in srgb, var(--lavender) 14%, transparent), color-mix(in srgb, var(--indigo) 4%, transparent));
+  background-size: 100% 36%, 100% var(--sap), 100% var(--sap), 100% 100%;
+  background-position: 0 140%, 0 100%, 0 100%, 0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Apagada mientras las raíces esperan; sube (solo hacia arriba) al dibujarse. */
+.footer__horizon:has(.rootlets[data-anim]:not([data-in])) .footer__giant {
+  --sap: 0%;
+}
+
+.footer__horizon:has(.rootlets[data-in]) .footer__giant {
+  transition: --sap 2.4s var(--e-out) 0.9s;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .footer__horizon .footer__giant {
+    animation: giant-sap 11s var(--e-inout) 3.5s infinite;
+  }
+}
+
+@keyframes giant-sap {
+  0% {
+    background-position: 0 140%, 0 100%, 0 100%, 0 0;
+  }
+  45%,
+  100% {
+    background-position: 0 -60%, 0 100%, 0 100%, 0 0;
+  }
 }
 
 /* Y el resplandor de detrás respira, muy despacio. */

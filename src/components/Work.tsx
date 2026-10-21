@@ -10,13 +10,12 @@
 // arrastra dos webs ajenas.
 //
 // Es una vista previa para el equipo: las páginas van con noindex y fuera
-// del sitemap (ver app/trabajo).
+// del sitemap (ver app/(es)/trabajo y app/[lang]/trabajo).
 
-import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { withBase } from "@/lib/base";
 import type { Dict } from "@/lib/dict";
-import { useI18n } from "@/lib/i18n";
+import { Link, useI18n } from "@/lib/i18n";
 import { useReveal } from "@/lib/reveal";
 import { shortUrl, work, workBySlug, type WorkProject, type WorkSlug } from "@/lib/work";
 import { WORK_GLYPHS } from "./glyphs";

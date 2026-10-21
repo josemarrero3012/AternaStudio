@@ -16,6 +16,7 @@ import {
   prefersReducedMotion,
   registerGsap,
 } from "@/lib/motion";
+import { startIntro, whenHeroReady } from "@/lib/intro";
 import { site } from "@/lib/site";
 
 export const CURTAIN_KEY = "aterna:curtain";
@@ -27,9 +28,15 @@ export const CURTAIN_KEY = "aterna:curtain";
  * instante: antes aparecía al cargar el JavaScript y dejaba ver un momento
  * la página estática.
  */
-export const CURTAIN_SCRIPT = `try{if(sessionStorage.getItem("${CURTAIN_KEY}")||matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.dataset.curtain="skip"}catch(e){document.documentElement.dataset.curtain="skip"}`;
+export const CURTAIN_SCRIPT = `try{var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches)d.dataset.motion="on";if(sessionStorage.getItem("${CURTAIN_KEY}")||d.dataset.motion!=="on")d.dataset.curtain="skip"}catch(e){document.documentElement.dataset.curtain="skip"}`;
 
-/** Cortina de marca: solo la primera vez por sesión. */
+/**
+ * Cortina de marca: solo la primera vez por sesión. En la portada no sube
+ * hasta que el vídeo del hero puede arrancar (con tope, ver lib/intro.ts):
+ * antes subía a los 0,2 s pasara lo que pasara con el vídeo, y según la red
+ * se veía el hero quieto, la cortina antes o después del vídeo… Al subir da
+ * la salida a la entrada (startIntro).
+ */
 export function Curtain() {
   const ref = useRef<HTMLDivElement>(null);
   const [gone, setGone] = useState(false);
@@ -39,19 +46,33 @@ export function Curtain() {
     if (!el) return;
     if (document.documentElement.dataset.curtain === "skip") {
       setGone(true);
+      startIntro();
       return;
     }
     try {
       sessionStorage.setItem(CURTAIN_KEY, "1");
     } catch {}
     registerGsap();
-    const ctx = gsap.context(() => {
-      gsap
-        .timeline({ delay: 0.2, onComplete: () => setGone(true) })
+    let tl: gsap.core.Timeline | null = null;
+    const lift = () => {
+      startIntro();
+      tl = gsap
+        .timeline({ onComplete: () => setGone(true) })
         .to(el, { yPercent: -100, duration: 0.9, ease: ATERNA_EASE })
         .to(el.querySelector(".curtain__rule"), { scaleX: 0, duration: 0.5, ease: "none" }, "<0.2");
-    }, el);
-    return () => ctx.revert();
+    };
+    // Un respiro mínimo para que la marca se vea; luego, en la portada, el vídeo.
+    let cancel = () => {};
+    const wait = window.setTimeout(() => {
+      if (document.querySelector(".hero__video")) cancel = whenHeroReady(lift);
+      else lift();
+    }, 200);
+    return () => {
+      window.clearTimeout(wait);
+      cancel();
+      tl?.kill();
+      gsap.set(el, { clearProps: "transform" });
+    };
   }, []);
 
   if (gone) return null;
