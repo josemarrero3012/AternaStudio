@@ -49,8 +49,8 @@ const es = {
   "hero": {
     "eyebrow": "Estudio digital independiente",
     "headline": "Una web mejor\nes solo el principio.",
-    "support": "Diseñamos, construimos y hacemos crecer webs de alto rendimiento para negocios que han superado su presencia actual.",
-    "tagline": "Diseñadas para que te encuentren. Construidas para convertir.",
+    "support": "Diseñamos y programamos webs a medida, y después trabajamos para que te encuentren. Para negocios a los que su web actual se les ha quedado pequeña.",
+    "tagline": "Pensadas para que te encuentren y te escriban.",
     "secondary": "Ver servicios"
   },
   "cases": {
@@ -102,16 +102,16 @@ const es = {
       },
       {
         "title": "Dirigir",
-        "body": "Decidimos el territorio: estructura, tipografía, color y tono. Una dirección, defendida."
+        "body": "Elegimos estructura, tipografía, color y tono, y te explicamos por qué. Te proponemos una sola dirección, no tres para que elijas."
       },
       {
         "title": "Construir",
-        "body": "Diseño y código avanzan juntos, no uno detrás del otro. La web toma forma desde el principio.",
+        "body": "Diseñamos y programamos a la vez, así que ves la web funcionando desde las primeras semanas.",
         "service": "web"
       },
       {
         "title": "Crecer",
-        "body": "Publicamos, medimos y mejoramos. SEO, contenido y visibilidad para que la web no se quede quieta el día del lanzamiento.",
+        "body": "Cuando la web sale, seguimos: medimos qué pasa, corregimos lo que no funciona y trabajamos el SEO y el contenido para que te encuentre más gente.",
         "service": "seo"
       }
     ] as { title: string; body: string; service?: string }[],
@@ -121,7 +121,7 @@ const es = {
   "studioHome": {
     "eyebrow": "Estudio",
     "title": "Un estudio pequeño,\npor decisión.",
-    "lead": "Aterna es un estudio digital independiente. Ser pequeños no es una limitación: es lo que nos permite trabajar así.",
+    "lead": "Aterna es un estudio digital independiente. Somos pocos a propósito: así podemos llevar cada proyecto en persona.",
     "link": "Conocer el estudio",
     "pillars": [
       {
@@ -134,7 +134,7 @@ const es = {
       },
       {
         "title": "Pocos proyectos a la vez",
-        "body": "No competimos en volumen. Cada proyecto tiene la atención que necesita, de principio a fin."
+        "body": "Aceptamos pocos encargos a la vez, así que tu proyecto no espera en la cola detrás de otros diez."
       }
     ]
   },
@@ -142,7 +142,7 @@ const es = {
     "eyebrow": "Contacto",
     "mailLabel": "O escríbenos directamente",
     "title": "Si tu web ya no\nrepresenta a tu negocio,\nhablemos.",
-    "lead": "Cuéntanos qué haces y qué quieres que tu presencia digital consiga.",
+    "lead": "Cuéntanos a qué te dedicas y qué esperas de tu web.",
     "nextTitle": "Qué pasa después",
     "next": [
       {
@@ -216,38 +216,38 @@ const es = {
           "slug": "web",
           "kicker": "Pago único",
           "title": "Diseño y desarrollo web",
-          "body": "La web a medida que pone tu negocio a la altura de lo que vale. Diseño, dirección de arte y código propio.",
+          "body": "Una web hecha para tu negocio y no para cualquiera. Diseño, dirección de arte y código propio.",
           "cta": "Ver diseño web"
         },
         {
           "slug": "seo",
           "kicker": "Cuota mensual",
           "title": "SEO y crecimiento orgánico",
-          "body": "Que te encuentren los que ya te están buscando. Trabajo mensual, medido y reportado con honestidad.",
+          "body": "Que te encuentre la gente que ya busca lo que ofreces. Trabajo mensual, con un informe claro de lo que cambia.",
           "cta": "Ver SEO"
         },
         {
           "slug": "mantenimiento",
           "kicker": "Cuota mensual",
           "title": "Mantenimiento y soporte",
-          "body": "Tu web siempre rápida, segura y al día. Sin que tengas que pensar en nada técnico.",
+          "body": "Nos ocupamos del hosting, las copias y las actualizaciones para que tú no tengas que pensar en ello.",
           "cta": "Ver mantenimiento"
         },
         {
           "slug": "asistente-ia",
           "kicker": "Cuota mensual",
           "title": "Asistente telefónico con IA",
-          "body": "Un asistente de voz que contesta las llamadas de tu negocio 24 horas al día. Ninguna llamada sin respuesta.",
+          "body": "Un asistente de voz que contesta las llamadas de tu negocio las 24 horas, también cuando estás ocupado o ya has cerrado.",
           "cta": "Ver asistente IA"
         }
       ]
     },
     "web": {
       "eyebrow": "Diseño y desarrollo web · Pago único",
-      "h1": "Una web a la altura\ndel negocio que ya eres.",
-      "lead": "Diseño, dirección de arte y desarrollo a medida. Sin plantillas, sin plugins que mantener. El código es tuyo.",
+      "h1": "Una web que se parezca\na tu negocio.",
+      "lead": "Diseño, dirección de arte y desarrollo web a medida, sin plantillas ni plugins que mantener. Al terminar, el código es tuyo.",
       "intro": [
-        "La mayoría de las webs se parecen entre sí porque salen del mismo puñado de plantillas. La tuya no. Partimos de qué tiene que conseguir —que te encuentren, que te reserven, que te compren— y a partir de ahí decidimos estructura, dirección de arte y código."
+        "Muchas webs se parecen porque salen del mismo puñado de plantillas. Nosotros empezamos por otra pregunta: qué tiene que conseguir la tuya. Que te encuentren, que te reserven, que te compren. Con eso claro, decidimos la estructura, la dirección de arte y el código."
       ],
       "includesTitle": "Qué incluye",
       "includes": [
@@ -268,7 +268,7 @@ const es = {
       "plans": [
         {
           "name": "Esencial",
-          "tagline": "One-pager o web pequeña para empezar con nivel.",
+          "tagline": "Una web de una página o de pocas secciones, para empezar bien.",
           "features": [
             "Hasta 3 secciones",
             "Diseño a medida",
@@ -279,7 +279,7 @@ const es = {
         },
         {
           "name": "A medida",
-          "tagline": "El estándar Aterna: web multipágina completa.",
+          "tagline": "La que más hacemos: una web completa de varias páginas.",
           "features": [
             "Páginas a medida sin límite fijo",
             "Dirección de arte completa",
@@ -290,7 +290,7 @@ const es = {
         },
         {
           "name": "Premium",
-          "tagline": "Proyectos con más piezas moviéndose.",
+          "tagline": "Para cuando la web tiene que hacer más cosas.",
           "features": [
             "Multi-idioma",
             "Reservas o tienda",
@@ -308,7 +308,7 @@ const es = {
         },
         {
           "q": "¿El código es mío?",
-          "a": "Sí. Entregamos código propio, limpio y mantenible. Es tuyo y cualquier otro estudio puede continuarlo. No te atamos a nosotros."
+          "a": "Sí. Te entregamos el código y es tuyo. Está escrito para que otro estudio pueda seguir con él si algún día cambias de proveedor."
         },
         {
           "q": "¿Incluye el mantenimiento?",
@@ -318,11 +318,11 @@ const es = {
     },
     "seo": {
       "eyebrow": "SEO y crecimiento orgánico · Cuota mensual",
-      "h1": "Especialistas en SEO\ny en crecimiento orgánico.",
-      "lead": "Una web excelente que nadie encuentra sigue teniendo el mismo problema. El SEO es la parte que hace que aparezcas cuando te buscan.",
+      "h1": "SEO y crecimiento orgánico\npara negocios locales.",
+      "lead": "Puedes tener una web estupenda, pero si nadie la encuentra no te sirve de mucho. El SEO se ocupa de que aparezcas cuando alguien busca lo que haces.",
       "intro": [
-        "Lo que prometemos es trabajo hecho, medido y contado con claridad. El SEO sube en escalones, no en línea recta, y lo verás mes a mes con datos reales.",
-        "Trabajamos el crecimiento orgánico con especial foco en la visibilidad local —para hoteles, bodegas, restaurantes y negocios que se juegan mucho en «cerca de mí»."
+        "Te prometemos trabajo hecho cada mes y contado con claridad. El SEO no sube en línea recta, va a saltos, y lo verás mes a mes con datos reales.",
+        "Trabajamos el crecimiento orgánico sobre todo en visibilidad local: hoteles, bodegas, restaurantes y cualquier negocio que depende de salir en las búsquedas «cerca de mí»."
       ],
       "includesTitle": "En qué trabajamos cada mes",
       "includes": [
@@ -334,7 +334,7 @@ const es = {
         "Medición, informe y siguientes pasos"
       ],
       "reportTitle": "Nuestra forma de informar",
-      "report": "Cada mes, el mismo esquema, aunque el mes haya sido plano: esto encontramos, esto hicimos, esto cambió, esto no, esto probamos ahora. Sin humo.",
+      "report": "Cada mes te mandamos el mismo esquema, también cuando el mes ha sido flojo: qué encontramos, qué hicimos, qué cambió, qué no y qué vamos a probar ahora.",
       "examplesTitle": "Un ejemplo de lo que recibes",
       "examplesLead": "Así son la auditoría y el informe que preparamos, en dos sectores distintos:",
       "examples": [
@@ -354,7 +354,7 @@ const es = {
       "plans": [
         {
           "name": "Cuidado",
-          "tagline": "Mantener viva la presencia y ganar terreno poco a poco.",
+          "tagline": "Para cuidar lo que ya tienes e ir subiendo poco a poco.",
           "features": [
             "Google Business Profile",
             "SEO técnico y monitorización",
@@ -365,7 +365,7 @@ const es = {
         },
         {
           "name": "Crecimiento",
-          "tagline": "Ganar terreno local de forma constante.",
+          "tagline": "Para ganar posiciones en tu zona mes a mes.",
           "features": [
             "Todo lo de Cuidado",
             "Páginas de zona y servicio",
@@ -376,7 +376,7 @@ const es = {
         },
         {
           "name": "Dominio",
-          "tagline": "Ser la referencia de tu comarca.",
+          "tagline": "Para ser el primer nombre que sale en tu comarca.",
           "features": [
             "Todo lo de Crecimiento",
             "Contenido semanal",
@@ -404,10 +404,10 @@ const es = {
     },
     "care": {
       "eyebrow": "Mantenimiento y soporte · Cuota mensual",
-      "h1": "Tu web, siempre\nrápida, segura y al día.",
-      "lead": "Hosting, copias, actualizaciones y soporte. Tú te ocupas de tu negocio; nosotros, de que la web no te dé un solo dolor de cabeza.",
+      "h1": "Que tu web funcione\nsin que pienses en ella.",
+      "lead": "Hosting, copias, actualizaciones y soporte. Si algo falla, nos enteramos nosotros antes que tú.",
       "intro": [
-        "Una web necesita mantenimiento para seguir rindiendo. Este servicio se encarga de todo lo técnico para que no tengas que pensar en ello.",
+        "Una web sin mantenimiento se va quedando lenta y desactualizada, hasta que un día algo deja de funcionar. Con este servicio, de la parte técnica nos ocupamos nosotros.",
         "Es independiente del SEO: mantener la web viva y hacerla crecer son dos cosas distintas, y no te obligamos a juntarlas."
       ],
       "includesTitle": "Qué incluye",
@@ -464,7 +464,7 @@ const es = {
     },
     "voice": {
       "eyebrow": "Asistente telefónico con IA · Cuota mensual",
-      "h1": "Tu negocio contesta\nal teléfono. Siempre.",
+      "h1": "Tu negocio contesta\naunque tú no puedas.",
       "lead": "Un asistente de voz con IA que atiende las llamadas en nombre de tu negocio, 24 horas al día: resuelve dudas, toma reservas o citas y te pasa el recado.",
       "intro": [
         "Cuando estás con un cliente, en cocina, en obra o con el negocio cerrado, el teléfono sigue sonando. Y quien llama y no obtiene respuesta suele probar con el siguiente de la lista.",
@@ -523,7 +523,7 @@ const es = {
       "faq": [
         {
           "q": "¿Cuánto cuesta?",
-          "a": "Depende de los minutos de llamada que reciba tu negocio al mes. Vemos juntos tu volumen y te damos un precio cerrado antes de empezar, sin sorpresas."
+          "a": "Depende de los minutos de llamada que reciba tu negocio al mes. Miramos juntos tu volumen y te damos un precio cerrado antes de empezar."
         },
         {
           "q": "¿Tengo que cambiar de número?",
@@ -549,7 +549,7 @@ const es = {
       "eyebrow": "Estudio",
       "h1": "Webs hechas para durar.",
       "prose": [
-        "El nombre viene de aeterna. El símbolo es un árbol con raíces dentro de un círculo cerrado. No es decoración: es lo que vendemos —una web bien construida sigue en pie cuando el estudio que la hizo ya no está mirando.",
+        "El nombre viene del latín aeterna, y el símbolo es un árbol con raíces dentro de un círculo cerrado. Lo elegimos porque resume lo que queremos hacer: webs bien construidas que siguen en pie años después, cuando ya nadie del estudio las está mirando.",
         "Por eso cuidamos lo que no se ve: código limpio, páginas rápidas y una estructura que se pueda ampliar sin rehacerla.",
         "Elegimos los proyectos por lo que tienen que contar, no por el tamaño del presupuesto: un oficio con historia, un lugar con carácter, un negocio que hace las cosas bien y necesita que la web lo demuestre."
       ],
@@ -561,7 +561,7 @@ const es = {
         },
         {
           "title": "Ninguna cifra inventada",
-          "body": "No marcamos como propia la valoración de un tercero, no ponemos premios que no tenemos y no escribimos testimonios. Da peor resultado a corto plazo y es la única forma de sostener el trabajo a largo."
+          "body": "No marcamos como propia la valoración de un tercero, no ponemos premios que no tenemos y no escribimos testimonios. A corto plazo vende menos, pero es lo único que aguanta con el tiempo."
         },
         {
           "title": "El movimiento con motivo",
@@ -630,8 +630,8 @@ const en: Dict = {
   "hero": {
     "eyebrow": "Independent digital studio",
     "headline": "A better website\nis only the beginning.",
-    "support": "We design, build and grow high-performance websites for businesses that have outgrown their digital presence.",
-    "tagline": "Designed to be found. Built to convert.",
+    "support": "We design and build bespoke websites, then work on getting you found. For businesses that have outgrown the site they have.",
+    "tagline": "Built so people find you and get in touch.",
     "secondary": "See services"
   },
   "cases": {
@@ -683,16 +683,16 @@ const en: Dict = {
       },
       {
         "title": "Direct",
-        "body": "We set the territory: structure, typography, colour and tone. One direction, defended."
+        "body": "We choose the structure, typography, colour and tone, and explain why. You get one direction from us, not three to pick from."
       },
       {
         "title": "Build",
-        "body": "Design and code move together, not one behind the other. The site takes shape from the start.",
+        "body": "We design and code at the same time, so you see the site working within the first few weeks.",
         "service": "web"
       },
       {
         "title": "Grow",
-        "body": "We publish, measure and improve. SEO, content and visibility, so the site doesn't go quiet the day it launches.",
+        "body": "Once the site is live, we keep going: we measure what happens, fix what isn’t working and work on SEO and content so more people find you.",
         "service": "seo"
       }
     ],
@@ -702,7 +702,7 @@ const en: Dict = {
   "studioHome": {
     "eyebrow": "Studio",
     "title": "A small studio,\nby choice.",
-    "lead": "Aterna is an independent digital studio. Being small isn’t a limitation: it’s what lets us work this way.",
+    "lead": "Aterna is an independent digital studio. We’re small on purpose, so we can handle every project ourselves.",
     "link": "About the studio",
     "pillars": [
       {
@@ -715,7 +715,7 @@ const en: Dict = {
       },
       {
         "title": "Few projects at once",
-        "body": "We don't compete on volume. Each project gets the attention it needs, from start to finish."
+        "body": "We only take on a few jobs at a time, so your project isn’t stuck in a queue behind ten others."
       }
     ]
   },
@@ -723,7 +723,7 @@ const en: Dict = {
     "eyebrow": "Contact",
     "mailLabel": "Or write to us directly",
     "title": "If your website no longer\nrepresents your business,\nlet’s talk.",
-    "lead": "Tell us what you do and what you want your digital presence to achieve.",
+    "lead": "Tell us what you do and what you’d like your website to do for you.",
     "nextTitle": "What happens next",
     "next": [
       {
@@ -797,38 +797,38 @@ const en: Dict = {
           "slug": "web",
           "kicker": "One-time",
           "title": "Web design & development",
-          "body": "The bespoke website that brings your business up to the level it deserves. Design, art direction and our own code.",
+          "body": "A website made for your business and nobody else’s. Design, art direction and our own code.",
           "cta": "See web design"
         },
         {
           "slug": "seo",
           "kicker": "Monthly",
           "title": "SEO & organic growth",
-          "body": "Get found by the people already searching for you. Monthly work, measured and reported honestly.",
+          "body": "Get found by people already searching for what you offer. Monthly work, with a clear report on what changes.",
           "cta": "See SEO"
         },
         {
           "slug": "mantenimiento",
           "kicker": "Monthly",
           "title": "Maintenance & support",
-          "body": "Your site always fast, secure and up to date. Without having to think about anything technical.",
+          "body": "We look after hosting, backups and updates so you don’t have to think about them.",
           "cta": "See maintenance"
         },
         {
           "slug": "asistente-ia",
           "kicker": "Monthly",
           "title": "AI phone assistant",
-          "body": "A voice assistant that answers your business’s calls 24 hours a day. No call left unanswered.",
+          "body": "A voice assistant that answers your business’s calls around the clock, including when you’re busy or already closed.",
           "cta": "See AI assistant"
         }
       ]
     },
     "web": {
       "eyebrow": "Web design & development · One-time",
-      "h1": "A website worthy of\nthe business you already are.",
-      "lead": "Design, art direction and custom development. No templates, no plugins to maintain. The code is yours.",
+      "h1": "A website that actually\nlooks like your business.",
+      "lead": "Bespoke web design, art direction and development, with no templates or plugins to maintain. When we finish, the code is yours.",
       "intro": [
-        "Most websites look alike because they come from the same handful of templates. Yours won’t. We start from what it needs to achieve —get found, get booked, get bought— and from there we decide structure, art direction and code."
+        "A lot of websites look alike because they come from the same handful of templates. We start with a different question: what does yours need to achieve? Getting found, getting bookings, making sales. Once that’s clear, we decide on structure, art direction and code."
       ],
       "includesTitle": "What’s included",
       "includes": [
@@ -849,7 +849,7 @@ const en: Dict = {
       "plans": [
         {
           "name": "Essential",
-          "tagline": "A one-pager or small site to start with real quality.",
+          "tagline": "A one-page or small site to get off to a good start.",
           "features": [
             "Up to 3 sections",
             "Bespoke design",
@@ -860,7 +860,7 @@ const en: Dict = {
         },
         {
           "name": "Bespoke",
-          "tagline": "The Aterna standard: a full multipage site.",
+          "tagline": "What we build most often: a complete multi-page site.",
           "features": [
             "Custom pages, no fixed limit",
             "Full art direction",
@@ -871,7 +871,7 @@ const en: Dict = {
         },
         {
           "name": "Premium",
-          "tagline": "Projects with more moving parts.",
+          "tagline": "For when the site needs to do more.",
           "features": [
             "Multi-language",
             "Booking or store",
@@ -889,7 +889,7 @@ const en: Dict = {
         },
         {
           "q": "Is the code mine?",
-          "a": "Yes. We deliver our own clean, maintainable code. It’s yours and any other studio can continue it. We don’t lock you in."
+          "a": "Yes. We hand over the code and it’s yours. It’s written so another studio can pick it up if you ever switch."
         },
         {
           "q": "Is maintenance included?",
@@ -899,11 +899,11 @@ const en: Dict = {
     },
     "seo": {
       "eyebrow": "SEO & organic growth · Monthly",
-      "h1": "SEO and organic growth\nspecialists.",
-      "lead": "An excellent website nobody finds still has the same problem. SEO is the part that makes you show up when they search for you.",
+      "h1": "SEO and organic growth\nfor local businesses.",
+      "lead": "You can have a great website, but if nobody finds it, it won’t do much for you. SEO is what makes you show up when someone searches for what you do.",
       "intro": [
-        "What we promise is work done, measured and told clearly. SEO climbs in steps, not a straight line, and you’ll see it month by month with real data.",
-        "We work on organic growth with a strong focus on local visibility —for hotels, wineries, restaurants and businesses with a lot riding on “near me”."
+        "What we promise is work done every month and explained clearly. SEO doesn’t climb in a straight line, it moves in jumps, and you’ll see that month by month in real data.",
+        "Our organic growth work focuses mostly on local visibility: hotels, wineries, restaurants and any business that depends on showing up in “near me” searches."
       ],
       "includesTitle": "What we work on each month",
       "includes": [
@@ -915,7 +915,7 @@ const en: Dict = {
         "Measurement, report and next steps"
       ],
       "reportTitle": "How we report",
-      "report": "Every month, the same structure, even when the month was flat: this is what we found, what we did, what changed, what didn’t, what we’ll try now. No smoke.",
+      "report": "Every month you get the same layout, even when it’s been a slow month: what we found, what we did, what changed, what didn’t, and what we’re trying next.",
       "examplesTitle": "An example of what you get",
       "examplesLead": "This is the audit and report we prepare, in two different sectors:",
       "examples": [
@@ -935,7 +935,7 @@ const en: Dict = {
       "plans": [
         {
           "name": "Care",
-          "tagline": "Keep the presence alive and gain ground steadily.",
+          "tagline": "Look after what you already have and climb bit by bit.",
           "features": [
             "Google Business Profile",
             "Technical SEO and monitoring",
@@ -946,7 +946,7 @@ const en: Dict = {
         },
         {
           "name": "Growth",
-          "tagline": "Gain local ground consistently.",
+          "tagline": "Move up in your area, month after month.",
           "features": [
             "Everything in Care",
             "Area and service pages",
@@ -957,7 +957,7 @@ const en: Dict = {
         },
         {
           "name": "Dominance",
-          "tagline": "Become the reference in your area.",
+          "tagline": "Be the first name that comes up in your area.",
           "features": [
             "Everything in Growth",
             "Weekly content",
@@ -985,10 +985,10 @@ const en: Dict = {
     },
     "care": {
       "eyebrow": "Maintenance & support · Monthly",
-      "h1": "Your site, always\nfast, secure and current.",
-      "lead": "Hosting, backups, updates and support. You take care of your business; we make sure the website never gives you a headache.",
+      "h1": "Your website keeps running\nwithout you thinking about it.",
+      "lead": "Hosting, backups, updates and support. If something breaks, we find out before you do.",
       "intro": [
-        "A website needs maintenance to keep performing. This service handles everything technical so you don’t have to think about it.",
+        "Without maintenance, a website gradually gets slower and more out of date, until one day something stops working. With this service, the technical side is our job.",
         "It’s independent from SEO: keeping the site alive and growing it are two different things, and we don’t force you to bundle them."
       ],
       "includesTitle": "What’s included",
@@ -1045,7 +1045,7 @@ const en: Dict = {
     },
     "voice": {
       "eyebrow": "AI phone assistant · Monthly",
-      "h1": "Your business answers\nthe phone. Always.",
+      "h1": "Your business picks up,\neven when you can’t.",
       "lead": "An AI voice assistant that takes calls on behalf of your business, 24 hours a day: it answers questions, takes bookings or appointments and passes the message on to you.",
       "intro": [
         "When you’re with a client, in the kitchen, on site or closed, the phone keeps ringing. And a caller who gets no answer usually tries the next name on the list.",
@@ -1104,7 +1104,7 @@ const en: Dict = {
       "faq": [
         {
           "q": "How much does it cost?",
-          "a": "It depends on how many call minutes your business gets each month. We look at your volume together and give you a fixed price before we start, no surprises."
+          "a": "It depends on how many call minutes your business gets each month. We look at your volume together and give you a fixed price before we start."
         },
         {
           "q": "Do I have to change my number?",
@@ -1130,7 +1130,7 @@ const en: Dict = {
       "eyebrow": "Studio",
       "h1": "Websites built to last.",
       "prose": [
-        "The name comes from aeterna. The symbol is a tree with roots inside a closed circle. It's not decoration: it's what we sell — a well-built website is still standing when the studio that made it is no longer watching.",
+        "The name comes from the Latin aeterna, and the symbol is a tree with roots inside a closed circle. We chose it because it sums up what we want to make: well-built websites that are still standing years later, when nobody at the studio is looking at them any more.",
         "That's why we care about what you can't see: clean code, fast pages and a structure that can grow without being rebuilt.",
         "We choose projects for what they have to say, not for the size of the budget: a craft with history, a place with character, a business that does things well and needs the website to show it."
       ],
@@ -1142,18 +1142,18 @@ const en: Dict = {
         },
         {
           "title": "No invented numbers",
-          "body": "We don't pass off someone else's rating as our own, we don't display awards we don't have and we don't write testimonials. It performs worse in the short term and it's the only way to sustain the work long term."
+          "body": "We don't pass off someone else's rating as our own, we don't display awards we don't have and we don't write testimonials. It sells less in the short term, but it's the only thing that holds up over time."
         },
         {
           "title": "Motion with a reason",
-          "body": "An animation has to explain something: a hierarchy, a continuity, a change of state. If it's only there to impress, it's excess — and it costs battery."
+          "body": "An animation has to explain something: a hierarchy, a continuity, a change of state. If it's only there to impress, it doesn't belong, and it drains the battery too."
         }
       ]
     },
     "contacto": {
       "eyebrow": "Contact",
       "h1": "Let’s start with\na conversation.",
-      "lead": "Write to us through the form, by email or on WhatsApp — whichever suits you."
+      "lead": "Write to us through the form, by email or on WhatsApp, whichever suits you best."
     },
     "notFound": {
       "eyebrow": "Error 404",
@@ -1209,8 +1209,8 @@ const nl: Dict = {
   "hero": {
     "eyebrow": "Onafhankelijke digitale studio",
     "headline": "Een betere website\nis pas het begin.",
-    "support": "We ontwerpen, bouwen en laten snelle websites groeien voor bedrijven die hun huidige online aanwezigheid ontgroeid zijn.",
-    "tagline": "Ontworpen om gevonden te worden. Gebouwd om te converteren.",
+    "support": "We ontwerpen en bouwen websites op maat en zorgen daarna dat je gevonden wordt. Voor bedrijven die hun huidige website ontgroeid zijn.",
+    "tagline": "Zo gemaakt dat mensen je vinden en contact opnemen.",
     "secondary": "Bekijk diensten"
   },
   "cases": {
@@ -1262,16 +1262,16 @@ const nl: Dict = {
       },
       {
         "title": "Richting geven",
-        "body": "We bepalen het terrein: structuur, typografie, kleur en toon. Eén richting, onderbouwd."
+        "body": "We kiezen structuur, typografie, kleur en toon, en leggen uit waarom. Je krijgt één richting van ons, niet drie om uit te kiezen."
       },
       {
         "title": "Bouwen",
-        "body": "Ontwerp en code gaan samen op, niet na elkaar. De website krijgt vanaf het begin vorm.",
+        "body": "We ontwerpen en programmeren tegelijk, dus je ziet de website al in de eerste weken werken.",
         "service": "web"
       },
       {
         "title": "Groeien",
-        "body": "We publiceren, meten en verbeteren. SEO, content en zichtbaarheid, zodat de website niet stilvalt op de dag van de lancering.",
+        "body": "Als de website live staat, gaan we door: we meten wat er gebeurt, verbeteren wat niet werkt en werken aan SEO en content, zodat meer mensen je vinden.",
         "service": "seo"
       }
     ],
@@ -1281,7 +1281,7 @@ const nl: Dict = {
   "studioHome": {
     "eyebrow": "Studio",
     "title": "Een kleine studio,\nbewust.",
-    "lead": "Aterna is een onafhankelijke digitale studio. Klein zijn is geen beperking: het is precies wat ons zo laat werken.",
+    "lead": "Aterna is een onafhankelijke digitale studio. We zijn bewust klein, zodat we elk project zelf kunnen doen.",
     "link": "Maak kennis met de studio",
     "pillars": [
       {
@@ -1294,7 +1294,7 @@ const nl: Dict = {
       },
       {
         "title": "Weinig projecten tegelijk",
-        "body": "We concurreren niet op volume. Elk project krijgt de aandacht die het nodig heeft, van begin tot eind."
+        "body": "We nemen weinig opdrachten tegelijk aan, dus jouw project staat niet in de rij achter tien andere."
       }
     ]
   },
@@ -1302,7 +1302,7 @@ const nl: Dict = {
     "eyebrow": "Contact",
     "mailLabel": "Of mail ons direct",
     "title": "Past je website niet meer\nbij je bedrijf?\nLaten we praten.",
-    "lead": "Vertel ons wat je doet en wat je online aanwezigheid moet bereiken.",
+    "lead": "Vertel ons wat je doet en wat je van je website verwacht.",
     "nextTitle": "Wat er daarna gebeurt",
     "next": [
       {
@@ -1376,38 +1376,38 @@ const nl: Dict = {
           "slug": "web",
           "kicker": "Eenmalig",
           "title": "Webdesign en -ontwikkeling",
-          "body": "De website op maat die je bedrijf op het niveau brengt dat het verdient. Ontwerp, art direction en eigen code.",
+          "body": "Een website die voor jouw bedrijf gemaakt is, niet voor zomaar iedereen. Ontwerp, art direction en eigen code.",
           "cta": "Bekijk webdesign"
         },
         {
           "slug": "seo",
           "kicker": "Maandelijks",
           "title": "SEO en organische groei",
-          "body": "Gevonden worden door wie al naar je zoekt. Maandelijks werk, gemeten en eerlijk gerapporteerd.",
+          "body": "Gevonden worden door mensen die al zoeken naar wat jij aanbiedt. Maandelijks werk, met een helder verslag van wat er verandert.",
           "cta": "Bekijk SEO"
         },
         {
           "slug": "mantenimiento",
           "kicker": "Maandelijks",
           "title": "Onderhoud en support",
-          "body": "Je website altijd snel, veilig en up-to-date. Zonder dat je aan iets technisch hoeft te denken.",
+          "body": "Wij regelen hosting, back-ups en updates, zodat jij daar niet aan hoeft te denken.",
           "cta": "Bekijk onderhoud"
         },
         {
           "slug": "asistente-ia",
           "kicker": "Maandelijks",
           "title": "AI-telefoonassistent",
-          "body": "Een spraakassistent die 24 uur per dag de telefoon van je bedrijf opneemt. Geen enkel gesprek onbeantwoord.",
+          "body": "Een spraakassistent die 24 uur per dag de telefoon van je bedrijf opneemt, ook als je het druk hebt of al dicht bent.",
           "cta": "Bekijk AI-assistent"
         }
       ]
     },
     "web": {
       "eyebrow": "Webdesign en -ontwikkeling · Eenmalig",
-      "h1": "Een website die past\nbij het bedrijf dat je al bent.",
-      "lead": "Ontwerp, art direction en ontwikkeling op maat. Geen templates, geen plug-ins om bij te houden. De code is van jou.",
+      "h1": "Een website die echt\nbij je bedrijf past.",
+      "lead": "Webdesign, art direction en ontwikkeling op maat, zonder templates of plug-ins om bij te houden. Als we klaar zijn, is de code van jou.",
       "intro": [
-        "De meeste websites lijken op elkaar omdat ze uit hetzelfde handjevol templates komen. De jouwe niet. We beginnen bij wat hij moet bereiken —gevonden worden, boekingen, verkopen— en van daaruit bepalen we structuur, art direction en code."
+        "Veel websites lijken op elkaar omdat ze uit hetzelfde handjevol templates komen. Wij beginnen met een andere vraag: wat moet de jouwe bereiken? Gevonden worden, boekingen binnenhalen, verkopen. Als dat duidelijk is, kiezen we structuur, art direction en code."
       ],
       "includesTitle": "Wat erbij zit",
       "includes": [
@@ -1428,7 +1428,7 @@ const nl: Dict = {
       "plans": [
         {
           "name": "Essentieel",
-          "tagline": "Een one-pager of kleine website om met niveau te beginnen.",
+          "tagline": "Een one-pager of kleine website om goed te beginnen.",
           "features": [
             "Tot 3 secties",
             "Ontwerp op maat",
@@ -1439,7 +1439,7 @@ const nl: Dict = {
         },
         {
           "name": "Op maat",
-          "tagline": "De Aterna-standaard: een complete website met meerdere pagina's.",
+          "tagline": "Wat we het vaakst maken: een complete website met meerdere pagina's.",
           "features": [
             "Pagina's op maat, zonder vaste limiet",
             "Volledige art direction",
@@ -1450,7 +1450,7 @@ const nl: Dict = {
         },
         {
           "name": "Premium",
-          "tagline": "Projecten met meer bewegende onderdelen.",
+          "tagline": "Voor als de website meer moet kunnen.",
           "features": [
             "Meertalig",
             "Reserveringen of webshop",
@@ -1468,7 +1468,7 @@ const nl: Dict = {
         },
         {
           "q": "Is de code van mij?",
-          "a": "Ja. We leveren eigen, schone en onderhoudbare code. Hij is van jou en elke andere studio kan ermee verder. We binden je niet aan ons."
+          "a": "Ja. We dragen de code aan je over en hij is van jou. Hij is zo geschreven dat een andere studio ermee verder kan als je ooit overstapt."
         },
         {
           "q": "Zit onderhoud erbij?",
@@ -1478,11 +1478,11 @@ const nl: Dict = {
     },
     "seo": {
       "eyebrow": "SEO en organische groei · Maandelijks",
-      "h1": "Specialisten in SEO\nen organische groei.",
-      "lead": "Een uitstekende website die niemand vindt, heeft nog steeds hetzelfde probleem. SEO is het deel dat ervoor zorgt dat je verschijnt als mensen naar je zoeken.",
+      "h1": "SEO en organische groei\nvoor lokale bedrijven.",
+      "lead": "Je kunt een prachtige website hebben, maar als niemand hem vindt, heb je er weinig aan. SEO zorgt ervoor dat je verschijnt als iemand zoekt naar wat jij doet.",
       "intro": [
-        "Wat we beloven is werk dat gedaan, gemeten en helder uitgelegd wordt. SEO stijgt in treden, niet in een rechte lijn, en dat zie je maand na maand met echte cijfers.",
-        "We werken aan organische groei met extra aandacht voor lokale zichtbaarheid —voor hotels, wijnhuizen, restaurants en bedrijven voor wie «bij mij in de buurt» veel uitmaakt."
+        "Wat we beloven is werk dat elke maand gedaan en helder uitgelegd wordt. SEO stijgt niet in een rechte lijn maar met sprongen, en dat zie je maand na maand in echte cijfers.",
+        "Bij organische groei richten we ons vooral op lokale zichtbaarheid: hotels, wijnhuizen, restaurants en elk bedrijf dat moet verschijnen bij zoekopdrachten als «bij mij in de buurt»."
       ],
       "includesTitle": "Waar we elke maand aan werken",
       "includes": [
@@ -1494,7 +1494,7 @@ const nl: Dict = {
         "Meting, rapport en volgende stappen"
       ],
       "reportTitle": "Hoe we rapporteren",
-      "report": "Elke maand hetzelfde schema, ook als de maand vlak was: dit vonden we, dit deden we, dit veranderde, dit niet, dit proberen we nu. Zonder poespas.",
+      "report": "Elke maand krijg je hetzelfde schema, ook als het een rustige maand was: wat we vonden, wat we deden, wat er veranderde, wat niet, en wat we nu gaan proberen.",
       "examplesTitle": "Een voorbeeld van wat je krijgt",
       "examplesLead": "Zo zien de audit en het rapport eruit die we maken, in twee verschillende sectoren:",
       "examples": [
@@ -1514,7 +1514,7 @@ const nl: Dict = {
       "plans": [
         {
           "name": "Zorg",
-          "tagline": "Je aanwezigheid levend houden en stap voor stap terrein winnen.",
+          "tagline": "Onderhouden wat je al hebt en stap voor stap stijgen.",
           "features": [
             "Google Bedrijfsprofiel",
             "Technische SEO en monitoring",
@@ -1525,7 +1525,7 @@ const nl: Dict = {
         },
         {
           "name": "Groei",
-          "tagline": "Gestaag lokaal terrein winnen.",
+          "tagline": "Maand na maand hoger komen in je regio.",
           "features": [
             "Alles uit Zorg",
             "Pagina's per regio en dienst",
@@ -1536,7 +1536,7 @@ const nl: Dict = {
         },
         {
           "name": "Dominantie",
-          "tagline": "Dé referentie worden in je regio.",
+          "tagline": "De eerste naam worden die opduikt in je regio.",
           "features": [
             "Alles uit Groei",
             "Wekelijkse content",
@@ -1564,10 +1564,10 @@ const nl: Dict = {
     },
     "care": {
       "eyebrow": "Onderhoud en support · Maandelijks",
-      "h1": "Je website, altijd\nsnel, veilig en actueel.",
-      "lead": "Hosting, back-ups, updates en support. Jij zorgt voor je bedrijf; wij zorgen dat je website je geen enkele hoofdpijn bezorgt.",
+      "h1": "Je website blijft draaien\nzonder dat je eraan denkt.",
+      "lead": "Hosting, back-ups, updates en support. Als er iets misgaat, weten wij het eerder dan jij.",
       "intro": [
-        "Een website heeft onderhoud nodig om te blijven presteren. Deze dienst regelt al het technische, zodat jij er niet aan hoeft te denken.",
+        "Zonder onderhoud wordt een website langzaam trager en verouderd, tot er op een dag iets niet meer werkt. Met deze dienst is het technische deel onze zaak.",
         "Hij staat los van SEO: een website in leven houden en hem laten groeien zijn twee verschillende dingen, en we dwingen je niet om ze samen te nemen."
       ],
       "includesTitle": "Wat erbij zit",
@@ -1624,7 +1624,7 @@ const nl: Dict = {
     },
     "voice": {
       "eyebrow": "AI-telefoonassistent · Maandelijks",
-      "h1": "Je bedrijf neemt\nde telefoon op. Altijd.",
+      "h1": "Je bedrijf neemt op,\nook als jij dat niet kunt.",
       "lead": "Een AI-spraakassistent die namens je bedrijf de telefoon opneemt, 24 uur per dag: hij beantwoordt vragen, neemt reserveringen of afspraken aan en geeft de boodschap aan je door.",
       "intro": [
         "Als je bij een klant bent, in de keuken staat, op de bouwplaats bent of gesloten hebt, blijft de telefoon gaan. En wie belt en geen gehoor krijgt, probeert meestal de volgende op de lijst.",
@@ -1683,7 +1683,7 @@ const nl: Dict = {
       "faq": [
         {
           "q": "Wat kost het?",
-          "a": "Dat hangt af van het aantal belminuten dat je bedrijf per maand krijgt. We bekijken samen je volume en geven je een vaste prijs voordat we beginnen, zonder verrassingen."
+          "a": "Dat hangt af van het aantal belminuten dat je bedrijf per maand krijgt. We bekijken samen je volume en geven je een vaste prijs voordat we beginnen."
         },
         {
           "q": "Moet ik van nummer veranderen?",
@@ -1709,7 +1709,7 @@ const nl: Dict = {
       "eyebrow": "Studio",
       "h1": "Websites gemaakt om te blijven.",
       "prose": [
-        "De naam komt van aeterna. Het symbool is een boom met wortels in een gesloten cirkel. Het is geen versiering: het is wat we verkopen —een goed gebouwde website staat nog overeind als de studio die hem maakte al lang niet meer kijkt.",
+        "De naam komt van het Latijnse aeterna, en het symbool is een boom met wortels in een gesloten cirkel. We kozen het omdat het samenvat wat we willen maken: goed gebouwde websites die jaren later nog overeind staan, als niemand van de studio er meer naar kijkt.",
         "Daarom zorgen we voor wat je niet ziet: schone code, snelle pagina's en een structuur die kan groeien zonder dat hij opnieuw gebouwd moet worden.",
         "We kiezen projecten om wat ze te vertellen hebben, niet om de grootte van het budget: een vak met geschiedenis, een plek met karakter, een bedrijf dat dingen goed doet en een website nodig heeft die dat laat zien."
       ],
@@ -1721,11 +1721,11 @@ const nl: Dict = {
         },
         {
           "title": "Geen verzonnen cijfers",
-          "body": "We presenteren de beoordeling van een ander niet als de onze, we tonen geen prijzen die we niet hebben en we schrijven geen testimonials. Op korte termijn levert het minder op, en het is de enige manier om het werk op lange termijn vol te houden."
+          "body": "We presenteren de beoordeling van een ander niet als de onze, we tonen geen prijzen die we niet hebben en we schrijven geen testimonials. Op korte termijn levert het minder op, maar het is het enige dat op de lange duur standhoudt."
         },
         {
           "title": "Beweging met een reden",
-          "body": "Een animatie moet iets uitleggen: een hiërarchie, een samenhang, een verandering van toestand. Is ze er alleen om indruk te maken, dan is ze overbodig — en kost ze ook nog batterij."
+          "body": "Een animatie moet iets uitleggen: een hiërarchie, een samenhang, een verandering van toestand. Is ze er alleen om indruk te maken, dan kan ze weg, en ze kost ook nog batterij."
         }
       ]
     },
@@ -1788,8 +1788,8 @@ const de: Dict = {
   "hero": {
     "eyebrow": "Unabhängiges Digitalstudio",
     "headline": "Eine bessere Website\nist erst der Anfang.",
-    "support": "Wir gestalten, entwickeln und bringen leistungsstarke Websites zum Wachsen – für Unternehmen, denen ihr bisheriger Auftritt zu klein geworden ist.",
-    "tagline": "Gestaltet, um gefunden zu werden. Gebaut, um zu überzeugen.",
+    "support": "Wir gestalten und entwickeln Websites nach Maß und sorgen danach dafür, dass man Sie findet. Für Unternehmen, denen ihre jetzige Website zu klein geworden ist.",
+    "tagline": "So gemacht, dass man Sie findet und sich bei Ihnen meldet.",
     "secondary": "Leistungen ansehen"
   },
   "cases": {
@@ -1841,16 +1841,16 @@ const de: Dict = {
       },
       {
         "title": "Ausrichten",
-        "body": "Wir stecken das Terrain ab: Struktur, Typografie, Farbe und Ton. Eine Richtung, gut begründet."
+        "body": "Wir wählen Struktur, Typografie, Farbe und Ton und erklären Ihnen, warum. Sie bekommen von uns eine Richtung, nicht drei zur Auswahl."
       },
       {
         "title": "Bauen",
-        "body": "Design und Code entstehen gemeinsam, nicht nacheinander. Die Website nimmt von Anfang an Gestalt an.",
+        "body": "Wir gestalten und programmieren gleichzeitig. So sehen Sie die Website schon in den ersten Wochen laufen.",
         "service": "web"
       },
       {
         "title": "Wachsen",
-        "body": "Wir veröffentlichen, messen und verbessern. SEO, Inhalte und Sichtbarkeit, damit die Website am Tag des Launches nicht stehen bleibt.",
+        "body": "Wenn die Website online ist, machen wir weiter: Wir messen, was passiert, korrigieren, was nicht funktioniert, und arbeiten an SEO und Inhalten, damit mehr Menschen Sie finden.",
         "service": "seo"
       }
     ],
@@ -1860,7 +1860,7 @@ const de: Dict = {
   "studioHome": {
     "eyebrow": "Studio",
     "title": "Ein kleines Studio,\nganz bewusst.",
-    "lead": "Aterna ist ein unabhängiges Digitalstudio. Klein zu sein ist keine Einschränkung: Genau das erlaubt uns, so zu arbeiten.",
+    "lead": "Aterna ist ein unabhängiges Digitalstudio. Wir sind bewusst klein, damit wir jedes Projekt selbst betreuen können.",
     "link": "Das Studio kennenlernen",
     "pillars": [
       {
@@ -1873,7 +1873,7 @@ const de: Dict = {
       },
       {
         "title": "Wenige Projekte gleichzeitig",
-        "body": "Wir konkurrieren nicht über Menge. Jedes Projekt bekommt die Aufmerksamkeit, die es braucht, von Anfang bis Ende."
+        "body": "Wir nehmen nur wenige Aufträge gleichzeitig an. Ihr Projekt wartet also nicht hinter zehn anderen in der Schlange."
       }
     ]
   },
@@ -1881,7 +1881,7 @@ const de: Dict = {
     "eyebrow": "Kontakt",
     "mailLabel": "Oder schreiben Sie uns direkt",
     "title": "Passt Ihre Website\nnicht mehr zu Ihrem Unternehmen?\nLassen Sie uns reden.",
-    "lead": "Erzählen Sie uns, was Sie tun und was Ihr digitaler Auftritt erreichen soll.",
+    "lead": "Erzählen Sie uns, was Sie machen und was Sie sich von Ihrer Website erwarten.",
     "nextTitle": "Wie es weitergeht",
     "next": [
       {
@@ -1955,38 +1955,38 @@ const de: Dict = {
           "slug": "web",
           "kicker": "Einmalig",
           "title": "Webdesign und -entwicklung",
-          "body": "Die maßgeschneiderte Website, die Ihr Unternehmen auf das Niveau hebt, das es verdient. Design, Art Direction und eigener Code.",
+          "body": "Eine Website, die für Ihr Unternehmen gemacht ist und nicht für irgendeines. Design, Art Direction und eigener Code.",
           "cta": "Webdesign ansehen"
         },
         {
           "slug": "seo",
           "kicker": "Monatlich",
           "title": "SEO und organisches Wachstum",
-          "body": "Gefunden werden von denen, die schon nach Ihnen suchen. Monatliche Arbeit, gemessen und ehrlich berichtet.",
+          "body": "Gefunden werden von Menschen, die schon nach dem suchen, was Sie anbieten. Monatliche Arbeit mit einem klaren Bericht, was sich verändert.",
           "cta": "SEO ansehen"
         },
         {
           "slug": "mantenimiento",
           "kicker": "Monatlich",
           "title": "Wartung und Support",
-          "body": "Ihre Website immer schnell, sicher und aktuell. Ohne dass Sie an irgendetwas Technisches denken müssen.",
+          "body": "Wir kümmern uns um Hosting, Backups und Updates, damit Sie sich darum keine Gedanken machen müssen.",
           "cta": "Wartung ansehen"
         },
         {
           "slug": "asistente-ia",
           "kicker": "Monatlich",
           "title": "KI-Telefonassistent",
-          "body": "Ein Sprachassistent, der die Anrufe Ihres Unternehmens rund um die Uhr annimmt. Kein Anruf bleibt unbeantwortet.",
+          "body": "Ein Sprachassistent, der die Anrufe Ihres Unternehmens rund um die Uhr annimmt, auch wenn Sie beschäftigt sind oder schon geschlossen haben.",
           "cta": "KI-Assistent ansehen"
         }
       ]
     },
     "web": {
       "eyebrow": "Webdesign und -entwicklung · Einmalig",
-      "h1": "Eine Website auf der Höhe\ndes Unternehmens, das Sie schon sind.",
-      "lead": "Design, Art Direction und Entwicklung nach Maß. Ohne Templates, ohne Plugins, die gepflegt werden müssen. Der Code gehört Ihnen.",
+      "h1": "Eine Website, die wirklich\nzu Ihrem Unternehmen passt.",
+      "lead": "Webdesign, Art Direction und Entwicklung nach Maß, ohne Templates oder Plugins, die gepflegt werden müssen. Wenn wir fertig sind, gehört der Code Ihnen.",
       "intro": [
-        "Die meisten Websites ähneln sich, weil sie aus derselben Handvoll Templates stammen. Ihre nicht. Wir gehen davon aus, was sie erreichen soll —gefunden werden, Buchungen, Verkäufe— und entscheiden von dort aus über Struktur, Art Direction und Code."
+        "Viele Websites ähneln sich, weil sie aus derselben Handvoll Templates stammen. Wir beginnen mit einer anderen Frage: Was soll Ihre Website erreichen? Gefunden werden, Buchungen bekommen, verkaufen. Wenn das klar ist, entscheiden wir über Struktur, Art Direction und Code."
       ],
       "includesTitle": "Was enthalten ist",
       "includes": [
@@ -2007,7 +2007,7 @@ const de: Dict = {
       "plans": [
         {
           "name": "Essenziell",
-          "tagline": "Ein Onepager oder eine kleine Website, um mit Niveau zu starten.",
+          "tagline": "Ein Onepager oder eine kleine Website für einen guten Start.",
           "features": [
             "Bis zu 3 Abschnitte",
             "Design nach Maß",
@@ -2018,7 +2018,7 @@ const de: Dict = {
         },
         {
           "name": "Nach Maß",
-          "tagline": "Der Aterna-Standard: eine vollständige Website mit mehreren Seiten.",
+          "tagline": "Was wir am häufigsten bauen: eine vollständige Website mit mehreren Seiten.",
           "features": [
             "Seiten nach Maß ohne feste Grenze",
             "Vollständige Art Direction",
@@ -2029,7 +2029,7 @@ const de: Dict = {
         },
         {
           "name": "Premium",
-          "tagline": "Projekte mit mehr beweglichen Teilen.",
+          "tagline": "Für Websites, die mehr können müssen.",
           "features": [
             "Mehrsprachig",
             "Buchungen oder Shop",
@@ -2047,7 +2047,7 @@ const de: Dict = {
         },
         {
           "q": "Gehört der Code mir?",
-          "a": "Ja. Wir liefern eigenen, sauberen und wartbaren Code. Er gehört Ihnen, und jedes andere Studio kann daran weiterarbeiten. Wir binden Sie nicht an uns."
+          "a": "Ja. Wir übergeben Ihnen den Code, und er gehört Ihnen. Er ist so geschrieben, dass ein anderes Studio damit weiterarbeiten kann, falls Sie einmal wechseln."
         },
         {
           "q": "Ist die Wartung enthalten?",
@@ -2057,11 +2057,11 @@ const de: Dict = {
     },
     "seo": {
       "eyebrow": "SEO und organisches Wachstum · Monatlich",
-      "h1": "Spezialisten für SEO\nund organisches Wachstum.",
-      "lead": "Eine hervorragende Website, die niemand findet, hat immer noch dasselbe Problem. SEO ist der Teil, der dafür sorgt, dass Sie erscheinen, wenn man nach Ihnen sucht.",
+      "h1": "SEO und organisches Wachstum\nfür lokale Unternehmen.",
+      "lead": "Sie können eine großartige Website haben, aber wenn niemand sie findet, bringt sie Ihnen wenig. SEO sorgt dafür, dass Sie auftauchen, wenn jemand nach dem sucht, was Sie machen.",
       "intro": [
-        "Was wir versprechen, ist Arbeit, die erledigt, gemessen und klar erklärt wird. SEO steigt in Stufen, nicht in einer geraden Linie, und Sie sehen es Monat für Monat mit echten Daten.",
-        "Wir arbeiten am organischen Wachstum mit besonderem Fokus auf lokale Sichtbarkeit —für Hotels, Weingüter, Restaurants und Unternehmen, für die „in meiner Nähe“ viel entscheidet."
+        "Wir versprechen Ihnen Arbeit, die jeden Monat erledigt und klar erklärt wird. SEO steigt nicht in einer geraden Linie, sondern in Sprüngen, und das sehen Sie Monat für Monat an echten Zahlen.",
+        "Beim organischen Wachstum konzentrieren wir uns vor allem auf lokale Sichtbarkeit: Hotels, Weingüter, Restaurants und jedes Unternehmen, das bei Suchen wie „in meiner Nähe“ auftauchen muss."
       ],
       "includesTitle": "Woran wir jeden Monat arbeiten",
       "includes": [
@@ -2073,7 +2073,7 @@ const de: Dict = {
         "Messung, Bericht und nächste Schritte"
       ],
       "reportTitle": "Wie wir berichten",
-      "report": "Jeden Monat dasselbe Schema, auch wenn der Monat flach war: Das haben wir gefunden, das haben wir getan, das hat sich geändert, das nicht, das probieren wir jetzt. Ohne heiße Luft.",
+      "report": "Jeden Monat bekommen Sie dasselbe Schema, auch wenn der Monat ruhig war: was wir gefunden haben, was wir getan haben, was sich geändert hat, was nicht und was wir als Nächstes probieren.",
       "examplesTitle": "Ein Beispiel für das, was Sie bekommen",
       "examplesLead": "So sehen das Audit und der Bericht aus, die wir erstellen, in zwei verschiedenen Branchen:",
       "examples": [
@@ -2093,7 +2093,7 @@ const de: Dict = {
       "plans": [
         {
           "name": "Pflege",
-          "tagline": "Die Präsenz lebendig halten und Schritt für Schritt Boden gewinnen.",
+          "tagline": "Das Bestehende pflegen und Schritt für Schritt aufsteigen.",
           "features": [
             "Google-Unternehmensprofil",
             "Technisches SEO und Monitoring",
@@ -2104,7 +2104,7 @@ const de: Dict = {
         },
         {
           "name": "Wachstum",
-          "tagline": "Lokal stetig Boden gewinnen.",
+          "tagline": "Monat für Monat in Ihrer Region nach oben kommen.",
           "features": [
             "Alles aus Pflege",
             "Seiten für Regionen und Leistungen",
@@ -2115,7 +2115,7 @@ const de: Dict = {
         },
         {
           "name": "Dominanz",
-          "tagline": "Die Referenz in Ihrer Region werden.",
+          "tagline": "Der erste Name werden, der in Ihrer Region auftaucht.",
           "features": [
             "Alles aus Wachstum",
             "Wöchentliche Inhalte",
@@ -2143,10 +2143,10 @@ const de: Dict = {
     },
     "care": {
       "eyebrow": "Wartung und Support · Monatlich",
-      "h1": "Ihre Website, immer\nschnell, sicher und aktuell.",
-      "lead": "Hosting, Backups, Updates und Support. Sie kümmern sich um Ihr Unternehmen; wir darum, dass die Website Ihnen keine Kopfschmerzen macht.",
+      "h1": "Ihre Website läuft,\nohne dass Sie daran denken müssen.",
+      "lead": "Hosting, Backups, Updates und Support. Wenn etwas ausfällt, merken wir es vor Ihnen.",
       "intro": [
-        "Eine Website braucht Wartung, um weiter Leistung zu bringen. Diese Leistung übernimmt alles Technische, damit Sie nicht daran denken müssen.",
+        "Ohne Wartung wird eine Website nach und nach langsamer und veraltet, bis eines Tages etwas nicht mehr funktioniert. Mit dieser Leistung ist das Technische unsere Sache.",
         "Sie ist unabhängig vom SEO: Eine Website am Leben zu halten und sie wachsen zu lassen sind zwei verschiedene Dinge, und wir zwingen Sie nicht, beides zu bündeln."
       ],
       "includesTitle": "Was enthalten ist",
@@ -2203,7 +2203,7 @@ const de: Dict = {
     },
     "voice": {
       "eyebrow": "KI-Telefonassistent · Monatlich",
-      "h1": "Ihr Unternehmen geht\nans Telefon. Immer.",
+      "h1": "Ihr Unternehmen\nbleibt erreichbar.",
       "lead": "Ein KI-Sprachassistent, der im Namen Ihres Unternehmens Anrufe annimmt, rund um die Uhr: Er beantwortet Fragen, nimmt Reservierungen oder Termine an und gibt Ihnen die Nachricht weiter.",
       "intro": [
         "Wenn Sie bei einem Kunden sind, in der Küche, auf der Baustelle oder geschlossen haben, klingelt das Telefon weiter. Und wer anruft und niemanden erreicht, versucht es meist beim Nächsten auf der Liste.",
@@ -2262,7 +2262,7 @@ const de: Dict = {
       "faq": [
         {
           "q": "Was kostet es?",
-          "a": "Das hängt davon ab, wie viele Gesprächsminuten Ihr Unternehmen im Monat bekommt. Wir schauen uns Ihr Volumen gemeinsam an und nennen Ihnen einen Festpreis, bevor wir beginnen, ohne Überraschungen."
+          "a": "Das hängt davon ab, wie viele Gesprächsminuten Ihr Unternehmen im Monat bekommt. Wir schauen uns Ihr Volumen gemeinsam an und nennen Ihnen einen Festpreis, bevor wir beginnen."
         },
         {
           "q": "Muss ich meine Nummer wechseln?",
@@ -2288,7 +2288,7 @@ const de: Dict = {
       "eyebrow": "Studio",
       "h1": "Websites, die bleiben.",
       "prose": [
-        "Der Name kommt von aeterna. Das Symbol ist ein Baum mit Wurzeln in einem geschlossenen Kreis. Das ist keine Dekoration: Es ist das, was wir verkaufen —eine gut gebaute Website steht noch, wenn das Studio, das sie gemacht hat, längst nicht mehr hinschaut.",
+        "Der Name kommt vom lateinischen aeterna, das Symbol ist ein Baum mit Wurzeln in einem geschlossenen Kreis. Wir haben es gewählt, weil es zusammenfasst, was wir machen wollen: gut gebaute Websites, die auch Jahre später noch stehen, wenn im Studio längst niemand mehr hinschaut.",
         "Deshalb kümmern wir uns um das, was man nicht sieht: sauberen Code, schnelle Seiten und eine Struktur, die wachsen kann, ohne neu gebaut zu werden.",
         "Wir wählen Projekte nach dem, was sie zu erzählen haben, nicht nach der Größe des Budgets: ein Handwerk mit Geschichte, ein Ort mit Charakter, ein Unternehmen, das seine Sache gut macht und eine Website braucht, die das zeigt."
       ],
@@ -2300,11 +2300,11 @@ const de: Dict = {
         },
         {
           "title": "Keine erfundenen Zahlen",
-          "body": "Wir geben die Bewertung anderer nicht als unsere aus, zeigen keine Auszeichnungen, die wir nicht haben, und schreiben keine Testimonials. Kurzfristig bringt das weniger, und es ist der einzige Weg, die Arbeit langfristig zu tragen."
+          "body": "Wir geben die Bewertung anderer nicht als unsere aus, zeigen keine Auszeichnungen, die wir nicht haben, und schreiben keine Testimonials. Kurzfristig bringt das weniger, aber nur so trägt die Arbeit auf Dauer."
         },
         {
           "title": "Bewegung mit Grund",
-          "body": "Eine Animation muss etwas erklären: eine Hierarchie, einen Zusammenhang, einen Zustandswechsel. Ist sie nur da, um zu beeindrucken, ist sie überflüssig — und kostet obendrein Akku."
+          "body": "Eine Animation muss etwas erklären: eine Hierarchie, einen Zusammenhang, einen Zustandswechsel. Ist sie nur da, um zu beeindrucken, ist sie überflüssig und kostet obendrein Akku."
         }
       ]
     },
