@@ -55,6 +55,10 @@ etiquetas `hreflang` de las cuatro versiones, y el sitemap las lista todas.
 - Una página nueva va en `src/app/(es)/` y en `src/app/[lang]/`, con su
   entrada en `src/lib/meta.ts` y, si se indexa, en `src/app/sitemap.ts`.
 - El `.htaccess` ya sirve `/en/...` como `en/....html`: no hay que tocarlo.
+- Cada idioma tiene su 404 (`src/app/[lang]/404/`, que se exporta como
+  `en/404.html`, etc.). La elige el `.htaccess` de cada carpeta
+  (`public/en/.htaccess`…); sin prefijo, la española de la raíz. En la demo de
+  GitHub Pages solo hay una 404, la española.
 
 ## Imágenes
 

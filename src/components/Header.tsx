@@ -18,7 +18,8 @@ import { ArrowRight } from "./icons";
 function LangToggle({ className = "" }: { className?: string }) {
   const { locale, t, lost } = useI18n();
   const pathname = stripLocale(usePathname());
-  const path = lost ? "/" : pathname;
+  // En la 404 (la global o la de cada idioma) lleva a la portada de cada idioma.
+  const path = lost || pathname === "/404" ? "/" : pathname;
   return (
     <div className={`lang-toggle ${className}`.trim()} role="group" aria-label={t.a11y.language}>
       {LOCALES.map((l) => {
@@ -28,6 +29,7 @@ function LangToggle({ className = "" }: { className?: string }) {
             key={l}
             href={localePath(path, l)}
             scroll={false}
+            prefetch={false}
             className="lang-toggle__btn t-label"
             data-active={active}
             aria-current={active ? "true" : undefined}
