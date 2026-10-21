@@ -14,11 +14,9 @@ npm run dev     # desarrollo en http://localhost:3000
 npm run build   # genera out/ (lo que se publica)
 ```
 
-Para publicar, sube el **contenido** de `out/` a `public_html/`. Incluye
-`.htaccess`, `contacto.php`, `php/` (PHPMailer) y los ejemplos de `ejemplos/`.
-
-> `public/php/mail-config.php` (credenciales SMTP) **no está en git**. Si
-> clonas el repo, cópialo desde el servidor antes de compilar.
+Para publicar, sube el **contenido** de `out/` a `public_html/`. Los pasos
+completos, con lo que no está en git (la contraseña del correo) y cómo
+comprobar que todo funciona, están en [DESPLIEGUE.md](DESPLIEGUE.md).
 
 ### Demo en GitHub Pages
 
