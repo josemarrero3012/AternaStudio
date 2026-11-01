@@ -44,6 +44,9 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 | Fondo 3D de la portada (escena, recorrido, raíces) | `src/world/` |
 | Cuándo se intenta el 3D y su estado | `src/lib/world.ts`, `src/components/World.tsx` |
 | Contornos del logo para el 3D | `src/world/mark-data.ts` (se regenera con `scripts/mark-contours.py`) |
+| Objetos de servicio y Semilla (3D) | `src/world/objects.ts`, `src/world/seed.ts`, materiales en `src/world/look.ts` |
+| Firma del estudio (/estudio) | `src/components/Signature.tsx` |
+| Imán del botón principal | `src/components/Chrome.tsx` (junto al foco del cursor) |
 
 ## Idiomas
 
@@ -74,10 +77,11 @@ tipografía), no con imágenes.
 
 En ordenador, la portada cambia el vídeo por una escena 3D (Three.js, sin
 React Three Fiber) que acompaña el scroll: el logo como sello de metal y
-cristal (acto 0), el cruce del árbol, el estudio entre niebla (acto 1) y
+cristal (acto 0), el cruce del árbol, el estudio entre niebla (acto 1),
 las raíces bajo tierra durante el método fijado (acto 2), donde cada fase
-enciende un nudo. El recorrido está explicado al principio de
-`src/world/journey.ts`.
+enciende un nudo, la subida a la copa con los servicios (acto 4) y el
+cierre con el Sello junto al titular de contacto (acto 5). El recorrido
+está explicado al principio de `src/world/journey.ts`.
 
 - **Quién lo ve.** Un script en línea (`WORLD_SCRIPT`, en `lib/world.ts`)
   decide antes de pintar: pantalla de 1024 px o más con ratón, movimiento
@@ -89,17 +93,37 @@ enciende un nudo. El recorrido está explicado al principio de
   recargar (`data-world="off"`). Lo mismo si tarda más de 8 s en cargar o
   se pierde el contexto de WebGL. Móviles, tabletas y movimiento reducido
   no cambian nada: ni descargan la escena.
-- **Peso.** Three.js y la escena van en un trozo aparte (unos 155 KB con
-  gzip) que se pide después del primer pintado; el JavaScript inicial es el
-  mismo. En ordenador con 3D tampoco se descarga el vídeo.
+- **Peso.** Three.js y la escena van en un trozo aparte (unos 157 KB con
+  gzip) que se pide después del primer pintado; el JavaScript inicial es
+  casi el mismo (la firma de /estudio suma unos 4 KB). En ordenador con 3D
+  tampoco se descarga el vídeo.
 - **Para probar:** `?3d=1` fuerza el 3D (aunque el equipo vaya lento o
   pinte por software, útil para capturas) y `?3d=0` lo quita, para comparar
   con la web de siempre.
 - **Alineación con la página.** Las paradas de la cámara se miden en el
-  DOM (estudio y método, `measureStations`) y se recalculan con cada
-  `ScrollTrigger.refresh`. Durante el método, la línea del suelo 3D coincide
-  con el eje de las fases. Si cambias mucho la altura de esas secciones,
-  revisa el recorrido con `?3d=1`.
+  DOM (estudio, método, filas de servicios, cierre y pie, en
+  `measureLayout`) y se recalculan con cada `ScrollTrigger.refresh` y al
+  cambiar el tamaño de la ventana. Durante el método, la línea del suelo 3D
+  coincide con el eje de las fases. En el cierre, el Sello se coloca a la
+  derecha del titular sin pisarlo (mide las líneas del texto), así que
+  aguanta titulares largos como el alemán. Si cambias mucho la altura de
+  esas secciones, revisa el recorrido con `?3d=1`.
+- **Objetos de servicio (acto 4).** Viven en el espacio de la cámara y se
+  colocan cada fotograma donde está el icono de su fila
+  (`.service__wire[data-service]`), que con 3D se oculta. Al pasar el
+  ratón o enfocar la fila, el objeto pasa de esmerilado a nítido. Con
+  calidad media se simplifican (`objects.lite()`).
+- **La Semilla (acto 5).** Es el único color cálido (`--gold` en
+  `tokens.css`). Sale de la copa del Sello y cae, con el scroll, hasta la
+  derecha del botón del cierre; al posarse, el botón recibe
+  `data-seed="on"` y se enciende un anillo dorado.
+- **Microinteracciones (sin 3D, en toda la web).** Con ratón y movimiento
+  no reducido, el botón principal se acerca un poco al cursor (variables
+  `--pull-x`/`--pull-y`) y le crece una raíz, y los enlaces con subrayado
+  echan una horquilla. En cualquier dispositivo, los campos del formulario
+  tienen una raicilla (lavanda con foco, rosa si hay error) y, al enviar,
+  brota la Semilla junto al botón; con movimiento reducido aparecen sin
+  animación. Las raíces son máscaras SVG en CSS (`globals.css`).
 
 ## Asistente
 

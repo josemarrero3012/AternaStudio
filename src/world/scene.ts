@@ -8,8 +8,11 @@
 //   El suelo   Un plano de luz casi invisible: de canto es la línea que sube
 //              por la pantalla al bajar bajo tierra.
 //   Raíces     Ver roots.ts.
-//   Polvo      Motas de luz que dan escala; bajo tierra suben despacio.
+//   Polvo      Motas de luz que dan escala; bajo tierra suben despacio y en
+//              la copa caen como polen.
 //   Nudos      Cuatro, uno por fase del método.
+//   Objetos    Los cuatro de servicio, junto a sus filas (objects.ts).
+//   Semilla    De la copa al botón de contacto (seed.ts).
 //
 // El texto nunca está dentro del canvas: es decorativo (aria-hidden) y toda
 // la lectura sigue en el HTML.
@@ -29,7 +32,6 @@ import {
   HalfFloatType,
   Mesh,
   MeshBasicMaterial,
-  MeshPhysicalMaterial,
   NoToneMapping,
   Path,
   PerspectiveCamera,
@@ -54,9 +56,12 @@ import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { ScrollTrigger } from "@/lib/motion";
-import { CAMERA_FOV, blankKey, buildKeys, journeyAt, measureStations, sample, type Key } from "./journey";
+import { CAMERA_FOV, blankKey, buildKeys, journeyAt, measureLayout, sample, type Key, type Layout } from "./journey";
+import { C, WORLD_VERT, anodized, glassy, glowMaterial, paintGradient } from "./look";
 import { MARK } from "./mark-data";
+import { SERVICE_ORDER, buildServiceObjects, type Anchor } from "./objects";
 import { GROUND_Y, buildRoots } from "./roots";
+import { buildSeed } from "./seed";
 
 export type WorldOptions = {
   canvas: HTMLCanvasElement;
@@ -73,15 +78,6 @@ export type WorldHandle = {
   /** Empieza la entrada del Sello (con la de la página). */
   intro: () => void;
   dispose: () => void;
-};
-
-// Paleta (tokens.css y la propuesta).
-const C = {
-  indigo: new Color("#4b55d6"),
-  lavender: new Color("#9aa3ff"),
-  violet: new Color("#9a5cf0"),
-  orchid: new Color("#d77cf5"),
-  platinum: new Color("#d9dcef"),
 };
 
 /** Entorno de estudio para los reflejos: paneles de luz con los colores de la marca. */
@@ -134,26 +130,13 @@ function markGeometry() {
     bevelSegments: 3,
   });
   geo.translate(0, 0, -depth / 2);
-  // Color del metal: el degradado del logo (índigo abajo a la izquierda,
-  // orquídea arriba a la derecha), en tonos claros para que el titanio refleje.
-  const from = new Color("#8f99ff");
-  const mid = new Color("#b996ff");
-  const to = new Color("#f2a6f2");
-  const p = geo.getAttribute("position");
-  const colors: number[] = [];
-  const c = new Color();
-  for (let i = 0; i < p.count; i++) {
-    const t = Math.min(1, Math.max(0, (p.getX(i) * 0.6 + p.getY(i) * 0.8) / 2.2 + 0.5));
-    if (t < 0.5) c.lerpColors(from, mid, t * 2);
-    else c.lerpColors(mid, to, (t - 0.5) * 2);
-    colors.push(c.r, c.g, c.b);
-  }
-  geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
+  // Color del metal: el degradado del logo.
+  paintGradient(geo);
   geo.computeVertexNormals();
   return geo;
 }
 
-/** Plano que solo brilla de canto (el suelo) o un resplandor radial (halo, nudos). */
+/** Plano que solo brilla de canto: el suelo. */
 const GROUND_FRAG = /* glsl */ `
   uniform vec3 uColor;
   uniform float uIntensity;
@@ -166,26 +149,6 @@ const GROUND_FRAG = /* glsl */ `
     float d = length(vWorld.xz - cameraPosition.xz);
     float fade = exp(-d * 0.055) * smoothstep(60.0, 20.0, d);
     gl_FragColor = vec4(uColor * grazing * fade * uIntensity, 1.0);
-  }
-`;
-const WORLD_VERT = /* glsl */ `
-  varying vec3 vWorld;
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    vec4 w = modelMatrix * vec4(position, 1.0);
-    vWorld = w.xyz;
-    gl_Position = projectionMatrix * viewMatrix * w;
-  }
-`;
-const GLOW_FRAG = /* glsl */ `
-  uniform vec3 uColor;
-  uniform float uIntensity;
-  varying vec2 vUv;
-  void main() {
-    float d = length(vUv - 0.5) * 2.0;
-    float g = pow(max(0.0, 1.0 - d), 2.2);
-    gl_FragColor = vec4(uColor * g * uIntensity, 1.0);
   }
 `;
 
@@ -265,56 +228,19 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
   const seal = new Group();
   scene.add(seal);
   const reveal = new Plane(new Vector3(0, -1, 0), -1.2);
-  const metal = new MeshPhysicalMaterial({
-    vertexColors: true,
-    metalness: 1,
-    roughness: 0.24,
-    envMapIntensity: 1.1,
-    clearcoat: 0.12,
-    clearcoatRoughness: 0.3,
-    iridescence: 0.3,
-    iridescenceIOR: 1.7,
-    iridescenceThicknessMinimum: 180,
-    iridescenceThicknessMaximum: 520,
-    clippingPlanes: [reveal],
-  });
+  const metal = anodized({ clippingPlanes: [reveal] });
   const markGeo = markGeometry();
   const mark = new Mesh(markGeo, metal);
   seal.add(mark);
 
-  const glass = new MeshPhysicalMaterial({
-    color: new Color("#d6d9ff"),
-    metalness: 0,
-    roughness: 0.32,
-    transmission: 1,
-    thickness: 0.5,
-    ior: 1.45,
-    iridescence: 0.7,
-    iridescenceIOR: 1.3,
-    iridescenceThicknessMinimum: 200,
-    iridescenceThicknessMaximum: 480,
-    envMapIntensity: 1.6,
-    clearcoat: 1,
-    clearcoatRoughness: 0.12,
-    attenuationColor: new Color("#b9b4ff"),
-    attenuationDistance: 1.4,
-    transparent: true,
-    opacity: 0,
-  });
+  const glass = glassy({ opacity: 0 });
   const ringGeo = new TorusGeometry(1.135, 0.05, 28, 220);
   const ring = new Mesh(ringGeo, glass);
   seal.add(ring);
 
   // Halo detrás del Sello: separa el metal oscuro del fondo oscuro.
   const glowGeo = new PlaneGeometry(1, 1);
-  const haloMat = new ShaderMaterial({
-    uniforms: { uColor: { value: C.indigo.clone().lerp(C.violet, 0.35) }, uIntensity: { value: 0 } },
-    vertexShader: WORLD_VERT,
-    fragmentShader: GLOW_FRAG,
-    transparent: true,
-    depthWrite: false,
-    blending: AdditiveBlending,
-  });
+  const haloMat = glowMaterial(C.indigo.clone().lerp(C.violet, 0.35));
   const halo = new Mesh(glowGeo, haloMat);
   halo.scale.setScalar(5.2);
   halo.position.set(0, -0.1, -0.9);
@@ -348,8 +274,9 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
   ground.position.y = GROUND_Y;
   scene.add(ground);
 
-  const DUST = 1700;
-  const box = new Vector3(16, 13, 18);
+  // Del fondo de las raíces a lo alto de la copa.
+  const DUST = 2200;
+  const box = new Vector3(16, 18, 18);
   const origin = new Vector3(-8, -9.5, -12.5);
   const dustPos: number[] = [];
   const dustSeed: number[] = [];
@@ -390,11 +317,7 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
     new Vector3(0.9, -3.2, -5.2),
     new Vector3(2.8, -3.1, -4.6),
   ]);
-  const knotMats = knotSpots.map(() => {
-    const m = haloMat.clone();
-    m.uniforms = { uColor: { value: C.orchid.clone() }, uIntensity: { value: 0 } };
-    return m;
-  });
+  const knotMats = knotSpots.map(() => glowMaterial(C.orchid));
   const knots = knotSpots.map((p, i) => {
     const m = new Mesh(glowGeo, knotMats[i]);
     m.position.copy(p);
@@ -403,6 +326,25 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
     return m;
   });
   const knotLit = [0, 0, 0, 0];
+
+  // La copa: una luz difusa que cae desde lo alto (acto 4) y el halo del
+  // Sello más abierto al llegar al contacto.
+  const skyMat = glowMaterial(C.lavender.clone().lerp(C.platinum, 0.35));
+  const sky = new Mesh(glowGeo, skyMat);
+  sky.scale.setScalar(26);
+  sky.position.set(0, 8.5, -7);
+  scene.add(sky);
+
+  // Lo que va pegado a la cámara: los objetos de servicio y la Semilla, que
+  // se colocan en píxeles de la página, con una luz que sigue al cursor.
+  const rig = new Group();
+  scene.add(rig);
+  const objects = buildServiceObjects();
+  rig.add(objects.group);
+  const seed = buildSeed();
+  rig.add(seed.group);
+  const objLight = new PointLight(C.lavender.clone().lerp(C.platinum, 0.4), 7, 7, 1.2);
+  rig.add(objLight);
 
   // Postproceso: un bloom suave para que la luz de las raíces respire.
   const target = new WebGLRenderTarget(1, 1, { type: HalfFloatType, samples: 4 });
@@ -416,8 +358,9 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
   // Recorrido ---------------------------------------------------------------
   let w = window.innerWidth;
   let h = window.innerHeight;
-  let keys: Key[] = buildKeys(w, h);
-  let stations = measureStations();
+  let layout: Layout | null = measureLayout();
+  let keys: Key[] = buildKeys(w, h, layout);
+  let stations = layout?.stations ?? null;
   const want = blankKey();
   const cur = blankKey();
   let first = true;
@@ -431,11 +374,13 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
     composer.setSize(w, h);
     bloom.resolution.set(w / 2, h / 2);
     camera.aspect = w / h;
-    keys = buildKeys(w, h);
+    keys = buildKeys(w, h, layout);
   };
   resize();
   const onRefresh = () => {
-    stations = measureStations();
+    layout = measureLayout();
+    stations = layout?.stations ?? null;
+    keys = buildKeys(w, h, layout);
   };
   ScrollTrigger.addEventListener("refresh", onRefresh);
   window.addEventListener("resize", resize);
@@ -450,6 +395,37 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
 
   // Fases del método: la escena las lee del HTML (ApproachRail las enciende).
   const phases = Array.from(document.querySelectorAll<HTMLElement>(".rail-phase"));
+
+  // Servicios: el sitio de cada icono y si su fila tiene el cursor o el foco.
+  const wires = SERVICE_ORDER.map((k) => document.querySelector<HTMLElement>(`.services .service__wire[data-service="${k}"]`));
+  const rowsOf = wires.map((el) => el?.closest<HTMLElement>(".service__inner") ?? null);
+  // La fila entra con su propia animación (useReveal): el objeto, con ella.
+  const itemsOf = wires.map((el) => el?.closest<HTMLElement>(".service") ?? null);
+  const hovered = SERVICE_ORDER.map(() => false);
+  const rowOff: (() => void)[] = [];
+  rowsOf.forEach((row, i) => {
+    if (!row) return;
+    const on = () => (hovered[i] = true);
+    const off = () => (hovered[i] = row.matches(":hover") || row.contains(document.activeElement));
+    const offLater = () => window.setTimeout(off, 0);
+    row.addEventListener("pointerenter", on);
+    row.addEventListener("pointerleave", off);
+    row.addEventListener("focusin", on);
+    row.addEventListener("focusout", offLater);
+    rowOff.push(() => {
+      row.removeEventListener("pointerenter", on);
+      row.removeEventListener("pointerleave", off);
+      row.removeEventListener("focusin", on);
+      row.removeEventListener("focusout", offLater);
+    });
+  });
+  const anchors: (Anchor | null)[] = SERVICE_ORDER.map(() => null);
+
+  // Contacto: el botón que se enciende cuando la Semilla se posa a su lado.
+  const ctaButton = document.querySelector<HTMLElement>(".final-cta .btn-primary");
+  let seedLanded = false;
+  const canopy = new Vector3(0.3, 0.6, 0.06);
+  const canopyAt = new Vector3();
 
   // Entrada ------------------------------------------------------------------
   let introAt = -1;
@@ -501,6 +477,7 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
           bloom.enabled = false;
           glass.transmission = 0;
           glass.roughness = 0.12;
+          objects.lite();
           resize();
           probeFrom = frames + 30;
         } else if (m > 40) {
@@ -523,7 +500,7 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
     cur.shift[0] += (want.shift[0] - cur.shift[0]) * k;
     cur.shift[1] += (want.shift[1] - cur.shift[1]) * k;
     cur.bg.lerp(want.bg, k);
-    for (const f of ["fog", "roots", "pulse", "ground", "rise", "dust", "halo", "opacity"] as const) cur[f] += (want[f] - cur[f]) * k;
+    for (const f of ["fog", "roots", "pulse", "ground", "rise", "dust", "halo", "sky", "anchor", "opacity"] as const) cur[f] += (want[f] - cur[f]) * k;
 
     // Opacidad del canvas: la entrada y la salida antes de los servicios.
     // La entrada va con el reloj real (no con el tiempo suavizado de la escena).
@@ -546,13 +523,26 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
     pointer.sy += (pointer.y - pointer.sy) * (1 - Math.exp(-dt * 5));
     // Cerca del hueco del árbol el cursor no mueve nada: se cruza recto.
     const calm = Math.min(1, Math.abs(u - 2) / 0.6);
-    const tilt = Math.max(0, 1 - u / 1.2);
+    const tilt = Math.min(1, Math.max(0, 1 - u / 1.2) + cur.anchor);
 
     camera.position.copy(cur.pos);
     camera.position.x += pointer.sx * 0.12 * calm;
     camera.position.y += pointer.sy * 0.08 * calm;
     camera.lookAt(cur.tgt);
-    applyShift(cur.shift[0], cur.shift[1]);
+    // Acto 5: el Sello va con el titular del contacto (al paso del scroll,
+    // sin suavizado, como el texto).
+    let shiftX = cur.shift[0];
+    let shiftY = cur.shift[1];
+    if (layout && cur.anchor > 0.001) {
+      const ax = (layout.seal.x / w) * 2 - 1;
+      const ay = -(((layout.seal.yDoc - y) / h) * 2 - 1);
+      shiftX += (ax - shiftX) * cur.anchor;
+      shiftY += (ay - shiftY) * cur.anchor;
+    }
+    applyShift(shiftX, shiftY);
+    camera.updateMatrixWorld();
+    rig.position.copy(camera.position);
+    rig.quaternion.copy(camera.quaternion);
 
     // El Sello: mira un poco al cursor (hasta 8°) y entra creciendo desde las raíces.
     const ease = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -565,6 +555,13 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
     ring.scale.setScalar(0.94 + 0.06 * ease(intro));
     haloMat.uniforms.uIntensity.value = 0.06 * cur.halo * ease(intro);
     cursorLight.position.set(pointer.sx * 2.6 + 0.4, pointer.sy * 1.8 + 0.4, 2.2);
+    objLight.position.set(pointer.sx * 1.4, pointer.sy * 0.9, -1.6);
+    // Solo en la copa: en el resto del recorrido iluminaría el Sello de frente.
+    objLight.intensity = 7 * Math.min(1, Math.max(0, (u - 7.6) / 0.6), Math.max(0, (11.2 - u) / 0.6));
+    objLight.visible = objLight.intensity > 0.01;
+    skyMat.uniforms.uIntensity.value = 0.11 * cur.sky;
+    sky.visible = cur.sky > 0.004;
+    sky.lookAt(camera.position);
 
     bg.copy(cur.bg);
     fog.color.copy(cur.bg);
@@ -578,6 +575,9 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
     ru.uFog.value = cur.fog * 0.9;
     // Cuánto está la cámara bajo tierra (0 encima, 1 debajo).
     ru.uUnder.value = Math.min(1, Math.max(0, (GROUND_Y + 0.05 - camera.position.y) / 0.12));
+    // Lo que no se ve en este tramo, no se pinta.
+    rootsGroup.visible = cur.roots > 0.004;
+    ground.visible = cur.ground > 0.004;
 
     groundMat.uniforms.uIntensity.value = cur.ground * ease(intro);
     dustMat.uniforms.uTime.value = time;
@@ -597,6 +597,44 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
       knots[i].lookAt(camera.position);
     }
     halo.lookAt(camera.position);
+
+    // Acto 4: cada objeto donde está el icono de su fila (se lee en vivo:
+    // la fila se mueve al pasar el cursor y al aparecer).
+    const inServices = u > 7.5 && u < 11.6;
+    for (let i = 0; i < wires.length; i++) {
+      const el = wires[i];
+      if (!inServices || !el) {
+        anchors[i] = null;
+        continue;
+      }
+      const r = el.getBoundingClientRect();
+      const shown = parseFloat(itemsOf[i]?.style.opacity || "1");
+      anchors[i] = { x: r.left + r.width / 2, y: r.top + r.height * 0.5 + 16, size: Math.min(128, Math.max(90, r.height * 1.45)), alpha: Number.isNaN(shown) ? 1 : shown };
+    }
+    objects.update(camera, w, h, time, dt, anchors, hovered, 1);
+
+    // Acto 5: la Semilla, de la copa del Sello al botón.
+    if (layout && cur.anchor > 0.02) {
+      seal.updateMatrixWorld();
+      canopyAt.copy(canopy);
+      seal.localToWorld(canopyAt).project(camera);
+      const from = { x: ((canopyAt.x + 1) / 2) * w, y: ((1 - canopyAt.y) / 2) * h };
+      const to = { x: layout.seed.x, y: layout.seed.yDoc - y };
+      const p = (y - layout.seed.from) / (layout.seed.to - layout.seed.from);
+      seed.update(camera, w, h, time, from, to, p, Math.min(1, cur.anchor * 1.2));
+      const landed = p >= 0.995 && cur.anchor > 0.5;
+      if (landed !== seedLanded && ctaButton) {
+        seedLanded = landed;
+        if (landed) ctaButton.dataset.seed = "on";
+        else delete ctaButton.dataset.seed;
+      }
+    } else {
+      seed.group.visible = false;
+      if (seedLanded && ctaButton) {
+        seedLanded = false;
+        delete ctaButton.dataset.seed;
+      }
+    }
 
     composer.render(dt);
 
@@ -628,6 +666,11 @@ export function createWorld({ canvas, forced, onReady, onFail }: WorldOptions): 
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onPointer);
       canvas.removeEventListener("webglcontextlost", onLost);
+      rowOff.forEach((off) => off());
+      if (ctaButton) delete ctaButton.dataset.seed;
+      objects.dispose();
+      seed.dispose();
+      skyMat.dispose();
       markGeo.dispose();
       ringGeo.dispose();
       glowGeo.dispose();
