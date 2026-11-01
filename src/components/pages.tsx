@@ -16,6 +16,7 @@ import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
 import { Approach, Cases, FinalCTA, Hero, NextSteps, Services, StartingPrice, StudioStatement } from "./sections";
 import { ServiceGlyph, ServiceTrace } from "./ServiceTrace";
 import { WordReveal } from "./WordReveal";
+import { World } from "./World";
 
 // / -------------------------------------------------------------------------
 
@@ -30,6 +31,8 @@ export function HomeContent() {
   const k = withCases ? 1 : 0;
   return (
     <>
+      {/* Fondo 3D del recorrido (Modo Premium): solo donde el equipo puede. */}
+      <World />
       <Hero />
       <StudioStatement n={1} />
       <Approach n={2} />
