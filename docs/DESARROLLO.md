@@ -41,6 +41,9 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 | Asistente (respuestas, flujo guiado) | `src/lib/assistant.ts`, `src/components/Assistant.tsx` |
 | Modelo del asistente en el navegador | `src/lib/semantic.ts`, `public/semantic/worker.js` |
 | Imagen para redes (OG) | `public/brand/og.jpg` (se regenera con `scripts/og-image.js`) |
+| Fondo 3D de la portada (escena, recorrido, raíces) | `src/world/` |
+| Cuándo se intenta el 3D y su estado | `src/lib/world.ts`, `src/components/World.tsx` |
+| Contornos del logo para el 3D | `src/world/mark-data.ts` (se regenera con `scripts/mark-contours.py`) |
 
 ## Idiomas
 
@@ -66,6 +69,37 @@ La web no usa ilustraciones ni fotos: la única imagen es el vídeo del hero
 (`public/brand/hero-tree-*`), que marca la estética de todo lo demás. La
 profundidad de las secciones se construye con CSS (color, luz, líneas y
 tipografía), no con imágenes.
+
+## Fondo 3D de la portada (Modo Premium)
+
+En ordenador, la portada cambia el vídeo por una escena 3D (Three.js, sin
+React Three Fiber) que acompaña el scroll: el logo como sello de metal y
+cristal (acto 0), el cruce del árbol, el estudio entre niebla (acto 1) y
+las raíces bajo tierra durante el método fijado (acto 2), donde cada fase
+enciende un nudo. El recorrido está explicado al principio de
+`src/world/journey.ts`.
+
+- **Quién lo ve.** Un script en línea (`WORLD_SCRIPT`, en `lib/world.ts`)
+  decide antes de pintar: pantalla de 1024 px o más con ratón, movimiento
+  no reducido, sin ahorro de datos, 4 GB de memoria y 4 núcleos o más.
+  Después, antes de descargar Three.js, se comprueba que haya WebGL 2 con
+  tarjeta gráfica de verdad (no render por software). Con la escena ya en
+  marcha, si va lenta baja la calidad y, si aun así no llega, se rinde.
+- **Si no sale**, en cualquier punto, la portada vuelve al vídeo sin
+  recargar (`data-world="off"`). Lo mismo si tarda más de 8 s en cargar o
+  se pierde el contexto de WebGL. Móviles, tabletas y movimiento reducido
+  no cambian nada: ni descargan la escena.
+- **Peso.** Three.js y la escena van en un trozo aparte (unos 155 KB con
+  gzip) que se pide después del primer pintado; el JavaScript inicial es el
+  mismo. En ordenador con 3D tampoco se descarga el vídeo.
+- **Para probar:** `?3d=1` fuerza el 3D (aunque el equipo vaya lento o
+  pinte por software, útil para capturas) y `?3d=0` lo quita, para comparar
+  con la web de siempre.
+- **Alineación con la página.** Las paradas de la cámara se miden en el
+  DOM (estudio y método, `measureStations`) y se recalculan con cada
+  `ScrollTrigger.refresh`. Durante el método, la línea del suelo 3D coincide
+  con el eje de las fases. Si cambias mucho la altura de esas secciones,
+  revisa el recorrido con `?3d=1`.
 
 ## Asistente
 

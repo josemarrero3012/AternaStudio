@@ -39,6 +39,8 @@ Las dos demos de GitHub Pages se vuelven a publicar solas cada vez que se sube a
 - Cada idioma tiene su propia página 404.
 - Reescribí los textos de los cuatro idiomas para que suenen más naturales.
 - El asistente de la esquina responde con los textos de la web sin ninguna API: busca por palabras en cualquier dispositivo y, en ordenador, carga un modelo pequeño que se sirve desde la propia web. También tiene «Ayúdame a elegir», que deja el mensaje escrito para WhatsApp o para el formulario.
+- Empecé el «Modo Premium»: en ordenador, el logo es un sello 3D de metal y cristal junto al titular. Al bajar, la cámara cruza el árbol por el hueco de su izquierda, atraviesa el estudio entre niebla y baja bajo tierra, donde las raíces recorren las fases del método y cada fase enciende un nudo. Si el equipo no puede con ello (móvil, sin tarjeta gráfica, va lento o se prefiere menos movimiento), la portada es la de siempre, con el vídeo.
+- Quité de los textos de SEO que solo era para negocios locales: ahora hablan de crecimiento orgánico para cualquier negocio, con lo local como una opción más.
 
 ## Cómo está organizada
 
@@ -48,11 +50,11 @@ Quería que cambiar algo fuera fácil sin tener que buscar por todo el código, 
 - Los precios de los servicios, en `src/lib/pricing.ts`.
 - Los colores, las tipografías y los espacios, en `src/styles/tokens.css`.
 
-La web no usa fotos ni ilustraciones. La única imagen es el vídeo del árbol de la portada, y la profundidad del resto de secciones está hecha con CSS: color, luz, líneas y tipografía.
+La web no usa fotos ni ilustraciones. La única imagen es el vídeo del árbol de la portada (o, en ordenador, su versión en 3D), y la profundidad del resto de secciones está hecha con CSS: color, luz, líneas y tipografía.
 
 ## Con qué está hecha
 
-Next.js y React con TypeScript, y GSAP para algunas animaciones. Se exporta como web estática, así que el servidor no necesita Node: basta con subir la carpeta que se genera. El formulario de contacto envía el correo con un pequeño script en PHP (en la demo de GitHub Pages no envía, porque ahí no hay PHP).
+Next.js y React con TypeScript, GSAP para algunas animaciones y Three.js para el fondo 3D de la portada (que solo se descarga en los ordenadores que lo van a usar). Se exporta como web estática, así que el servidor no necesita Node: basta con subir la carpeta que se genera. El formulario de contacto envía el correo con un pequeño script en PHP (en la demo de GitHub Pages no envía, porque ahí no hay PHP).
 
 ## Probarla en local
 
