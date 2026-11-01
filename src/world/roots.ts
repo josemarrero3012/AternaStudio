@@ -98,7 +98,9 @@ function growAll(seed: number) {
   // que se ve debajo del eje del método.
   for (let i = 0; i < 12; i++) {
     const x = -6.5 + (13 * (i + 0.5)) / 12 + (rnd() - 0.5) * 0.8;
-    const z = -1.5 - rnd() * 9;
+    // Las que caen en el camino de la cámara (x ≈ −0,6, z ≈ −3,5, en el
+    // estudio), más al fondo: de tan cerca se verían como palos gruesos.
+    const z = Math.abs(x + 0.6) < 1.6 ? -6.5 - rnd() * 4 : -1.5 - rnd() * 9;
     const start = new Vector3(x, GROUND_Y, z);
     grow(start, new Vector3((rnd() - 0.5) * 0.6, -1, (rnd() - 0.5) * 0.4), null, 2.5 + rnd() * 3.5, 0.011, 1, 1.5 + Math.abs(x) * 0.5);
   }
@@ -183,7 +185,7 @@ const FRAG = /* glsl */ `
     col += uHot * tip * 1.4;
     float fog = exp(-uFog * uFog * vDepth * vDepth);
     // Muy cerca de la cámara se apagan: nada de manchas al pasar junto a una.
-    float near = smoothstep(0.35, 1.8, vDepth);
+    float near = smoothstep(0.8, 3.2, vDepth);
     // Bajo tierra no se ve lo que hay encima del suelo.
     float above = smoothstep(${GROUND_Y.toFixed(2)} - 0.05, ${GROUND_Y.toFixed(2)} + 0.35, vWorld.y) * uUnder;
     gl_FragColor = vec4(col * uIntensity * fog * near * (1.0 - above), 1.0);
