@@ -380,11 +380,11 @@ const es = {
     },
     "seo": {
       "eyebrow": "SEO y crecimiento orgánico · Cuota mensual",
-      "h1": "SEO y crecimiento orgánico\npara negocios locales.",
+      "h1": "SEO y crecimiento orgánico\npara que te encuentren.",
       "lead": "Puedes tener una web estupenda, pero si nadie la encuentra no te sirve de mucho. El SEO se ocupa de que aparezcas cuando alguien busca lo que haces.",
       "intro": [
         "Te prometemos trabajo hecho cada mes y contado con claridad. El SEO no sube en línea recta, va a saltos, y lo verás mes a mes con datos reales.",
-        "Trabajamos el crecimiento orgánico sobre todo en visibilidad local: hoteles, bodegas, restaurantes y cualquier negocio que depende de salir en las búsquedas «cerca de mí»."
+        "Trabajamos tres frentes a la vez: el técnico, para que Google lea bien tu web; el contenido, para responder a lo que busca tu cliente; y, si atiendes en una zona concreta, la visibilidad local en Google Maps y en las búsquedas «cerca de mí»."
       ],
       "includesTitle": "En qué trabajamos cada mes",
       "includes": [
@@ -427,7 +427,7 @@ const es = {
         },
         {
           "name": "Crecimiento",
-          "tagline": "Para ganar posiciones en tu zona mes a mes.",
+          "tagline": "Para ganar posiciones mes a mes en lo que buscan tus clientes.",
           "features": [
             "Todo lo de Cuidado",
             "Páginas de zona y servicio",
@@ -438,7 +438,7 @@ const es = {
         },
         {
           "name": "Dominio",
-          "tagline": "Para ser el primer nombre que sale en tu comarca.",
+          "tagline": "Para ser el primer nombre que sale cuando buscan lo tuyo.",
           "features": [
             "Todo lo de Crecimiento",
             "Contenido semanal",
@@ -1023,11 +1023,11 @@ const en: Dict = {
     },
     "seo": {
       "eyebrow": "SEO & organic growth · Monthly",
-      "h1": "SEO and organic growth\nfor local businesses.",
+      "h1": "SEO and organic growth\nso people find you.",
       "lead": "You can have a great website, but if nobody finds it, it won’t do much for you. SEO is what makes you show up when someone searches for what you do.",
       "intro": [
         "What we promise is work done every month and explained clearly. SEO doesn’t climb in a straight line, it moves in jumps, and you’ll see that month by month in real data.",
-        "Our organic growth work focuses mostly on local visibility: hotels, wineries, restaurants and any business that depends on showing up in “near me” searches."
+        "We work on three fronts at once: technical, so Google can read your site properly; content, to answer what your customers are searching for; and, if you serve a specific area, local visibility on Google Maps and in “near me” searches."
       ],
       "includesTitle": "What we work on each month",
       "includes": [
@@ -1070,7 +1070,7 @@ const en: Dict = {
         },
         {
           "name": "Growth",
-          "tagline": "Move up in your area, month after month.",
+          "tagline": "Move up, month after month, for what your customers search.",
           "features": [
             "Everything in Care",
             "Area and service pages",
@@ -1081,7 +1081,7 @@ const en: Dict = {
         },
         {
           "name": "Dominance",
-          "tagline": "Be the first name that comes up in your area.",
+          "tagline": "Be the first name that comes up when people search for what you do.",
           "features": [
             "Everything in Growth",
             "Weekly content",
@@ -1664,11 +1664,11 @@ const nl: Dict = {
     },
     "seo": {
       "eyebrow": "SEO en organische groei · Maandelijks",
-      "h1": "SEO en organische groei\nvoor lokale bedrijven.",
+      "h1": "SEO en organische groei\nzodat ze je vinden.",
       "lead": "Je kunt een prachtige website hebben, maar als niemand hem vindt, heb je er weinig aan. SEO zorgt ervoor dat je verschijnt als iemand zoekt naar wat jij doet.",
       "intro": [
         "Wat we beloven is werk dat elke maand gedaan en helder uitgelegd wordt. SEO stijgt niet in een rechte lijn maar met sprongen, en dat zie je maand na maand in echte cijfers.",
-        "Bij organische groei richten we ons vooral op lokale zichtbaarheid: hotels, wijnhuizen, restaurants en elk bedrijf dat moet verschijnen bij zoekopdrachten als «bij mij in de buurt»."
+        "We werken aan drie fronten tegelijk: de techniek, zodat Google je site goed kan lezen; de inhoud, om te antwoorden op wat je klanten zoeken; en, als je in een bepaalde regio werkt, lokale zichtbaarheid in Google Maps en bij zoekopdrachten als «bij mij in de buurt»."
       ],
       "includesTitle": "Waar we elke maand aan werken",
       "includes": [
@@ -1711,7 +1711,7 @@ const nl: Dict = {
         },
         {
           "name": "Groei",
-          "tagline": "Maand na maand hoger komen in je regio.",
+          "tagline": "Maand na maand hoger komen op wat je klanten zoeken.",
           "features": [
             "Alles uit Zorg",
             "Pagina's per regio en dienst",
@@ -1722,7 +1722,7 @@ const nl: Dict = {
         },
         {
           "name": "Dominantie",
-          "tagline": "De eerste naam worden die opduikt in je regio.",
+          "tagline": "De eerste naam worden die opduikt als ze zoeken naar wat jij doet.",
           "features": [
             "Alles uit Groei",
             "Wekelijkse content",
@@ -2305,11 +2305,11 @@ const de: Dict = {
     },
     "seo": {
       "eyebrow": "SEO und organisches Wachstum · Monatlich",
-      "h1": "SEO und organisches Wachstum\nfür lokale Unternehmen.",
+      "h1": "SEO und organisches Wachstum,\ndamit man Sie findet.",
       "lead": "Sie können eine großartige Website haben, aber wenn niemand sie findet, bringt sie Ihnen wenig. SEO sorgt dafür, dass Sie auftauchen, wenn jemand nach dem sucht, was Sie machen.",
       "intro": [
         "Wir versprechen Ihnen Arbeit, die jeden Monat erledigt und klar erklärt wird. SEO steigt nicht in einer geraden Linie, sondern in Sprüngen, und das sehen Sie Monat für Monat an echten Zahlen.",
-        "Beim organischen Wachstum konzentrieren wir uns vor allem auf lokale Sichtbarkeit: Hotels, Weingüter, Restaurants und jedes Unternehmen, das bei Suchen wie „in meiner Nähe“ auftauchen muss."
+        "Wir arbeiten an drei Fronten zugleich: an der Technik, damit Google Ihre Website richtig lesen kann; am Inhalt, damit sie beantwortet, wonach Ihre Kunden suchen; und, wenn Sie in einer bestimmten Region tätig sind, an der lokalen Sichtbarkeit in Google Maps und bei Suchen wie „in meiner Nähe“."
       ],
       "includesTitle": "Woran wir jeden Monat arbeiten",
       "includes": [
@@ -2352,7 +2352,7 @@ const de: Dict = {
         },
         {
           "name": "Wachstum",
-          "tagline": "Monat für Monat in Ihrer Region nach oben kommen.",
+          "tagline": "Monat für Monat nach oben kommen, bei dem, was Ihre Kunden suchen.",
           "features": [
             "Alles aus Pflege",
             "Seiten für Regionen und Leistungen",
@@ -2363,7 +2363,7 @@ const de: Dict = {
         },
         {
           "name": "Dominanz",
-          "tagline": "Der erste Name werden, der in Ihrer Region auftaucht.",
+          "tagline": "Der erste Name werden, der auftaucht, wenn man nach Ihrem Angebot sucht.",
           "features": [
             "Alles aus Wachstum",
             "Wöchentliche Inhalte",
