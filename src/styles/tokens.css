@@ -25,6 +25,8 @@
   --lavender: #9aa3ff;
   --violet: #9a5cf0;
   --orchid: #d77cf5;
+  /* Oro pálido: solo la Semilla del Modo Premium y el botón que la recibe. */
+  --gold: #e9d3a2;
   /* Rosa de marca: solo el hover del botón principal y los errores. */
   --rose: #ff4d8f;
 
