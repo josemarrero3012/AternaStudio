@@ -61,7 +61,7 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     seo: {
       title: "SEO y crecimiento orgánico",
       description:
-        "SEO técnico, contenido y visibilidad local para que tu negocio crezca en Google sin depender de anuncios. Trabajo mensual con un informe claro. Desde 390 €/mes.",
+        "SEO y crecimiento orgánico con foco local, para hoteles, bodegas y restaurantes. Trabajo mensual con un informe claro de lo que cambia. Desde 390 €/mes.",
     },
     mantenimiento: {
       title: "Mantenimiento y soporte",
@@ -103,7 +103,7 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     seo: {
       title: "SEO & organic growth",
       description:
-        "Technical SEO, content and local visibility so your business grows on Google without relying on ads. Monthly work with a clear report. From €390/month.",
+        "SEO and organic growth with a local focus, for hotels, wineries and restaurants. Monthly work with a clear report on what changes. From €390/month.",
     },
     mantenimiento: {
       title: "Maintenance & support",
@@ -145,7 +145,7 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     seo: {
       title: "SEO en organische groei",
       description:
-        "Technische SEO, inhoud en lokale zichtbaarheid, zodat je bedrijf groeit in Google zonder afhankelijk te zijn van advertenties. Maandelijks werk met een helder verslag. Vanaf € 390 per maand.",
+        "SEO en organische groei met lokale focus, voor hotels, wijnhuizen en restaurants. Maandelijks werk met een helder verslag van wat er verandert. Vanaf € 390 per maand.",
     },
     mantenimiento: {
       title: "Onderhoud en support",
@@ -187,7 +187,7 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     seo: {
       title: "SEO und organisches Wachstum",
       description:
-        "Technisches SEO, Inhalte und lokale Sichtbarkeit, damit Ihr Unternehmen bei Google wächst, ohne von Anzeigen abzuhängen. Monatliche Arbeit mit klarem Bericht. Ab 390 €/Monat.",
+        "SEO und organisches Wachstum mit lokalem Fokus, für Hotels, Weingüter und Restaurants. Monatliche Arbeit mit einem klaren Bericht, was sich ändert. Ab 390 €/Monat.",
     },
     mantenimiento: {
       title: "Wartung und Support",

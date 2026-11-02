@@ -7,7 +7,6 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { JsonLd } from "@/components/JsonLd";
 import { withBase } from "@/lib/base";
-import { WORLD_SCRIPT } from "@/lib/world";
 import type { Locale } from "@/lib/dict";
 import { LanguageProvider } from "@/lib/i18n";
 import { routeMeta } from "@/lib/meta";
@@ -66,8 +65,6 @@ export function Shell({ locale, lost, children }: { locale: Locale; lost?: boole
       <body>
         {/* Antes que nada: decide si la cortina de entrada sale (ver Chrome.tsx). */}
         <script dangerouslySetInnerHTML={{ __html: CURTAIN_SCRIPT }} />
-        {/* Y si se intenta el fondo 3D de la portada (ver lib/world.ts). */}
-        <script dangerouslySetInnerHTML={{ __html: WORLD_SCRIPT }} />
         <noscript>
           <style>{".curtain{display:none}.hero__still{opacity:1}"}</style>
         </noscript>

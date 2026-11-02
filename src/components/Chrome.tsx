@@ -134,40 +134,18 @@ export function Cursor() {
 /**
  * Foco de luz en las tarjetas: un solo listener para toda la página que
  * pasa la posición del puntero (--mx, --my) al `[data-spot]` que hay debajo.
- * El brillo lo pinta el CSS. El mismo listener acerca el botón principal al
- * cursor (--pull-x, --pull-y; la raíz que le crece debajo es CSS).
+ * El brillo lo pinta el CSS.
  */
 export function Spotlight() {
   useEffect(() => {
     if (isCoarsePointer()) return;
-    const magnet = !prefersReducedMotion();
     let raf = 0;
     let last: PointerEvent | null = null;
-    // El botón principal se deja llevar hasta 6 px hacia el cursor.
-    let pulled: HTMLElement | null = null;
-    const release = () => {
-      pulled?.style.removeProperty("--pull-x");
-      pulled?.style.removeProperty("--pull-y");
-      pulled = null;
-    };
-    const pull = (e: PointerEvent, target: Element | null) => {
-      const btn = target?.closest<HTMLElement>(".btn-primary");
-      if (btn !== pulled) release();
-      if (!btn || btn.matches(":disabled")) return;
-      const r = btn.getBoundingClientRect();
-      const clamp = (v: number) => Math.max(-6, Math.min(6, v));
-      btn.style.setProperty("--pull-x", `${clamp((e.clientX - (r.left + r.width / 2)) * 0.12).toFixed(1)}px`);
-      btn.style.setProperty("--pull-y", `${clamp((e.clientY - (r.top + r.height / 2)) * 0.22).toFixed(1)}px`);
-      pulled = btn;
-    };
     const apply = () => {
       raf = 0;
       const e = last;
-      if (!e) return;
-      const target = e.target as Element | null;
-      if (magnet) pull(e, target);
-      const card = target?.closest<HTMLElement>("[data-spot]");
-      if (!card) return;
+      const card = (e?.target as Element | null)?.closest<HTMLElement>("[data-spot]");
+      if (!e || !card) return;
       const r = card.getBoundingClientRect();
       card.style.setProperty("--mx", `${e.clientX - r.left}px`);
       card.style.setProperty("--my", `${e.clientY - r.top}px`);
@@ -176,14 +154,10 @@ export function Spotlight() {
       last = e;
       if (!raf) raf = requestAnimationFrame(apply);
     };
-    const onLeave = () => release();
     window.addEventListener("pointermove", onMove, { passive: true });
-    document.documentElement.addEventListener("pointerleave", onLeave);
     return () => {
       cancelAnimationFrame(raf);
-      release();
       window.removeEventListener("pointermove", onMove);
-      document.documentElement.removeEventListener("pointerleave", onLeave);
     };
   }, []);
 

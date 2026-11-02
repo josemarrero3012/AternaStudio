@@ -15,9 +15,7 @@ import { whatsappHref } from "./Chrome";
 import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
 import { Approach, Cases, FinalCTA, Hero, NextSteps, Services, StartingPrice, StudioStatement } from "./sections";
 import { ServiceGlyph, ServiceTrace } from "./ServiceTrace";
-import { Signature } from "./Signature";
 import { WordReveal } from "./WordReveal";
-import { World } from "./World";
 
 // / -------------------------------------------------------------------------
 
@@ -32,8 +30,6 @@ export function HomeContent() {
   const k = withCases ? 1 : 0;
   return (
     <>
-      {/* Fondo 3D del recorrido (Modo Premium): solo donde el equipo puede. */}
-      <World />
       <Hero />
       <StudioStatement n={1} />
       <Approach n={2} />
@@ -370,8 +366,6 @@ export function EstudioContent() {
               </li>
             ))}
           </ol>
-          {/* Al final de la raíz, la firma del estudio: el símbolo se dibuja solo. */}
-          <Signature label={site.name} />
           {/* Lo que creemos, aplicado: el método está en la portada. */}
           <div className="section-foot">
             <Link href="/#metodo" className="btn-ghost">
@@ -434,7 +428,7 @@ function ContactForm() {
   const note = state === "sent" ? t.contactForm.sent : state === "error" ? t.contactForm.error : "";
 
   return (
-    <form className="contact-form" onSubmit={onSubmit} aria-busy={sending} data-state={state}>
+    <form className="contact-form" onSubmit={onSubmit} aria-busy={sending}>
       <div className="contact-form__field">
         <label htmlFor="cf-name">{t.contactForm.name}</label>
         <input id="cf-name" name="name" type="text" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} disabled={sending} />
@@ -473,18 +467,10 @@ function ContactForm() {
         className="contact-form__trap"
       />
       <div className="contact-form__footer">
-        <div className="contact-form__send">
-          <button type="submit" className="btn-primary contact-form__submit" disabled={sending}>
-            {sending ? t.contactForm.sending : t.contactForm.submit}
-            {!sending ? <ArrowRight /> : null}
-          </button>
-          {/* La Semilla: late mientras se envía y, enviado, echa un brote. */}
-          <span className="contact-form__seed" aria-hidden="true">
-            <svg viewBox="0 0 24 32" width="24" height="32" focusable="false">
-              <path className="contact-form__sprout" pathLength={1} d="M12 25V12M12 18c-2.5-3-5.5-3.6-8-2.6 2.2 2.4 5.2 3.2 8 2.6M12 14c2.6-3.6 5.8-4.6 8.6-3.6-2 3-5 4.2-8.6 3.6" />
-            </svg>
-          </span>
-        </div>
+        <button type="submit" className="btn-primary contact-form__submit" disabled={sending}>
+          {sending ? t.contactForm.sending : t.contactForm.submit}
+          {!sending ? <ArrowRight /> : null}
+        </button>
         <p className="t-small contact-form__note" data-state={state} role="status" aria-live="polite">
           {note}
         </p>
