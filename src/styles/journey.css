@@ -85,11 +85,12 @@
 
 /* Texto recortado: la caja va de la altura de las mayúsculas a la línea base,
    así las posiciones se miden a esos bordes. --lh es el interlineado si la
-   línea se parte. Las métricas (--a, --d, --cap) son las de Fraunces. */
+   línea se parte. Las métricas (--a, --d, --cap: ascendente, descendente y
+   altura de mayúsculas, en em) son las de Fraunces, recta y cursiva. */
 
 .journey .trim {
-  --a: 0.978;
-  --d: 0.255;
+  --a: 0.98;
+  --d: 0.26;
   --cap: 0.7;
   display: block;
   line-height: var(--lh);

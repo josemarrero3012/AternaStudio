@@ -27,12 +27,13 @@ import { WordReveal } from "./WordReveal";
 // alguno real: tres huecos «Pendiente» en la portada restaban más de lo que
 // contaban. La numeración se ajusta sola.
 export function HomeContent() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const withCases = t.cases.items.some((item) => !item.pending);
   const k = withCases ? 1 : 0;
   return (
     <>
-      <Journey />
+      {/* Por idioma: el recorrido guarda sus palabras al montar. */}
+      <Journey key={locale} />
       <StudioStatement n={1} />
       <Approach n={2} />
       {withCases ? <Cases n={3} /> : null}
