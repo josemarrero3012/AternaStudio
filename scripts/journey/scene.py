@@ -6,39 +6,60 @@
 # cuerpo de metal anodizado con el degradado del logo, incrustación pulida y
 # un filamento de luz que recorre cada trazo.
 #
-#   python scene.py --out DIR [--preview] [--frames 0,30,60] [--res 1600x900] [--samples N]
-#   python scene.py --mark-blend aterna-mark.blend
+#   blender -b --python scene.py -- --out DIR [--preset final|draft|smoke] [--frames 0,60,119]
+#                                  [--res 3840x2160] [--overscan 0.025] [--fstop 4] [--device optix|cuda|cpu]
+#   blender -b --python scene.py -- --list-devices
+#   blender -b --python scene.py -- --mark-blend aterna-mark.blend
+#   (también con el módulo bpy de pip: python scene.py --out DIR --device cpu …)
 #
-# Escribe por fotograma un EXR multicapa (Combined + Depth), que post.py
-# convierte en el JPEG y el mapa de profundidad de la web. Con --mark-blend
-# guarda un .blend con solo el símbolo (peana, aura, luces y cámara), para
-# usarlo aparte. La escena sale siempre igual: la semilla es fija y el orden
-# de los números aleatorios no debe cambiar (si se toca, hay que volver a
-# renderizar los 120 fotogramas). mark.json lo genera mark_contours.py.
+# Versión 2: la escena se renderiza por capas para el paralaje de la web. Cada
+# spline lleva su grupo (a0…a6 cada arco del túnel, back los arcos del claro,
+# mark el símbolo con su aura, base el suelo con sus raíces y la peana) y cada
+# grupo tiene su colección y su view layer: en la suya se ve y en las demás es
+# «Indirect Only» (no se ve, pero ilumina, se refleja y da sombra). El grupo
+# base hace de «holdout» en las demás: el suelo tapa lo que queda bajo tierra.
+#
+# Escribe por fotograma un EXR multicapa (Combined RGBA + Depth de cada view
+# layer) y un JSON con la cámara y los tiempos; post.py hace el revelado. --res
+# es lo visible: se renderiza con un margen alrededor (--overscan) ampliando
+# el sensor, así el centro encuadra igual. Orden de grueso a fino (0, 119, 59,
+# 29…), reanudable (salta lo que ya tiene EXR y JSON) y con escritura atómica.
+#
+# La escena sale siempre igual: la semilla es fija y el orden de los números
+# aleatorios no debe cambiar (si se toca, hay que volver a renderizar los 120
+# fotogramas). mark.json lo genera mark_contours.py.
 
 import argparse
 import json
 import math
 import os
+import re
 import sys
 import time
 
 import bpy
 import numpy as np
-from scipy.interpolate import CubicSpline
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--out", default="")
 ap.add_argument("--frames", default="")
-ap.add_argument("--preview", action="store_true")
-ap.add_argument("--res", default="1600x900")
+ap.add_argument("--preset", default="final", choices=("final", "draft", "smoke"))
+ap.add_argument("--res", default="3840x2160", help="resolución visible; el render lleva además el margen")
+ap.add_argument("--overscan", type=float, default=0.025, help="margen por lado, en fracción de lo visible")
 ap.add_argument("--samples", type=int, default=0)
+ap.add_argument("--threshold", type=float, default=0.0)
+ap.add_argument("--fstop", type=float, default=4.0)
+ap.add_argument("--device", default="optix", choices=("optix", "cuda", "cpu"))
 ap.add_argument("--threads", type=int, default=0)
+ap.add_argument("--list-devices", action="store_true")
+ap.add_argument("--build-only", action="store_true")
 ap.add_argument("--save-blend", default="")
 ap.add_argument("--mark-blend", default="")
-args = ap.parse_args()
+# Con el Blender de verdad los argumentos del script van después de «--».
+argv = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else sys.argv[1:]
+args = ap.parse_args(argv)
 
 FRAMES = 120
 Y_MARK = 58.0
@@ -62,13 +83,34 @@ def lin(hex_or_rgb):
     return (*out, 1.0)
 
 
+def natural_spline(x, y, xs):
+    """Spline cúbico natural (segunda derivada nula en los extremos), como
+    CubicSpline(x, y, bc_type="natural") de scipy, que no trae el Python de
+    Blender. y: (m, k); devuelve (len(xs), k)."""
+    m = len(x)
+    h = np.diff(x)
+    M = np.zeros_like(y)
+    if m > 2:
+        A = np.zeros((m - 2, m - 2))
+        i = np.arange(m - 2)
+        A[i, i] = 2 * (h[:-1] + h[1:])
+        A[i[1:], i[:-1]] = h[1:-1]
+        A[i[:-1], i[1:]] = h[1:-1]
+        slope = np.diff(y, axis=0) / h[:, None]
+        M[1:-1] = np.linalg.solve(A, 6 * np.diff(slope, axis=0))
+    k = np.clip(np.searchsorted(x, xs, side="right") - 1, 0, m - 2)
+    t = (xs - x[k])[:, None]
+    hk = h[k][:, None]
+    b = (y[k + 1] - y[k]) / hk - hk * (2 * M[k] + M[k + 1]) / 6
+    return y[k] + b * t + M[k] / 2 * t**2 + (M[k + 1] - M[k]) / (6 * hk) * t**3
+
+
 def smooth_path(ctrl, n):
     ctrl = np.asarray(ctrl, float)
     d = np.r_[0, np.cumsum(np.linalg.norm(np.diff(ctrl, axis=0), axis=1))]
     keep = np.r_[True, np.diff(d) > 1e-6]
     ctrl, d = ctrl[keep], d[keep]
-    cs = CubicSpline(d, ctrl, bc_type="natural")
-    return cs(np.linspace(0, d[-1], n))
+    return natural_spline(d, ctrl, np.linspace(0, d[-1], n))
 
 
 def frames_of(P):
@@ -123,9 +165,49 @@ scene = bpy.context.scene
 col = scene.collection
 
 
-def link(ob):
-    col.objects.link(ob)
+def gpu_devices(kind):
+    """Dispositivos de Cycles de un tipo (OPTIX, CUDA…), ya activados."""
+    prefs = bpy.context.preferences.addons["cycles"].preferences
+    try:
+        prefs.compute_device_type = kind
+    except TypeError:
+        return []
+    try:
+        prefs.refresh_devices()
+    except AttributeError:
+        prefs.get_devices()
+    for d in prefs.devices:
+        d.use = d.type == kind
+    return [d for d in prefs.devices if d.type == kind]
+
+
+if args.list_devices:
+    for kind in ("OPTIX", "CUDA"):
+        names = [d.name for d in gpu_devices(kind)]
+        print(f"{kind}: {', '.join(names) if names else '—'}", flush=True)
+    sys.exit(0)
+
+# Las capas: un grupo por cosa que se mueve entera en el paralaje de la web.
+TUNNEL = [f"a{k}" for k in range(7)]
+GROUPS = ["base", "back", "mark", *TUNNEL]
+COLLS = {}
+for g in GROUPS:
+    c = bpy.data.collections.new(f"g-{g}")
+    col.children.link(c)
+    COLLS[g] = c
+
+
+def link(ob, group=None):
+    """Al grupo (su colección) o, sin grupo, a la escena (luces, cámara)."""
+    (COLLS[group] if group else col).objects.link(ob)
     return ob
+
+
+def to_group(ob, group):
+    """Lo creado con bpy.ops cae en la colección activa: a su grupo."""
+    for c in list(ob.users_collection):
+        c.objects.unlink(ob)
+    return link(ob, group)
 
 
 def new_mat(name):
@@ -158,7 +240,7 @@ def emission_mat(name, color, strength):
     return m
 
 
-def add_curves(name, splines, mat, bevel_res=2, caps=True):
+def add_curves(name, splines, mat, group, bevel_res=2, caps=True):
     """splines: lista de (puntos (n,3), radios (n,)). Radio absoluto en metros."""
     cu = bpy.data.curves.new(name, "CURVE")
     cu.dimensions = "3D"
@@ -172,7 +254,7 @@ def add_curves(name, splines, mat, bevel_res=2, caps=True):
         sp.points.foreach_set("radius", np.asarray(radii, np.float32))
     ob = bpy.data.objects.new(name, cu)
     ob.data.materials.append(mat)
-    return link(ob)
+    return link(ob, group)
 
 
 # Materiales de las raíces ----------------------------------------------------
@@ -241,11 +323,17 @@ GLOWS = {
     "indigo": emission_mat("glow-indigo", lin("#5d68f0"), 5.0),
 }
 
-glow_splines = {k: [] for k in GLOWS}
-root_splines, deep_splines, fiber_splines = [], [], []
+# Por grupo (y los tramos encendidos, por grupo y color): cada grupo es su
+# capa. Repartirlos no gasta números aleatorios: la geometría es la de la v1.
+glow_splines = {}
+root_splines, deep_splines, fiber_splines = {}, {}, {}
 
 
-def glow_on(pts, radii, palette, chance, rmul=1.18):
+def put(store, key, item):
+    store.setdefault(key, []).append(item)
+
+
+def glow_on(pts, radii, palette, chance, group, rmul=1.18):
     """Un tramo encendido sobre una raíz (como la luz que recorre el vídeo)."""
     if rng.random() > chance:
         return
@@ -256,13 +344,13 @@ def glow_on(pts, radii, palette, chance, rmul=1.18):
     a = int(rng.integers(0, n - L))
     seg = pts[a : a + L]
     rr = np.minimum(radii[a : a + L] * rmul, 0.05) * taper(L, 0.3, 0.3, 0.05)
-    glow_splines[palette[int(rng.integers(0, len(palette)))]].append((seg, rr))
+    put(glow_splines, (group, palette[int(rng.integers(0, len(palette)))]), (seg, rr))
 
 
 # Arcos del túnel -------------------------------------------------------------
 
 
-def arch(y, W, H, strands, thick=(0.02, 0.075), lean=0.0, palette=("lavender", "violet", "indigo"), glow_chance=0.18, tendrils=12, deep=False, dense=1.0):
+def arch(group, y, W, H, strands, thick=(0.02, 0.075), lean=0.0, palette=("lavender", "violet", "indigo"), glow_chance=0.18, tendrils=12, deep=False, dense=1.0):
     yaw = rng.uniform(-0.12, 0.12)
     cy, sy = math.cos(yaw), math.sin(yaw)
 
@@ -312,8 +400,8 @@ def arch(y, W, H, strands, thick=(0.02, 0.075), lean=0.0, palette=("lavender", "
         thick_i = rng.uniform(*thick) * (1.0 if rng.random() < 0.75 else 0.45)
         prof = taper(len(P), 0.22, 0.22, 0.05) * (0.75 + 0.25 * np.cos(np.linspace(0, 2 * np.pi, len(P))) ** 2)
         radii = thick_i * prof
-        (deep_splines if deep else root_splines).append((P, radii))
-        glow_on(P, radii, palette, glow_chance)
+        put(deep_splines if deep else root_splines, group, (P, radii))
+        glow_on(P, radii, palette, glow_chance, group)
         arch_paths.append(P)
     # Fibras finas que acompañan el arco.
     for i in range(int(strands * 0.8)):
@@ -326,8 +414,8 @@ def arch(y, W, H, strands, thick=(0.02, 0.075), lean=0.0, palette=("lavender", "
             continue
         P = P[a0:a1]
         r = rng.uniform(0.003, 0.009) * taper(len(P), 0.2, 0.2, 0.1)
-        fiber_splines.append((P, r))
-        glow_on(P, r, palette, 0.1, rmul=1.6)
+        put(fiber_splines, group, (P, r))
+        glow_on(P, r, palette, 0.1, group, rmul=1.6)
     # Zarcillos que cuelgan de lo alto: nunca bajan al eje de la cámara.
     for i in range(tendrils):
         P0 = arch_paths[int(rng.integers(0, len(arch_paths)))]
@@ -341,26 +429,32 @@ def arch(y, W, H, strands, thick=(0.02, 0.075), lean=0.0, palette=("lavender", "
         ctrl = [p0, p0 + (rng.normal(0, 0.15), rng.normal(0, 0.15), -L * 0.45), p0 + (rng.normal(0, 0.3), rng.normal(0, 0.3), -L)]
         P = smooth_path(ctrl, 40) + wobble(40, 0.05)
         r = rng.uniform(0.004, 0.012) * taper(40, 0.0, 0.5, 0.15)
-        fiber_splines.append((P, r))
+        put(fiber_splines, group, (P, r))
         if rng.random() < 0.55:
             tip = P[-7:]
-            glow_splines[palette[int(rng.integers(0, len(palette)))]].append((tip, r[-7:] * 2.2 + 0.004))
+            put(glow_splines, (group, palette[int(rng.integers(0, len(palette)))]), (tip, r[-7:] * 2.2 + 0.004))
     return arch_paths
 
 
 arches = []
+anchors = []  # (y, grupo): las motas van con el grupo más cercano
 # El portal: más ancho, más alto, más raíces.
-arches.append(arch(4.0, 3.9, 6.3, 46, thick=(0.03, 0.1), glow_chance=0.16, tendrils=18))
+arches.append(arch("a0", 4.0, 3.9, 6.3, 46, thick=(0.03, 0.1), glow_chance=0.16, tendrils=18))
+anchors.append((4.0, "a0"))
 ys = [10.0, 15.6, 21.3, 26.9, 32.4, 37.8]
 for k, y in enumerate(ys):
     t = k / (len(ys) - 1)
     pal = ("lavender", "indigo", "violet") if t < 0.5 else ("violet", "orchid", "lavender")
-    arches.append(arch(y + rng.uniform(-0.4, 0.4), rng.uniform(2.9, 3.4), rng.uniform(4.6, 5.4), int(rng.integers(26, 34)), palette=pal, glow_chance=0.16 + 0.1 * t, tendrils=12))
+    ya = y + rng.uniform(-0.4, 0.4)  # mismo orden de números que en la v1
+    arches.append(arch(f"a{k + 1}", ya, rng.uniform(2.9, 3.4), rng.uniform(4.6, 5.4), int(rng.integers(26, 34)), palette=pal, glow_chance=0.16 + 0.1 * t, tendrils=12))
+    anchors.append((ya, f"a{k + 1}"))
 # Más allá del símbolo: los arcos del claro, grandes, que lo enmarcan en la niebla.
-arches.append(arch(Y_MARK + 6.5, 6.8, 8.6, 44, thick=(0.04, 0.13), palette=("violet", "orchid", "indigo"), glow_chance=0.07, tendrils=10, deep=True, dense=1.3))
-arches.append(arch(Y_MARK + 14.0, 9.0, 11.5, 50, thick=(0.05, 0.16), palette=("violet", "indigo"), glow_chance=0.07, tendrils=6, deep=True, dense=1.4))
+arches.append(arch("back", Y_MARK + 6.5, 6.8, 8.6, 44, thick=(0.04, 0.13), palette=("violet", "orchid", "indigo"), glow_chance=0.07, tendrils=10, deep=True, dense=1.3))
+arches.append(arch("back", Y_MARK + 14.0, 9.0, 11.5, 50, thick=(0.05, 0.16), palette=("violet", "indigo"), glow_chance=0.07, tendrils=6, deep=True, dense=1.4))
+anchors += [(Y_MARK, "mark"), (Y_MARK + 6.5, "back"), (Y_MARK + 14.0, "back")]
 
-# Hilos que unen arcos consecutivos por arriba: la red.
+# Hilos que unen arcos consecutivos por arriba: la red. Cada hilo va con el
+# arco de más allá (el de más acá está más cerca: queda por delante).
 for k in range(len(arches) - 3):
     A, B = arches[k], arches[k + 1]
     for i in range(14):
@@ -373,8 +467,8 @@ for k in range(len(arches) - 3):
         mid = (a + b) / 2 + (rng.normal(0, 0.4), 0, -rng.uniform(0.2, 0.9))
         P = smooth_path([a, mid, b], 60) + wobble(60, 0.08)
         r = np.full(60, rng.uniform(0.0025, 0.006))
-        fiber_splines.append((P, r))
-        glow_on(P, r, ("lavender", "violet"), 0.3, rmul=1.8)
+        put(fiber_splines, f"a{k + 1}", (P, r))
+        glow_on(P, r, ("lavender", "violet"), 0.3, f"a{k + 1}", rmul=1.8)
 
 # Raíces del suelo: el sistema de raíces del símbolo. Nacen en la peana, se
 # abren por el suelo y se ramifican; las que van hacia el túnel llegan lejos.
@@ -394,8 +488,8 @@ def grow(p, heading, length, radius, depth, palette):
     P = np.array(pts)
     P[:, 2] = -0.012 + 0.05 * np.sin(np.linspace(0, length * rng.uniform(0.25, 0.6), len(P)) + rng.uniform(0, 6)) * np.linspace(0.6, 1, len(P))
     r = radius * np.linspace(1, 0.12, len(P)) ** 0.8 * taper(len(P), 0.0, 0.08, 0.3)
-    root_splines.append((P, r))
-    glow_on(P, r, palette, 0.3)
+    put(root_splines, "base", (P, r))  # van por el suelo: se mueven con él
+    glow_on(P, r, palette, 0.3, "base")
     if depth <= 0:
         return
     for _ in range(int(rng.integers(1, 4))):
@@ -416,12 +510,14 @@ for i in range(16):
     x0 = rng.choice([-1, 1]) * rng.uniform(1.0, 4.0)
     grow((x0, rng.uniform(-8, 30), 0.0), math.pi / 2 + rng.normal(0, 0.25) - 0.06 * np.sign(x0), rng.uniform(8, 20), rng.uniform(0.02, 0.045), 2, ("indigo", "lavender", "violet"))
 
-add_curves("roots", root_splines, MAT_ROOT, bevel_res=3)
-add_curves("roots-deep", deep_splines, MAT_ROOT_DEEP, bevel_res=3)
-add_curves("fibers", fiber_splines, MAT_FIBER, bevel_res=1)
-for k, spl in glow_splines.items():
-    if spl:
-        add_curves(f"glow-{k}", spl, GLOWS[k], bevel_res=2)
+for g, spl in root_splines.items():
+    add_curves(f"roots-{g}", spl, MAT_ROOT, g, bevel_res=3)
+for g, spl in deep_splines.items():
+    add_curves(f"roots-deep-{g}", spl, MAT_ROOT_DEEP, g, bevel_res=3)
+for g, spl in fiber_splines.items():
+    add_curves(f"fibers-{g}", spl, MAT_FIBER, g, bevel_res=1)
+for (g, k), spl in glow_splines.items():
+    add_curves(f"glow-{g}-{k}", spl, GLOWS[k], g, bevel_res=2)
 
 # Motas de luz ------------------------------------------------------------------
 
@@ -442,13 +538,22 @@ def motes(name, n, box, rmin, rmax, mat):
     near_axis = (np.abs(c[:, 0]) < 0.5) & (c[:, 2] < 2.6) & (c[:, 2] > 1.0)
     c = c[~near_axis]
     r = rng.uniform(rmin, rmax, len(c)) ** 1.0
-    verts = (v0[None] * r[:, None, None] + c[:, None]).reshape(-1, 3)
-    faces = (f0[None] + (np.arange(len(c)) * len(v0))[:, None, None]).reshape(-1, 3)
-    me = bpy.data.meshes.new(name)
-    me.from_pydata(verts.tolist(), [], faces.tolist())
-    ob = bpy.data.objects.new(name, me)
-    me.materials.append(mat)
-    return link(ob)
+    # Cada mota, con el grupo (arco, símbolo o claro) más cercano en y.
+    ay = np.array([a[0] for a in anchors])
+    near = np.abs(c[:, 1][:, None] - ay[None]).argmin(axis=1)
+    owner = np.array([anchors[k][1] for k in near])
+    for g in GROUPS:
+        sel = owner == g
+        if not sel.any():
+            continue
+        cg, rg = c[sel], r[sel]
+        verts = (v0[None] * rg[:, None, None] + cg[:, None]).reshape(-1, 3)
+        faces = (f0[None] + (np.arange(len(cg)) * len(v0))[:, None, None]).reshape(-1, 3)
+        me = bpy.data.meshes.new(f"{name}-{g}")
+        me.from_pydata(verts.tolist(), [], faces.tolist())
+        ob = bpy.data.objects.new(f"{name}-{g}", me)
+        me.materials.append(mat)
+        link(ob, g)
 
 
 motes("motes-lav", 900, ((-4.5, 4.5), (-8, 70), (0.2, 6.0)), 0.006, 0.016, emission_mat("mote-lav", lin("#c9ceff"), 9.0))
@@ -478,7 +583,7 @@ nt.links.new(nz2.outputs["Fac"], bump.inputs["Height"])
 nt.links.new(bump.outputs["Normal"], p.inputs["Normal"])
 nt.links.new(p.outputs[0], out.inputs["Surface"])
 bpy.ops.mesh.primitive_plane_add(size=400, location=(0, 40, 0))
-floor = bpy.context.active_object
+floor = to_group(bpy.context.active_object, "base")
 floor.name = "floor"
 floor.data.materials.append(m)
 
@@ -489,7 +594,7 @@ mark = json.load(open(os.path.join(HERE, "mark.json")))  # mark_contours.py
 frame_empty = bpy.data.objects.new("mark-frame", None)
 frame_empty.location = (0, Y_MARK, Z_MARK)
 frame_empty.rotation_euler = (math.pi / 2, 0, 0)
-link(frame_empty)
+link(frame_empty, "mark")
 
 
 def gradient_ramp(nt, stops, coord_object):
@@ -580,7 +685,7 @@ def mark_curve(name, shapes, extrude, bevel, mat, z_off):
     ob.data.materials.append(mat)
     ob.parent = frame_empty
     ob.location = (0, 0, z_off)
-    return link(ob)
+    return link(ob, "mark")
 
 
 BODY_EXT, BODY_BEV = 0.15, 0.028
@@ -595,7 +700,7 @@ for c in mark["filaments"]:
     pts = np.c_[c[:, 0], c[:, 1], np.full(len(c), front - 0.001)]
     pts = np.vstack([pts, pts[:1]])
     fils.append((pts, np.full(len(pts), 0.0065)))
-ob = add_curves("mark-filaments", fils, m_fil, bevel_res=2)
+ob = add_curves("mark-filaments", fils, m_fil, "mark", bevel_res=2)
 ob.parent = frame_empty
 
 # Peana: obsidiana con anillos de luz.
@@ -607,9 +712,10 @@ pl = bpy.context.active_object
 pl.name = "plinth"
 pl.data.materials.append(m)
 bpy.ops.object.shade_smooth()
+to_group(pl, "base")  # está sobre el suelo: se mueve con él
 for i, (rad, colr) in enumerate([(2.45, "#b07cff"), (2.95, "#7f88ff"), (3.3, "#e08cff")]):
     bpy.ops.mesh.primitive_torus_add(major_radius=rad, minor_radius=0.011 if i != 2 else 0.016, major_segments=256, minor_segments=8, location=(0, Y_MARK, 0.165 if i != 2 else 0.16))
-    tr = bpy.context.active_object
+    tr = to_group(bpy.context.active_object, "base")
     tr.name = f"ring{i}"
     tr.data.materials.append(emission_mat(f"ring{i}", lin(colr), 2.4))
 
@@ -640,7 +746,7 @@ nt.links.new(tr_.outputs[0], mix.inputs[1])
 nt.links.new(em.outputs[0], mix.inputs[2])
 nt.links.new(mix.outputs[0], out.inputs["Surface"])
 bpy.ops.mesh.primitive_plane_add(size=9.2, location=(0, Y_MARK + 1.7, Z_MARK + 0.1), rotation=(math.pi / 2, 0, 0))
-aura = bpy.context.active_object
+aura = to_group(bpy.context.active_object, "mark")
 aura.name = "aura"
 aura.data.materials.append(m)
 aura.visible_shadow = False
@@ -660,6 +766,7 @@ def area(name, loc, target, size, energy, color, shape="DISK"):
     ob.location = loc
     d = np.subtract(target, loc)
     ob.rotation_euler = vec_to_euler(d)
+    ob.visible_camera = False  # las luces están en todas las capas: que no salgan en ninguna
     return link(ob)
 
 
@@ -696,7 +803,7 @@ cam_data.sensor_width = 36
 cam_data.clip_start = 0.05
 cam_data.clip_end = 400
 cam_data.dof.use_dof = True
-cam_data.dof.aperture_fstop = 2.4
+cam_data.dof.aperture_fstop = args.fstop  # v1: 2.4 (más blando)
 cam = bpy.data.objects.new("cam", cam_data)
 link(cam)
 scene.camera = cam
@@ -741,23 +848,52 @@ def place_camera(f):
 
 # Render ------------------------------------------------------------------------
 
-W, H = (int(v) for v in args.res.split("x"))
+# Muestras máximas y umbral adaptativo. «final» es la calidad de la web; la
+# prueba corta del PC usa también «final» para medir el tiempo de verdad.
+PRESETS = {"final": (1024, 0.01), "draft": (192, 0.03), "smoke": (16, 0.1)}
+
+VW, VH = (int(v) for v in args.res.split("x"))
+MX, MY = round(VW * args.overscan), round(VH * args.overscan)
+W, H = VW + 2 * MX, VH + 2 * MY
+# El margen sale de ampliar el sensor con la misma focal: el píxel mide lo
+# mismo y el centro (VW × VH) encuadra exactamente igual que sin margen.
+cam_data.sensor_fit = "HORIZONTAL"
+cam_data.sensor_width = 36.0 * W / VW
+
 r = scene.render
 r.engine = "CYCLES"
 r.resolution_x, r.resolution_y = W, H
 r.resolution_percentage = 100
-r.film_transparent = False
+r.film_transparent = True  # cada capa con su alfa; el cielo lo pone post.py
 r.use_persistent_data = True
 cy = scene.cycles
-cy.device = "CPU"
-cy.samples = args.samples or (24 if args.preview else 64)
+if args.device == "cpu":
+    cy.device = "CPU"
+    device_name = "CPU"
+else:
+    found = gpu_devices(args.device.upper())
+    if not found:
+        sys.exit(f"[scene] No hay GPU {args.device.upper()} para Cycles. Comprueba el driver de NVIDIA (nvidia-smi) o usa --device cpu.")
+    cy.device = "GPU"
+    device_name = ", ".join(d.name for d in found)
+print(f"[scene] dispositivo: {device_name} ({args.device})", flush=True)
+
+samples, threshold = PRESETS[args.preset]
+cy.samples = args.samples or samples
 cy.use_adaptive_sampling = True
-cy.adaptive_threshold = 0.035 if not args.preview else 0.1
+cy.adaptive_threshold = args.threshold or threshold
 cy.use_denoising = True
-try:
-    cy.denoiser = "OPENIMAGEDENOISE"
-except Exception:
-    pass
+for attr, val in (
+    ("denoiser", "OPENIMAGEDENOISE"),
+    ("denoising_input_passes", "RGB_ALBEDO_NORMAL"),  # las fibras finas no se emborronan
+    ("denoising_prefilter", "ACCURATE"),
+    ("denoising_quality", "HIGH"),
+    ("denoising_use_gpu", cy.device == "GPU"),
+):
+    try:
+        setattr(cy, attr, val)
+    except (AttributeError, TypeError) as err:
+        print(f"[scene] aviso: {attr}: {err}", flush=True)
 cy.max_bounces = 4
 cy.diffuse_bounces = 1
 cy.glossy_bounces = 2
@@ -767,13 +903,11 @@ cy.volume_bounces = 0
 cy.caustics_reflective = False
 cy.caustics_refractive = False
 cy.sample_clamp_indirect = 6.0
-cy.blur_glossy = 0.6
+cy.blur_glossy = 0.3  # v1: 0.6; con más muestras, reflejos más nítidos
 if args.threads:
     r.threads_mode = "FIXED"
     r.threads = args.threads
 scene.view_settings.view_transform = "Standard"
-vl = scene.view_layers[0]
-vl.use_pass_z = True
 
 fmt = r.image_settings
 try:
@@ -789,7 +923,6 @@ fmt.exr_codec = "ZIP"
 
 for mname in ("root", "root-deep", "fiber", "mote-lav", "mote-orchid", "aura"):
     bpy.data.materials[mname].cycles.emission_sampling = "NONE"
-vl.cycles.denoising_store_passes = False
 
 if args.save_blend:
     bpy.ops.wm.save_as_mainfile(filepath=args.save_blend)
@@ -801,6 +934,7 @@ if args.mark_blend:
             bpy.data.objects.remove(ob, do_unlink=True)
     bpy.data.orphans_purge(do_recursive=True)
     place_camera(FRAMES - 1)
+    r.film_transparent = False
     fmt.media_type = "IMAGE"
     fmt.file_format = "PNG"
     fmt.color_depth = "16"
@@ -809,16 +943,137 @@ if args.mark_blend:
     bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(args.mark_blend), compress=True)
     sys.exit(0)
 
+# Una view layer por grupo. En la suya el grupo se ve; los demás no se ven pero
+# iluminan, se reflejan y dan sombra (Indirect Only), y el grupo base (suelo,
+# raíces del suelo, peana) hace de holdout: tapa lo que queda bajo tierra o
+# detrás de una raíz del suelo, como en la imagen entera.
+VLS = {}
+for g in GROUPS:
+    vl = scene.view_layers[0] if g == "base" else scene.view_layers.new(g)
+    vl.name = g
+    vl.use_pass_combined = True
+    vl.use_pass_z = True
+    for prop, val in (("denoising_store_passes", False), ("pass_debug_sample_count", True)):
+        try:
+            setattr(vl.cycles, prop, val)
+        except AttributeError:
+            pass
+    for lc in vl.layer_collection.children:
+        own = lc.name == f"g-{g}"
+        lc.holdout = not own and lc.name == "g-base"
+        lc.indirect_only = not own and lc.name != "g-base"
+    VLS[g] = vl
+bpy.context.view_layer.update()
+
+# Caja de cada grupo (en el mundo) para saltar las capas que no salen en cuadro.
+BOXES = {}
+for g in GROUPS:
+    pts = []
+    for ob in COLLS[g].all_objects:
+        if ob.type in ("MESH", "CURVE"):
+            mw = np.array(ob.matrix_world)
+            bb = np.array([list(v) for v in ob.bound_box])
+            pts.append(bb @ mw[:3, :3].T + mw[:3, 3])
+    BOXES[g] = np.vstack(pts) if pts else np.zeros((0, 3))
+
+
+def in_view(g):
+    """Prueba conservadora contra la pirámide de visión (con el margen y un
+    poco más): False solo si toda la caja queda fuera de un mismo plano."""
+    P = BOXES[g]
+    if not len(P):
+        return False
+    m = np.array(cam.matrix_world.inverted())
+    q = P @ m[:3, :3].T + m[:3, 3]
+    x, y, d = q[:, 0], q[:, 1], -q[:, 2]
+    tx = cam_data.sensor_width / 2 / cam_data.lens * 1.08
+    ty = tx * H / W
+    if np.all(d < cam_data.clip_start):
+        return False
+    return not (np.all(x > tx * d) or np.all(x < -tx * d) or np.all(y > ty * d) or np.all(y < -ty * d))
+
+
+STATS = {"peak": 0.0}
+
+
+def on_stats(stats):
+    # Blender 5.2: «Mem: 1234M | Rendering … | base». Se guarda el máximo.
+    m = re.search(r"(?:Peak|Mem)[:\s]+([\d.]+)\s*([KMG])", str(stats))
+    if m:
+        mb = float(m.group(1)) * {"K": 1 / 1024, "M": 1, "G": 1024}[m.group(2)]
+        STATS["peak"] = max(STATS["peak"], mb)
+
+
+bpy.app.handlers.render_stats.append(on_stats)
+
+
+def coarse_to_fine(n):
+    """0, n−1 y después los puntos medios, por niveles: siempre hay recorrido entero."""
+    order, queue = [0, n - 1], [(0, n - 1)]
+    while queue:
+        a, b = queue.pop(0)
+        if b - a >= 2:
+            mid = (a + b) // 2
+            order.append(mid)
+            queue += [(a, mid), (mid, b)]
+    return order
+
+
+def write_json(path, data):
+    tmp = path + ".tmp"
+    with open(tmp, "w") as fh:
+        json.dump(data, fh, indent=1)
+    os.replace(tmp, path)
+
+
+if args.build_only:
+    print("[scene] escena construida", flush=True)
+    sys.exit(0)
 if not args.out:
     sys.exit("Falta --out")
 os.makedirs(args.out, exist_ok=True)
-frames = [int(v) for v in args.frames.split(",")] if args.frames else list(range(FRAMES))
-for f in frames:
+frames = [int(v) for v in args.frames.split(",")] if args.frames else coarse_to_fine(FRAMES)
+todo = [f for f in frames if not (os.path.exists(os.path.join(args.out, f"f{f:03d}.exr")) and os.path.exists(os.path.join(args.out, f"f{f:03d}.json")))]
+print(f"[scene] {W}×{H} (visible {VW}×{VH}), {cy.samples} muestras máx., umbral {cy.adaptive_threshold}, f/{args.fstop}; faltan {len(todo)} de {len(frames)}", flush=True)
+for k, f in enumerate(todo):
     dst = os.path.join(args.out, f"f{f:03d}.exr")
-    if os.path.exists(dst):
-        continue
+    tmp = os.path.join(args.out, f"f{f:03d}.tmp.exr")
     place_camera(f)
-    r.filepath = dst
+    bpy.context.view_layer.update()
+    layers = [g for g in GROUPS if g == "base" or in_view(g)]
+    for g in GROUPS:
+        VLS[g].use = g in layers
+    STATS["peak"] = 0.0
+    r.filepath = tmp
     t0 = time.time()
     bpy.ops.render.render(write_still=True)
-    print(f"frame {f} {time.time() - t0:.1f}s", flush=True)
+    took = time.time() - t0
+    os.replace(tmp, dst)
+    pos, target, roll, focus = camera_at(f)
+    write_json(
+        os.path.join(args.out, f"f{f:03d}.json"),
+        {
+            "frame": f,
+            "seconds": round(took, 2),
+            "layers": layers,
+            "preset": args.preset,
+            "samples": cy.samples,
+            "threshold": cy.adaptive_threshold,
+            "device": device_name,
+            "blender": bpy.app.version_string,
+            "res": [W, H],
+            "visible": [VW, VH],
+            "margin": [MX, MY],
+            "peak_mb": round(STATS["peak"], 1),
+            "camera": {
+                "pos": [float(v) for v in pos],
+                "rot": [list(map(float, row)) for row in cam.matrix_world.to_3x3()],
+                "focus": float(focus),
+                "fstop": args.fstop,
+                "lens": cam_data.lens,
+                "sensor": cam_data.sensor_width,
+                "clip_start": cam_data.clip_start,
+            },
+        },
+    )
+    print(f"[scene] fotograma {f} ({k + 1}/{len(todo)}) {took:.1f}s · capas {','.join(layers)} · pico {STATS['peak']:.0f} MB", flush=True)

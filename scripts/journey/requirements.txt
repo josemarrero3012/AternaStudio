@@ -1,0 +1,5 @@
+# Revelado del recorrido (post.py). scene.py va con el Python que trae Blender.
+numpy>=2.1
+opencv-python-headless>=4.10
+pillow>=12.0
+OpenEXR>=3.3

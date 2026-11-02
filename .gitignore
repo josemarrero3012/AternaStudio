@@ -10,3 +10,7 @@ public/php/mail-config.php
 # Modelo del asistente: lo descarga scripts/fetch-semantic.mjs al compilar.
 public/semantic/*
 !public/semantic/worker.js
+
+# El render del recorrido (Blender, venv y EXR): se queda en el PC que renderiza.
+.render/
+__pycache__/
