@@ -14,7 +14,8 @@ import { absoluteUrl } from "@/lib/seo";
 import { site } from "@/lib/site";
 import "@/app/globals.css";
 
-const fraunces = Fraunces({ subsets: ["latin"], axes: ["opsz"], variable: "--font-fraunces", display: "swap" });
+// La cursiva es la segunda línea de los titulares del recorrido y su contador.
+const fraunces = Fraunces({ subsets: ["latin"], style: ["normal", "italic"], axes: ["opsz"], variable: "--font-fraunces", display: "swap" });
 const archivo = Archivo({ subsets: ["latin"], variable: "--font-archivo", display: "swap" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
 
@@ -66,7 +67,7 @@ export function Shell({ locale, lost, children }: { locale: Locale; lost?: boole
         {/* Antes que nada: decide si la cortina de entrada sale (ver Chrome.tsx). */}
         <script dangerouslySetInnerHTML={{ __html: CURTAIN_SCRIPT }} />
         <noscript>
-          <style>{".curtain{display:none}.hero__still{opacity:1}"}</style>
+          <style>{".curtain,.journey__loader{display:none}"}</style>
         </noscript>
         <JsonLd data={organization(locale)} />
         <LanguageProvider locale={locale} lost={lost}>

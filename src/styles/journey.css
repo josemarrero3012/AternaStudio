@@ -1,0 +1,589 @@
+/* ==========================================================================
+   Recorrido de la portada (components/Journey.tsx)
+
+   Medidas en px de diseño: 1 u = min(100vw / 1440, 100svh / 760) en
+   ordenador (diseñado a 1440 × 900) y min(100vw / 415, 100svh / 760) por
+   debajo de 1024 px (diseñado a 415 de ancho). Los márgenes laterales son los
+   del contenedor de la web, así todo alinea con la cabecera y las secciones.
+   ========================================================================== */
+
+.journey {
+  --u: min(100vw / 1440, 100vh / 760);
+  --journey-x: max(var(--margin), calc((100% - var(--container)) / 2 + var(--margin)));
+  position: relative;
+  height: var(--journey-scene-h);
+}
+
+@supports (height: 100svh) {
+  .journey {
+    --u: min(100vw / 1440, 100svh / 760);
+  }
+}
+
+@media (max-width: 1023px) {
+  .journey {
+    --u: min(100vw / 415, 100vh / 760);
+  }
+
+  @supports (height: 100svh) {
+    .journey {
+      --u: min(100vw / 415, 100svh / 760);
+    }
+  }
+}
+
+/* Escenario fijado ----------------------------------------------------------- */
+
+.journey__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--journey-stage);
+}
+
+/* Sonda: JS lee aquí cuántos px CSS mide 1 u. */
+.journey__probe {
+  position: absolute;
+  width: calc(100 * var(--u));
+  height: 0;
+  visibility: hidden;
+}
+
+.journey__cave {
+  position: absolute;
+  inset: 0;
+}
+
+.journey__canvas,
+.journey__poster {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.journey__poster {
+  object-fit: cover;
+}
+
+.journey__shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: var(--journey-shade);
+}
+
+.journey__content {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Texto recortado: la caja va de la altura de las mayúsculas a la línea base,
+   así las posiciones se miden a esos bordes. --lh es el interlineado si la
+   línea se parte. Las métricas (--a, --d, --cap: ascendente, descendente y
+   altura de mayúsculas, en em) son las de Fraunces, recta y cursiva. */
+
+.journey .trim {
+  --a: 0.98;
+  --d: 0.26;
+  --cap: 0.7;
+  display: block;
+  line-height: var(--lh);
+  text-box: trim-both cap alphabetic;
+}
+
+@supports not (text-box: trim-both cap alphabetic) {
+  .journey .trim {
+    margin-top: calc(((var(--d) - var(--a)) / 2 + var(--cap)) * 1em - var(--lh) / 2);
+    margin-bottom: calc((var(--a) - var(--d)) / 2 * 1em - var(--lh) / 2);
+  }
+}
+
+/* Bloques de texto ------------------------------------------------------------ */
+
+.journey__copy {
+  --reveal: 1;
+  --detail: 1;
+  --hl1: 76;
+  --hl2: 82;
+  position: absolute;
+  left: var(--journey-x);
+  /* A la derecha queda libre el carril del asistente y WhatsApp (76 px). */
+  right: max(var(--journey-x), 92px);
+  bottom: calc(28 * var(--u));
+  display: grid;
+  grid-template-columns: minmax(0, calc(803 * var(--u))) calc(330 * var(--u));
+  justify-content: space-between;
+  align-items: end;
+  will-change: opacity, transform;
+}
+
+/* Con movimiento, palabras y columna empiezan ocultas (data-motion lo pone el
+   script del <body> antes de pintar); sin JavaScript o con movimiento
+   reducido se ven tal cual. */
+html[data-motion="on"] .journey__copy {
+  --reveal: 0;
+  --detail: 0;
+}
+
+.journey__copy--mid,
+.journey__copy--final {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.journey__headline {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6.56 * var(--u));
+  padding-bottom: calc(12.8 * var(--u));
+  color: var(--text-hi);
+}
+
+.journey__line {
+  --lh: calc(var(--hl1) * 0.9 * var(--u));
+  white-space: nowrap;
+  font-family: var(--font-display);
+}
+
+.journey__line--sans {
+  font-size: calc(var(--hl1) * var(--u));
+  font-weight: 520;
+  font-variation-settings: "opsz" 144;
+  letter-spacing: -0.02em;
+}
+
+/* La segunda línea, en cursiva y con la luz del vídeo (como la palabra final
+   de los titulares de la web). */
+.journey__line--serif {
+  font-size: calc(var(--hl2) * var(--u));
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings: "opsz" 144;
+  letter-spacing: -0.01em;
+}
+
+.journey__word {
+  display: inline-block;
+  white-space: pre;
+  opacity: var(--reveal);
+  transform: translate3d(0, calc((1 - var(--reveal)) * 28 * var(--u)), 0);
+  filter: blur(calc((1 - var(--reveal)) * 7px));
+  transition:
+    opacity 0.58s linear,
+    transform 0.58s linear,
+    filter 0.58s linear;
+}
+
+/* Degradado continuo a lo largo de la línea: JS da a cada palabra el ancho
+   de la línea y su desplazamiento (background-size/-position), así no vuelve
+   a empezar en cada palabra. El relleno inferior alcanza los descendentes. */
+.journey__line--serif .journey__word {
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+  background-image: var(--brand-gradient-light);
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.journey__detail {
+  opacity: var(--detail);
+  transform: translate3d(0, calc((1 - var(--detail)) * 18 * var(--u)), 0);
+  filter: blur(calc((1 - var(--detail)) * 5px));
+}
+
+.journey__body {
+  font-size: calc(18 * var(--u));
+  line-height: 1.22;
+  color: var(--text-support);
+  text-wrap: pretty;
+}
+
+.journey__cta {
+  margin-top: calc(28 * var(--u));
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+/* Entrada (M3): palabra a palabra, luego la columna. */
+@keyframes journey-reveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--from-y), 0);
+    filter: blur(var(--from-blur));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+.journey__copy.is-intro .journey__word {
+  --from-y: calc(28 * var(--u));
+  --from-blur: 7px;
+  animation: journey-reveal 1.3s var(--e-out) calc(0.8s + var(--i) * 0.11s) both;
+}
+
+.journey__copy.is-intro .journey__detail {
+  --from-y: calc(18 * var(--u));
+  --from-blur: 5px;
+  animation: journey-reveal 0.8s var(--e-out) 1.65s both;
+}
+
+/* Tarjetas de vidrio (pantalla final) --------------------------------------- */
+
+.journey__cards {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity, transform;
+}
+
+.journey-card {
+  position: absolute;
+  display: block;
+  width: var(--card-w);
+  border: 1px solid var(--glass-edge);
+  border-radius: calc(20 * var(--u));
+  background: var(--glass-card-fill);
+  box-shadow: var(--glass-card-shadow);
+  overflow: hidden;
+  isolation: isolate;
+  pointer-events: auto;
+  transition: border-color var(--d-std) var(--e-out);
+}
+
+/* Alineadas con el contenedor mientras no tapen el símbolo; en pantallas
+   muy anchas (el fotograma se amplía para cubrir) se apartan hacia los
+   bordes, nunca más allá del margen. El símbolo mide de ancho ~0,33 del
+   fotograma, que a su vez mide max(100vw, 100svh × 16/9). */
+.journey__cards {
+  --card-w: calc(330 * var(--u));
+  --card-x: max(var(--margin), min(var(--journey-x), calc(50% - 0.165 * max(100vw, 100vh * 16 / 9) - 24px - var(--card-w))));
+}
+
+.journey-card--left {
+  left: var(--card-x);
+  top: 22%;
+}
+
+.journey-card--right {
+  right: var(--card-x);
+  top: 49%;
+}
+
+.journey-card__glass {
+  position: absolute;
+  z-index: 0;
+  max-width: none;
+  pointer-events: none;
+}
+
+.journey-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--glass-card-tint);
+  transition: background-color var(--d-std) var(--e-out);
+}
+
+.journey-card__text {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  padding: calc(24 * var(--u)) calc(24 * var(--u)) calc(32 * var(--u));
+}
+
+.journey-card__label {
+  margin-bottom: calc(16 * var(--u));
+  color: var(--lavender);
+}
+
+.journey-card__title {
+  margin-bottom: calc(10 * var(--u));
+  font-family: var(--font-display);
+  font-size: calc(28 * var(--u));
+  font-weight: 400;
+  font-variation-settings: "opsz" 72;
+  line-height: 1.15;
+  letter-spacing: var(--ls-title);
+  color: var(--text-hi);
+}
+
+.journey-card__body {
+  font-size: calc(17 * var(--u));
+  line-height: 1.3;
+  color: var(--text-support);
+}
+
+@media (hover: hover) {
+  .journey-card:hover {
+    border-color: color-mix(in srgb, var(--lavender) 60%, transparent);
+  }
+
+  .journey-card:hover::after {
+    background: var(--glass-card-tint-hover);
+  }
+}
+
+/* Pantalla de carga ------------------------------------------------------------ */
+
+/* Por encima de todo, también de la cabecera. Viene en el HTML tapando desde
+   el primer pintado; sin JavaScript no se muestra (ver Shell). */
+.journey__loader {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-curtain) + 1);
+}
+
+.journey__veil {
+  position: absolute;
+  inset: 0;
+  background: var(--journey-veil);
+}
+
+/* El velo lo pinta el shader del fundido. */
+.journey__loader[data-burn="on"] .journey__veil {
+  background: none;
+}
+
+.journey__burn {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.journey__loader-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+@keyframes journey-drop {
+  to {
+    opacity: 0;
+    transform: translate3d(0, calc(10 * var(--u)), 0);
+  }
+}
+
+.journey__loader:not([data-phase="loading"]) .journey__loader-ui {
+  animation: journey-drop 0.35s ease forwards;
+}
+
+.journey__loader[data-phase="done"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Sin fundido (sin WebGL): la pantalla se desvanece. */
+.journey__loader:not([data-burn="on"])[data-phase="ready"] {
+  opacity: 0;
+  transition: opacity 0.6s linear;
+}
+
+.journey__counter {
+  --lh: calc(92 * 0.8 * var(--u));
+  position: absolute;
+  left: var(--journey-x);
+  bottom: calc(36.8 * var(--u));
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(92 * var(--u));
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings: "opsz" 144;
+  letter-spacing: -0.03em;
+  color: var(--text-hi);
+  text-shadow: 0 calc(2 * var(--u)) calc(24 * var(--u)) var(--journey-counter-shadow);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  /* Hasta que llega su fuente: nunca se ve con la de respaldo. */
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.journey__loader[data-fonts="ready"] .journey__counter {
+  opacity: 1;
+}
+
+.journey__track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--journey-track);
+}
+
+.journey__bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: var(--brand-gradient-h);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+/* La cabecera durante el recorrido ---------------------------------------- */
+
+/* Entra con el titular (M3); hasta entonces, tapada por la pantalla de carga. */
+@keyframes journey-header-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+html[data-journey-intro="pending"] .header {
+  opacity: 0;
+}
+
+html[data-journey-intro="on"] .header {
+  animation: journey-header-in 0.8s var(--e-out) 0.15s both;
+}
+
+/* Sobre la escena, sin velo ni filete: la escena llega hasta arriba. */
+html[data-journey="over"] .header[data-scrolled="true"] {
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html[data-journey="over"] .header::after {
+  opacity: 0;
+}
+
+/* Y los enlaces, en una píldora de vidrio. */
+@media (min-width: 1024px) {
+  html[data-journey="over"] .header__nav ul {
+    border-color: var(--glass-edge);
+    background-color: var(--glass-pill-fill);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    backdrop-filter: blur(16px) saturate(1.2);
+  }
+}
+
+/* En móvil y tableta los textos ocupan todo el ancho: el asistente y WhatsApp
+   esperan a que acabe el recorrido. */
+@media (max-width: 1023px) {
+  html[data-journey="over"] .whatsapp-widget,
+  html[data-journey="over"] .assistant__orb {
+    opacity: 0;
+    transform: translateY(12px) scale(0.9);
+    pointer-events: none;
+    visibility: hidden;
+    transition:
+      transform var(--d-micro) var(--e-out),
+      opacity var(--d-std) var(--e-out),
+      visibility 0s linear var(--d-std);
+  }
+}
+
+/* Móvil y tableta --------------------------------------------------------------- */
+
+@media (max-width: 1023px) {
+  .journey__copy {
+    --hl1: 46;
+    --hl2: 50;
+    bottom: calc(22 * var(--u));
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: calc(18 * var(--u));
+  }
+
+  .journey__copy--final {
+    bottom: calc(18 * var(--u));
+  }
+
+  .journey__headline {
+    gap: calc(6.35 * var(--u));
+    padding-bottom: calc(7.97 * var(--u));
+  }
+
+  .journey__line {
+    white-space: normal;
+  }
+
+  .journey__copy {
+    right: var(--journey-x);
+  }
+
+  .journey__detail {
+    max-width: calc(440 * var(--u));
+  }
+
+  .journey__body {
+    font-size: calc(16 * var(--u));
+  }
+
+  .journey-card--left {
+    left: var(--margin);
+    top: 16%;
+  }
+
+  .journey-card--right {
+    right: var(--margin);
+    top: 39%;
+  }
+
+  .journey-card__text {
+    padding: calc(20 * var(--u)) calc(20 * var(--u)) calc(24 * var(--u));
+  }
+
+  .journey-card__label {
+    margin-bottom: calc(12 * var(--u));
+  }
+
+  .journey-card__title {
+    font-size: calc(24 * var(--u));
+  }
+
+  .journey-card__body {
+    font-size: calc(15 * var(--u));
+  }
+
+  .journey__counter {
+    --lh: calc(66.7 * 0.8 * var(--u));
+    bottom: calc(28.4 * var(--u));
+    font-size: calc(66.7 * var(--u));
+  }
+}
+
+/* Movimiento reducido ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .journey__copy.is-intro .journey__word,
+  .journey__copy.is-intro .journey__detail {
+    animation-duration: 0.01ms;
+    animation-delay: 0s;
+  }
+
+  .journey__word {
+    transition: none;
+  }
+
+  .journey__loader:not([data-burn="on"])[data-phase="ready"] {
+    transition-duration: 0.2s;
+  }
+
+  html[data-journey-intro="on"] .header {
+    animation-duration: 0.01ms;
+    animation-delay: 0s;
+  }
+}

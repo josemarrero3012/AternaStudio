@@ -13,24 +13,27 @@ import { BeliefArt } from "./BeliefArt";
 import { CopyEmail } from "./CopyEmail";
 import { whatsappHref } from "./Chrome";
 import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
-import { Approach, Cases, FinalCTA, Hero, NextSteps, Services, StartingPrice, StudioStatement } from "./sections";
+import { Journey } from "./Journey";
+import { Approach, Cases, FinalCTA, NextSteps, Services, StartingPrice, StudioStatement } from "./sections";
 import { ServiceGlyph, ServiceTrace } from "./ServiceTrace";
 import { WordReveal } from "./WordReveal";
 
 // / -------------------------------------------------------------------------
 
-// Al entrar, la portada cuenta primero quiénes somos (el estudio), después
+// La portada abre con el recorrido (Journey: de un túnel de raíces de luz al
+// símbolo de Aterna) y después cuenta quiénes somos (el estudio), después
 // cómo trabajamos (el método) y luego casos de uso; con eso ya presentado,
 // el catálogo de servicios y el contacto. Los casos solo salen cuando hay
 // alguno real: tres huecos «Pendiente» en la portada restaban más de lo que
 // contaban. La numeración se ajusta sola.
 export function HomeContent() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const withCases = t.cases.items.some((item) => !item.pending);
   const k = withCases ? 1 : 0;
   return (
     <>
-      <Hero />
+      {/* Por idioma: el recorrido guarda sus palabras al montar. */}
+      <Journey key={locale} />
       <StudioStatement n={1} />
       <Approach n={2} />
       {withCases ? <Cases n={3} /> : null}
