@@ -1,9 +1,18 @@
 # Recorrido de la portada, versión 2: encargo y contexto
 
 Este documento pasa el contexto a la sesión que va a hacer la versión 2 del
-recorrido de la portada en el ordenador con la RTX. **No es el plan**: el plan
-lo prepara esa sesión, en modo plan y con razonamiento máximo, y se lo enseña
-a José antes de tocar nada.
+recorrido de la portada. **No es el plan**: el plan lo prepara esa sesión, en
+modo plan y con razonamiento máximo, y se lo enseña a José antes de tocar
+nada.
+
+**Reparto del trabajo**: Claude trabaja en una sesión en la nube (sin GPU).
+El ordenador de José con la RTX solo renderiza y **no ejecuta Claude**: José
+lanza un script con un solo comando y el resultado vuelve por git. Así no
+gasta el límite semanal de su plan, que lo consumen las sesiones locales y
+está casi agotado. Las sesiones en la nube gastan créditos aparte (74 $ el
+2 de noviembre, que caducan el 5 de noviembre a las 7:59 WET): conviene
+cerrar el trabajo antes y no gastar turnos de más (esperar a que termine un
+render no cuesta nada).
 
 ## Qué hay ahora (versión 1, en `main`)
 
@@ -87,8 +96,22 @@ José se pregunta si es porque el escenario no es 3D de verdad: sí, es eso.
   - Mipmaps o un tamaño servido cercano al del lienzo, para no ampliar ni
     producir aliasing.
 
-## Recursos en este ordenador
+## El ordenador que renderiza (el de José, sin Claude)
 
+- Se maneja con un script del repositorio (por ejemplo
+  `scripts/journey/render-gpu.sh`) que José lanza en Konsole desde
+  `~/Escritorio/AternaStudio`. El script tiene que:
+  - hacer `git pull` de la rama;
+  - preparar Blender y el venv si faltan;
+  - renderizar (reanudable);
+  - hacer el revelado;
+  - subir solo lo final, ni EXR ni archivos intermedios.
+
+  Lo que sube son los WebP/AVIF de cada resolución y capa, hojas de contactos
+  y un informe corto (tiempos por fotograma, muestras, errores) que la sesión
+  en la nube lee.
+- Los EXR se quedan en el PC (son decenas de GB). Si hay que retocar el
+  revelado, otro comando que solo rehace `post.py`.
 - CachyOS (Arch), RTX 3060 de 12 GB, driver NVIDIA 615.
 - **Blender**: `pacman -S blender` falló por un espejo roto. Usar el Blender
   5.2.3 oficial de blender.org (tar.xz, sin `sudo`, trae los núcleos de
@@ -99,7 +122,8 @@ José se pregunta si es porque el escenario no es 3D de verdad: sí, es eso.
 - Para `post.py`: un venv con `numpy scipy opencv-python-headless pillow OpenEXR`.
 - Activar OptiX en Cycles (`compute_device_type = "OPTIX"`) y comprobar que la
   GPU aparece antes de lanzar 120 fotogramas.
-- `git push` desde aquí (`gh auth login` si hace falta).
+- `git push` desde ese ordenador (`gh auth login` si hace falta), para que
+  el script suba los resultados.
 
 ## Lo aprendido en la versión 1
 
@@ -124,7 +148,11 @@ José se pregunta si es porque el escenario no es 3D de verdad: sí, es eso.
    reproducir el problema (capturas con el puntero en el centro y en los
    extremos) y proponer el plan con números: resoluciones, capas, muestras,
    tiempo de render estimado en la 3060, pesos por dispositivo y memoria.
-   José lo aprueba antes de empezar.
+   José lo aprueba antes de empezar. Después basta con esfuerzo alto.
+   - La prueba corta del render la hace José con el script en su PC.
+   - La nube no tiene GPU: las pruebas de WebGL allí van por software
+     (swiftshader), así que la revisión visual final es de José en sus
+     pantallas.
 2. Ejecución por fases, cada una comprobada antes de la siguiente: una prueba
    corta de pocos fotogramas, después el render completo y por último la web.
 3. Verificación:
