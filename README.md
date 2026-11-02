@@ -38,6 +38,7 @@ Las dos demos de GitHub Pages se vuelven a publicar solas cada vez que se sube a
 - Usé una versión clara del logo para que se lea bien sobre el fondo oscuro, también en el pie.
 - Cada idioma tiene su propia página 404.
 - Reescribí los textos de los cuatro idiomas para que suenen más naturales.
+- La portada es ahora un recorrido: al bajar, la cámara cruza un túnel de raíces de luz hasta el símbolo de Aterna en 3D, con paralaje al mover el ratón. Son 120 fotogramas renderizados en Blender (`scripts/journey/`), con una pantalla de carga que se funde desde el centro, el titular entrando palabra a palabra, tarjetas de vidrio junto al símbolo y un cursor nuevo para toda la web. El símbolo 3D también está como archivo de Blender: `scripts/journey/aterna-mark.blend`.
 - El asistente de la esquina responde con los textos de la web sin ninguna API: busca por palabras en cualquier dispositivo y, en ordenador, carga un modelo pequeño que se sirve desde la propia web. También tiene «Ayúdame a elegir», que deja el mensaje escrito para WhatsApp o para el formulario.
 
 ## Cómo está organizada
@@ -48,7 +49,7 @@ Quería que cambiar algo fuera fácil sin tener que buscar por todo el código, 
 - Los precios de los servicios, en `src/lib/pricing.ts`.
 - Los colores, las tipografías y los espacios, en `src/styles/tokens.css`.
 
-La web no usa fotos ni ilustraciones. La única imagen es el vídeo del árbol de la portada, y la profundidad del resto de secciones está hecha con CSS: color, luz, líneas y tipografía.
+La web no usa fotos ni ilustraciones. La única imagen es el recorrido de la portada, renderizado en Blender, y la profundidad del resto de secciones está hecha con CSS: color, luz, líneas y tipografía.
 
 ## Con qué está hecha
 

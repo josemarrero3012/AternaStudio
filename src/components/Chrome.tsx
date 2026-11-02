@@ -16,7 +16,9 @@ import {
   prefersReducedMotion,
   registerGsap,
 } from "@/lib/motion";
-import { startIntro, whenHeroReady } from "@/lib/intro";
+import { startIntro } from "@/lib/intro";
+import { CURSOR_SMOOTHING } from "@/lib/journey/config";
+import { damp } from "@/lib/journey/motion";
 import { site } from "@/lib/site";
 
 export const CURTAIN_KEY = "aterna:curtain";
@@ -31,11 +33,9 @@ export const CURTAIN_KEY = "aterna:curtain";
 export const CURTAIN_SCRIPT = `try{var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches)d.dataset.motion="on";if(sessionStorage.getItem("${CURTAIN_KEY}")||d.dataset.motion!=="on")d.dataset.curtain="skip"}catch(e){document.documentElement.dataset.curtain="skip"}`;
 
 /**
- * Cortina de marca: solo la primera vez por sesión. En la portada no sube
- * hasta que el vídeo del hero puede arrancar (con tope, ver lib/intro.ts):
- * antes subía a los 0,2 s pasara lo que pasara con el vídeo, y según la red
- * se veía el hero quieto, la cortina antes o después del vídeo… Al subir da
- * la salida a la entrada (startIntro).
+ * Cortina de marca: solo la primera vez por sesión. Al subir da la salida a
+ * la entrada (startIntro). En la portada no sale: allí tapa la pantalla de
+ * carga del recorrido (Journey.tsx), que da ella la salida.
  */
 export function Curtain() {
   const ref = useRef<HTMLDivElement>(null);
@@ -44,6 +44,10 @@ export function Curtain() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (document.querySelector(".journey")) {
+      setGone(true);
+      return;
+    }
     if (document.documentElement.dataset.curtain === "skip") {
       setGone(true);
       startIntro();
@@ -61,15 +65,10 @@ export function Curtain() {
         .to(el, { yPercent: -100, duration: 0.9, ease: ATERNA_EASE })
         .to(el.querySelector(".curtain__rule"), { scaleX: 0, duration: 0.5, ease: "none" }, "<0.2");
     };
-    // Un respiro mínimo para que la marca se vea; luego, en la portada, el vídeo.
-    let cancel = () => {};
-    const wait = window.setTimeout(() => {
-      if (document.querySelector(".hero__video")) cancel = whenHeroReady(lift);
-      else lift();
-    }, 200);
+    // Un respiro mínimo para que la marca se vea.
+    const wait = window.setTimeout(lift, 200);
     return () => {
       window.clearTimeout(wait);
-      cancel();
       tl?.kill();
       gsap.set(el, { clearProps: "transform" });
     };
@@ -83,52 +82,71 @@ export function Curtain() {
   );
 }
 
+/**
+ * Cursor propio (solo con ratón y con movimiento): un anillo que sigue al
+ * puntero con algo de retraso, crece sobre enlaces y botones y, sobre un
+ * elemento con data-cursor-label, muestra ese texto debajo. Se ve cuando ha
+ * empezado la entrada (html[data-intro], ver globals.css).
+ */
 export function Cursor() {
   const ref = useRef<HTMLDivElement>(null);
+  const label = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    if (isCoarsePointer() || prefersReducedMotion()) return;
     const el = ref.current;
-    if (!el) return;
+    const text = label.current;
+    if (!el || !text || isCoarsePointer() || prefersReducedMotion()) return;
     document.body.classList.add("has-cursor");
     const target = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     const pos = { ...target };
     let raf = 0;
-    let visible = false;
+    let last = performance.now();
+    // Atributos y no className: React no los pisa al volver a pintar.
     const onMove = (e: PointerEvent) => {
-      if (!visible) {
-        visible = true;
-        el.style.opacity = "1";
-      }
+      if (e.pointerType !== "mouse" && e.pointerType !== "pen") return;
+      if (el.dataset.visible !== "true") el.dataset.visible = "true";
       target.x = e.clientX;
       target.y = e.clientY;
-      const hit = (e.target as Element | null)?.closest('a, button, [role="button"], input, textarea');
-      el.dataset.big = hit ? "true" : "false";
     };
-    const tick = () => {
-      pos.x += (target.x - pos.x) * 0.18;
-      pos.y += (target.y - pos.y) * 0.18;
-      el.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) translate(-50%, -50%)`;
+    const onOver = (e: PointerEvent) => {
+      const hit = (e.target as Element | null)?.closest<HTMLElement>('a, button, [role="button"], input, textarea, [data-cursor-label]');
+      el.dataset.hover = hit ? "true" : "false";
+      const words = hit?.dataset.cursorLabel;
+      // La etiqueta conserva su texto mientras se desvanece.
+      if (words) text.textContent = words;
+      el.dataset.label = words ? "true" : "false";
+    };
+    const hide = () => {
+      el.dataset.visible = "false";
+    };
+    const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
-    };
-    const hide = () => (el.style.opacity = "0");
-    const showC = () => {
-      if (visible) el.style.opacity = "1";
+      const k = damp(CURSOR_SMOOTHING, Math.max(0, now - last));
+      last = now;
+      pos.x += (target.x - pos.x) * k;
+      pos.y += (target.y - pos.y) * k;
+      el.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0)`;
     };
     window.addEventListener("pointermove", onMove, { passive: true });
-    document.addEventListener("pointerleave", hide);
-    document.addEventListener("pointerenter", showC);
+    document.addEventListener("pointerover", onOver, { passive: true });
+    document.documentElement.addEventListener("mouseleave", hide);
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerleave", hide);
-      document.removeEventListener("pointerenter", showC);
+      document.removeEventListener("pointerover", onOver);
+      document.documentElement.removeEventListener("mouseleave", hide);
       document.body.classList.remove("has-cursor");
     };
   }, []);
 
-  return <div ref={ref} className="cursor" data-big="false" aria-hidden="true" />;
+  return (
+    <div ref={ref} className="cursor" data-visible="false" data-hover="false" data-label="false" aria-hidden="true">
+      <span className="cursor__ring" />
+      <span className="cursor__dot" />
+      <span ref={label} className="cursor__label" />
+    </div>
+  );
 }
 
 /**
