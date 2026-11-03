@@ -76,7 +76,7 @@ export const CURSOR_SMOOTHING = 0.2; // por fotograma a 60 fps
 /** Fundido de la versión ligera a la HD del mismo fotograma. */
 export const HD_FADE_MS = 150;
 /** Ventanas (en fotogramas) alrededor del actual: descarga y decodificación. */
-export const WINDOW = { lightDecode: 2, hdDecode: 1, hdFetch: 1, hdIdleFetch: 3 };
+export const WINDOW = { lightDecode: 2, lightDecodeLayers: 1, hdDecode: 1, hdIdleFetch: 1 };
 /** Por encima de esta velocidad del scroll (fotogramas/s) no se pide ni se decodifica HD. */
 export const HD_MAX_SPEED = 8;
 /** Caché de bytes comprimidos de la HD (la ligera se guarda entera). */

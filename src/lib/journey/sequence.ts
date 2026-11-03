@@ -271,15 +271,17 @@ export class Sequence {
       for (let d = 1; d <= radius; d++) out.push(t + d * this.dir, t - d * this.dir);
       return out;
     };
+    // La HD: en el móvil, solo con el scroll parado y solo el fotograma que se ve;
+    // en ordenador, también con el scroll lento, y parado, sus vecinos.
+    const mobile = this.plan.mobile;
     if (free(0, t)) return [0, t];
-    if (this.hasHd && slow && free(1, t)) return [1, t];
+    if (this.hasHd && (mobile ? idle : slow) && free(1, t)) return [1, t];
     for (const i of around(3)) if (free(0, i)) return [0, i];
     const byDistance = (a: number, b: number) => Math.abs(a - t) - Math.abs(b - t);
     const coarse = Array.from({ length: Math.ceil(FRAME_COUNT / 8) }, (_, k) => k * 8).sort(byDistance);
     for (const i of coarse) if (free(0, i)) return [0, i];
-    if (this.hasHd && slow) for (const i of around(WINDOW.hdFetch)) if (free(1, i)) return [1, i];
     for (const i of Array.from({ length: FRAME_COUNT }, (_, k) => k).sort(byDistance)) if (free(0, i)) return [0, i];
-    if (this.hasHd && idle) for (const i of around(WINDOW.hdIdleFetch)) if (free(1, i)) return [1, i];
+    if (this.hasHd && idle && !mobile) for (const i of around(WINDOW.hdIdleFetch)) if (free(1, i)) return [1, i];
     return null;
   }
 
@@ -344,7 +346,9 @@ export class Sequence {
 
   private wanted(level: number, i: number) {
     const d = (i - this.target) * this.dir; // > 0: hacia donde va el scroll
-    if (level === 0) return d >= -WINDOW.lightDecode && d <= WINDOW.lightDecode + 1;
+    // Por capas, cada fotograma decodificado ocupa mucho (base, color y alfa del atlas): menos ventana.
+    const r = this.plan.family === "layers" ? WINDOW.lightDecodeLayers : WINDOW.lightDecode;
+    if (level === 0) return d >= -r && d <= r + 1;
     return this.speed < HD_MAX_SPEED && Math.abs(d) <= WINDOW.hdDecode;
   }
 

@@ -192,7 +192,35 @@ Hecho y subido:
   `debug.ts` (`?recorrido=debug`), `Journey.tsx`, `glass.ts`, la precarga y el
   `.htaccess`. Verificación en `verify-web.mjs` y `verify_shift.py`.
 
-Siguiente: la prueba corta en el PC (`scripts/journey/render-gpu.sh test`),
-ajustar muestras y revelado con su informe, el render completo
-(`scripts/journey/render-gpu.sh render`) y la verificación final con los 120
-fotogramas.
+## Resultado (3 de noviembre)
+
+- **Render**: los 120 fotogramas en la RTX 3060 en 7 h 13 min (228 s de media;
+  de 147 a 302 s según cuántas capas tenga el fotograma) y 72 min de revelado.
+  Unas 95 muestras de media por capa (253 en la base) con el umbral 0,01.
+- **Calidad**: comparada al 100 % con la v1, sin bloques de compresión ni
+  dientes de sierra; las fibras finas, definidas. Continuidad sin saltos
+  (diferencia media entre fotogramas consecutivos: 10 sobre 255).
+- **Pesos por fotograma**: versión ligera con capas 103 KB (12 MB el recorrido
+  entero); HD 295 KB a 1920, 405 KB a 2560 y 682 KB a 3840; móvil 22 KB
+  ligera y 115 KB HD (1440 de alto). `public/journey/v2` ocupa 282 MB.
+- **Por visita** (medido con un scroll de 24 paradas):
+
+  | Equipo | Primera vista | Recorrido entero | Decodificado | Texturas |
+  |---|---|---|---|---|
+  | Ordenador 1920 | 0,64 MB | 15,3 MB | 51 MB | 66 MB |
+  | Ordenador 2560 | 0,77 MB | 15,2 MB | 68 MB | 98 MB |
+  | Móvil 375 × 667 | 0,33 MB | 5,0 MB | 10 MB | — |
+
+  La HD se pide solo con el scroll lento o parado (en el móvil, solo parado y
+  solo el fotograma que se ve).
+- **Sin deformación**: cada capa sola, con el puntero en los cuatro extremos,
+  se desplaza lo que dice el manifiesto (error máximo 0,08 px) y el resto
+  coincide (PSNR ≥ 46 dB). Con la técnica de la v1, la misma medida da 38,5 px
+  de deformación dentro del símbolo. Detalle en `scripts/journey/report/web/`.
+- **Web**: consola limpia (también con StrictMode), sin scroll horizontal en
+  375 × 667, 768 × 1024, 1280 × 720, 1440 × 900, 1920 × 1080 y 2560 × 1080,
+  movimiento reducido con la versión plana, `tsc` y `next build` sin errores.
+
+Pendiente: la revisión de José en sus pantallas (Chrome y Firefox, con
+`?recorrido=debug`); borrar `public/journey/v1` si da el visto bueno; pasar a
+`main` solo cuando lo pida.

@@ -1,0 +1,395 @@
+{
+ "base": "http://localhost:3100",
+ "date": "2026-11-03T17:41:07.619Z",
+ "console": [],
+ "sizes": [
+  {
+   "width": 375,
+   "height": 667,
+   "mobile": true,
+   "overflowX": 0,
+   "debug": "fps 60 · portrait ligera 720 · HD 1440\nfotograma 0 (HD)\ndescargado 3.1 MB · listos 120 ligeros, 4 HD\ndecodificado 17.8 MB · texturas 0.0 MB\nJS 16.3 MB · scroll 0.0 fot/s",
+   "firstViewMB": 3.26
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "mobile": true,
+   "overflowX": 0,
+   "debug": "fps 60 · portrait ligera 720 · HD 2160\nfotograma 0 (HD)\ndescargado 3.5 MB · listos 120 ligeros, 4 HD\ndecodificado 32.6 MB · texturas 0.0 MB\nJS 16.3 MB · scroll 0.0 fot/s",
+   "firstViewMB": 3.67
+  },
+  {
+   "width": 1280,
+   "height": 720,
+   "mobile": false,
+   "overflowX": 0,
+   "debug": "fps 60 · layers ligera 1280 · HD —\nfotograma 0 (ligera)\ndescargado 12.1 MB · listos 120 ligeros, 0 HD\ndecodificado 82.8 MB · texturas 24.5 MB\nJS 17.4 MB · scroll 0.0 fot/s",
+   "firstViewMB": 12.18
+  },
+  {
+   "width": 1440,
+   "height": 900,
+   "mobile": false,
+   "overflowX": 0,
+   "debug": "fps 60 · layers ligera 1280 · HD 1920\nfotograma 0 (HD)\ndescargado 13.4 MB · listos 120 ligeros, 4 HD\ndecodificado 172.7 MB · texturas 65.7 MB\nJS 17.4 MB · scroll 0.0 fot/s",
+   "firstViewMB": 13.52
+  },
+  {
+   "width": 1920,
+   "height": 1080,
+   "mobile": false,
+   "overflowX": 0,
+   "debug": "fps 60 · layers ligera 1280 · HD 1920\nfotograma 0 (HD)\ndescargado 13.4 MB · listos 120 ligeros, 4 HD\ndecodificado 172.7 MB · texturas 65.7 MB\nJS 16.3 MB · scroll 0.0 fot/s",
+   "firstViewMB": 13.52
+  },
+  {
+   "width": 2560,
+   "height": 1080,
+   "mobile": false,
+   "overflowX": 0,
+   "debug": "fps 60 · layers ligera 1280 · HD 2560\nfotograma 0 (HD)\ndescargado 14.0 MB · listos 120 ligeros, 4 HD\ndecodificado 242.3 MB · texturas 97.6 MB\nJS 16.3 MB · scroll 0.0 fot/s",
+   "firstViewMB": 14.04
+  }
+ ],
+ "rigid": [
+  {
+   "frame": 0,
+   "layer": "mark",
+   "viewport": [
+    1280,
+    720
+   ],
+   "shots": [
+    {
+     "name": "centro",
+     "file": "rigidez-mark-0-centro.png",
+     "pointer": [
+      0,
+      0
+     ]
+    },
+    {
+     "name": "izquierda",
+     "file": "rigidez-mark-0-izquierda.png",
+     "pointer": [
+      -1,
+      0
+     ]
+    },
+    {
+     "name": "derecha",
+     "file": "rigidez-mark-0-derecha.png",
+     "pointer": [
+      0.9984375000000001,
+      0
+     ]
+    },
+    {
+     "name": "arriba",
+     "file": "rigidez-mark-0-arriba.png",
+     "pointer": [
+      0,
+      1
+     ]
+    },
+    {
+     "name": "abajo",
+     "file": "rigidez-mark-0-abajo.png",
+     "pointer": [
+      0,
+      -0.9972222222222222
+     ]
+    }
+   ],
+   "debug": "fps 60 · layers ligera 1280 · HD —\nfotograma 0 (ligera)\ndescargado 12.1 MB · listos 120 ligeros, 0 HD\ndecodificado 82.8 MB · texturas 24.5 MB\nJS 16.3 MB · scroll 0.0 fot/s"
+  },
+  {
+   "frame": 0,
+   "layer": "back",
+   "viewport": [
+    1280,
+    720
+   ],
+   "shots": [
+    {
+     "name": "centro",
+     "file": "rigidez-back-0-centro.png",
+     "pointer": [
+      0,
+      0
+     ]
+    },
+    {
+     "name": "izquierda",
+     "file": "rigidez-back-0-izquierda.png",
+     "pointer": [
+      -1,
+      0
+     ]
+    },
+    {
+     "name": "derecha",
+     "file": "rigidez-back-0-derecha.png",
+     "pointer": [
+      0.9984375000000001,
+      0
+     ]
+    },
+    {
+     "name": "arriba",
+     "file": "rigidez-back-0-arriba.png",
+     "pointer": [
+      0,
+      1
+     ]
+    },
+    {
+     "name": "abajo",
+     "file": "rigidez-back-0-abajo.png",
+     "pointer": [
+      0,
+      -0.9972222222222222
+     ]
+    }
+   ],
+   "debug": "fps 60 · layers ligera 1280 · HD —\nfotograma 0 (ligera)\ndescargado 12.1 MB · listos 120 ligeros, 0 HD\ndecodificado 82.8 MB · texturas 24.5 MB\nJS 17.4 MB · scroll 0.0 fot/s"
+  },
+  {
+   "frame": 60,
+   "layer": "mark",
+   "viewport": [
+    1280,
+    720
+   ],
+   "shots": [
+    {
+     "name": "centro",
+     "file": "rigidez-mark-60-centro.png",
+     "pointer": [
+      0,
+      0
+     ]
+    },
+    {
+     "name": "izquierda",
+     "file": "rigidez-mark-60-izquierda.png",
+     "pointer": [
+      -1,
+      0
+     ]
+    },
+    {
+     "name": "derecha",
+     "file": "rigidez-mark-60-derecha.png",
+     "pointer": [
+      0.9984375000000001,
+      0
+     ]
+    },
+    {
+     "name": "arriba",
+     "file": "rigidez-mark-60-arriba.png",
+     "pointer": [
+      0,
+      1
+     ]
+    },
+    {
+     "name": "abajo",
+     "file": "rigidez-mark-60-abajo.png",
+     "pointer": [
+      0,
+      -0.9972222222222222
+     ]
+    }
+   ],
+   "debug": "fps 60 · layers ligera 1280 · HD —\nfotograma 60 (ligera)\ndescargado 12.1 MB · listos 120 ligeros, 0 HD\ndecodificado 139.3 MB · texturas 24.5 MB\nJS 17.4 MB · scroll 0.0 fot/s"
+  },
+  {
+   "frame": 60,
+   "layer": "back",
+   "viewport": [
+    1280,
+    720
+   ],
+   "shots": [
+    {
+     "name": "centro",
+     "file": "rigidez-back-60-centro.png",
+     "pointer": [
+      0,
+      0
+     ]
+    },
+    {
+     "name": "izquierda",
+     "file": "rigidez-back-60-izquierda.png",
+     "pointer": [
+      -1,
+      0
+     ]
+    },
+    {
+     "name": "derecha",
+     "file": "rigidez-back-60-derecha.png",
+     "pointer": [
+      0.9984375000000001,
+      0
+     ]
+    },
+    {
+     "name": "arriba",
+     "file": "rigidez-back-60-arriba.png",
+     "pointer": [
+      0,
+      1
+     ]
+    },
+    {
+     "name": "abajo",
+     "file": "rigidez-back-60-abajo.png",
+     "pointer": [
+      0,
+      -0.9972222222222222
+     ]
+    }
+   ],
+   "debug": "fps 60 · layers ligera 1280 · HD —\nfotograma 60 (ligera)\ndescargado 12.1 MB · listos 120 ligeros, 0 HD\ndecodificado 139.3 MB · texturas 24.5 MB\nJS 17.4 MB · scroll 0.0 fot/s"
+  },
+  {
+   "frame": 119,
+   "layer": "mark",
+   "viewport": [
+    1280,
+    720
+   ],
+   "shots": [
+    {
+     "name": "centro",
+     "file": "rigidez-mark-119-centro.png",
+     "pointer": [
+      0,
+      0
+     ]
+    },
+    {
+     "name": "izquierda",
+     "file": "rigidez-mark-119-izquierda.png",
+     "pointer": [
+      -1,
+      0
+     ]
+    },
+    {
+     "name": "derecha",
+     "file": "rigidez-mark-119-derecha.png",
+     "pointer": [
+      0.9984375000000001,
+      0
+     ]
+    },
+    {
+     "name": "arriba",
+     "file": "rigidez-mark-119-arriba.png",
+     "pointer": [
+      0,
+      1
+     ]
+    },
+    {
+     "name": "abajo",
+     "file": "rigidez-mark-119-abajo.png",
+     "pointer": [
+      0,
+      -0.9972222222222222
+     ]
+    }
+   ],
+   "debug": "fps 60 · layers ligera 1280 · HD —\nfotograma 119 (ligera)\ndescargado 12.1 MB · listos 120 ligeros, 0 HD\ndecodificado 50.6 MB · texturas 24.5 MB\nJS 17.4 MB · scroll 0.0 fot/s"
+  },
+  {
+   "frame": 119,
+   "layer": "back",
+   "viewport": [
+    1280,
+    720
+   ],
+   "shots": [
+    {
+     "name": "centro",
+     "file": "rigidez-back-119-centro.png",
+     "pointer": [
+      0,
+      0
+     ]
+    },
+    {
+     "name": "izquierda",
+     "file": "rigidez-back-119-izquierda.png",
+     "pointer": [
+      -1,
+      0
+     ]
+    },
+    {
+     "name": "derecha",
+     "file": "rigidez-back-119-derecha.png",
+     "pointer": [
+      0.9984375000000001,
+      0
+     ]
+    },
+    {
+     "name": "arriba",
+     "file": "rigidez-back-119-arriba.png",
+     "pointer": [
+      0,
+      1
+     ]
+    },
+    {
+     "name": "abajo",
+     "file": "rigidez-back-119-abajo.png",
+     "pointer": [
+      0,
+      -0.9972222222222222
+     ]
+    }
+   ],
+   "debug": "fps 60 · layers ligera 1280 · HD —\nfotograma 119 (ligera)\ndescargado 12.1 MB · listos 120 ligeros, 0 HD\ndecodificado 50.6 MB · texturas 24.5 MB\nJS 17.4 MB · scroll 0.0 fot/s"
+  }
+ ],
+ "reduced": {
+  "debug": "fps 60 · flat ligera 1280 · HD 1920\nfotograma 0 (HD)\ndescargado 5.3 MB · listos 120 ligeros, 4 HD\ndecodificado 29.9 MB · texturas 0.0 MB\nJS 18.4 MB · scroll 0.0 fot/s"
+ },
+ "weights": [
+  {
+   "width": 1920,
+   "height": 1080,
+   "mobile": false,
+   "frame0MB": 0.64,
+   "firstViewMB": 12.95,
+   "afterScrollMB": 15.34,
+   "debug": "fps 4 · layers ligera 1280 · HD 1920\nfotograma 118 (ligera) · pintar 338.4 ms (máx.)\ndescargado 15.2 MB · listos 120 ligeros, 9 HD\ndecodificado 50.6 MB · texturas 65.7 MB\nJS 16.3 MB · scroll 8.9 fot/s"
+  },
+  {
+   "width": 2560,
+   "height": 1440,
+   "mobile": false,
+   "frame0MB": 0.77,
+   "firstViewMB": 13.21,
+   "afterScrollMB": 15.18,
+   "debug": "fps 1 · layers ligera 1280 · HD 2560\nfotograma 114 (ligera) · pintar 10.0 ms (máx.)\ndescargado 15.0 MB · listos 120 ligeros, 6 HD\ndecodificado 68.1 MB · texturas 97.6 MB\nJS 16.3 MB · scroll 14.3 fot/s"
+  },
+  {
+   "width": 375,
+   "height": 667,
+   "mobile": true,
+   "frame0MB": 0.33,
+   "firstViewMB": 2.9,
+   "afterScrollMB": 5.01,
+   "debug": "fps 60 · portrait ligera 720 · HD 1440\nfotograma 119 (HD) · pintar 0.0 ms (máx.)\ndescargado 4.8 MB · listos 120 ligeros, 20 HD\ndecodificado 10.4 MB · texturas 0.0 MB\nJS 16.3 MB · scroll 0.0 fot/s"
+  }
+ ]
+}

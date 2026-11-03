@@ -38,7 +38,7 @@ async function open(browser, { width, height, mobile = false, reduced = false, q
     reducedMotion: reduced ? "reduce" : "no-preference",
   });
   const page = await ctx.newPage();
-  const bytes = { n: 0 };
+  const bytes = { n: 0, first: 0 };
   page.on("console", (m) => {
     if ((m.type() === "error" || m.type() === "warning") && !IGNORE.test(m.text())) report.console.push(`${width}×${height}${reduced ? " reducido" : ""}: ${m.type()}: ${m.text()}`);
   });
@@ -46,10 +46,15 @@ async function open(browser, { width, height, mobile = false, reduced = false, q
   page.on("response", async (r) => {
     if (!r.url().includes("/journey/")) return;
     const len = Number(r.headers()["content-length"]);
-    bytes.n += Number.isFinite(len) ? len : (await r.body().catch(() => Buffer.alloc(0))).length;
+    const n = Number.isFinite(len) ? len : (await r.body().catch(() => Buffer.alloc(0))).length;
+    bytes.n += n;
+    // Lo imprescindible para la primera vista: el manifiesto y el fotograma 0 (ligero y HD).
+    if (/journey\.json|\/f000[-.]/.test(r.url())) bytes.first += n;
   });
   await page.goto(`${BASE}/${query}`, { waitUntil: "load" });
-  await page.waitForFunction(() => document.querySelector(".journey__loader")?.getAttribute("data-phase") === "done", null, { timeout: 30000 });
+  // Por intervalos, no por requestAnimationFrame: con WebGL por software (SwiftShader) cada
+  // subida de textura grande para la página unos segundos.
+  await page.waitForFunction(() => document.querySelector(".journey__loader")?.getAttribute("data-phase") === "done", null, { timeout: 90000, polling: 500 });
   return { ctx, page, bytes };
 }
 
@@ -77,8 +82,12 @@ async function settle(page, file, max = 16000) {
 
 const browser = await chromium.launch({ args: ARGS });
 
+// VERIFY_ONLY=pesos (o rigidez, tamaños, reducido) para pasar solo una parte.
+const ONLY = process.env.VERIFY_ONLY ?? "";
+const run = (name) => !ONLY || ONLY.split(",").includes(name);
+
 // 1. Rigidez ---------------------------------------------------------------------
-{
+if (run("rigidez")) {
   const manifest = await (await fetch(`${BASE}/journey/v2/journey.json`)).json();
   const frames = manifest.f.map((f, i) => (f ? i : -1)).filter((i) => i >= 0);
   const pick = [frames[0], frames[Math.floor(frames.length / 2)], frames[frames.length - 1]];
@@ -112,7 +121,7 @@ const browser = await chromium.launch({ args: ARGS });
 }
 
 // 2. Tamaños y 4. consola ----------------------------------------------------------
-for (const [width, height, mobile] of [
+for (const [width, height, mobile] of !run("tamaños") ? [] : [
   [375, 667, true],
   [768, 1024, true],
   [1280, 720, false],
@@ -128,7 +137,7 @@ for (const [width, height, mobile] of [
 }
 
 // 3. Movimiento reducido ------------------------------------------------------------
-{
+if (run("reducido")) {
   const { ctx, page } = await open(browser, { width: 1440, height: 900, reduced: true, query: "?recorrido=debug" });
   await page.mouse.move(720, 450);
   await settle(page, path.join(OUT, "reducido-centro.png"), 10000);
@@ -139,7 +148,7 @@ for (const [width, height, mobile] of [
 }
 
 // 5. Pesos y memoria: primera vista y el recorrido entero, despacio -------------------
-for (const [width, height, mobile] of [
+for (const [width, height, mobile] of !run("pesos") ? [] : [
   [1920, 1080, false],
   [2560, 1440, false],
   [375, 667, true],
@@ -155,7 +164,7 @@ for (const [width, height, mobile] of [
     await sleep(900);
   }
   await sleep(3000);
-  report.weights.push({ width, height, mobile, firstViewMB: +(first / 2 ** 20).toFixed(2), afterScrollMB: +(bytes.n / 2 ** 20).toFixed(2), debug: await debugText(page) });
+  report.weights.push({ width, height, mobile, frame0MB: +(bytes.first / 2 ** 20).toFixed(2), firstViewMB: +(first / 2 ** 20).toFixed(2), afterScrollMB: +(bytes.n / 2 ** 20).toFixed(2), debug: await debugText(page) });
   await ctx.close();
 }
 
@@ -163,6 +172,6 @@ await browser.close();
 writeFileSync(path.join(OUT, "verify.json"), JSON.stringify(report, null, 1));
 console.log(`Consola: ${report.console.length ? report.console.join("\n") : "limpia"}`);
 for (const s of report.sizes) console.log(`${s.width}×${s.height}: scroll horizontal ${s.overflowX > 0 ? `SÍ (${s.overflowX}px)` : "no"} · ${s.debug.split("\n")[0]} · ${s.firstViewMB} MB primera vista`);
-console.log(`Reducido: ${report.reduced?.debug.split("\n")[0]}`);
-for (const w of report.weights) console.log(`Pesos ${w.width}×${w.height}: primera vista ${w.firstViewMB} MB, recorrido entero ${w.afterScrollMB} MB · ${w.debug.split("\n").slice(2, 4).join(" · ")}`);
+if (report.reduced) console.log(`Reducido: ${report.reduced.debug.split("\n")[0]}`);
+for (const w of report.weights) console.log(`Pesos ${w.width}×${w.height}: fotograma 0 + manifiesto ${w.frame0MB} MB · a los 1,5 s ${w.firstViewMB} MB · recorrido entero ${w.afterScrollMB} MB · ${w.debug.split("\n").slice(2, 4).join(" · ")}`);
 console.log(`Capturas y verify.json en ${OUT}`);

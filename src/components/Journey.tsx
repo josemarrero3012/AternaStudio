@@ -351,7 +351,9 @@ export function Journey() {
       const changed = shown.index !== drawnIndex || shown.level !== drawnLevel;
       if (!needsDraw && !changed && !pointerMoved && !animating && !(moved && glass)) return;
       if (!renderer.resize()) return;
+      const t0 = debug ? performance.now() : 0;
       animating = renderer.draw(shown, pointer, amp, now);
+      debug?.drew(performance.now() - t0);
       drawnIndex = shown.index;
       drawnLevel = shown.level;
       drawnPointer.x = pointer.x;

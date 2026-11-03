@@ -29,6 +29,8 @@ export function mountDebug(get: () => { seq: Sequence | null; renderer: FrameRen
   let fps = 0;
   let since = performance.now();
   let shown = "—";
+  let drawMax = 0; // ms del dibujo más lento (con la subida de texturas) en el último medio segundo
+  let drawShown = 0;
   const timer = window.setInterval(() => {
     const { seq, renderer } = get();
     const s = seq?.stats();
@@ -36,13 +38,15 @@ export function mountDebug(get: () => { seq: Sequence | null; renderer: FrameRen
     const heap = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize;
     el.textContent = [
       `fps ${fps.toFixed(0)} · ${p ? `${p.family} ligera ${p.light} · HD ${p.hd ?? "—"}${p.mips ? " · mipmaps" : ""}` : "cargando"}`,
-      `fotograma ${shown}`,
+      `fotograma ${shown} · pintar ${drawShown.toFixed(1)} ms (máx.)`,
       s ? `descargado ${MB(s.bytesLoaded)} MB · listos ${s.light} ligeros, ${s.hd} HD` : "",
       s ? `decodificado ${MB(s.decodedBytes)} MB · texturas ${MB(renderer?.stats().textureBytes ?? 0)} MB` : "",
       heap ? `JS ${MB(heap)} MB · scroll ${s?.speed.toFixed(1) ?? 0} fot/s` : `scroll ${s?.speed.toFixed(1) ?? 0} fot/s`,
     ]
       .filter(Boolean)
       .join("\n");
+    drawShown = drawMax;
+    drawMax = 0;
   }, 500);
   return {
     frame(now: number) {
@@ -52,6 +56,9 @@ export function mountDebug(get: () => { seq: Sequence | null; renderer: FrameRen
         frames = 0;
         since = now;
       }
+    },
+    drew(ms: number) {
+      drawMax = Math.max(drawMax, ms);
     },
     shown(index: number, level: number) {
       shown = `${index} (${level ? "HD" : "ligera"})`;
