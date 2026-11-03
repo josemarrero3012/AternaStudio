@@ -50,8 +50,11 @@ in vec2 vUv;
 out vec4 outColor;
 uniform sampler2D uBaseL;
 uniform sampler2D uAtlasL;
+uniform sampler2D uAlphaL;
 uniform sampler2D uBaseH;
 uniform sampler2D uAtlasH;
+uniform sampler2D uAlphaH;
+uniform bool uSplit;
 uniform float uMix;
 uniform vec2 uCover;
 uniform vec2 uShift;
@@ -80,7 +83,7 @@ vec2 source(vec2 p, vec4 pl) {
   return w > 0.0 ? p - s * (w - uZr) : p + s * uZr;
 }
 
-vec3 composite(sampler2D base, sampler2D atlas, bool high, vec2 p) {
+vec3 composite(sampler2D base, sampler2D atlas, sampler2D alpha, bool high, vec2 p) {
   vec2 q = source(p, uPlane[0]);
   vec3 acc = uSolo < 0 || uSolo == 0 ? toLin(texture(base, (q + uMargin) / (1.0 + 2.0 * uMargin)).rgb) : vec3(0.0);
   for (int l = 1; l < MAXL; l++) {
@@ -91,7 +94,12 @@ vec3 composite(sampler2D base, sampler2D atlas, bool high, vec2 p) {
       vec4 r = uBox[b];
       if (any(lessThan(ql, r.xy + uInset)) || any(greaterThan(ql, r.zw - uInset))) continue;
       vec4 ar = high ? uRectH[b] : uRectL[b];
-      vec4 c = texture(atlas, ar.xy + (ql - r.xy) / (r.zw - r.xy) * ar.zw);
+      vec2 t = ar.xy + (ql - r.xy) / (r.zw - r.xy) * ar.zw;
+      vec4 c = texture(atlas, t);
+      if (uSplit) c.a = texture(alpha, t).r; // atlas apilado: el alfa va aparte
+      // Premultiplicado: el color nunca pasa del alfa (la compresión lo puede empujar
+      // un poco por encima en los bordes, y al dividir saldrían puntos brillantes).
+      c.rgb = min(c.rgb, vec3(c.a));
       if (c.a > 0.002) acc = toLin(c.rgb / c.a) * c.a + (1.0 - c.a) * acc;
       break;
     }
@@ -101,8 +109,8 @@ vec3 composite(sampler2D base, sampler2D atlas, bool high, vec2 p) {
 
 void main() {
   vec2 p = (vec2(vUv.x, 1.0 - vUv.y) - 0.5) * uCover + 0.5;
-  vec3 col = uMix < 1.0 ? composite(uBaseL, uAtlasL, false, p) : vec3(0.0);
-  if (uMix > 0.0) col = mix(col, composite(uBaseH, uAtlasH, true, p), uMix);
+  vec3 col = uMix < 1.0 ? composite(uBaseL, uAtlasL, uAlphaL, false, p) : vec3(0.0);
+  if (uMix > 0.0) col = mix(col, composite(uBaseH, uAtlasH, uAlphaH, true, p), uMix);
   vec2 v = p * 2.0 - 1.0;
   float vig = uSolo >= 0 ? 1.0 : 1.0 - 0.22 * clamp(v.x * v.x * 0.6 + v.y * v.y - 0.25, 0.0, 1.0);
   float n = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5;
@@ -115,6 +123,7 @@ type Slot = {
   mips: boolean;
   base: WebGLTexture | null;
   atlas: WebGLTexture | null;
+  alpha: WebGLTexture | null;
   baseSize: [number, number] | null;
   atlasSize: [number, number] | null;
   index: number;
@@ -175,10 +184,10 @@ export class LayeredRenderer implements FrameRenderer {
     this.prog = createProgram(gl, VERT, FRAG);
     gl.useProgram(this.prog);
     this.buf = fullscreenQuad(gl, this.prog);
-    for (const name of ["uBaseL", "uAtlasL", "uBaseH", "uAtlasH", "uMix", "uCover", "uShift", "uMargin", "uInset", "uZr", "uLayers", "uSolo", "uPlane", "uStart", "uBox", "uRectL", "uRectH"]) {
+    for (const name of ["uBaseL", "uAtlasL", "uAlphaL", "uBaseH", "uAtlasH", "uAlphaH", "uSplit", "uMix", "uCover", "uShift", "uMargin", "uInset", "uZr", "uLayers", "uSolo", "uPlane", "uStart", "uBox", "uRectL", "uRectH"]) {
       this.loc[name] = gl.getUniformLocation(this.prog, name);
     }
-    ["uBaseL", "uAtlasL", "uBaseH", "uAtlasH"].forEach((name, unit) => gl.uniform1i(this.loc[name], unit));
+    ["uBaseL", "uAtlasL", "uAlphaL", "uBaseH", "uAtlasH", "uAlphaH"].forEach((name, unit) => gl.uniform1i(this.loc[name], unit));
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
     gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
@@ -191,19 +200,19 @@ export class LayeredRenderer implements FrameRenderer {
     this.plan = plan;
     if (same) return;
     this.slots.forEach((s) => this.freeSlot(s));
-    const make = (tier: number, mips: boolean): Slot => ({ tier, mips, base: null, atlas: null, baseSize: null, atlasSize: null, index: -1 });
+    const make = (tier: number, mips: boolean): Slot => ({ tier, mips, base: null, atlas: null, alpha: null, baseSize: null, atlasSize: null, index: -1 });
     this.slots = [make(plan.light, true), make(plan.hd ?? plan.light, plan.mips)];
     // Todas las unidades con algo dentro desde el principio (sin avisos de WebGL).
     this.slots.forEach((s) => this.ensure(s, 1, 1, 1, 1));
     this.shownIndex = -1;
   }
 
-  private texture(w: number, h: number, mips: boolean) {
+  private texture(w: number, h: number, mips: boolean, format: number = this.gl.RGBA8) {
     const gl = this.gl;
     const t = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, t);
     const levels = mips ? Math.floor(Math.log2(Math.max(w, h))) + 1 : 1;
-    gl.texStorage2D(gl.TEXTURE_2D, levels, gl.RGBA8, w, h);
+    gl.texStorage2D(gl.TEXTURE_2D, levels, format, w, h);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mips ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
@@ -220,7 +229,9 @@ export class LayeredRenderer implements FrameRenderer {
     }
     if (!s.atlasSize || s.atlasSize[0] < aw || s.atlasSize[1] < ah) {
       if (s.atlas) gl.deleteTexture(s.atlas);
+      if (s.alpha) gl.deleteTexture(s.alpha);
       s.atlas = this.texture(aw, ah, s.mips);
+      s.alpha = this.texture(aw, ah, s.mips, gl.R8);
       s.atlasSize = [aw, ah];
     }
   }
@@ -229,12 +240,13 @@ export class LayeredRenderer implements FrameRenderer {
     if (this.gl.isContextLost()) return;
     if (s.base) this.gl.deleteTexture(s.base);
     if (s.atlas) this.gl.deleteTexture(s.atlas);
+    if (s.alpha) this.gl.deleteTexture(s.alpha);
   }
 
   private upload(s: Slot, shown: Shown) {
     const gl = this.gl;
-    const [base, atlas] = shown.bitmaps;
-    if (!base?.width || !atlas?.width) return false; // liberado (close) antes de subirlo
+    const [base, atlas, alpha] = shown.bitmaps;
+    if (!base?.width || !atlas?.width || (alpha && !alpha.width)) return false; // liberado (close) antes de subirlo
     const max = this.manifest.atlasMax[String(s.tier)] ?? [atlas.width, atlas.height];
     this.ensure(s, base.width, base.height, Math.max(max[0], atlas.width), Math.max(max[1], atlas.height));
     gl.activeTexture(gl.TEXTURE0);
@@ -244,6 +256,11 @@ export class LayeredRenderer implements FrameRenderer {
     ] as const) {
       gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, bm);
+      if (s.mips) gl.generateMipmap(gl.TEXTURE_2D);
+    }
+    if (alpha) {
+      gl.bindTexture(gl.TEXTURE_2D, s.alpha);
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RED, gl.UNSIGNED_BYTE, alpha);
       if (s.mips) gl.generateMipmap(gl.TEXTURE_2D);
     }
     s.index = shown.index;
@@ -299,14 +316,17 @@ export class LayeredRenderer implements FrameRenderer {
     gl.useProgram(this.prog);
     const units: [Slot, number][] = [
       [this.slots[0], 0],
-      [this.slots[1], 2],
+      [this.slots[1], 3],
     ];
     for (const [s, unit] of units) {
       gl.activeTexture(gl.TEXTURE0 + unit);
       gl.bindTexture(gl.TEXTURE_2D, s.base);
       gl.activeTexture(gl.TEXTURE0 + unit + 1);
       gl.bindTexture(gl.TEXTURE_2D, s.atlas ?? s.base);
+      gl.activeTexture(gl.TEXTURE0 + unit + 2);
+      gl.bindTexture(gl.TEXTURE_2D, s.alpha ?? s.base);
     }
+    gl.uniform1i(this.loc.uSplit, m.atlasGap !== undefined ? 1 : 0);
     gl.uniform1f(this.loc.uMix, mix);
     gl.uniform2f(this.loc.uCover, ...coverScale(w, h));
     gl.uniform2f(this.loc.uShift, -pointer.x * m.k[0] * amp, pointer.y * m.k[1] * amp);
@@ -329,7 +349,7 @@ export class LayeredRenderer implements FrameRenderer {
     for (const s of this.slots) {
       const k = s.mips ? 4 / 3 : 1;
       if (s.baseSize) bytes += s.baseSize[0] * s.baseSize[1] * 4 * k;
-      if (s.atlasSize) bytes += s.atlasSize[0] * s.atlasSize[1] * 4 * k;
+      if (s.atlasSize) bytes += s.atlasSize[0] * s.atlasSize[1] * (this.manifest.atlasGap !== undefined ? 5 : 4) * k;
     }
     return { textureBytes: Math.round(bytes) };
   }

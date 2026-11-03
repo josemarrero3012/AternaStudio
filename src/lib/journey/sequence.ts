@@ -23,6 +23,8 @@ export type Manifest = {
   visible: [number, number];
   margin: [number, number];
   pad: [number, number];
+  /** Atlas apilado: el color (premultiplicado) arriba, atlasGap px y el alfa debajo. */
+  atlasGap?: number;
   k: [number, number];
   tope: [number, number];
   tiers: { layers: number[]; flat: number[]; portrait: number[]; fallback: number | null };
@@ -376,7 +378,16 @@ export class Sequence {
     this.decodes++;
     try {
       const opts: ImageBitmapOptions = { premultiplyAlpha: "premultiply", colorSpaceConversion: "none" };
-      const bitmaps = await Promise.all(s.blobs.map((b) => createImageBitmap(b, opts)));
+      let bitmaps = await Promise.all(s.blobs.map((b) => createImageBitmap(b, opts)));
+      const gap = this.manifest.atlasGap;
+      if (this.plan.family === "layers" && gap !== undefined && bitmaps[1]) {
+        // El atlas apilado, en dos: el color y el alfa (recortar un ImageBitmap no lo vuelve a decodificar).
+        const [base, atlas] = bitmaps;
+        const h = (atlas.height - gap) / 2;
+        const parts = await Promise.all([createImageBitmap(atlas, 0, 0, atlas.width, h), createImageBitmap(atlas, 0, h + gap, atlas.width, h)]);
+        atlas.close();
+        bitmaps = [base, ...parts];
+      }
       if (this.disposed) {
         bitmaps.forEach((b) => b.close());
         return;

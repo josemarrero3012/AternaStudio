@@ -167,6 +167,10 @@ main() {
 
   # 4. Revelado e informe -------------------------------------------------------------
   [ -n "$(ls "$EXR"/f???.exr 2>/dev/null)" ] || die "No hay EXR en $EXR: primero test o render."
+  # Lo que se haya mejorado del revelado mientras renderizaba, ya (los EXR no cambian).
+  if [ -z "${NO_PULL:-}" ]; then
+    git pull --ff-only origin "$BRANCH" || echo "Aviso: no se pudo actualizar la rama; se revela con lo que hay."
+  fi
   say "Revelando (CPU, en paralelo)"
   rm -rf "$EXR/post"
   "$VENV/bin/python" scripts/journey/post.py "$EXR" "$OUT" --report "$REPORT" ${JOBS:+--jobs "$JOBS"} 2>&1 | tee "$LOGS/post-$STAMP.log"

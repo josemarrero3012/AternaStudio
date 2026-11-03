@@ -55,8 +55,8 @@ ap.add_argument("--tiers", default="1280,1920,2560,3840", help="anchos visibles 
 ap.add_argument("--flat-tiers", default="1280,1920,2560")
 ap.add_argument("--portrait-tiers", default="720,1440,2160", help="altos del recorte vertical 3:4")
 ap.add_argument("--fallback", type=int, default=1920)
-ap.add_argument("--quality", type=int, default=80)
-ap.add_argument("--base-quality", type=int, default=0, help="la base (niebla y suelo); 0 = la misma")
+ap.add_argument("--quality", type=int, default=70, help="AVIF de la HD (4:4:4)")
+ap.add_argument("--light-quality", type=int, default=50, help="AVIF de la versión ligera (4:2:0): solo se ve con el scroll en marcha")
 ap.add_argument("--speed", type=int, default=4)
 ap.add_argument("--bloom", type=float, default=0.45, help="v1: 0.6")
 ap.add_argument("--halo-outer", type=float, default=0.6, help="cuánto halo queda fuera del objeto")
@@ -65,6 +65,7 @@ args = ap.parse_args()
 
 K = (0.0864, 0.0648)  # anchos·m y altos·m: a 4 m con enfoque a 9 m, un 1,2 % del ancho (como la v1)
 TOPE = (0.02, 0.015)  # desplazamiento máximo de una capa (fracción del ancho y del alto)
+ATLAS_GAP = 8  # px entre el color y el alfa del atlas apilado
 MAX_BOXES = 40  # cajas por fotograma (uniforms del shader de la web)
 MERGE_PX = 1.0  # arcos contiguos cuyo paralaje difiere menos de esto (px a 2560) van juntos
 ORDER = ["base", "back", "mark", "a6", "a5", "a4", "a3", "a2", "a1", "a0"]  # de atrás adelante
@@ -280,17 +281,16 @@ def pack_at(sizes, width, gutter):
 
 
 def pack(sizes, base_width, gutter=4, limit=8192):
-    """Prueba varios anchos y se queda con el atlas de menor área que quepa en `limit`."""
+    """El atlas, del ancho del fotograma: así la textura que reserva la web (el
+    máximo de todos los fotogramas) no se infla. Solo si no cabe en `limit` de
+    alto se ensancha."""
     widest = max([w for w, _ in sizes] + [1]) + gutter
-    best = None
     for k in (1.0, 1.25, 1.5, 2.0):
         width = max(widest, round(base_width * k))
         pos, height = pack_at(sizes, width, gutter)
-        ok = max(width, height) <= limit
-        key = (not ok, width * height)
-        if best is None or key < best[0]:
-            best = (key, pos, width, height)
-    return best[1], best[2], best[3]
+        if height <= limit:
+            break
+    return pos, width, height
 
 
 def split_boxes(occ, depth=0):
@@ -437,7 +437,10 @@ def process(f):
     for t in tiers_of(args.tiers, vw):
         st = t / vw
         Wt, Ht = round(W * st), round(H * st)
-        put(f"layers/{t}", save(to8(srgb(resize(base, Wt, Ht)), f), os.path.join(args.dst, "layers", str(t), f"f{f:03d}-base.avif"), args.base_quality or args.quality, "4:2:0"))
+        light_t = t == min(tiers_of(args.tiers, vw))
+        put(f"layers/{t}", save(to8(srgb(resize(base, Wt, Ht)), f), os.path.join(args.dst, "layers", str(t), f"f{f:03d}-base.avif"), args.light_quality if light_t else args.quality, "4:2:0"))
+        light = t == min(tiers_of(args.tiers, vw))
+        q, sub = (args.light_quality, "4:2:0") if light else (args.quality, "4:4:4")
         tiles = []
         for rec, S, Ap, boxes in alpha:
             s = st * store_scale(coc_px(meta, rec["z"][2], t))
@@ -447,27 +450,36 @@ def process(f):
                 pm = resize(np.dstack([S[y0:y1, x0:x1] * a0[..., None], a0]), w, h)  # en premultiplicado: sin halos oscuros
                 a = np.clip(pm[..., 3:], 0, 1)
                 col = np.where(a > 1e-5, pm[..., :3] / np.maximum(a, 1e-5), 0)
-                tiles.append(np.dstack([to8(srgb(col), f + t), np.clip(a * 255 + 0.5, 0, 255).astype(np.uint8)]))
+                # Color premultiplicado (en sRGB, como lo premultiplica el navegador) y alfa.
+                tiles.append(np.dstack([to8(srgb(col) * a, f + t), np.clip(a * 255 + 0.5, 0, 255).astype(np.uint8)]))
         pos, width, height = pack([(tl.shape[1], tl.shape[0]) for tl in tiles], Wt)
         atlas = np.zeros((max(4, height), max(4, width), 4), np.uint8)
         rects = []
         for (x, y), tl in zip(pos, tiles):
             atlas[y - 2 : y + tl.shape[0] + 2, x - 2 : x + tl.shape[1] + 2] = cv2.copyMakeBorder(tl, 2, 2, 2, 2, cv2.BORDER_REPLICATE)
             rects.append([x, y, tl.shape[1], tl.shape[0]])
-        put(f"layers/{t}", save(atlas, os.path.join(args.dst, "layers", str(t), f"f{f:03d}-atlas.avif")))
+        # Opaco y apilado: el color arriba, ATLAS_GAP px y el alfa (en gris) debajo. Así
+        # comprime mucho mejor que RGBA con color recto y el navegador no toca el alfa.
+        h0 = atlas.shape[0]
+        stacked = np.zeros((2 * h0 + ATLAS_GAP, atlas.shape[1], 3), np.uint8)
+        stacked[:h0] = atlas[..., :3]
+        stacked[h0 + ATLAS_GAP :] = atlas[..., 3:4]
+        put(f"layers/{t}", save(stacked, os.path.join(args.dst, "layers", str(t), f"f{f:03d}-atlas.avif"), q, sub))
         atlases[str(t)] = {"size": [atlas.shape[1], atlas.shape[0]], "rects": rects}
 
     # Versiones planas: todo compuesto, sin margen y con la viñeta de la v1.
     flat = srgb(comp[my : my + vh, mx : mx + vw]) * vignette(vh, vw)
     for t in tiers_of(args.flat_tiers, vw):
-        put(f"flat/{t}", save(to8(resize(flat, t, round(t * vh / vw)), f), os.path.join(args.dst, "flat", str(t), f"f{f:03d}.avif")))
+        lq = t == min(tiers_of(args.flat_tiers, vw))
+        put(f"flat/{t}", save(to8(resize(flat, t, round(t * vh / vw)), f), os.path.join(args.dst, "flat", str(t), f"f{f:03d}.avif"), *((args.light_quality, "4:2:0") if lq else (args.quality, "4:4:4"))))
     cw = round(vh * 0.75)
     cx = (vw - cw) // 2
     for t in tiers_of(args.portrait_tiers, vh):
-        put(f"portrait/{t}", save(to8(resize(flat[:, cx : cx + cw], round(t * 0.75), t), f), os.path.join(args.dst, "portrait", str(t), f"f{f:03d}.avif")))
+        lq = t == min(tiers_of(args.portrait_tiers, vh))
+        put(f"portrait/{t}", save(to8(resize(flat[:, cx : cx + cw], round(t * 0.75), t), f), os.path.join(args.dst, "portrait", str(t), f"f{f:03d}.avif"), *((args.light_quality, "4:2:0") if lq else (args.quality, "4:4:4"))))
     if args.fallback <= vw or args.upscale:
         fb = args.fallback
-        put("fallback", save(to8(resize(flat, fb, round(fb * vh / vw)), f), os.path.join(args.dst, "fallback", f"f{f:03d}.webp")))
+        put("fallback", save(to8(resize(flat, fb, round(fb * vh / vw)), f), os.path.join(args.dst, "fallback", f"f{f:03d}.webp"), 80))
 
     thumb = to8(resize(flat, 320, 180), f)
     sheet = layer_sheet(f, meta, base, alpha, zr) if f in SHEET_FRAMES else None
@@ -637,6 +649,7 @@ def build_outputs():
         "visible": [vw, vh],
         "margin": [round(mx / vw, 6), round(my / vh, 6)],
         "pad": [round(any_rec.get("pad", 0) / vw, 6), round(any_rec.get("pad", 0) / vh, 6)],  # datos de más alrededor de cada caja
+        "atlasGap": ATLAS_GAP,  # atlas apilado: color premultiplicado arriba, el alfa debajo
         "k": list(K),
         "tope": list(TOPE),
         "tiers": {
@@ -684,7 +697,7 @@ def report(recs, manifest, rdir):
         "",
         f"- Generado: {time.strftime('%Y-%m-%d %H:%M')} · Blender {any_rec.get('blender')} · {any_rec.get('device')}",
         f"- Preajuste: {any_rec.get('preset')} ({any_rec.get('max_samples')} muestras máx.) · f/{any_rec.get('fstop')} · render {any_rec['res'][0]}×{any_rec['res'][1]} (visible {any_rec['visible'][0]}×{any_rec['visible'][1]})",
-        f"- Halo {args.bloom} (fuera del objeto ×{args.halo_outer}) · AVIF q{args.quality} velocidad {args.speed}",
+        f"- Halo {args.bloom} (fuera del objeto ×{args.halo_outer}) · AVIF HD q{args.quality} 4:4:4, ligera q{args.light_quality} 4:2:0, velocidad {args.speed}",
         f"- Fotogramas revelados: **{n} de {FRAMES}**" + (f" (faltan {len(missing)}: {', '.join(map(str, missing[:20]))}{'…' if len(missing) > 20 else ''})" if missing else ""),
         "",
         "## Tiempos",
