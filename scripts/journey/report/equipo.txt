@@ -1,3 +1,3 @@
-Modo: test · preajuste final · f/4 · 2026-11-03 08:23
+Modo: render · preajuste final · f/4 · 2026-11-03 17:19
 NVIDIA GeForce RTX 3060, 615.78.08, 12288 MiB
-Tiempo total del script: 27 min
+Tiempo total del script: 509 min
