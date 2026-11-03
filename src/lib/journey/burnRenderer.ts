@@ -2,7 +2,7 @@
 // centro hacia fuera por un borde de ruido, con un filo de luz lavanda y
 // orquídea (los colores del vídeo del árbol), WebGL 1.
 
-import { createProgram, fullscreenQuad, sizeCanvas } from "./depthRenderer";
+import { createProgram, fullscreenQuad, sizeCanvas } from "./gl";
 
 const VERT = `
 attribute vec2 aPosition;

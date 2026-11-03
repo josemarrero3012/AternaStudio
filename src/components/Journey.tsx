@@ -2,8 +2,9 @@
 
 // La portada: un recorrido de 120 fotogramas renderizados en Blender que el
 // scroll recorre, desde la boca de un túnel de raíces de luz hasta el símbolo
-// de Aterna en 3D. Cada fotograma lleva su mapa de profundidad: la escena se
-// mueve en paralaje con el puntero. Abre con una pantalla de carga (contador
+// de Aterna en 3D. En ordenador con ratón cada fotograma va por capas (el
+// suelo, los arcos, el símbolo) que se mueven enteras con el puntero: paralaje
+// sin deformación. En el móvil, el fotograma plano. Abre con una pantalla de carga (contador
 // y línea de progreso) que se funde desde el centro con un filo de luz; luego
 // entran la cabecera y el titular, palabra a palabra. Al bajar cambian los
 // textos y, al final, junto al símbolo, aparecen dos tarjetas de vidrio.
@@ -29,15 +30,17 @@ import {
   LOADER_TIMEOUT_MS,
   MIN_LOADER_MS,
   POINTER_SMOOTHING,
+  POSTER,
   SCROLL_SMOOTHING,
   TIMING,
-  colorUrl,
   type Timing,
 } from "@/lib/journey/config";
-import { CanvasFrameRenderer, DepthRenderer, type FrameRenderer } from "@/lib/journey/depthRenderer";
+import { mountDebug } from "@/lib/journey/debug";
+import { FlatRenderer } from "@/lib/journey/flatRenderer";
 import { drawGlass } from "@/lib/journey/glass";
+import { LayeredRenderer, type FrameRenderer } from "@/lib/journey/layeredRenderer";
 import { clamp, damp, invLerp, lerp, stateStyle } from "@/lib/journey/motion";
-import { getSequence } from "@/lib/journey/sequence";
+import { chooseFamily, choosePlan, getSequence, loadManifest, supportsAvif, type Manifest, type Sequence } from "@/lib/journey/sequence";
 
 type Phase = "loading" | "burning" | "ready" | "done";
 
@@ -136,6 +139,7 @@ export function Journey() {
   const counterRef = useRef<HTMLSpanElement>(null);
   const barRef = useRef<HTMLSpanElement>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const labelRef = useRef(j.label);
 
   useEffect(() => {
     const main = mainRef.current;
@@ -155,25 +159,80 @@ export function Journey() {
     let alive = true;
     const reduced = prefersReducedMotion();
     const root = document.documentElement;
-    const seq = getSequence();
     const skip = played;
     const go = (next: Phase) => {
       if (alive) setPhase(next);
     };
 
-    // El lienzo del recorrido ----------------------------------------------
-    const canvas = document.createElement("canvas");
-    canvas.className = "journey__canvas";
-    canvas.setAttribute("role", "img");
-    caveHost.appendChild(canvas);
-    canvasRef.current = canvas;
-    let renderer: FrameRenderer;
-    try {
-      renderer = new DepthRenderer(canvas);
-    } catch (err) {
-      console.warn("[recorrido] sin WebGL, sin paralaje:", err);
-      renderer = new CanvasFrameRenderer(canvas);
-    }
+    // El lienzo, el renderer y la secuencia -------------------------------------
+    // Llegan con el manifiesto: la familia (por capas, plana o vertical) y la
+    // resolución dependen de la pantalla y del navegador. Un lienzo con WebGL
+    // no puede pasar a 2D: si cambia el tipo de renderer, lienzo nuevo.
+    let canvas = document.createElement("canvas");
+    let renderer: FrameRenderer | null = null;
+    let seq: Sequence | null = null;
+    let offLoad: () => void = () => {};
+    let amp = 0; // amplitud del paralaje: 0 sin capas o con movimiento reducido
+    const mountCanvas = () => {
+      canvas.className = "journey__canvas";
+      canvas.setAttribute("role", "img");
+      canvas.setAttribute("aria-label", labelRef.current);
+      caveHost.appendChild(canvas);
+      canvasRef.current = canvas;
+    };
+    mountCanvas();
+    const makeRenderer = (kind: "layers" | "flat", manifest: Manifest) => {
+      if (renderer?.kind === kind) return renderer;
+      renderer?.dispose();
+      renderer = null;
+      if (canvas.dataset.used) {
+        canvas.remove();
+        canvas = document.createElement("canvas");
+        mountCanvas();
+      }
+      canvas.dataset.used = "1";
+      try {
+        renderer = kind === "layers" ? new LayeredRenderer(canvas, manifest) : new FlatRenderer(canvas);
+      } catch (err) {
+        console.warn(`[recorrido] sin ${kind === "layers" ? "WebGL2, sin paralaje" : "canvas"}:`, err);
+      }
+      return renderer;
+    };
+    const setup = async () => {
+      const [manifest, avif] = await Promise.all([loadManifest(), supportsAvif()]);
+      if (!alive) return false;
+      const { width, height } = stage.getBoundingClientRect();
+      const fine = !reduced && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      let family = chooseFamily(width, height, avif, fine);
+      let r = makeRenderer(family === "layers" ? "layers" : "flat", manifest);
+      if (!r && family === "layers") {
+        family = "flat";
+        r = makeRenderer("flat", manifest);
+      }
+      if (!r) return false;
+      const plan = choosePlan(manifest, family, width, height, r instanceof LayeredRenderer ? r.maxTexture : Infinity);
+      if (debug && r instanceof LayeredRenderer) r.solo = new URLSearchParams(window.location.search).get("capa") ?? "";
+      r.setPlan(plan);
+      amp = family === "layers" ? 1 : 0;
+      const next = getSequence(manifest, plan);
+      if (next !== seq) {
+        offLoad();
+        seq = next;
+        offLoad = seq.onLoad(() => {
+          needsDraw = true;
+        });
+      }
+      needsDraw = true;
+      drawnIndex = -1;
+      return seq.start();
+    };
+    let replanTimer = 0;
+    const replan = () => {
+      window.clearTimeout(replanTimer);
+      replanTimer = window.setTimeout(() => {
+        if (seq) setup().catch((err) => console.warn("[recorrido]", err));
+      }, 400);
+    };
 
     // Estado del bucle ------------------------------------------------------
     let target = 0;
@@ -181,7 +240,9 @@ export function Journey() {
     let unit = 1;
     let onScreen = true;
     let needsDraw = true;
-    let drawn = -1;
+    let drawnIndex = -1;
+    let drawnLevel = -1;
+    let animating = false;
     let lastProgress = Number.NaN;
     const pointer = { x: 0, y: 0 };
     const pointerTarget = { x: 0, y: 0 };
@@ -279,20 +340,24 @@ export function Journey() {
         lastProgress = progress;
       }
       const want = Math.round(progress * (FRAME_COUNT - 1));
-      seq.request(want);
+      debug?.frame(now);
+      if (!seq || !renderer) return;
+      seq.update(want, now);
       if (!onScreen) return;
-      const index = seq.nearest(want);
-      const frame = index >= 0 ? seq.frames[index] : null;
-      if (!frame) return;
+      const shown = seq.best(want);
+      if (!shown) return;
       const glass = cardsBlock.last.v === "visible";
-      const pointerMoved = pointer.x !== drawnPointer.x || pointer.y !== drawnPointer.y;
-      if (!needsDraw && index === drawn && !pointerMoved && !(moved && glass)) return;
+      const pointerMoved = amp > 0 && (pointer.x !== drawnPointer.x || pointer.y !== drawnPointer.y);
+      const changed = shown.index !== drawnIndex || shown.level !== drawnLevel;
+      if (!needsDraw && !changed && !pointerMoved && !animating && !(moved && glass)) return;
       if (!renderer.resize()) return;
-      renderer.draw(frame, index, pointer);
-      drawn = index;
+      animating = renderer.draw(shown, pointer, amp, now);
+      drawnIndex = shown.index;
+      drawnLevel = shown.level;
       drawnPointer.x = pointer.x;
       drawnPointer.y = pointer.y;
       needsDraw = false;
+      debug?.shown(shown.index, shown.level);
       if (glass) drawGlass(stage, canvas);
     };
     raf = requestAnimationFrame(loop);
@@ -322,11 +387,11 @@ export function Journey() {
       needsDraw = true;
       lastProgress = Number.NaN; // los desplazamientos van en px de diseño
       if (loading) burn?.draw(0);
+      replan();
     });
     ro.observe(stage);
-    const offLoad = seq.onLoad(() => {
-      needsDraw = true;
-    });
+    // ?recorrido=debug: fps, familia, resolución, MB descargados, decodificados y en texturas.
+    const debug = new URLSearchParams(window.location.search).get("recorrido") === "debug" ? mountDebug(() => ({ seq, renderer })) : null;
 
     // Carga, fundido y entrada ---------------------------------------------
     let loaderRaf = 0;
@@ -353,7 +418,7 @@ export function Journey() {
     };
 
     if (skip) {
-      seq.start();
+      setup().catch((err) => console.warn("[recorrido]", err));
       startIntro();
       document.fonts?.ready.then(() => alive && paintGradients());
     } else {
@@ -387,9 +452,12 @@ export function Journey() {
       const fonts = loadFonts([counter, hero.querySelector(".journey__line--sans"), hero.querySelector(".journey__body")])
         .catch((err) => console.warn("[recorrido] fuentes:", err))
         .finally(fontsIn);
-      const first = seq.start().then((ok) => {
-        if (!ok) console.warn("[recorrido] el primer fotograma no cargó: se abre igual.");
-      });
+      const first = setup().then(
+        (ok) => {
+          if (!ok && alive) console.warn("[recorrido] el primer fotograma no cargó: se abre igual.");
+        },
+        (err) => console.warn("[recorrido] no se pudo preparar:", err),
+      );
       void Promise.all([first, fonts]).then(() => {
         ready = true;
       });
@@ -456,9 +524,11 @@ export function Journey() {
       window.removeEventListener("pointermove", onPointer);
       root.removeEventListener("mouseleave", onLeave);
       ro.disconnect();
+      window.clearTimeout(replanTimer);
+      debug?.dispose();
       offLoad();
-      seq.stop();
-      renderer.dispose();
+      seq?.stop();
+      renderer?.dispose();
       canvas.remove();
       canvasRef.current = null;
       disposeBurn();
@@ -471,6 +541,7 @@ export function Journey() {
 
   // El texto alternativo sigue al idioma (entre /en, /nl y /de no se desmonta).
   useEffect(() => {
+    labelRef.current = j.label;
     canvasRef.current?.setAttribute("aria-label", j.label);
   }, [j.label]);
 
@@ -480,8 +551,11 @@ export function Journey() {
         <div ref={probeRef} className="journey__probe" aria-hidden="true" />
         <div ref={caveRef} className="journey__cave">
           <noscript>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="journey__poster" src={colorUrl(0)} alt={j.label} />
+            <picture>
+              <source type="image/avif" srcSet={POSTER.avif} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="journey__poster" src={POSTER.webp} alt={j.label} />
+            </picture>
           </noscript>
         </div>
         <div className="journey__shade" aria-hidden="true" />

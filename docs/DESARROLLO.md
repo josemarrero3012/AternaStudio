@@ -74,8 +74,24 @@ con imágenes.
 
 La portada abre con una pantalla fijada de 380vh: al hacer scroll se recorre
 una secuencia de 120 fotogramas renderizados en Blender, desde la boca de un
-túnel de raíces de luz hasta el símbolo de Aterna en 3D. Cada fotograma lleva
-su mapa de profundidad, así que la escena se mueve en paralaje con el ratón.
+túnel de raíces de luz hasta el símbolo de Aterna en 3D. En ordenador con
+ratón, cada fotograma va por capas renderizadas aparte (el suelo, cada arco,
+el símbolo con su aura, los arcos del fondo) que se mueven enteras con el
+puntero: paralaje sin deformación (versión 2; el porqué, en
+`docs/RECORRIDO-V2.md`).
+
+- **Paralaje**: cada capa lleva un modelo de su profundidad en el manifiesto
+  (`public/journey/v2/journey.json`). El suelo se mueve como el plano que es
+  (afín) y el resto, como planos rígidos; lo enfocado no se mueve (al final,
+  el símbolo es el pivote) y las capas muy cercanas tienen un tope suave. Lo
+  pinta `layeredRenderer.ts` (WebGL2, un solo pase, composición en lineal).
+- **Familias**: por capas (ordenador con ratón), plana (apaisado sin
+  paralaje: tableta, movimiento reducido), vertical (el centro 3:4, para el
+  móvil) y WebP plano para navegadores sin AVIF. Cada una en una versión
+  ligera de todo el recorrido y HD alrededor de donde se está (1920, 2560 o
+  3840 según el lienzo, la memoria y la red). Solo se decodifica una ventana
+  de fotogramas (`sequence.ts`). Con `?recorrido=debug`, una capa con fps,
+  resoluciones y megas descargados, decodificados y en texturas.
 
 - **Entrada**: una pantalla de carga (contador y línea de progreso) que espera
   al primer fotograma y a las fuentes, como mínimo 1,5 s y como mucho 8 s, y
@@ -101,22 +117,33 @@ su mapa de profundidad, así que la escena se mueve en paralaje con el ratón.
 
 ### Volver a renderizar
 
-Los fotogramas (`public/journey/v1/`, 1600 × 900 y la profundidad a 800 × 450,
-todo en WebP) salen de `scripts/journey/`:
+Los fotogramas (`public/journey/v2/`) se renderizan en un PC con GPU NVIDIA
+con un solo comando, desde la carpeta del repositorio:
 
 ```bash
-python -m venv .venv && .venv/bin/pip install bpy==5.2.3 numpy scipy opencv-python-headless pillow OpenEXR
-.venv/bin/python scripts/journey/mark_contours.py public/brand/aterna-mark.png scripts/journey/mark.json   # solo si cambia el símbolo
-.venv/bin/python scripts/journey/scene.py --out exr/          # Cycles en CPU: ~1,5 min por fotograma
-.venv/bin/python scripts/journey/post.py exr/ public/journey/v2 --size 1600x900
+scripts/journey/render-gpu.sh test     # prueba corta: 6 fotogramas a calidad final
+scripts/journey/render-gpu.sh render   # los 120 (si se corta, el mismo comando sigue)
+scripts/journey/render-gpu.sh post     # solo rehace el revelado desde los EXR
 ```
 
-`scene.py` construye la escena entera con una semilla fija (los mismos
-números dan siempre la misma escena) y escribe un EXR por fotograma;
-`post.py` hace el revelado (halo, AgX, niebla hacia la noche de la web) y los
-mapas de profundidad. Si cambian los fotogramas, nueva carpeta (`v2`) y se
-actualiza `DIR` en `src/lib/journey/config.ts`: el `.htaccess` los cachea un
-año como inmutables.
+El script prepara lo que falte en `.render/` (Blender oficial y un venv para
+el revelado; no va a git), comprueba la GPU (OptiX), renderiza de forma
+reanudable, valida los EXR, revela y sube solo lo final (`public/journey/v2`
+y el informe de `scripts/journey/report`). Los EXR se quedan en el PC.
+
+- `scene.py` construye la escena con una semilla fija (los mismos números dan
+  siempre la misma escena) y escribe por fotograma un EXR con una capa por
+  grupo (arco, símbolo, suelo…), en 4K con un margen alrededor para el
+  paralaje. `mark_contours.py` regenera `mark.json` si cambia el símbolo.
+- `post.py` hace el revelado capa a capa (halo, AgX, niebla hacia la noche de
+  la web), los modelos del paralaje, los atlas, todas las familias y
+  resoluciones en AVIF, el manifiesto y un informe con hojas de contactos.
+- `verify-web.mjs` y `verify_shift.py` comprueban la web: que cada capa se
+  mueve entera (sin deformarse), los tamaños de pantalla, el movimiento
+  reducido, la consola y los pesos.
+
+Si cambian los fotogramas, nueva carpeta (`v3`) y se actualiza `DIR` en
+`src/lib/journey/config.ts`: el `.htaccess` los cachea un año como inmutables.
 
 El símbolo en 3D también está aparte, listo para abrir en Blender:
 `scripts/journey/aterna-mark.blend` (cuerpo de titanio anodizado con el

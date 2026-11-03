@@ -60,10 +60,12 @@ ap.add_argument("--base-quality", type=int, default=0, help="la base (niebla y s
 ap.add_argument("--speed", type=int, default=4)
 ap.add_argument("--bloom", type=float, default=0.45, help="v1: 0.6")
 ap.add_argument("--halo-outer", type=float, default=0.6, help="cuánto halo queda fuera del objeto")
+ap.add_argument("--upscale", action="store_true", help="solo para pruebas: también las resoluciones mayores que el render")
 args = ap.parse_args()
 
 K = (0.0864, 0.0648)  # anchos·m y altos·m: a 4 m con enfoque a 9 m, un 1,2 % del ancho (como la v1)
 TOPE = (0.02, 0.015)  # desplazamiento máximo de una capa (fracción del ancho y del alto)
+MAX_BOXES = 40  # cajas por fotograma (uniforms del shader de la web)
 MERGE_PX = 1.0  # arcos contiguos cuyo paralaje difiere menos de esto (px a 2560) van juntos
 ORDER = ["base", "back", "mark", "a6", "a5", "a4", "a3", "a2", "a1", "a0"]  # de atrás adelante
 NIGHT = np.array([0x13, 0x16, 0x3B], np.float32) / 255  # --night-0 de la web
@@ -329,8 +331,7 @@ def split_boxes(occ, depth=0):
 
 def tiers_of(text, limit):
     out = [int(t) for t in text.split(",") if t]
-    keep = [t for t in out if t <= limit]
-    return keep
+    return out if args.upscale else [t for t in out if t <= limit]
 
 
 def process(f):
@@ -416,6 +417,12 @@ def process(f):
         ux1, uy1 = max(bx[2] for bx in boxes), max(bx[3] for bx in boxes)
         rec = {"g": "+".join(members), "uv": [uv_of(*bx) for bx in boxes], "z": [0.0, 0.0, iz], "bound": uv_of(ux0, uy0, ux1, uy1)}
         alpha.append((rec, S, Ap, boxes))
+    # La web pinta cada caja con un uniform: como mucho MAX_BOXES por fotograma.
+    while sum(len(a[3]) for a in alpha) > MAX_BOXES:
+        rec, S, Ap, boxes = max(alpha, key=lambda a: len(a[3]))
+        bx = (min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes))
+        boxes[:] = [bx]
+        rec["uv"] = [uv_of(*bx)]
     layers[0]["gain"] = gain_of(layers[0]["z"], layers[0]["uv"][0], zr)
     for rec, *_ in alpha:
         rec["gain"] = gain_of(rec["z"], rec.pop("bound"), zr)
@@ -458,7 +465,7 @@ def process(f):
     cx = (vw - cw) // 2
     for t in tiers_of(args.portrait_tiers, vh):
         put(f"portrait/{t}", save(to8(resize(flat[:, cx : cx + cw], round(t * 0.75), t), f), os.path.join(args.dst, "portrait", str(t), f"f{f:03d}.avif")))
-    if args.fallback <= vw:
+    if args.fallback <= vw or args.upscale:
         fb = args.fallback
         put("fallback", save(to8(resize(flat, fb, round(fb * vh / vw)), f), os.path.join(args.dst, "fallback", f"f{f:03d}.webp")))
 
@@ -482,6 +489,7 @@ def process(f):
         "device": meta.get("device"),
         "blender": meta.get("blender"),
         "fstop": meta["camera"]["fstop"],
+        "pad": pad,
     }
     return record, thumb, sheet
 
@@ -628,6 +636,7 @@ def build_outputs():
         "ready": len(recs),
         "visible": [vw, vh],
         "margin": [round(mx / vw, 6), round(my / vh, 6)],
+        "pad": [round(any_rec.get("pad", 0) / vw, 6), round(any_rec.get("pad", 0) / vh, 6)],  # datos de más alrededor de cada caja
         "k": list(K),
         "tope": list(TOPE),
         "tiers": {

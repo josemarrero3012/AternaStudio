@@ -168,3 +168,31 @@ José se pregunta si es porque el escenario no es 3D de verdad: sí, es eso.
 4. Rama: `claude/hopeful-babbage-yt1ln3` (salida de `main`). Los fotogramas
    nuevos van en una carpeta con versión nueva (`public/journey/v2`) y se
    actualiza `DIR` en `config.ts`. Nada pasa a `main` sin que José lo pida.
+
+## Plan aprobado y estado (2 de noviembre)
+
+José aprobó el plan con el **master en 4K y la resolución 3840** para las
+pantallas grandes. Lo esencial:
+
+- **Paralaje por capas renderizadas aparte** (una view layer por arco, el
+  símbolo con su aura, los arcos del fondo y la base con el suelo): cada capa
+  se mueve entera, el suelo como el plano que es y lo demás como planos
+  rígidos. Lo enfocado no se mueve: al final, el símbolo es el pivote.
+- **Calidad**: 4K con un 2,5 % de margen, OptiX, hasta 1024 muestras con OIDN
+  guiado (albedo y normales), f/4, halo más contenido, AVIF 4:4:4.
+- **Rendimiento**: versión ligera de todo el recorrido y HD alrededor de donde
+  se está; solo una ventana decodificada; el móvil, plano y recortado (3:4).
+
+Hecho y subido:
+
+- `scene.py` por capas (geometría idéntica a la v1, comprobada spline a
+  spline), `post.py` reescrito, `render-gpu.sh` y `requirements.txt`. Probado
+  en la nube en CPU a baja resolución, de principio a fin.
+- La web v2: `sequence.ts`, `layeredRenderer.ts`, `flatRenderer.ts`, `gl.ts`,
+  `debug.ts` (`?recorrido=debug`), `Journey.tsx`, `glass.ts`, la precarga y el
+  `.htaccess`. Verificación en `verify-web.mjs` y `verify_shift.py`.
+
+Siguiente: la prueba corta en el PC (`scripts/journey/render-gpu.sh test`),
+ajustar muestras y revelado con su informe, el render completo
+(`scripts/journey/render-gpu.sh render`) y la verificación final con los 120
+fotogramas.
