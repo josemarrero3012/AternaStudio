@@ -712,13 +712,74 @@ html[data-journey="over"] .header::after {
   opacity: 0;
 }
 
-/* Y los enlaces, en una píldora de vidrio. */
+/* Y el menú, como el de TIGRIS: arriba a la derecha, una sola fila de texto
+   en mayúsculas muy espaciadas, sin píldoras ni botón relleno («Empezar un
+   proyecto →» va igual que los enlaces, algo más claro). Los idiomas, al
+   final, más pequeños y tenues, tras un filete. */
 @media (min-width: 1024px) {
-  html[data-journey="over"] .header__nav ul {
-    border-color: var(--glass-edge);
-    background-color: var(--glass-pill-fill);
-    -webkit-backdrop-filter: blur(16px) saturate(1.2);
-    backdrop-filter: blur(16px) saturate(1.2);
+  html[data-journey="over"] .header__nav a,
+  html[data-journey="over"] .header__cta {
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  html[data-journey="over"] .header__nav a {
+    padding: 14px 22px;
+    color: color-mix(in srgb, var(--journey-name) 78%, transparent);
+    transition: color var(--d-std) var(--e-out);
+  }
+
+  html[data-journey="over"] .header__nav a:hover,
+  html[data-journey="over"] .header__nav a[aria-current="page"] {
+    color: var(--journey-name);
+  }
+
+  html[data-journey="over"] .header__nav .link-underline::after {
+    inset-inline: 22px calc(22px + 0.3em);
+    bottom: 7px;
+  }
+
+  html[data-journey="over"] .header__end {
+    gap: 0;
+  }
+
+  html[data-journey="over"] .header__cta,
+  html[data-journey="over"] .header__cta:hover {
+    order: 1;
+    min-height: 44px;
+    padding: 0 0 0 22px;
+    border-color: transparent;
+    background-color: transparent;
+    color: var(--journey-name);
+  }
+
+  html[data-journey="over"] .header__cta:hover {
+    color: var(--rose);
+  }
+
+  html[data-journey="over"] .header__lang {
+    order: 2;
+    margin-left: 26px;
+    padding-left: 14px;
+    border-left: 1px solid var(--glass-edge);
+  }
+
+  html[data-journey="over"] .header__lang .lang-toggle__btn {
+    min-width: 0;
+    padding: 8px 6px;
+    border-left: 0;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: color-mix(in srgb, var(--journey-name) 58%, transparent);
+  }
+
+  html[data-journey="over"] .header__lang .lang-toggle__btn[data-active="true"],
+  html[data-journey="over"] .header__lang .lang-toggle__btn:hover {
+    color: var(--journey-name);
   }
 }
 

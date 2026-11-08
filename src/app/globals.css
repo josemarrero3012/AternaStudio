@@ -652,9 +652,8 @@ html.lenis body {
   margin-inline-start: auto;
 }
 
-/* Los enlaces van dentro de una píldora que solo se ve sobre el recorrido
-   de la portada (journey.css). Fuera, borde y fondo transparentes: el
-   espacio entre textos es el de siempre (16 + 16 px). */
+/* Sobre el recorrido de la portada, los enlaces cambian de estilo (texto en
+   mayúsculas espaciadas, como TIGRIS: journey.css). */
 .header__nav ul {
   display: flex;
   padding: 3px;

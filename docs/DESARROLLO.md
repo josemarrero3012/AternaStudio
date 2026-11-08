@@ -137,8 +137,11 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   (`public/tree/v1/poster.webp`, una captura del propio lienzo); **con
   movimiento reducido**, sin fundido, sin entrada, sin giro ni empuje (el
   scroll sigue cambiando las formas).
-- Mientras el recorrido está en pantalla, la cabecera va sin velo y con los
-  enlaces en una píldora de vidrio; en móvil y tableta, el asistente y
+- Mientras el recorrido está en pantalla, la cabecera va sin velo y el menú
+  va como el de TIGRIS: arriba a la derecha, «Servicios», «Estudio»,
+  «Contacto» y «Empezar un proyecto →» en una fila de texto en mayúsculas
+  espaciadas (sin píldora ni botón relleno), y los idiomas al final, más
+  pequeños y tenues, tras un filete; en móvil y tableta, el asistente y
   WhatsApp esperan a que termine (los textos ocupan todo el ancho).
 
 Si cambia el símbolo, se regenera la silueta y, con la web en marcha, se
