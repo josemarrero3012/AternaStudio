@@ -1,7 +1,7 @@
 import { preload } from "react-dom";
 import { HomeContent } from "@/components/pages";
 import type { Locale } from "@/lib/dict";
-import { preloadFirstFrame } from "@/lib/journey/config";
+import { preloadTree } from "@/lib/tree/config";
 import { pageMeta } from "@/lib/seo";
 
 type Props = { params: Promise<{ lang: string }> };
@@ -11,6 +11,6 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default function Page() {
-  preloadFirstFrame(preload);
+  preloadTree(preload);
   return <HomeContent />;
 }

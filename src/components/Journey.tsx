@@ -1,12 +1,13 @@
 "use client";
 
-// La portada: un recorrido de 120 fotogramas renderizados en Blender que el
-// scroll recorre, desde la boca de un túnel de raíces de luz hasta el símbolo
-// de Aterna en 3D. Cada fotograma lleva su mapa de profundidad: la escena se
-// mueve en paralaje con el puntero. Abre con una pantalla de carga (contador
-// y línea de progreso) que se funde desde el centro con un filo de luz; luego
-// entran la cabecera y el titular, palabra a palabra. Al bajar cambian los
-// textos y, al final, junto al símbolo, aparecen dos tarjetas de vidrio.
+// La portada: el árbol de Aterna hecho de partículas (WebGL). Al abrir, las
+// partículas llegan desde la profundidad y forman el árbol del símbolo; al
+// hacer scroll se deshacen en un sistema de raíces («Lo que no se ve…») y
+// vuelven a subir para formar el árbol crecido, dentro de su anillo, junto a
+// dos tarjetas de vidrio. Giran con el puntero y se apartan a su paso. Abre
+// con una pantalla de carga (contador y línea de progreso) que se funde desde
+// el centro con un filo de luz; luego entran la cabecera y el titular,
+// palabra a palabra. Las formas y el shader están en src/lib/tree/.
 //
 // Todo el movimiento sale de un solo efecto de montaje (su cierre lleva la
 // carga, el fundido y el bucle del scroll) y se limpia al desmontar: con
@@ -24,25 +25,36 @@ import { BurnRenderer } from "@/lib/journey/burnRenderer";
 import {
   BURN_MS,
   CARD_BLUR,
-  FRAME_COUNT,
   INTRO_AT_MS,
   LOADER_TIMEOUT_MS,
   MIN_LOADER_MS,
   POINTER_SMOOTHING,
   SCROLL_SMOOTHING,
   TIMING,
-  colorUrl,
   type Timing,
 } from "@/lib/journey/config";
-import { CanvasFrameRenderer, DepthRenderer, type FrameRenderer } from "@/lib/journey/depthRenderer";
 import { drawGlass } from "@/lib/journey/glass";
 import { clamp, damp, invLerp, lerp, stateStyle } from "@/lib/journey/motion";
-import { getSequence } from "@/lib/journey/sequence";
+import { ASSEMBLE_AGAIN_MS, ASSEMBLE_MS, MASK_URL, MORPH, POSTER_URL, particleCount } from "@/lib/tree/config";
+import { ParticleRenderer, PosterRenderer, type TreeRenderer } from "@/lib/tree/renderer";
+import { buildShapes, loadMask, type Shapes } from "@/lib/tree/shapes";
 
 type Phase = "loading" | "burning" | "ready" | "done";
 
 /** La pantalla de carga ya salió en esta vida de la página (al volver a la portada sin recargar no se repite). */
 let played = false;
+
+/** Las formas, construidas una vez por página y número de partículas. */
+let shapesCache: { count: number; shapes: Promise<Shapes> } | null = null;
+function getShapes(count: number) {
+  if (!shapesCache || shapesCache.count !== count) {
+    shapesCache = { count, shapes: loadMask(MASK_URL).then((mask) => buildShapes(mask, count)) };
+    shapesCache.shapes.catch(() => {
+      shapesCache = null; // la próxima vez, otro intento
+    });
+  }
+  return shapesCache.shapes;
+}
 
 /** Espera a las fuentes con las que se pintan estos elementos (no a todas: document.fonts.ready). */
 function loadFonts(els: (HTMLElement | null)[]) {
@@ -155,25 +167,42 @@ export function Journey() {
     let alive = true;
     const reduced = prefersReducedMotion();
     const root = document.documentElement;
-    const seq = getSequence();
     const skip = played;
     const go = (next: Phase) => {
       if (alive) setPhase(next);
     };
 
-    // El lienzo del recorrido ----------------------------------------------
+    // El lienzo del árbol --------------------------------------------------
     const canvas = document.createElement("canvas");
     canvas.className = "journey__canvas";
     canvas.setAttribute("role", "img");
     caveHost.appendChild(canvas);
     canvasRef.current = canvas;
-    let renderer: FrameRenderer;
-    try {
-      renderer = new DepthRenderer(canvas);
-    } catch (err) {
-      console.warn("[recorrido] sin WebGL, sin paralaje:", err);
-      renderer = new CanvasFrameRenderer(canvas);
-    }
+    let renderer: TreeRenderer | null = null;
+    const usePoster = (err: unknown) => {
+      console.warn("[árbol] sin partículas, imagen fija:", err);
+      try {
+        renderer = new PosterRenderer(canvas, POSTER_URL, () => {
+          needsDraw = true;
+        });
+      } catch (e) {
+        console.warn("[árbol] sin canvas:", e);
+      }
+    };
+    // Listo cuando las partículas (o la imagen fija) pueden dibujarse.
+    const treeReady = getShapes(particleCount(window.innerWidth))
+      .then((shapes) => {
+        if (!alive) return;
+        try {
+          renderer = new ParticleRenderer(canvas, shapes);
+        } catch (err) {
+          usePoster(err);
+        }
+        needsDraw = true;
+      })
+      .catch((err) => {
+        if (alive) usePoster(err);
+      });
 
     // Estado del bucle ------------------------------------------------------
     let target = 0;
@@ -181,11 +210,20 @@ export function Journey() {
     let unit = 1;
     let onScreen = true;
     let needsDraw = true;
-    let drawn = -1;
     let lastProgress = Number.NaN;
     const pointer = { x: 0, y: 0 };
     const pointerTarget = { x: 0, y: 0 };
-    const drawnPointer = { x: Number.NaN, y: Number.NaN };
+    let energy = 0;
+    let energyTarget = 0;
+    // La entrada de las partículas: empieza con la del titular (o ya, si la
+    // pantalla de carga salió antes en esta página).
+    let assembleFrom = Number.NaN;
+    let assembleMs = skip ? ASSEMBLE_AGAIN_MS : ASSEMBLE_MS;
+    const startAssemble = () => {
+      if (Number.isNaN(assembleFrom)) assembleFrom = performance.now();
+    };
+    const t0 = performance.now();
+    let frameNo = 0;
 
     const header = document.querySelector<HTMLElement>(".header");
     const measure = () => {
@@ -273,27 +311,31 @@ export function Journey() {
         if (Math.abs(pointer.x - pointerTarget.x) < 0.0005) pointer.x = pointerTarget.x;
         if (Math.abs(pointer.y - pointerTarget.y) < 0.0005) pointer.y = pointerTarget.y;
       }
+      energy = lerp(energy, energyTarget, damp(0.06, dt));
       const moved = progress !== lastProgress;
       if (moved) {
         applyBlocks();
         lastProgress = progress;
       }
-      const want = Math.round(progress * (FRAME_COUNT - 1));
-      seq.request(want);
-      if (!onScreen) return;
-      const index = seq.nearest(want);
-      const frame = index >= 0 ? seq.frames[index] : null;
-      if (!frame) return;
-      const glass = cardsBlock.last.v === "visible";
-      const pointerMoved = pointer.x !== drawnPointer.x || pointer.y !== drawnPointer.y;
-      if (!needsDraw && index === drawn && !pointerMoved && !(moved && glass)) return;
+      if (!onScreen || !renderer) return;
+      // La imagen fija solo se repinta si hace falta; las partículas, siempre.
+      const still = renderer instanceof PosterRenderer;
+      if (still && !needsDraw && !moved) return;
       if (!renderer.resize()) return;
-      renderer.draw(frame, index, pointer);
-      drawn = index;
-      drawnPointer.x = pointer.x;
-      drawnPointer.y = pointer.y;
+      const assemble = reduced ? 1 : Number.isNaN(assembleFrom) ? 0 : clamp((now - assembleFrom) / assembleMs);
+      renderer.draw({
+        time: (now - t0) / 1000,
+        assemble,
+        morph1: invLerp(MORPH.roots[0], MORPH.roots[1], progress),
+        morph2: invLerp(MORPH.final[0], MORPH.final[1], progress),
+        pointer,
+        energy: reduced ? 0 : energy,
+        motion: !reduced,
+      });
       needsDraw = false;
-      if (glass) drawGlass(stage, canvas);
+      frameNo++;
+      // El vidrio copia la escena: cada dos fotogramas basta.
+      if (cardsBlock.last.v === "visible" && (still || frameNo % 2 === 0)) drawGlass(stage, canvas);
     };
     raf = requestAnimationFrame(loop);
 
@@ -303,10 +345,12 @@ export function Journey() {
       if (e.pointerType !== "mouse" && e.pointerType !== "pen") return;
       pointerTarget.x = (e.clientX / window.innerWidth - 0.5) * 2;
       pointerTarget.y = (0.5 - e.clientY / window.innerHeight) * 2;
+      energyTarget = 1;
     };
     const onLeave = () => {
       pointerTarget.x = 0;
       pointerTarget.y = 0;
+      energyTarget = 0;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
@@ -324,9 +368,6 @@ export function Journey() {
       if (loading) burn?.draw(0);
     });
     ro.observe(stage);
-    const offLoad = seq.onLoad(() => {
-      needsDraw = true;
-    });
 
     // Carga, fundido y entrada ---------------------------------------------
     let loaderRaf = 0;
@@ -344,6 +385,7 @@ export function Journey() {
     const startEntrance = () => {
       root.dataset.journeyIntro = "on";
       startIntro();
+      startAssemble();
     };
     const finish = () => {
       if (!alive) return;
@@ -353,7 +395,7 @@ export function Journey() {
     };
 
     if (skip) {
-      seq.start();
+      void treeReady.then(startAssemble);
       startIntro();
       document.fonts?.ready.then(() => alive && paintGradients());
     } else {
@@ -387,10 +429,7 @@ export function Journey() {
       const fonts = loadFonts([counter, hero.querySelector(".journey__line--sans"), hero.querySelector(".journey__body")])
         .catch((err) => console.warn("[recorrido] fuentes:", err))
         .finally(fontsIn);
-      const first = seq.start().then((ok) => {
-        if (!ok) console.warn("[recorrido] el primer fotograma no cargó: se abre igual.");
-      });
-      void Promise.all([first, fonts]).then(() => {
+      void Promise.all([treeReady, fonts]).then(() => {
         ready = true;
       });
       // Una petición atascada no deja la pantalla en 99.
@@ -410,14 +449,17 @@ export function Journey() {
           return;
         }
         go("burning");
-        const t0 = performance.now();
+        // Las partículas empiezan a llegar mientras se abre el velo.
+        assembleMs = ASSEMBLE_MS;
+        startAssemble();
+        const burnStart = performance.now();
         introTimer = window.setTimeout(() => {
           go("ready");
           startEntrance();
         }, INTRO_AT_MS);
         const step = (now: number) => {
           if (!alive || !burn) return;
-          const t = Math.min(Math.max(0, now - t0) / BURN_MS, 1);
+          const t = Math.min(Math.max(0, now - burnStart) / BURN_MS, 1);
           burn.draw(t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
           if (t < 1) burnRaf = requestAnimationFrame(step);
           else finish();
@@ -456,9 +498,7 @@ export function Journey() {
       window.removeEventListener("pointermove", onPointer);
       root.removeEventListener("mouseleave", onLeave);
       ro.disconnect();
-      offLoad();
-      seq.stop();
-      renderer.dispose();
+      renderer?.dispose();
       canvas.remove();
       canvasRef.current = null;
       disposeBurn();
@@ -481,7 +521,7 @@ export function Journey() {
         <div ref={caveRef} className="journey__cave">
           <noscript>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="journey__poster" src={colorUrl(0)} alt={j.label} />
+            <img className="journey__poster" src={POSTER_URL} alt={j.label} />
           </noscript>
         </div>
         <div className="journey__shade" aria-hidden="true" />

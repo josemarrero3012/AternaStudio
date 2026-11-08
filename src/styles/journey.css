@@ -262,13 +262,13 @@ html[data-motion="on"] .journey__copy {
   transition: border-color var(--d-std) var(--e-out);
 }
 
-/* Alineadas con el contenedor mientras no tapen el símbolo; en pantallas
-   muy anchas (el fotograma se amplía para cubrir) se apartan hacia los
-   bordes, nunca más allá del margen. El símbolo mide de ancho ~0,33 del
-   fotograma, que a su vez mide max(100vw, 100svh × 16/9). */
+/* Alineadas con el contenedor mientras no tapen el árbol; en pantallas muy
+   anchas se apartan hacia los bordes, nunca más allá del margen. El anillo
+   del árbol final mide de radio el 27 % de la altura (el 16,2 % del ancho en
+   pantallas más estrechas que 5:3; ver layoutFor en src/lib/tree/renderer.ts). */
 .journey__cards {
   --card-w: calc(330 * var(--u));
-  --card-x: max(var(--margin), min(var(--journey-x), calc(50% - 0.165 * max(100vw, 100vh * 16 / 9) - 24px - var(--card-w))));
+  --card-x: max(var(--margin), min(var(--journey-x), calc(50% - min(27vh, 16.2vw) - 24px - var(--card-w))));
 }
 
 .journey-card--left {

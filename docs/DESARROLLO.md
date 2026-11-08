@@ -37,8 +37,9 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 | Páginas en inglés, neerlandés y alemán (`/en`, `/nl`, `/de`) | `src/app/[lang]/` |
 | Tokens de diseño (color, tipo, espacio, forma, movimiento) | `src/styles/tokens.css` |
 | Recorrido de la portada (componente, estilos) | `src/components/Journey.tsx`, `src/styles/journey.css` |
-| Recorrido: tiempos, fotogramas, WebGL | `src/lib/journey/` (todos los números en `config.ts`) |
-| Recorrido: escena de Blender y revelado | `scripts/journey/` |
+| Recorrido: tiempos de los textos, carga, vidrio | `src/lib/journey/` (`config.ts`) |
+| Árbol de partículas: formas, shader, números | `src/lib/tree/` (todos los números en `config.ts`) |
+| Silueta del árbol para las partículas | `scripts/tree/make-mask.py` |
 | Estilos de componentes y páginas | `src/app/globals.css` |
 | Páginas legales (HTML literal) | `src/content/legal/` |
 | Asistente (respuestas, flujo guiado) | `src/lib/assistant.ts`, `src/components/Assistant.tsx` |
@@ -65,44 +66,73 @@ etiquetas `hreflang` de las cuatro versiones, y el sitemap las lista todas.
 
 ## Imágenes
 
-La web no usa ilustraciones ni fotos: la única imagen es el recorrido de la
-portada (ver abajo), que marca la estética de todo lo demás. La profundidad
+La web no usa ilustraciones ni fotos: la portada es el árbol de partículas
+(ver abajo), que marca la estética de todo lo demás. La profundidad
 de las secciones se construye con CSS (color, luz, líneas y tipografía), no
 con imágenes.
 
 ## El recorrido de la portada
 
-La portada abre con una pantalla fijada de 380vh: al hacer scroll se recorre
-una secuencia de 120 fotogramas renderizados en Blender, desde la boca de un
-túnel de raíces de luz hasta el símbolo de Aterna en 3D. Cada fotograma lleva
-su mapa de profundidad, así que la escena se mueve en paralaje con el ratón.
+La portada abre con una pantalla fijada de 380vh con el árbol de Aterna hecho
+de partículas (WebGL, sin librerías). Es la técnica de las portadas de
+partículas como la del tigre de TIGRIS: miles de puntos que dibujan una forma
+sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
 
+- **Formas** (`src/lib/tree/shapes.ts`): el árbol se lee de la silueta del
+  símbolo (`public/tree/v1/mark-mask.webp`, un tercio de las partículas en el
+  contorno para que tenga filo); las raíces se generan con una semilla fija
+  (siempre las mismas); el árbol final es el mismo árbol dentro de un anillo.
+  Cada partícula tiene su sitio en las tres formas y en una nube de salida.
+- **Movimiento** (`src/lib/tree/renderer.ts`): el shader lleva cada partícula
+  de una forma a otra con su propio retardo y un remolino de ruido a mitad de
+  camino. Al abrir, llegan desde la profundidad y forman el árbol mientras se
+  abre la pantalla de carga. El árbol gira un poco con el ratón y las
+  partículas se apartan a su paso. Se dibujan con mezcla aditiva más una
+  pasada de resplandor (puntos grandes y tenues) en pantallas medianas y
+  grandes.
+- **Números**: cuántas partículas según la pantalla, cuándo cambia cada forma
+  (`MORPH`, en progreso del scroll), giro, empuje del puntero y tamaño de los
+  puntos, en `src/lib/tree/config.ts`. Dónde se coloca cada forma según la
+  proporción de la pantalla, en `layoutFor` (`renderer.ts`).
 - **Entrada**: una pantalla de carga (contador y línea de progreso) que espera
-  al primer fotograma y a las fuentes, como mínimo 1,5 s y como mucho 8 s, y
-  se funde desde el centro con un filo de luz (shader WebGL). Después entran
-  la cabecera y el titular, palabra a palabra. Sale una vez por carga de
-  página: al volver a la portada sin recargar ya no se repite. Hace de
-  cortina de la sesión (las demás páginas ya no la muestran).
-- **Scroll**: el titular de entrada se va, entran «Lo que no se ve…» y, junto
-  al símbolo, dos tarjetas de vidrio (enlazan a Diseño web y a SEO) y el
-  cierre. Los tiempos están en `TIMING` (`src/lib/journey/config.ts`), en
-  progreso del scroll de 0 a 1.
+  a la silueta y a las fuentes, como mínimo 1,5 s y como mucho 8 s, y se
+  funde desde el centro con un filo de luz (shader WebGL). Después entran la
+  cabecera y el titular, palabra a palabra. Sale una vez por carga de página:
+  al volver a la portada sin recargar ya no se repite (las partículas vuelven
+  a formarse, más deprisa). Hace de cortina de la sesión (las demás páginas
+  ya no la muestran).
+- **Scroll**: el titular de entrada se va y el árbol baja a sus raíces
+  («Lo que no se ve…»); luego las raíces suben y forman el árbol crecido,
+  junto a dos tarjetas de vidrio (enlazan a Diseño web y a SEO) y el cierre.
+  Los tiempos de los textos están en `TIMING` (`src/lib/journey/config.ts`).
 - **Vidrio**: las tarjetas no usan `backdrop-filter`: cada una lleva un lienzo
   con una copia desenfocada de la escena que tiene detrás.
 - **Textos**: en `dict.ts` (`journey`), en los cuatro idiomas. El titular de
   entrada es el de siempre (`hero.headline`).
-- **Sin WebGL** se ven los fotogramas sin paralaje; **con movimiento
-  reducido**, sin fundido, sin animación de entrada y sin paralaje (el scroll
-  sigue moviendo la escena); **sin JavaScript**, el primer fotograma y el
-  titular.
+- **Sin WebGL** y **sin JavaScript** se ve una imagen fija del árbol
+  (`public/tree/v1/poster.webp`, una captura del propio lienzo); **con
+  movimiento reducido**, sin fundido, sin entrada, sin giro ni empuje (el
+  scroll sigue cambiando las formas).
 - Mientras el recorrido está en pantalla, la cabecera va sin velo y con los
   enlaces en una píldora de vidrio; en móvil y tableta, el asistente y
   WhatsApp esperan a que termine (los textos ocupan todo el ancho).
 
-### Volver a renderizar
+Si cambia el símbolo, se regenera la silueta y, con la web en marcha, se
+vuelve a capturar la imagen fija (por ejemplo con `canvas.toDataURL()` sobre
+`.journey__canvas`). Si cambia alguno de los dos archivos, nueva carpeta
+(`v2`) y se actualiza `DIR` en `src/lib/tree/config.ts`:
 
-Los fotogramas (`public/journey/v1/`, 1600 × 900 y la profundidad a 800 × 450,
-todo en WebP) salen de `scripts/journey/`:
+```bash
+python3 scripts/tree/make-mask.py public/brand/aterna-mark.png public/tree/v2/mark-mask.webp
+```
+
+### El recorrido anterior (Blender)
+
+Antes de las partículas, la portada era una secuencia de 120 fotogramas
+renderizados en Blender (un túnel de raíces de luz hasta el símbolo en 3D,
+con paralaje por mapas de profundidad). Los fotogramas siguen en
+`public/journey/v1/` y la escena en `scripts/journey/`, aunque la portada ya
+no los usa. Para volver a renderizarlos:
 
 ```bash
 python -m venv .venv && .venv/bin/pip install bpy==5.2.3 numpy scipy opencv-python-headless pillow OpenEXR
@@ -111,17 +141,9 @@ python -m venv .venv && .venv/bin/pip install bpy==5.2.3 numpy scipy opencv-pyth
 .venv/bin/python scripts/journey/post.py exr/ public/journey/v2 --size 1600x900
 ```
 
-`scene.py` construye la escena entera con una semilla fija (los mismos
-números dan siempre la misma escena) y escribe un EXR por fotograma;
-`post.py` hace el revelado (halo, AgX, niebla hacia la noche de la web) y los
-mapas de profundidad. Si cambian los fotogramas, nueva carpeta (`v2`) y se
-actualiza `DIR` en `src/lib/journey/config.ts`: el `.htaccess` los cachea un
-año como inmutables.
-
 El símbolo en 3D también está aparte, listo para abrir en Blender:
-`scripts/journey/aterna-mark.blend` (cuerpo de titanio anodizado con el
-degradado del logo, incrustación esmaltada, filamentos de luz, peana, luces y
-cámara). Se regenera con `scene.py --mark-blend scripts/journey/aterna-mark.blend`.
+`scripts/journey/aterna-mark.blend`. Se regenera con
+`scene.py --mark-blend scripts/journey/aterna-mark.blend`.
 
 ## Asistente
 

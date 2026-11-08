@@ -54,7 +54,7 @@ const es = {
     "secondary": "Ver servicios"
   },
   "journey": {
-    "label": "Un recorrido entre raíces de luz hasta el símbolo de Aterna",
+    "label": "El árbol de Aterna hecho de partículas de luz, que baja a sus raíces y vuelve a crecer",
     "loading": "Cargando",
     "heroBody": "Diseñamos y programamos webs a medida, y después trabajamos para que te encuentren.",
     "heroCursor": "Hablemos",
@@ -726,7 +726,7 @@ const en: Dict = {
     "secondary": "See services"
   },
   "journey": {
-    "label": "A journey through roots of light to the Aterna mark",
+    "label": "The Aterna tree made of particles of light, sinking into its roots and growing back",
     "loading": "Loading",
     "heroBody": "We design and build bespoke websites, then work on getting you found.",
     "heroCursor": "Let’s talk",
@@ -1396,7 +1396,7 @@ const nl: Dict = {
     "secondary": "Bekijk diensten"
   },
   "journey": {
-    "label": "Een reis door wortels van licht naar het Aterna-symbool",
+    "label": "De Aterna-boom van lichtdeeltjes, die afdaalt naar zijn wortels en opnieuw groeit",
     "loading": "Laden",
     "heroBody": "We ontwerpen en bouwen websites op maat en zorgen daarna dat je gevonden wordt.",
     "heroCursor": "Laten we praten",
@@ -2066,7 +2066,7 @@ const de: Dict = {
     "secondary": "Leistungen ansehen"
   },
   "journey": {
-    "label": "Eine Reise durch Wurzeln aus Licht bis zum Aterna-Zeichen",
+    "label": "Der Aterna-Baum aus Lichtpartikeln, der zu seinen Wurzeln hinabsinkt und neu wächst",
     "loading": "Wird geladen",
     "heroBody": "Wir gestalten und entwickeln Websites nach Maß und sorgen danach dafür, dass man Sie findet.",
     "heroCursor": "Sprechen wir",
