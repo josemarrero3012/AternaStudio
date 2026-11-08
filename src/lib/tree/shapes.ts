@@ -224,15 +224,17 @@ function turn(dx: number, dy: number, dz: number, az: number, ang: number): [num
  * todo cabe en un círculo, casi simétrico. El tronco, corto, son tres hebras
  * que se trenzan; arriba se abren en ramas maestras que suben como un jarrón
  * y, al llegar al borde del círculo, lo siguen y se curvan hacia fuera y
- * hacia abajo (como las del logo); abajo, las raíces se abren anchas y
- * también siguen el círculo. Hojas en racimos en las puntas y a lo largo de
- * las ramas finas. Se genera la mitad derecha y se refleja (con la
+ * hacia abajo (como las del logo); abajo, raíces naturales, retorcidas y
+ * ramificadas. Hojas en racimos en las puntas y a lo largo de
+ * las ramas finas. La copa se genera en su mitad derecha y se refleja (con la
  * profundidad invertida, para que no se vea calcada); el tronco va aparte.
  * Cada tramo y cada racimo guardan su distancia a la base (g): el shader hace
  * crecer el árbol de abajo arriba.
  */
 const CIRCLE = { r: 1, z: 0.55 };
 const TRUNK = { base: -0.5, top: -0.04 };
+/** Hasta dónde bajan las raíces (y fija el encaje del árbol). */
+const ROOT_BOTTOM = -0.757;
 function growNaturalTree(r: Rand) {
   const wood: Wood[] = [];
   const leaves: Leaf[] = [];
@@ -241,19 +243,14 @@ function growNaturalTree(r: Rand) {
   const circD = (x: number, y: number, z: number) => Math.hypot(x, y, z / CIRCLE.z) / CIRCLE.r;
 
   // Sigue el borde del círculo: la tangente que se aleja de la vertical
-  // (arriba, hacia fuera; a los lados, hacia abajo). Las raíces, al revés:
-  // desde abajo, hacia fuera y hacia arriba.
-  const follow = (x: number, y: number, dx: number, dy: number, k: number, up: boolean): [number, number] => {
+  // (arriba, hacia fuera; a los lados, hacia abajo).
+  const follow = (x: number, y: number, dx: number, dy: number, k: number): [number, number] => {
     const rr = Math.hypot(x, y) || 1;
     const ux = x / rr;
     const uy = y / rr;
     const side = Math.sign(x || dx) || 1;
-    let tx = uy * side;
-    let ty = -ux * side;
-    if (!up) {
-      tx = -tx;
-      ty = -ty;
-    }
+    const tx = uy * side;
+    const ty = -ux * side;
     return [dx + (tx - dx) * k, dy + (ty - dy) * k];
   };
 
@@ -268,7 +265,7 @@ function growNaturalTree(r: Rand) {
       // Cerca del borde, lo sigue (cuanto más cerca, más).
       const d0 = circD(x, y, z);
       const k = Math.min(1, Math.max(0, (d0 - 0.7) / 0.26)) * 0.16;
-      if (k > 0) [dx, dy] = follow(x, y, dx, dy, k, true);
+      if (k > 0) [dx, dy] = follow(x, y, dx, dy, k);
       const n = Math.hypot(dx, dy, dz) || 1;
       dx /= n;
       dy /= n;
@@ -303,36 +300,6 @@ function growNaturalTree(r: Rand) {
     }
   };
 
-  const root = (x: number, y: number, z: number, dx: number, dy: number, dz: number, len: number, rad: number, depth: number) => {
-    const steps = Math.max(3, Math.ceil(len / 0.03));
-    const step = len / steps;
-    for (let s = 0; s < steps; s++) {
-      dx += (r() - 0.5) * 0.12;
-      dy += (r() - 0.5) * 0.08 - 0.01;
-      dz += (r() - 0.5) * 0.12;
-      const k = Math.min(1, Math.max(0, (circD(x, y, z) - 0.6) / 0.3)) * 0.26;
-      if (k > 0) [dx, dy] = follow(x, y, dx, dy, k, false);
-      const n = Math.hypot(dx, dy, dz) || 1;
-      dx /= n;
-      dy /= n;
-      dz /= n;
-      const nx = x + dx * step;
-      const ny = y + dy * step;
-      const nz = z + dz * step;
-      if (circD(nx, ny, nz) > 0.98 || ny > TRUNK.base + 0.25) return;
-      wood.push({ ax: x, ay: y, az: z, bx: nx, by: ny, bz: nz, r: rad, g: 0 });
-      x = nx;
-      y = ny;
-      z = nz;
-      rad *= 0.975;
-      // Raicillas que salen hacia abajo y hacia fuera.
-      if (depth < 2 && s > 2 && r() < 0.09) {
-        const [cx, cy, cz] = turn(dx, dy, dz, r() * Math.PI * 2, 0.5 + r() * 0.3);
-        root(x, y, z, cx, cy, cz, len * 0.45, rad * 0.6, depth + 1);
-      }
-    }
-  };
-
   // El tronco: tres hebras que se trenzan (como en el símbolo).
   const STRANDS = 3;
   const twist = Math.PI * 1.1;
@@ -357,7 +324,7 @@ function growNaturalTree(r: Rand) {
   const gTop = (TRUNK.top - TRUNK.base) * 0.6;
 
   // La mitad derecha: ramas maestras (ángulo desde la vertical, hacia qué
-  // lado en profundidad, largo) y raíces (ángulo bajo la horizontal).
+  // lado en profundidad, largo).
   const half0 = { wood: wood.length, leaves: leaves.length };
   const limbs: [number, number, number][] = [
     [0.1, 0.4, 0.9], // la guía (con su reflejo, dos hebras que suben trenzadas)
@@ -372,15 +339,10 @@ function growNaturalTree(r: Rand) {
     const x0 = 0.03;
     branch(x0, TRUNK.top, 0, Math.sin(th1), Math.cos(th1), zd, 0.7 * l, 0.034, 1, gTop);
   }
-  const rootsDef: [number, number, number][] = [
-    [0.25, 0.3, 0.95],
-    [0.55, -0.4, 0.8],
-    [0.9, 0.6, 0.6],
-  ];
-  for (const [down, ph, l] of rootsDef) {
-    const dzr = Math.sin(ph) * 0.4;
-    root(0.04, TRUNK.base + 0.04, 0, Math.cos(down), -Math.sin(down), dzr, 0.9 * l, 0.036, 0);
-  }
+  // Aquí iban unas raíces anteriores: se gastan los mismos números al azar
+  // que gastaban para que la copa (el reflejo y el relleno, más abajo) salga
+  // igual que la aprobada. Las raíces de ahora van al final, con su azar.
+  for (let i = 0; i < 521; i++) r();
   // El reflejo, a la izquierda.
   const wEnd = wood.length;
   for (let i = half0.wood; i < wEnd; i++) {
@@ -414,15 +376,59 @@ function growNaturalTree(r: Rand) {
     if (best) leaves.push({ x: px + (best.bx - px) * 0.35, y: py + (best.by - py) * 0.35, z: pz + (best.bz - pz) * 0.35, r: 0.08 + r() * 0.05, g: best.g });
   }
 
-  // Encaja el árbol: de la punta de las raíces (y = -1) a la copa (y = 1),
-  // centrado en el tronco, sin pasar de ±1,2 de ancho, y algo más plano de
-  // fondo.
-  let minY = Infinity;
+  // Las raíces, naturales: salen del pie del tronco en todas direcciones
+  // (las que van hacia delante o hacia atrás se ven bajar), gruesas al
+  // principio y adelgazando deprisa, retorcidas, con la gravedad tirando de
+  // ellas, y se ramifican en otras más finas y en raicillas. Cada una, de
+  // largo distinto. Con su propio azar: no tocan la copa.
+  const rr = rng(SEED ^ 0x0de5ce5d);
+  const root = (x: number, y: number, z: number, dx: number, dy: number, dz: number, len: number, rad: number, depth: number) => {
+    const steps = Math.max(2, Math.ceil(len / 0.022));
+    const step = len / steps;
+    for (let s = 0; s < steps; s++) {
+      dx += (rr() - 0.5) * 0.26;
+      dy += (rr() - 0.5) * 0.16 - 0.018 * (1 + depth * 0.5);
+      dz += (rr() - 0.5) * 0.26;
+      if (dy > 0.15) dy = 0.15; // no vuelven a subir
+      if (y < ROOT_BOTTOM + 0.1) dy += 0.06; // cerca del fondo, se tienden
+      const n = Math.hypot(dx, dy, dz) || 1;
+      dx /= n;
+      dy /= n;
+      dz /= n;
+      const nx = x + dx * step;
+      const ny = y + dy * step;
+      const nz = z + dz * step;
+      if (ny < ROOT_BOTTOM || circD(nx, ny, nz) > 0.96) return;
+      wood.push({ ax: x, ay: y, az: z, bx: nx, by: ny, bz: nz, r: rad, g: 0 });
+      x = nx;
+      y = ny;
+      z = nz;
+      rad = Math.max(0.004, rad * (s < 3 && depth === 0 ? 0.9 : 0.972));
+      if (depth < 3 && s > 1 && rr() < (depth === 0 ? 0.11 : 0.08)) {
+        const [cx, cy, cz] = turn(dx, dy, dz, rr() * Math.PI * 2, 0.45 + rr() * 0.5);
+        root(x, y, z, cx, cy, cz, (len - s * step) * (0.4 + rr() * 0.35) + 0.05, rad * 0.62, depth + 1);
+      }
+    }
+  };
+  const MAIN_ROOTS = 9;
+  for (let i = 0; i < MAIN_ROOTS; i++) {
+    const a = (i / MAIN_ROOTS) * Math.PI * 2 + (rr() - 0.5) * 0.5;
+    const dx = Math.cos(a);
+    const dz = Math.sin(a) * 0.8;
+    const sideways = Math.abs(dx);
+    // Las de los lados, más largas y tendidas; las de delante y detrás, más
+    // cortas y hacia abajo.
+    const len = 0.32 + sideways * 0.42 + rr() * 0.2;
+    root(dx * 0.05, TRUNK.base + 0.05, dz * 0.05, dx, -0.25 - (1 - sideways) * 0.45 - rr() * 0.2, dz, len, 0.042 + rr() * 0.012, 0);
+  }
+
+  // Encaja el árbol: de abajo (ROOT_BOTTOM, donde acaban las raíces; fijo,
+  // para que el encaje no cambie con ellas) a la copa (y = 1), centrado en
+  // el tronco, sin pasar de ±1,2 de ancho, y algo más plano de fondo.
+  const minY = ROOT_BOTTOM;
   let maxY = -Infinity;
   let maxX = 0;
   for (const w of wood) {
-    minY = Math.min(minY, w.by);
-    maxY = Math.max(maxY, w.by);
     maxX = Math.max(maxX, Math.abs(w.bx));
   }
   for (const l of leaves) {

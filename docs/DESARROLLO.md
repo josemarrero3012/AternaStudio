@@ -85,8 +85,8 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   generado, con el concepto del símbolo: cabe en un círculo (`CIRCLE`), casi
   simétrico (se genera la mitad y se refleja), con un tronco corto de tres
   hebras trenzadas, ramas que suben como un jarrón y siguen el borde del
-  círculo curvándose hacia fuera, raíces anchas que también lo siguen y
-  racimos de hojas. Cada partícula tiene su
+  círculo curvándose hacia fuera, racimos de hojas y raíces naturales
+  (retorcidas, ramificadas, con su propio azar para no cambiar la copa). Cada partícula tiene su
   sitio en las tres formas y en una nube de salida.
 - **Movimiento** (`src/lib/tree/renderer.ts`): el shader lleva cada partícula
   de una forma a otra con su propio retardo y un remolino de ruido a mitad de
