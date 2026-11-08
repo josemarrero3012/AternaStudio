@@ -171,7 +171,7 @@ function WriteState({ ref, text }: { ref: Ref<HTMLElement>; text: string }) {
 }
 
 /**
- * La entrada, como la de TIGRIS: antetítulo arriba, el nombre enorme sobre el
+ * La entrada, como la de TIGRIS (sin antetítulo): el nombre enorme sobre el
  * árbol, el lema debajo y «desliza» abajo. El nombre (decorativo: el logo de
  * la cabecera ya lo dice) se va en cuanto empieza el scroll; el resto, poco
  * después. El titular de la página es el lema.
@@ -179,7 +179,6 @@ function WriteState({ ref, text }: { ref: Ref<HTMLElement>; text: string }) {
 function HeroState({
   nameRef,
   restRef,
-  eyebrow,
   headline,
   scrollCue,
   cta,
@@ -188,7 +187,6 @@ function HeroState({
 }: {
   nameRef: Ref<HTMLDivElement>;
   restRef: Ref<HTMLDivElement>;
-  eyebrow: string;
   headline: string;
   scrollCue: string;
   cta: string;
@@ -208,7 +206,6 @@ function HeroState({
         </p>
       </div>
       <div ref={restRef} className="journey__hero-rest">
-        <p className="t-label journey__eyebrow">{eyebrow}</p>
         <h1 className="journey__tagline" id="journey-title">
           {headline.replace("\n", " ")}
         </h1>
@@ -568,7 +565,7 @@ export function Journey() {
       };
       // Si la fuente se atasca, el contador sale igual (con la de respaldo).
       fontTimer = window.setTimeout(fontsIn, 2500);
-      const fonts = loadFonts([counter, name.querySelector(".journey__name"), hero.querySelector(".journey__tagline"), hero.querySelector(".journey__eyebrow")])
+      const fonts = loadFonts([counter, name.querySelector(".journey__name"), hero.querySelector(".journey__tagline")])
         .catch((err) => console.warn("[recorrido] fuentes:", err))
         .finally(fontsIn);
       void Promise.all([treeReady, fonts]).then(() => {
@@ -672,7 +669,6 @@ export function Journey() {
           <HeroState
             nameRef={nameRef}
             restRef={heroRef}
-            eyebrow={t.hero.eyebrow}
             headline={t.hero.headline}
             scrollCue={j.scrollCue}
             cta={t.cta}

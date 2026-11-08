@@ -101,7 +101,7 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   forma según la proporción de la pantalla, en `HERO` y `layoutFor`
   (`renderer.ts`); si cambia el árbol de la entrada, se mueven también el
   nombre y el lema en `journey.css` («Entrada»).
-- **Composición de la entrada** (como la de TIGRIS): antetítulo arriba,
+- **Composición de la entrada** (como la de TIGRIS, sin antetítulo):
   «ATERNA» enorme sobre el árbol, el lema (el `h1`) debajo, «Desliza para
   descubrir» abajo y el botón en una píldora abajo a la izquierda. El nombre
   se va en cuanto empieza el scroll y entonces aparece el logo de la cabecera

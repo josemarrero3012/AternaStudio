@@ -207,7 +207,7 @@ html[data-motion="on"] .journey__copy {
 
 /* Entrada (como TIGRIS) ------------------------------------------------------
 
-   Centrada sobre el árbol: antetítulo arriba, el nombre enorme encima del
+   Centrada sobre el árbol (sin antetítulo): el nombre enorme encima del
    árbol, el lema debajo, «desliza» abajo y el botón en una píldora abajo a la
    izquierda. El árbol lo coloca el shader (HERO en src/lib/tree/renderer.ts:
    en ordenador, el 64 % del alto con el centro al 49 %; en móvil, el 90 % del
@@ -254,7 +254,6 @@ html[data-motion="on"] .journey__copy {
   display: inline-block;
 }
 
-.journey__eyebrow,
 .journey__tagline,
 .journey__scroll {
   position: absolute;
@@ -262,14 +261,6 @@ html[data-motion="on"] .journey__copy {
   right: var(--journey-x);
   margin: 0;
   text-align: center;
-}
-
-.journey__eyebrow {
-  top: max(calc(var(--header-h) + 8px), calc(17% - 34 * var(--u)));
-  color: var(--text-hi);
-  letter-spacing: 0.42em;
-  /* Compensa el espaciado de la última letra. */
-  text-indent: 0.42em;
 }
 
 .journey__tagline {
@@ -403,11 +394,6 @@ html[data-motion="on"] .journey__hero:not(.is-intro) .journey__hero-rest > * {
   animation: journey-reveal 1.6s var(--e-out) calc(0.9s + var(--i) * 0.09s) both;
 }
 
-.journey__hero.is-intro .journey__eyebrow {
-  --from-y: calc(-10 * var(--u));
-  --from-blur: 4px;
-  animation: journey-reveal 1s var(--e-out) 0.7s both;
-}
 
 .journey__hero.is-intro .journey__tagline {
   --from-y: calc(16 * var(--u));
@@ -670,15 +656,15 @@ html[data-journey="over"] .header::after {
   html[data-journey="over"] .header__nav a,
   html[data-journey="over"] .header__cta {
     font-family: var(--font-ui);
-    font-size: 12px;
+    font-size: 10.5px;
     font-weight: 500;
     line-height: 1;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
   }
 
   html[data-journey="over"] .header__nav a {
-    padding: 14px 22px;
+    padding: 14px 11px;
     color: color-mix(in srgb, var(--journey-name) 78%, transparent);
     transition: color var(--d-std) var(--e-out);
   }
@@ -689,7 +675,7 @@ html[data-journey="over"] .header::after {
   }
 
   html[data-journey="over"] .header__nav .link-underline::after {
-    inset-inline: 22px calc(22px + 0.3em);
+    inset-inline: 11px calc(11px + 0.22em);
     bottom: 7px;
   }
 
@@ -701,7 +687,7 @@ html[data-journey="over"] .header::after {
   html[data-journey="over"] .header__cta:hover {
     order: 1;
     min-height: 44px;
-    padding: 0 0 0 22px;
+    padding: 0 0 0 14px;
     border-color: transparent;
     background-color: transparent;
     color: var(--journey-name);
@@ -713,17 +699,17 @@ html[data-journey="over"] .header::after {
 
   html[data-journey="over"] .header__lang {
     order: 2;
-    margin-left: 26px;
-    padding-left: 14px;
+    margin-left: 16px;
+    padding-left: 8px;
     border-left: 1px solid var(--glass-edge);
   }
 
   html[data-journey="over"] .header__lang .lang-toggle__btn {
     min-width: 0;
-    padding: 8px 6px;
+    padding: 8px 4px;
     border-left: 0;
-    font-size: 10px;
-    letter-spacing: 0.2em;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
     color: color-mix(in srgb, var(--journey-name) 58%, transparent);
   }
 
@@ -770,12 +756,6 @@ html[data-journey="over"] .header::after {
     font-size: calc(84 * var(--u));
     letter-spacing: 0.03em;
     margin-right: -0.03em;
-  }
-
-  .journey__eyebrow {
-    top: calc(var(--header-h) + 22 * var(--u));
-    letter-spacing: 0.3em;
-    text-indent: 0.3em;
   }
 
   .journey__tagline {
