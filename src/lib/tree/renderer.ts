@@ -65,7 +65,7 @@ attribute vec3 aTree;
 attribute vec3 aRoots;
 attribute vec3 aFinal;
 attribute vec4 aRand;
-attribute vec3 aTone;
+attribute vec4 aTone;
 uniform mat4 uProj;
 uniform mat4 uView;
 uniform float uTime;
@@ -73,6 +73,7 @@ uniform float uMotion;
 uniform float uAssemble;
 uniform float uMorph1;
 uniform float uMorph2;
+uniform float uHandoff;
 uniform vec4 uTreeX;
 uniform vec4 uRootsX;
 uniform vec4 uFinalX;
@@ -101,21 +102,28 @@ vec3 brand(float g) {
 void main() {
   float kind = aRand.w;
   float dust = 1.0 - step(0.5, abs(kind - 1.0));
-  float ring = step(1.5, kind);
+  float leaf = step(1.5, kind);
 
   vec3 tree = aTree * uTreeX.w + uTreeX.xyz;
   vec3 roots = aRoots * uRootsX.w + uRootsX.xyz;
   vec3 fin = aFinal * uFinalX.w + uFinalX.xyz;
-  // Al bajar a las raíces caen antes las de abajo; al subir, las raíces cercanas al tronco.
+  // Al bajar a las raíces caen antes las de abajo; al subir, el árbol crece
+  // de la base a la copa (aTone.w).
   float t1 = stagger(uMorph1, mix(aRand.x, 0.5 - aTree.y * 0.5, 0.6), 0.5);
-  float t2 = stagger(uMorph2, mix(aRand.x, aTone.y, 0.6), 0.5);
+  float t2 = stagger(uMorph2, mix(aRand.x, aTone.w, 0.78), 0.55);
+  // El paso a la sección siguiente: la copa se suelta en luz que sube y se
+  // abre, como semillas al viento; la madera, casi quieta, se apaga antes.
+  float release = smoothstep(0.08 + aRand.x * 0.4, 0.5 + aRand.x * 0.4, uHandoff);
+  float side = fract(aRand.y * 7.31) - 0.5;
+  fin.y += release * mix(0.05, 0.1 + aTone.w * 0.32 + aRand.y * 0.24, leaf);
+  fin.x += release * (aFinal.x * 0.24 + side * 0.4) * leaf;
   vec3 pos = mix(mix(tree, roots, t1), fin, t2);
   pos = mix(pos, aTree, dust);
   float ta = stagger(uAssemble, aRand.x, 0.55);
   pos = mix(aStart, pos, ta);
 
   // Remolino a mitad de cada viaje y respiración en reposo.
-  float swirl = (sin(3.14159 * t1) + sin(3.14159 * t2)) * (1.0 - dust) + 1.4 * sin(3.14159 * ta);
+  float swirl = (sin(3.14159 * t1) + sin(3.14159 * t2)) * (1.0 - dust) + 1.4 * sin(3.14159 * ta) + release * leaf * 0.6;
   vec3 q = pos * 0.75 + vec3(0.0, uTime * 0.045, uTime * 0.02);
   vec3 n = vec3(snoise(q), snoise(q + 19.1), snoise(q + 37.7));
   pos += n * ((0.011 + dust * 0.16) * uMotion + swirl * 0.3);
@@ -139,16 +147,21 @@ void main() {
   float streak = smoothstep(0.7, 0.9, fur);
   float spark = step(0.982, aRand.y) * (1.0 - dust);
 
-  // Color: el degradado del logo en el árbol; en las raíces, índigo y
-  // lavanda con pulsos de orquídea que bajan; el anillo, lavanda a orquídea.
+  // Color: el degradado del logo en el símbolo; en las raíces, índigo y
+  // lavanda con pulsos de orquídea que bajan; en el árbol final, la madera
+  // de índigo a violeta y la copa de violeta a rosa (también con manchas).
   vec3 cTree = brand(clamp(aTone.x + (fur - 0.5) * 0.3, 0.0, 1.0));
   cTree = mix(cTree, vec3(1.0, 0.36, 0.78) * 1.25, streak * 0.55);
   float wave = fract(aTone.y * 2.4 - uTime * 0.14 * uMotion);
   float pulse = exp(-pow((wave - 0.5) * 9.0, 2.0));
   vec3 cRoot = mix(vec3(0.3, 0.34, 0.86), vec3(0.62, 0.66, 1.0), aTone.y * 0.7);
   cRoot = mix(cRoot, vec3(1.15, 0.65, 1.3), pulse * 0.8);
-  vec3 cRing = mix(vec3(0.62, 0.66, 1.0), vec3(0.9, 0.52, 1.0), aTone.x);
-  vec3 cFinal = mix(cTree, cRing, ring);
+  float gF = clamp(aFinal.y * 0.42 + 0.5 + aFinal.x * 0.1, 0.0, 1.0);
+  float furF = snoise(aFinal * 3.6 + 2.1) * 0.5 + 0.5;
+  vec3 cWood = mix(vec3(0.2, 0.3, 0.95), vec3(0.56, 0.34, 1.0), gF);
+  vec3 cLeaf = brand(clamp(0.38 + gF * 0.62 + (furF - 0.5) * 0.35, 0.0, 1.0));
+  cLeaf = mix(cLeaf, vec3(1.0, 0.4, 0.8) * 1.2, smoothstep(0.72, 0.92, furF) * 0.5);
+  vec3 cFinal = mix(cWood, cLeaf, leaf);
   vec3 color = mix(mix(cTree, cRoot, t1), cFinal, t2);
   color = mix(color, vec3(0.62, 0.66, 1.0), dust);
   // Destellos: una de cada treinta y tantas, casi blanca.
@@ -157,8 +170,15 @@ void main() {
   float twinkle = 0.7 + 0.3 * sin(uTime * (0.7 + aRand.y * 2.3) * uMotion + aRand.y * 40.0);
   float alpha = twinkle * mix(0.5, 0.95, aTone.z * (1.0 - t1 * (1.0 - t2)));
   // Las manchas solo en el árbol (en las raíces manda el pulso de luz).
-  float inTree = (1.0 - t1) + t2;
-  alpha *= mix(1.0, 0.7 + fur * 0.6, clamp(inTree, 0.0, 1.0) * (1.0 - dust));
+  alpha *= mix(1.0, 0.7 + fur * 0.6, clamp(1.0 - t1, 0.0, 1.0) * (1.0 - dust));
+  alpha *= mix(1.0, 0.65 + furF * 0.7, t2 * (1.0 - dust));
+  // La madera del árbol final, algo más densa de luz (el tronco se lee).
+  alpha *= 1.0 + t2 * (1.0 - leaf) * (1.0 - dust) * 0.25;
+  // Al soltarse, las hojas se encienden un poco (luciérnagas) y la madera se
+  // apaga; al final, todo, antes de que la sección llegue arriba.
+  alpha *= 1.0 + release * leaf * 0.7 * (1.0 - uHandoff);
+  alpha *= 1.0 - smoothstep(0.25, 0.85, uHandoff) * (1.0 - leaf) * 0.95;
+  alpha *= 1.0 - smoothstep(0.6, 0.97, uHandoff);
   alpha *= mix(1.0, 0.32, dust);
   alpha *= 1.0 + spark * 0.6;
   size *= 1.0 + spark * 0.4;
@@ -210,16 +230,18 @@ varying vec2 vUv;
 uniform vec2 uResolution;
 uniform vec3 uGlow; // centro (uv) y radio (en alturas de pantalla)
 uniform float uGlowAmount;
+uniform float uFade; // paso a la sección siguiente: la noche se aclara a la de la página
 void main() {
   vec2 p = vUv - uGlow.xy;
   p.x *= uResolution.x / uResolution.y;
   float r = length(p) / uGlow.z;
-  vec3 base = vec3(11.0, 13.0, 38.0) / 255.0;
+  vec3 base = mix(vec3(11.0, 13.0, 38.0), vec3(19.0, 22.0, 59.0), uFade) / 255.0;
   vec3 haze = vec3(44.0, 34.0, 112.0) / 255.0;
   vec3 color = base + haze * exp(-r * r * 1.6) * uGlowAmount;
-  // Viñeta suave.
+  // Viñeta suave. Con el paso a la sección siguiente se van viñeta y halo:
+  // al acabar, el fondo es la noche de la página (--night-0) sin más.
   vec2 v = vUv - 0.5;
-  color *= 1.0 - dot(v, v) * 0.55;
+  color *= 1.0 - dot(v, v) * 0.55 * (1.0 - uFade);
   gl_FragColor = vec4(color, 1.0);
 }
 `;
@@ -279,6 +301,17 @@ export const HERO = {
   mobile: { center: 0.41, width: 0.9 },
 };
 
+/**
+ * El árbol final (del suelo, y = -1, a la copa, y = 1; la copa, de ±0,95
+ * de ancho, nunca más de ±1,2): en ordenador, el 68 % del alto con el centro
+ * al 47 % (las tarjetas, a los lados: journey.css); en móvil, casi todo el
+ * ancho.
+ */
+export const FINAL = {
+  desktop: { center: 0.47, height: 0.68 },
+  mobile: { center: 0.42, height: 0.44 },
+};
+
 export function layoutFor(aspect: number): Layout {
   const H = HALF_H;
   const W = H * aspect;
@@ -287,14 +320,14 @@ export function layoutFor(aspect: number): Layout {
     return {
       tree: [0, (1 - 2 * center) * H, 0, Math.min((diameter * H) / 0.89, (0.5 * W) / 0.89)],
       roots: [0, 0, 0, 0.8 * H],
-      final: [0, 0.14 * H, 0, Math.min(0.5 * H, 0.3 * W)],
+      final: [0, (1 - 2 * FINAL.desktop.center) * H, 0, Math.min(FINAL.desktop.height * H, 0.42 * W)],
     };
   }
   const { center, width } = HERO.mobile;
   return {
     tree: [0, (1 - 2 * center) * H, 0, Math.min(0.5 * H, (width * W) / 0.89)],
     roots: [0, 0.1 * H, 0, 0.72 * H],
-    final: [0, 0.3 * H, 0, Math.min(0.4 * H, 0.74 * W)],
+    final: [0, (1 - 2 * FINAL.mobile.center) * H, 0, Math.min(FINAL.mobile.height * H, (0.92 * W) / 1.2)],
   };
 }
 
@@ -304,7 +337,8 @@ export type TreeState = {
   time: number; // s
   assemble: number; // 0 a 1
   morph1: number; // árbol → raíces, 0 a 1
-  morph2: number; // raíces → árbol crecido, 0 a 1
+  morph2: number; // raíces → árbol final, 0 a 1
+  handoff: number; // paso a la sección siguiente, 0 a 1
   pointer: { x: number; y: number }; // -1 a 1 (y hacia arriba)
   energy: number; // intensidad del brillo del puntero, 0 a 1
   motion: boolean; // false con movimiento reducido
@@ -323,7 +357,7 @@ const ATTRS = [
   ["aRoots", 3, "roots"],
   ["aFinal", 3, "final"],
   ["aRand", 4, "rand"],
-  ["aTone", 3, "tone"],
+  ["aTone", 4, "tone"],
 ] as const;
 
 export class ParticleRenderer implements TreeRenderer {
@@ -373,14 +407,14 @@ export class ParticleRenderer implements TreeRenderer {
       return buf;
     });
     this.attrLocs = ATTRS.map(([name]) => gl.getAttribLocation(this.points!, name));
-    for (const name of ["uProj", "uView", "uTime", "uMotion", "uAssemble", "uMorph1", "uMorph2", "uTreeX", "uRootsX", "uFinalX", "uTrail", "uGlowR", "uPoint", "uCamZ", "uGain", "uSizeMul"]) {
+    for (const name of ["uProj", "uView", "uTime", "uMotion", "uAssemble", "uMorph1", "uMorph2", "uHandoff", "uTreeX", "uRootsX", "uFinalX", "uTrail", "uGlowR", "uPoint", "uCamZ", "uGain", "uSizeMul"]) {
       this.locs[name] = gl.getUniformLocation(this.points, name);
     }
     this.quad = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.quad);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
     this.bgPos = gl.getAttribLocation(this.bg, "aPosition");
-    for (const name of ["uResolution", "uGlow", "uGlowAmount"]) this.locs[name] = gl.getUniformLocation(this.bg, name);
+    for (const name of ["uResolution", "uGlow", "uGlowAmount", "uFade"]) this.locs[name] = gl.getUniformLocation(this.bg, name);
   }
 
   /** La estela del brillo: la cabeza es el puntero; detrás, puntos que se apagan. */
@@ -428,6 +462,11 @@ export class ParticleRenderer implements TreeRenderer {
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const e1 = s.morph1 * s.morph1 * (3 - 2 * s.morph1);
     const e2 = s.morph2 * s.morph2 * (3 - 2 * s.morph2);
+    // Durante el paso a la sección siguiente, el árbol sube algo (paralaje
+    // con la sección, que sube más deprisa) y se encoge un poco.
+    const ho = s.handoff * s.handoff * (3 - 2 * s.handoff);
+    L.final[1] += ho * 0.2 * HALF_H;
+    L.final[3] *= 1 - ho * 0.12;
     const cy = lerp(lerp(L.tree[1], L.roots[1], e1), L.final[1], e2);
     const glowY = 0.5 + (cy / HALF_H) * 0.5;
     const glowR = lerp(lerp(L.tree[3], L.roots[3] * 1.6, e1), L.final[3], e2) / HALF_H;
@@ -441,7 +480,8 @@ export class ParticleRenderer implements TreeRenderer {
     gl.vertexAttribPointer(this.bgPos, 2, gl.FLOAT, false, 0, 0);
     gl.uniform2f(this.locs.uResolution, w, h);
     gl.uniform3f(this.locs.uGlow, 0.5, glowY, Math.max(0.25, glowR));
-    gl.uniform1f(this.locs.uGlowAmount, (0.75 + 0.25 * Math.sin(s.time * 0.6)) * (s.motion ? 1 : 0.9) * lerp(1, 0.55, e1 * (1 - e2)) * (0.35 + 0.65 * s.assemble));
+    gl.uniform1f(this.locs.uGlowAmount, (0.75 + 0.25 * Math.sin(s.time * 0.6)) * (s.motion ? 1 : 0.9) * lerp(1, 0.55, e1 * (1 - e2)) * (0.35 + 0.65 * s.assemble) * (1 - ho));
+    gl.uniform1f(this.locs.uFade, ho);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     gl.disableVertexAttribArray(this.bgPos);
 
@@ -462,6 +502,7 @@ export class ParticleRenderer implements TreeRenderer {
     gl.uniform1f(this.locs.uAssemble, s.assemble);
     gl.uniform1f(this.locs.uMorph1, s.morph1);
     gl.uniform1f(this.locs.uMorph2, s.morph2);
+    gl.uniform1f(this.locs.uHandoff, s.handoff);
     gl.uniform4f(this.locs.uTreeX, ...L.tree);
     gl.uniform4f(this.locs.uRootsX, ...L.roots);
     gl.uniform4f(this.locs.uFinalX, ...L.final);
@@ -521,17 +562,25 @@ export class PosterRenderer implements TreeRenderer {
     return sizeCanvas(this.canvas);
   }
 
-  draw() {
+  draw(s?: TreeState) {
     const { width: w, height: h } = this.canvas;
     const ctx = this.ctx;
     ctx.fillStyle = "#0b0d26";
     ctx.fillRect(0, 0, w, h);
     const img = this.img;
-    if (!img.complete || !img.naturalWidth) return;
-    const k = Math.max(w / img.naturalWidth, h / img.naturalHeight);
-    const iw = img.naturalWidth * k;
-    const ih = img.naturalHeight * k;
-    ctx.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
+    if (img.complete && img.naturalWidth) {
+      const k = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+      const iw = img.naturalWidth * k;
+      const ih = img.naturalHeight * k;
+      ctx.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
+    }
+    // Paso a la sección siguiente: se funde en la noche de la página.
+    if (s && s.handoff > 0) {
+      ctx.globalAlpha = Math.min(1, s.handoff * 1.25);
+      ctx.fillStyle = "#13163b";
+      ctx.fillRect(0, 0, w, h);
+      ctx.globalAlpha = 1;
+    }
   }
 
   dispose() {}

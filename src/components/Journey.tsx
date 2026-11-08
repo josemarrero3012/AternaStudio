@@ -3,8 +3,9 @@
 // La portada: el árbol de Aterna hecho de partículas (WebGL). Al abrir, las
 // partículas llegan desde la profundidad y forman el árbol del símbolo; al
 // hacer scroll se deshacen en un sistema de raíces («Lo que no se ve…») y
-// vuelven a subir para formar el árbol crecido, dentro de su anillo, junto a
-// dos tarjetas de vidrio. Giran con el puntero y se apartan a su paso. Abre
+// de ellas crece un árbol de verdad, junto a dos tarjetas de vidrio; al subir
+// «01 — Estudio» por encima, la copa se suelta en luz y la escena se funde en
+// la noche de la página. El puntero no las mueve: las enciende. Abre
 // con una pantalla de carga (contador y línea de progreso) que se funde desde
 // el centro con un filo de luz; luego entran la cabecera y el titular,
 // palabra a palabra. Las formas y el shader están en src/lib/tree/.
@@ -261,6 +262,8 @@ export function Journey() {
     let progress = 0;
     let unit = 1;
     let onScreen = true;
+    let handoff = 0;
+    let drawnHandoff = Number.NaN;
     let needsDraw = true;
     let lastProgress = Number.NaN;
     const pointer = { x: 0, y: 0 };
@@ -278,12 +281,20 @@ export function Journey() {
     let frameNo = 0;
 
     const header = document.querySelector<HTMLElement>(".header");
+    // La sección siguiente («01 — Estudio») sube por encima del escenario en
+    // el último tramo (journey.css, «Paso a la sección siguiente»).
+    const next = main.nextElementSibling as HTMLElement | null;
     const measure = () => {
       const r = main.getBoundingClientRect();
-      target = clamp(-r.top / Math.max(1, main.offsetHeight - window.innerHeight));
-      onScreen = r.bottom > 0 && r.top < window.innerHeight;
+      const vh = window.innerHeight;
+      target = clamp(-r.top / Math.max(1, main.offsetHeight - vh));
+      const nextTop = next ? next.getBoundingClientRect().top : r.bottom;
+      // El paso va pegado a donde está la sección de verdad (sin suavizar):
+      // de 0, con su borde abajo, a 1, con su borde arriba.
+      handoff = clamp(1 - nextTop / vh);
+      onScreen = r.bottom > 0 && r.top < vh && nextTop > 0;
       // Mientras el recorrido está bajo la cabecera, esta va sin velo.
-      const over = r.bottom > (header?.offsetHeight ?? 84) ? "over" : "past";
+      const over = Math.min(r.bottom, nextTop) > (header?.offsetHeight ?? 84) ? "over" : "past";
       if (root.dataset.journey !== over) root.dataset.journey = over;
     };
     const measureUnit = () => {
@@ -373,10 +384,12 @@ export function Journey() {
         const named = nameBlock.last.o > 0.5 ? "on" : "off";
         if (root.dataset.journeyName !== named) root.dataset.journeyName = named;
       }
-      if (!onScreen || !renderer) return;
+      // Tapado del todo, un último fotograma con el paso acabado (si el
+      // scroll fue rápido, el anterior se quedó a medias) y nada más.
+      if (!renderer || (!onScreen && handoff === drawnHandoff)) return;
       // La imagen fija solo se repinta si hace falta; las partículas, siempre.
       const still = renderer instanceof PosterRenderer;
-      if (still && !needsDraw && !moved) return;
+      if (still && !needsDraw && !moved && handoff === drawnHandoff) return;
       if (!renderer.resize()) return;
       const assemble = reduced ? 1 : Number.isNaN(assembleFrom) ? 0 : clamp((now - assembleFrom) / assembleMs);
       renderer.draw({
@@ -384,10 +397,12 @@ export function Journey() {
         assemble,
         morph1: invLerp(MORPH.roots[0], MORPH.roots[1], progress),
         morph2: invLerp(MORPH.final[0], MORPH.final[1], progress),
+        handoff,
         pointer,
         energy: reduced ? 0 : energy,
         motion: !reduced,
       });
+      drawnHandoff = handoff;
       needsDraw = false;
       frameNo++;
       // El vidrio copia la escena: cada dos fotogramas basta.

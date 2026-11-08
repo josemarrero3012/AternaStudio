@@ -452,22 +452,24 @@ html[data-motion="on"] .journey__hero:not(.is-intro) .journey__hero-rest > * {
 }
 
 /* Alineadas con el contenedor mientras no tapen el árbol; en pantallas muy
-   anchas se apartan hacia los bordes, nunca más allá del margen. El anillo
-   del árbol final mide de radio el 27 % de la altura (el 16,2 % del ancho en
-   pantallas más estrechas que 5:3; ver layoutFor en src/lib/tree/renderer.ts). */
+   anchas se apartan hacia los bordes, nunca más allá del margen. La copa del
+   árbol final mide de semiancho el 32 % de la altura (el 20 % del ancho en
+   pantallas más estrechas que 1,62:1; ver FINAL y layoutFor en
+   src/lib/tree/renderer.ts). */
 .journey__cards {
   --card-w: calc(330 * var(--u));
-  --card-x: max(var(--margin), min(var(--journey-x), calc(50% - min(27vh, 16.2vw) - 24px - var(--card-w))));
+  --card-x: max(var(--margin), min(var(--journey-x), calc(50% - min(32vh, 20vw) - 24px - var(--card-w))));
 }
 
+/* La raíz, abajo junto al tronco; la copa, arriba junto a las ramas. */
 .journey-card--left {
   left: var(--card-x);
-  top: 22%;
+  top: 50%;
 }
 
 .journey-card--right {
   right: var(--card-x);
-  top: 49%;
+  top: 17%;
 }
 
 .journey-card__glass {
@@ -626,6 +628,43 @@ html[data-motion="on"] .journey__hero:not(.is-intro) .journey__hero-rest > * {
   transform-origin: left center;
 }
 
+/* Paso a la sección siguiente («01 — Estudio») ---------------------------- */
+
+/* En el último tramo del recorrido, la sección siguiente sube por encima del
+   escenario, que sigue fijado: su borde de arriba es transparente y se funde
+   en la noche de la página a lo largo de --handoff-fade, mientras el árbol se
+   suelta en luz y el fondo de la escena pasa a ser esa misma noche (uHandoff
+   y uFade en src/lib/tree/renderer.ts; el paso lo mide Journey.tsx con el
+   borde de esta sección). Al acabar, escenario y sección suben juntos y no
+   hay costura. La banda de la sección empieza donde acaba el fundido. */
+.journey + .section {
+  --handoff-fade: 52vh;
+  margin-top: -100vh;
+  padding-top: calc(var(--section-y-lg) * 0.7 + var(--handoff-fade) * 0.6);
+  background-image: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--night-0) 55%, transparent) 50%, var(--night-0) 100%), var(--band, linear-gradient(var(--night-0), var(--night-0)));
+  background-position:
+    0 0,
+    0 var(--handoff-fade),
+    0 var(--handoff-fade);
+  background-size:
+    100% var(--handoff-fade),
+    100% calc(100% - var(--handoff-fade)),
+    100% calc(100% - var(--handoff-fade));
+  background-repeat: no-repeat;
+}
+
+@supports (height: 100svh) {
+  .journey + .section {
+    --handoff-fade: 52svh;
+    margin-top: -100svh;
+  }
+}
+
+/* La luz que deriva sobre la banda, también debajo del fundido. */
+.journey + .section::before {
+  top: var(--handoff-fade);
+}
+
 /* La cabecera durante el recorrido ---------------------------------------- */
 
 /* Entra con el titular (M3); hasta entonces, tapada por la pantalla de carga. */
@@ -770,12 +809,12 @@ html[data-journey="over"] .header::after {
 
   .journey-card--left {
     left: var(--margin);
-    top: 16%;
+    top: 41%;
   }
 
   .journey-card--right {
     right: var(--margin);
-    top: 39%;
+    top: 13%;
   }
 
   .journey-card__text {

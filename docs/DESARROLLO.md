@@ -73,7 +73,7 @@ con imágenes.
 
 ## El recorrido de la portada
 
-La portada abre con una pantalla fijada de 380vh con el árbol de Aterna hecho
+La portada abre con una pantalla fijada de 460vh con el árbol de Aterna hecho
 de partículas (WebGL, sin librerías). Es la técnica de las portadas de
 partículas como la del tigre de TIGRIS: miles de puntos que dibujan una forma
 sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
@@ -81,8 +81,11 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
 - **Formas** (`src/lib/tree/shapes.ts`): el árbol se lee de la silueta del
   símbolo (`public/tree/v1/mark-mask.webp`, un tercio de las partículas en el
   contorno para que tenga filo); las raíces se generan con una semilla fija
-  (siempre las mismas); el árbol final es el mismo árbol dentro de un anillo.
-  Cada partícula tiene su sitio en las tres formas y en una nube de salida.
+  (siempre las mismas); el árbol final es un árbol de verdad, también
+  generado: tronco, siete ramas maestras repartidas que se abren en
+  horquillas y crecen hasta el contorno de una copa redonda (un elipsoide,
+  `CROWN`), racimos de hojas y raíces de superficie. Cada partícula tiene su
+  sitio en las tres formas y en una nube de salida.
 - **Movimiento** (`src/lib/tree/renderer.ts`): el shader lleva cada partícula
   de una forma a otra con su propio retardo y un remolino de ruido a mitad de
   camino. Al abrir, llegan desde la profundidad y forman el árbol mientras se
@@ -111,9 +114,21 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   a formarse, más deprisa). Hace de cortina de la sesión (las demás páginas
   ya no la muestran).
 - **Scroll**: la entrada se va y el árbol baja a sus raíces
-  («Lo que no se ve…»); luego las raíces suben y forman el árbol crecido,
-  junto a dos tarjetas de vidrio (enlazan a Diseño web y a SEO) y el cierre.
-  Los tiempos de los textos están en `TIMING` (`src/lib/journey/config.ts`).
+  («Lo que no se ve…»); luego las raíces suben y crece un árbol de verdad,
+  del tronco a la copa, junto a dos tarjetas de vidrio (la raíz abajo, que
+  enlaza a Diseño web; la copa arriba, a SEO) y el cierre. Los tiempos de los
+  textos están en `TIMING` (`src/lib/journey/config.ts`).
+- **Paso a «01 — Estudio»**: en el último tramo (la última pantalla de
+  scroll) la sección siguiente sube por encima del escenario, que sigue
+  fijado. Su borde de arriba es transparente y se funde en la noche de la
+  página (`--handoff-fade`, en `journey.css`); a la vez, la copa se suelta en
+  luz que sube, la madera se apaga y el fondo de la escena pasa a ser esa
+  misma noche (`--night-0`), sin halo ni viñeta. Al acabar, escenario y
+  sección suben juntos y no hay costura. El paso lo mide `Journey.tsx` con el
+  borde de la sección (no con el progreso), así va pegado a ella. Si se
+  cambia `--journey-scene-h`, hay que revisar `TIMING` y `MORPH`: todo lo
+  del recorrido tiene que acabar antes de que llegue la sección (hacia 0,72
+  con 460vh).
 - **Vidrio**: las tarjetas no usan `backdrop-filter`: cada una lleva un lienzo
   con una copia desenfocada de la escena que tiene detrás.
 - **Textos**: en `dict.ts` (`journey`), en los cuatro idiomas. El titular de

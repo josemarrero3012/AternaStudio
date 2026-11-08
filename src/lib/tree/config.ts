@@ -3,9 +3,10 @@
 // La técnica es la de las portadas de partículas en WebGL (la del tigre de
 // TIGRIS): miles de puntos que dibujan una forma sacada de una imagen y que,
 // al hacer scroll, se deshacen y se rehacen en otra. Aquí las formas son tres:
-// el árbol del símbolo de Aterna, sus raíces y el árbol otra vez, ya crecido,
-// dentro de su anillo. Las partículas llegan dispersas al abrir la página y
-// brillan al pasar el puntero (no se mueven con él).
+// el árbol del símbolo de Aterna, sus raíces y un árbol de verdad que crece de
+// ellas y que, al subir «01 — Estudio», se suelta en luz. Las partículas
+// llegan dispersas al abrir la página y brillan al pasar el puntero (no se
+// mueven con él).
 
 import { withBase } from "@/lib/base";
 
@@ -28,9 +29,10 @@ export function particleCount(width: number) {
   return 76000;
 }
 
-/** Reparto: polvo que flota en toda la escena y anillo del árbol final. */
+/** Polvo que flota en toda la escena. */
 export const DUST_SHARE = 0.07;
-export const RING_SHARE = 0.11;
+/** Parte de las partículas (sin el polvo) que forman la copa del árbol final. */
+export const LEAF_SHARE = 0.68;
 /** Parte de las partículas del árbol que se reservan al contorno: le da filo. */
 export const EDGE_SHARE = 0.22;
 
@@ -43,10 +45,10 @@ export const CAMERA_Z = 5;
 
 /** Morfologías, en progreso del scroll del recorrido (0 a 1). */
 export const MORPH = {
-  /** Del árbol a las raíces («Lo que no se ve…»). */
-  roots: [0.06, 0.42] as const,
-  /** De las raíces al árbol crecido, con las tarjetas. */
-  final: [0.56, 0.86] as const,
+  /** Del símbolo a las raíces («Lo que no se ve…»). */
+  roots: [0.04, 0.32] as const,
+  /** De las raíces al árbol: crece del tronco a la copa, con las tarjetas. */
+  final: [0.44, 0.64] as const,
 };
 
 /** La entrada: las partículas llegan desde la profundidad y forman el árbol. */

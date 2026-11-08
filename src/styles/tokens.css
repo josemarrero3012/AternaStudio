@@ -147,7 +147,7 @@
 
   /* Recorrido de la portada (Journey.tsx, styles/journey.css). Sus medidas
      van en px de diseño: --u (ver journey.css). */
-  --journey-scene-h: 380vh;
+  --journey-scene-h: 460vh;
   --journey-stage: #0b0d26; /* detrás del lienzo mientras se forman las partículas (es el fondo del shader) */
   /* Velo sobre la escena: algo arriba (cabecera), mucho abajo (textos), y
      en el borde inferior, la noche de la página para fundirse con lo que sigue. */

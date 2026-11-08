@@ -35,11 +35,14 @@ export type Timing = { enter?: Range; exit?: Range };
 export const TIMING = {
   // El nombre grande se va en cuanto empieza el scroll; el resto de la
   // entrada, justo después (las partículas empiezan a bajar a las raíces).
-  name: { exit: [0.004, 0.05] },
-  hero: { exit: [0.02, 0.1] },
-  mid: { enter: [0.38, 0.46], exit: [0.58, 0.68] },
-  cards: { enter: [0.76, 0.84] },
-  final: { enter: [0.82, 0.9] },
+  name: { exit: [0.004, 0.04] },
+  hero: { exit: [0.015, 0.07] },
+  mid: { enter: [0.3, 0.36], exit: [0.46, 0.53] },
+  // El árbol, con sus tarjetas y su lema; todo se va antes de que llegue
+  // «01 — Estudio», que sube por encima en el último tramo (desde ~0,72 con
+  // --journey-scene-h: 460vh; ver --journey-handoff en tokens.css).
+  cards: { enter: [0.6, 0.66], exit: [0.7, 0.76] },
+  final: { enter: [0.61, 0.67], exit: [0.69, 0.75] },
 } satisfies Record<string, Timing>;
 
 export const ENTER_RISE = 24; // px de diseño
