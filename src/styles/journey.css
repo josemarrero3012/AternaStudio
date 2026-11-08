@@ -807,14 +807,15 @@ html[data-journey="over"] .header::after {
     font-size: calc(16 * var(--u));
   }
 
+  /* La copa del árbol queda a la vista entre las dos (del 29 % al 46 %). */
   .journey-card--left {
     left: var(--margin);
-    top: 41%;
+    top: 47%;
   }
 
   .journey-card--right {
     right: var(--margin);
-    top: 13%;
+    top: 10%;
   }
 
   .journey-card__text {
