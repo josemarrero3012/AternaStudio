@@ -25,7 +25,7 @@ export function preloadFirstFrame(preload: (href: string, options: { as: "image"
 
 export const SCROLL_SMOOTHING = 0.09; // por fotograma a 60 fps
 export const DEPTH_STRENGTH = { x: 0.0144, y: 0.0108 };
-export const POINTER_SMOOTHING = 0.055; // por fotograma a 60 fps
+export const POINTER_SMOOTHING = 0.3; // por fotograma a 60 fps (el brillo sigue al puntero de cerca)
 export const CURSOR_SMOOTHING = 0.2; // por fotograma a 60 fps
 
 export type Range = readonly [number, number];
@@ -33,7 +33,10 @@ export type Timing = { enter?: Range; exit?: Range };
 
 /** En progreso del scroll, de 0 a 1. */
 export const TIMING = {
-  hero: { exit: [0.16, 0.28] },
+  // El nombre grande se va en cuanto empieza el scroll; el resto de la
+  // entrada, justo después (las partículas empiezan a bajar a las raíces).
+  name: { exit: [0.004, 0.05] },
+  hero: { exit: [0.02, 0.1] },
   mid: { enter: [0.38, 0.46], exit: [0.58, 0.68] },
   cards: { enter: [0.76, 0.84] },
   final: { enter: [0.82, 0.9] },

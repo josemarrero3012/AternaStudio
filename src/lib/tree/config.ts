@@ -5,7 +5,7 @@
 // al hacer scroll, se deshacen y se rehacen en otra. Aquí las formas son tres:
 // el árbol del símbolo de Aterna, sus raíces y el árbol otra vez, ya crecido,
 // dentro de su anillo. Las partículas llegan dispersas al abrir la página y
-// se apartan del puntero.
+// brillan al pasar el puntero (no se mueven con él).
 
 import { withBase } from "@/lib/base";
 
@@ -21,18 +21,18 @@ export function preloadTree(preload: (href: string, options: { as: "image"; cros
   preload(MASK_URL, { as: "image", crossOrigin: "anonymous", fetchPriority: "high" });
 }
 
-/** Partículas según el ancho de la pantalla (y la mitad con movimiento reducido no hace falta: no se animan). */
+/** Partículas según el ancho de la pantalla. */
 export function particleCount(width: number) {
-  if (width < 640) return 26000;
-  if (width < 1024) return 38000;
-  return 56000;
+  if (width < 640) return 30000;
+  if (width < 1024) return 44000;
+  return 76000;
 }
 
 /** Reparto: polvo que flota en toda la escena y anillo del árbol final. */
 export const DUST_SHARE = 0.07;
 export const RING_SHARE = 0.11;
 /** Parte de las partículas del árbol que se reservan al contorno: le da filo. */
-export const EDGE_SHARE = 0.32;
+export const EDGE_SHARE = 0.22;
 
 /** Semilla fija: la misma escena en cada carga. */
 export const SEED = 20261108;
@@ -44,7 +44,7 @@ export const CAMERA_Z = 5;
 /** Morfologías, en progreso del scroll del recorrido (0 a 1). */
 export const MORPH = {
   /** Del árbol a las raíces («Lo que no se ve…»). */
-  roots: [0.12, 0.44] as const,
+  roots: [0.06, 0.42] as const,
   /** De las raíces al árbol crecido, con las tarjetas. */
   final: [0.56, 0.86] as const,
 };
@@ -54,12 +54,12 @@ export const ASSEMBLE_MS = 2600;
 /** Al volver a la portada sin recargar, una entrada más corta. */
 export const ASSEMBLE_AGAIN_MS = 1500;
 
-/** Rotación máxima con el puntero (radianes) y vaivén lento del árbol. */
-export const TILT = { yaw: 0.32, pitch: 0.14 };
-export const SWAY = 0.06;
-
-/** Empuje del puntero: radio (unidades de escena) y fuerza. */
-export const REPEL = { radius: 0.26, strength: 0.17 };
+/**
+ * El brillo del puntero: radio (unidades de escena; el árbol de la entrada
+ * mide ~2 de diámetro), puntos de la estela (con la cabeza) y en cuánto se
+ * apaga la estela (s, constante de tiempo).
+ */
+export const GLOW = { radius: 0.24, trail: 10, fade: 0.35 };
 
 /** Tamaño base del punto en px CSS (se multiplica por el dpr). */
 export const POINT_SIZE = 2.3;

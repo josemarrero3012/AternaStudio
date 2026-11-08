@@ -161,6 +161,9 @@
   );
   /* Pantalla de carga: la noche, algo más clara en el centro (como el shader). */
   --journey-veil: radial-gradient(circle 75vh at 50% 50%, #262c62 0%, #181c46 100%);
+  /* El nombre grande de la entrada, sobre las partículas. */
+  --journey-name: #f4f1ff;
+  --journey-name-shadow: #0b0d2659;
   --journey-track: #e6e9ff14;
   --journey-counter-shadow: #0d0b3a73;
   /* Vidrio: borde, relleno bajo la copia desenfocada y tinte encima. */

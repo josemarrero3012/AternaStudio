@@ -8,7 +8,7 @@
 // Sin WebGL, PosterRenderer pinta la imagen fija (poster.webp).
 
 import { createProgram, sizeCanvas } from "@/lib/journey/depthRenderer";
-import { CAMERA_Z, FOV, POINT_SIZE, REPEL, SWAY, TILT } from "./config";
+import { CAMERA_Z, FOV, GLOW, POINT_SIZE } from "./config";
 import type { Shapes } from "./shapes";
 
 // Ruido simplex 3D (Ashima Arts / Stefan Gustavson, licencia MIT).
@@ -76,8 +76,11 @@ uniform float uMorph2;
 uniform vec4 uTreeX;
 uniform vec4 uRootsX;
 uniform vec4 uFinalX;
-uniform vec3 uPointer;
-uniform vec2 uRepel;
+// El brillo del puntero: su posición ahora y una estela que se apaga
+// (x, y en el plano de la escena; z, intensidad).
+#define TRAIL ${GLOW.trail}
+uniform vec3 uTrail[TRAIL];
+uniform float uGlowR;
 uniform float uPoint;
 uniform float uCamZ;
 uniform float uSizeMul;
@@ -117,21 +120,29 @@ void main() {
   vec3 n = vec3(snoise(q), snoise(q + 19.1), snoise(q + 37.7));
   pos += n * ((0.011 + dust * 0.16) * uMotion + swirl * 0.3);
 
-  // El puntero aparta las partículas (en el plano de la escena).
-  vec2 dp = pos.xy - uPointer.xy;
-  float d2 = dot(dp, dp);
-  float push = uPointer.z * exp(-d2 / (uRepel.x * uRepel.x)) * (1.0 - dust * 0.6);
-  pos.xy += dp * inversesqrt(d2 + 1e-4) * push * uRepel.y;
-  pos.z += push * 0.2;
+  // El puntero no mueve nada: enciende las partículas que tiene cerca.
+  float glow = 0.0;
+  for (int i = 0; i < TRAIL; i++) {
+    vec2 d = pos.xy - uTrail[i].xy;
+    glow = max(glow, uTrail[i].z * exp(-dot(d, d) / (uGlowR * uGlowR)));
+  }
+  glow *= (1.0 - dust * 0.6) * (0.72 + 0.28 * sin(uTime * 9.0 + aRand.y * 60.0));
 
   vec4 mv = uView * vec4(pos, 1.0);
   gl_Position = uProj * mv;
   float persp = uCamZ / max(0.4, -mv.z);
-  gl_PointSize = clamp(uPoint * aRand.z * persp * (1.0 + push * 1.2) * uSizeMul, 1.0, 64.0);
+  float size = uPoint * aRand.z * persp;
+
+  // Textura de la forma (como el pelaje del tigre): manchas de luz fijas
+  // sobre el árbol y vetas de rosa encendido.
+  float fur = snoise(aTree * vec3(4.2, 4.2, 2.0) + 7.3) * 0.5 + 0.5;
+  float streak = smoothstep(0.7, 0.9, fur);
+  float spark = step(0.982, aRand.y) * (1.0 - dust);
 
   // Color: el degradado del logo en el árbol; en las raíces, índigo y
   // lavanda con pulsos de orquídea que bajan; el anillo, lavanda a orquídea.
-  vec3 cTree = brand(aTone.x);
+  vec3 cTree = brand(clamp(aTone.x + (fur - 0.5) * 0.3, 0.0, 1.0));
+  cTree = mix(cTree, vec3(1.0, 0.36, 0.78) * 1.25, streak * 0.55);
   float wave = fract(aTone.y * 2.4 - uTime * 0.14 * uMotion);
   float pulse = exp(-pow((wave - 0.5) * 9.0, 2.0));
   vec3 cRoot = mix(vec3(0.3, 0.34, 0.86), vec3(0.62, 0.66, 1.0), aTone.y * 0.7);
@@ -140,17 +151,29 @@ void main() {
   vec3 cFinal = mix(cTree, cRing, ring);
   vec3 color = mix(mix(cTree, cRoot, t1), cFinal, t2);
   color = mix(color, vec3(0.62, 0.66, 1.0), dust);
+  // Destellos: una de cada treinta y tantas, casi blanca.
+  color = mix(color, vec3(1.0, 0.94, 1.0), spark * 0.75);
 
   float twinkle = 0.7 + 0.3 * sin(uTime * (0.7 + aRand.y * 2.3) * uMotion + aRand.y * 40.0);
   float alpha = twinkle * mix(0.5, 0.95, aTone.z * (1.0 - t1 * (1.0 - t2)));
+  // Las manchas solo en el árbol (en las raíces manda el pulso de luz).
+  float inTree = (1.0 - t1) + t2;
+  alpha *= mix(1.0, 0.7 + fur * 0.6, clamp(inTree, 0.0, 1.0) * (1.0 - dust));
   alpha *= mix(1.0, 0.32, dust);
+  alpha *= 1.0 + spark * 0.6;
+  size *= 1.0 + spark * 0.4;
   // En las raíces están más repartidas: algo más de brillo y tamaño.
   float spreadOut = t1 * (1.0 - t2) * (1.0 - dust);
   alpha *= 1.0 + spreadOut * 0.9;
-  gl_PointSize *= 1.0 + spreadOut * 0.35;
+  size *= 1.0 + spreadOut * 0.35;
   alpha *= mix(0.45, 1.0, ta);
-  alpha *= 1.0 + push * 1.5;
+  // El brillo: más luz, más tamaño y hacia el blanco.
+  // (Algo menos donde las partículas van sueltas en remolino: se amontonan.)
+  alpha *= 1.0 + glow * mix(4.0, 2.2, clamp(swirl, 0.0, 1.0));
+  size *= 1.0 + glow * 1.6;
+  color = mix(color, mix(color * 1.5, vec3(1.0, 0.95, 1.0), 0.6), clamp(glow, 0.0, 1.0) * 0.85);
   alpha *= smoothstep(13.0, 3.2, -mv.z) * smoothstep(0.4, 1.4, -mv.z);
+  gl_PointSize = clamp(size * uSizeMul, 1.0, 72.0);
   vColor = color;
   vAlpha = alpha;
 }
@@ -245,22 +268,31 @@ export type Layout = { tree: [number, number, number, number]; roots: [number, n
 export const HALF_H = Math.tan(FOV / 2) * CAMERA_Z;
 
 /**
- * Posición (x, y, z) y escala de cada forma. En ordenador el árbol queda
- * arriba y al centro, sobre el titular (abajo); en móvil, más pequeño y algo
- * más alto, porque el texto ocupa casi media pantalla.
+ * Posición (x, y, z) y escala de cada forma. El árbol de la entrada va al
+ * centro y grande, con el nombre encima (la silueta mide ±0,89): en
+ * ordenador, el 64 % del alto con el centro al 49 %; en móvil, casi todo el
+ * ancho y algo más arriba (el lema va debajo). Si se mueve, hay que mover
+ * también el nombre y el lema (journey.css, «Entrada»).
  */
+export const HERO = {
+  desktop: { center: 0.49, diameter: 0.64 },
+  mobile: { center: 0.41, width: 0.9 },
+};
+
 export function layoutFor(aspect: number): Layout {
   const H = HALF_H;
   const W = H * aspect;
   if (aspect >= 1) {
+    const { center, diameter } = HERO.desktop;
     return {
-      tree: [0, 0.2 * H, 0, Math.min(0.6 * H, 0.42 * W)],
+      tree: [0, (1 - 2 * center) * H, 0, Math.min((diameter * H) / 0.89, (0.5 * W) / 0.89)],
       roots: [0, 0, 0, 0.8 * H],
       final: [0, 0.14 * H, 0, Math.min(0.5 * H, 0.3 * W)],
     };
   }
+  const { center, width } = HERO.mobile;
   return {
-    tree: [0, 0.36 * H, 0, Math.min(0.44 * H, 0.82 * W)],
+    tree: [0, (1 - 2 * center) * H, 0, Math.min(0.5 * H, (width * W) / 0.89)],
     roots: [0, 0.1 * H, 0, 0.72 * H],
     final: [0, 0.3 * H, 0, Math.min(0.4 * H, 0.74 * W)],
   };
@@ -274,7 +306,7 @@ export type TreeState = {
   morph1: number; // árbol → raíces, 0 a 1
   morph2: number; // raíces → árbol crecido, 0 a 1
   pointer: { x: number; y: number }; // -1 a 1 (y hacia arriba)
-  energy: number; // fuerza del empuje del puntero, 0 a 1
+  energy: number; // intensidad del brillo del puntero, 0 a 1
   motion: boolean; // false con movimiento reducido
 };
 
@@ -341,7 +373,7 @@ export class ParticleRenderer implements TreeRenderer {
       return buf;
     });
     this.attrLocs = ATTRS.map(([name]) => gl.getAttribLocation(this.points!, name));
-    for (const name of ["uProj", "uView", "uTime", "uMotion", "uAssemble", "uMorph1", "uMorph2", "uTreeX", "uRootsX", "uFinalX", "uPointer", "uRepel", "uPoint", "uCamZ", "uGain", "uSizeMul"]) {
+    for (const name of ["uProj", "uView", "uTime", "uMotion", "uAssemble", "uMorph1", "uMorph2", "uTreeX", "uRootsX", "uFinalX", "uTrail", "uGlowR", "uPoint", "uCamZ", "uGain", "uSizeMul"]) {
       this.locs[name] = gl.getUniformLocation(this.points, name);
     }
     this.quad = gl.createBuffer();
@@ -349,6 +381,34 @@ export class ParticleRenderer implements TreeRenderer {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
     this.bgPos = gl.getAttribLocation(this.bg, "aPosition");
     for (const name of ["uResolution", "uGlow", "uGlowAmount"]) this.locs[name] = gl.getUniformLocation(this.bg, name);
+  }
+
+  /** La estela del brillo: la cabeza es el puntero; detrás, puntos que se apagan. */
+  private trail: { x: number; y: number; s: number }[] = [];
+  private trailTime = Number.NaN;
+  private trailData = new Float32Array(GLOW.trail * 3);
+
+  private updateTrail(x: number, y: number, energy: number, time: number) {
+    const dt = Number.isNaN(this.trailTime) ? 0 : Math.max(0, time - this.trailTime);
+    this.trailTime = time;
+    const fade = Math.exp(-dt / GLOW.fade);
+    for (const p of this.trail) p.s *= fade;
+    const last = this.trail[0];
+    if (energy > 0.05 && (!last || Math.hypot(x - last.x, y - last.y) > GLOW.radius * 0.35)) {
+      this.trail.unshift({ x, y, s: energy });
+      this.trail.length = Math.min(this.trail.length, GLOW.trail - 1);
+    }
+    const d = this.trailData;
+    d.fill(0);
+    d[0] = x;
+    d[1] = y;
+    d[2] = energy;
+    this.trail.forEach((p, i) => {
+      d[(i + 1) * 3] = p.x;
+      d[(i + 1) * 3 + 1] = p.y;
+      d[(i + 1) * 3 + 2] = p.s * 0.85;
+    });
+    return d;
   }
 
   resize() {
@@ -394,9 +454,9 @@ export class ParticleRenderer implements TreeRenderer {
       gl.enableVertexAttribArray(loc);
       gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
     });
-    const sway = s.motion ? Math.sin(s.time * 0.21) * SWAY : 0;
     gl.uniformMatrix4fv(this.locs.uProj, false, perspective(FOV, aspect, 0.1, 40));
-    gl.uniformMatrix4fv(this.locs.uView, false, view(s.pointer.x * TILT.yaw + sway, -s.pointer.y * TILT.pitch, CAMERA_Z, cy));
+    // La escena no gira: ni con el puntero ni sola.
+    gl.uniformMatrix4fv(this.locs.uView, false, view(0, 0, CAMERA_Z, cy));
     gl.uniform1f(this.locs.uTime, s.time);
     gl.uniform1f(this.locs.uMotion, s.motion ? 1 : 0);
     gl.uniform1f(this.locs.uAssemble, s.assemble);
@@ -405,8 +465,8 @@ export class ParticleRenderer implements TreeRenderer {
     gl.uniform4f(this.locs.uTreeX, ...L.tree);
     gl.uniform4f(this.locs.uRootsX, ...L.roots);
     gl.uniform4f(this.locs.uFinalX, ...L.final);
-    gl.uniform3f(this.locs.uPointer, s.pointer.x * HALF_H * aspect, s.pointer.y * HALF_H, s.energy);
-    gl.uniform2f(this.locs.uRepel, REPEL.radius, REPEL.strength);
+    gl.uniform3fv(this.locs.uTrail, this.updateTrail(s.pointer.x * HALF_H * aspect, s.pointer.y * HALF_H, s.energy, s.time));
+    gl.uniform1f(this.locs.uGlowR, GLOW.radius);
     // Puntos algo más gruesos en pantallas pequeñas (hay menos partículas).
     const small = this.canvas.clientWidth < 640;
     gl.uniform1f(this.locs.uPoint, POINT_SIZE * dpr * (small ? 1.25 : 1));

@@ -86,14 +86,23 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
 - **Movimiento** (`src/lib/tree/renderer.ts`): el shader lleva cada partícula
   de una forma a otra con su propio retardo y un remolino de ruido a mitad de
   camino. Al abrir, llegan desde la profundidad y forman el árbol mientras se
-  abre la pantalla de carga. El árbol gira un poco con el ratón y las
-  partículas se apartan a su paso. Se dibujan con mezcla aditiva más una
-  pasada de resplandor (puntos grandes y tenues) en pantallas medianas y
-  grandes.
+  abre la pantalla de carga. El ratón no mueve nada: enciende las partículas
+  que tiene cerca (y deja una estela corta que se apaga), en el árbol, en las
+  raíces y en el árbol final. El árbol lleva textura fija (manchas de luz,
+  vetas de rosa y algún destello casi blanco) y el borde algo suelto. Se
+  dibujan con mezcla aditiva más una pasada de resplandor (puntos grandes y
+  tenues) en pantallas medianas y grandes.
 - **Números**: cuántas partículas según la pantalla, cuándo cambia cada forma
-  (`MORPH`, en progreso del scroll), giro, empuje del puntero y tamaño de los
-  puntos, en `src/lib/tree/config.ts`. Dónde se coloca cada forma según la
-  proporción de la pantalla, en `layoutFor` (`renderer.ts`).
+  (`MORPH`, en progreso del scroll), el brillo del puntero (`GLOW`) y el
+  tamaño de los puntos, en `src/lib/tree/config.ts`. Dónde se coloca cada
+  forma según la proporción de la pantalla, en `HERO` y `layoutFor`
+  (`renderer.ts`); si cambia el árbol de la entrada, se mueven también el
+  nombre y el lema en `journey.css` («Entrada»).
+- **Composición de la entrada** (como la de TIGRIS): antetítulo arriba,
+  «ATERNA» enorme sobre el árbol, el lema (el `h1`) debajo, «Desliza para
+  descubrir» abajo y el botón en una píldora abajo a la izquierda. El nombre
+  se va en cuanto empieza el scroll y entonces aparece el logo de la cabecera
+  (mientras se ve el nombre, la cabecera va sin logo).
 - **Entrada**: una pantalla de carga (contador y línea de progreso) que espera
   a la silueta y a las fuentes, como mínimo 1,5 s y como mucho 8 s, y se
   funde desde el centro con un filo de luz (shader WebGL). Después entran la
@@ -101,7 +110,7 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   al volver a la portada sin recargar ya no se repite (las partículas vuelven
   a formarse, más deprisa). Hace de cortina de la sesión (las demás páginas
   ya no la muestran).
-- **Scroll**: el titular de entrada se va y el árbol baja a sus raíces
+- **Scroll**: la entrada se va y el árbol baja a sus raíces
   («Lo que no se ve…»); luego las raíces suben y forman el árbol crecido,
   junto a dos tarjetas de vidrio (enlazan a Diseño web y a SEO) y el cierre.
   Los tiempos de los textos están en `TIMING` (`src/lib/journey/config.ts`).

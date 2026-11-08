@@ -91,11 +91,14 @@ function treePoint(mask: Mask, list: Uint32Array, r: Rand, out: Float32Array, o:
   const py = Math.floor(i / mask.size) + r();
   const x = (px / mask.size - 0.5) * 2;
   const y = (0.5 - py / mask.size) * 2;
-  // Relieve: abombado hacia el centro, para que gire como un objeto.
+  // Relieve: abombado hacia el centro, con volumen.
   const bulge = 0.24 * Math.max(0, 1 - (x * x + y * y));
-  out[o] = x;
-  out[o + 1] = y;
-  out[o + 2] = bulge + gauss(r) * 0.022;
+  // Borde suelto, como el pelaje del tigre: todas tiemblan un poco y algunas
+  // se escapan de la silueta.
+  const loose = r() < 0.06 ? 0.022 : 0.0025;
+  out[o] = x + gauss(r) * loose;
+  out[o + 1] = y + gauss(r) * loose;
+  out[o + 2] = bulge + gauss(r) * 0.03;
 }
 
 // Raíces ------------------------------------------------------------------------

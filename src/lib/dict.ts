@@ -56,7 +56,7 @@ const es = {
   "journey": {
     "label": "El árbol de Aterna hecho de partículas de luz, que baja a sus raíces y vuelve a crecer",
     "loading": "Cargando",
-    "heroBody": "Diseñamos y programamos webs a medida, y después trabajamos para que te encuentren.",
+    "scrollCue": "Desliza para descubrir",
     "heroCursor": "Hablemos",
     "mid": {
       "headline": "Lo que no se ve\nsostiene lo que crece.",
@@ -728,7 +728,7 @@ const en: Dict = {
   "journey": {
     "label": "The Aterna tree made of particles of light, sinking into its roots and growing back",
     "loading": "Loading",
-    "heroBody": "We design and build bespoke websites, then work on getting you found.",
+    "scrollCue": "Scroll to discover",
     "heroCursor": "Let’s talk",
     "mid": {
       "headline": "What you don’t see\nholds up what grows.",
@@ -1398,7 +1398,7 @@ const nl: Dict = {
   "journey": {
     "label": "De Aterna-boom van lichtdeeltjes, die afdaalt naar zijn wortels en opnieuw groeit",
     "loading": "Laden",
-    "heroBody": "We ontwerpen en bouwen websites op maat en zorgen daarna dat je gevonden wordt.",
+    "scrollCue": "Scroll om te ontdekken",
     "heroCursor": "Laten we praten",
     "mid": {
       "headline": "Wat je niet ziet,\ndraagt wat groeit.",
@@ -2068,7 +2068,7 @@ const de: Dict = {
   "journey": {
     "label": "Der Aterna-Baum aus Lichtpartikeln, der zu seinen Wurzeln hinabsinkt und neu wächst",
     "loading": "Wird geladen",
-    "heroBody": "Wir gestalten und entwickeln Websites nach Maß und sorgen danach dafür, dass man Sie findet.",
+    "scrollCue": "Scrollen und entdecken",
     "heroCursor": "Sprechen wir",
     "mid": {
       "headline": "Was man nicht sieht,\nträgt, was wächst.",

@@ -89,28 +89,23 @@ function Words({ text, start }: { text: string; start: number }) {
 function CopyState({
   ref,
   kind,
-  heading = "h2",
   id,
   headline,
   body,
-  intro,
   children,
 }: {
   ref: Ref<HTMLElement>;
-  kind: "hero" | "mid" | "final";
-  heading?: "h1" | "h2";
+  kind: "mid" | "final";
   id?: string;
   headline: string;
   body: string;
-  intro?: boolean;
   children?: ReactNode;
 }) {
   const [a = "", b = ""] = headline.split("\n");
-  const H = heading;
   const firstCount = a.split(" ").length;
   return (
-    <section ref={ref} className={`journey__copy journey__copy--${kind}${intro ? " is-intro" : ""}`} aria-labelledby={id}>
-      <H className="journey__headline" id={id}>
+    <section ref={ref} className={`journey__copy journey__copy--${kind}`} aria-labelledby={id}>
+      <h2 className="journey__headline" id={id}>
         <span className="journey__line journey__line--sans trim">
           <Words text={a} start={0} />
         </span>{" "}
@@ -119,10 +114,65 @@ function CopyState({
         <span className="journey__line journey__line--serif trim">
           <Words text={b} start={firstCount} />
         </span>
-      </H>
+      </h2>
       <div className="journey__detail" data-detail>
         <p className="journey__body">{body}</p>
         {children}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * La entrada, como la de TIGRIS: antetítulo arriba, el nombre enorme sobre el
+ * árbol, el lema debajo y «desliza» abajo. El nombre (decorativo: el logo de
+ * la cabecera ya lo dice) se va en cuanto empieza el scroll; el resto, poco
+ * después. El titular de la página es el lema.
+ */
+function HeroState({
+  nameRef,
+  restRef,
+  eyebrow,
+  headline,
+  scrollCue,
+  cta,
+  ctaCursor,
+  intro,
+}: {
+  nameRef: Ref<HTMLDivElement>;
+  restRef: Ref<HTMLDivElement>;
+  eyebrow: string;
+  headline: string;
+  scrollCue: string;
+  cta: string;
+  ctaCursor: string;
+  intro: boolean;
+}) {
+  const letters = Array.from("Aterna");
+  return (
+    <section className={`journey__hero${intro ? " is-intro" : ""}`} aria-labelledby="journey-title">
+      <div ref={nameRef} className="journey__name-wrap" aria-hidden="true">
+        <p className="journey__name">
+          {letters.map((l, i) => (
+            <span key={i} className="journey__letter" style={{ "--i": i } as CSSProperties}>
+              {l}
+            </span>
+          ))}
+        </p>
+      </div>
+      <div ref={restRef} className="journey__hero-rest">
+        <p className="t-label journey__eyebrow">{eyebrow}</p>
+        <h1 className="journey__tagline" id="journey-title">
+          {headline.replace("\n", " ")}
+        </h1>
+        <p className="t-label journey__scroll" aria-hidden="true">
+          <span className="journey__scroll-line" />
+          {scrollCue}
+        </p>
+        <Link href="/contacto" className="journey__pill" data-cursor-label={ctaCursor}>
+          {cta}
+          <ArrowRight />
+        </Link>
       </div>
     </section>
   );
@@ -139,7 +189,8 @@ export function Journey() {
   const stageRef = useRef<HTMLDivElement>(null);
   const probeRef = useRef<HTMLDivElement>(null);
   const caveRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLElement>(null);
+  const nameRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
   const midRef = useRef<HTMLElement>(null);
   const finalRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -154,6 +205,7 @@ export function Journey() {
     const stage = stageRef.current;
     const probe = probeRef.current;
     const caveHost = caveRef.current;
+    const name = nameRef.current;
     const hero = heroRef.current;
     const mid = midRef.current;
     const final = finalRef.current;
@@ -162,7 +214,7 @@ export function Journey() {
     const burnHost = burnRef.current;
     const counter = counterRef.current;
     const bar = barRef.current;
-    if (!main || !stage || !probe || !caveHost || !hero || !mid || !final || !cards || !loader || !burnHost || !counter || !bar) return;
+    if (!main || !stage || !probe || !caveHost || !name || !hero || !mid || !final || !cards || !loader || !burnHost || !counter || !bar) return;
 
     let alive = true;
     const reduced = prefersReducedMotion();
@@ -264,8 +316,9 @@ export function Journey() {
       detail: reveal ? el.querySelector<HTMLElement>("[data-detail]") : undefined,
       last: { o: Number.NaN, y: Number.NaN, v: "", reveal: [], detail: Number.NaN },
     });
-    const blocks = [block(hero, TIMING.hero), block(mid, TIMING.mid, true), block(cards, TIMING.cards), block(final, TIMING.final, true)];
-    const cardsBlock = blocks[2];
+    const blocks = [block(name, TIMING.name), block(hero, TIMING.hero), block(mid, TIMING.mid, true), block(cards, TIMING.cards), block(final, TIMING.final, true)];
+    const nameBlock = blocks[0];
+    const cardsBlock = blocks[3];
 
     const applyBlocks = () => {
       for (const b of blocks) {
@@ -316,6 +369,9 @@ export function Journey() {
       if (moved) {
         applyBlocks();
         lastProgress = progress;
+        // Mientras se ve el nombre grande, la cabecera va sin logo (como en TIGRIS).
+        const named = nameBlock.last.o > 0.5 ? "on" : "off";
+        if (root.dataset.journeyName !== named) root.dataset.journeyName = named;
       }
       if (!onScreen || !renderer) return;
       // La imagen fija solo se repinta si hace falta; las partículas, siempre.
@@ -426,7 +482,7 @@ export function Journey() {
       };
       // Si la fuente se atasca, el contador sale igual (con la de respaldo).
       fontTimer = window.setTimeout(fontsIn, 2500);
-      const fonts = loadFonts([counter, hero.querySelector(".journey__line--sans"), hero.querySelector(".journey__body")])
+      const fonts = loadFonts([counter, name.querySelector(".journey__name"), hero.querySelector(".journey__tagline"), hero.querySelector(".journey__eyebrow")])
         .catch((err) => console.warn("[recorrido] fuentes:", err))
         .finally(fontsIn);
       void Promise.all([treeReady, fonts]).then(() => {
@@ -506,6 +562,7 @@ export function Journey() {
       delete loader.dataset.fonts;
       delete root.dataset.journey;
       delete root.dataset.journeyIntro;
+      delete root.dataset.journeyName;
     };
   }, []);
 
@@ -538,12 +595,16 @@ export function Journey() {
               </Link>
             ))}
           </div>
-          <CopyState ref={heroRef} kind="hero" heading="h1" id="journey-title" headline={t.hero.headline} body={j.heroBody} intro={intro}>
-            <Link href="/contacto" className="btn-primary journey__cta" data-cursor-label={j.heroCursor}>
-              {t.cta}
-              <ArrowRight />
-            </Link>
-          </CopyState>
+          <HeroState
+            nameRef={nameRef}
+            restRef={heroRef}
+            eyebrow={t.hero.eyebrow}
+            headline={t.hero.headline}
+            scrollCue={j.scrollCue}
+            cta={t.cta}
+            ctaCursor={j.heroCursor}
+            intro={intro}
+          />
           <CopyState ref={midRef} kind="mid" id="journey-mid" headline={j.mid.headline} body={j.mid.body} />
           <CopyState ref={finalRef} kind="final" id="journey-final" headline={j.final.headline} body={j.final.body} />
         </div>
