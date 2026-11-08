@@ -25,17 +25,16 @@ import { prefersReducedMotion } from "@/lib/motion";
 import { BurnRenderer } from "@/lib/journey/burnRenderer";
 import {
   BURN_MS,
-  CARD_BLUR,
   INTRO_AT_MS,
   LOADER_TIMEOUT_MS,
   MIN_LOADER_MS,
   POINTER_SMOOTHING,
   SCROLL_SMOOTHING,
   TIMING,
+  WRITE,
   type Timing,
 } from "@/lib/journey/config";
-import { drawGlass } from "@/lib/journey/glass";
-import { clamp, damp, invLerp, lerp, stateStyle } from "@/lib/journey/motion";
+import { clamp, damp, invLerp, lerp, smoothstep, stateStyle } from "@/lib/journey/motion";
 import { ASSEMBLE_AGAIN_MS, ASSEMBLE_MS, MASK_URL, MORPH, POSTER_URL, particleCount } from "@/lib/tree/config";
 import { ParticleRenderer, PosterRenderer, type TreeRenderer } from "@/lib/tree/renderer";
 import { buildShapes, loadMask, type Shapes } from "@/lib/tree/shapes";
@@ -96,7 +95,7 @@ function CopyState({
   children,
 }: {
   ref: Ref<HTMLElement>;
-  kind: "mid" | "final";
+  kind: "mid";
   id?: string;
   headline: string;
   body: string;
@@ -120,6 +119,53 @@ function CopyState({
         <p className="journey__body">{body}</p>
         {children}
       </div>
+    </section>
+  );
+}
+
+/**
+ * El texto que se escribe sobre el árbol, como el de TIGRIS: grande, centrado
+ * y letra a letra según se baja. Las palabras entre asteriscos van en cursiva
+ * con la luz del logo (cada letra, su tramo del degradado). Los lectores de
+ * pantalla leen el texto entero de una vez.
+ */
+function WriteState({ ref, text }: { ref: Ref<HTMLElement>; text: string }) {
+  let n = 0;
+  const plain = text.replaceAll("*", "");
+  return (
+    <section ref={ref} className="journey__write">
+      <p className="journey__write-text">
+        <span className="sr-only">{plain}</span>
+        <span aria-hidden="true">
+          {text.split("*").map((part, k) => {
+            const accent = k % 2 === 1;
+            const words = part.split(" ");
+            return (
+              <span key={k} className={accent ? "journey__write-accent" : undefined}>
+                {words.map((word, w) => (
+                  <span key={w}>
+                    {word ? (
+                      <span className="journey__write-word">
+                        {Array.from(word).map((ch, c, all) => (
+                          <span
+                            key={c}
+                            className="journey__char"
+                            data-char={n++}
+                            style={accent ? ({ "--g": all.length > 1 ? c / (all.length - 1) : 0.5 } as CSSProperties) : undefined}
+                          >
+                            {ch}
+                          </span>
+                        ))}
+                      </span>
+                    ) : null}
+                    {w < words.length - 1 ? " " : null}
+                  </span>
+                ))}
+              </span>
+            );
+          })}
+        </span>
+      </p>
     </section>
   );
 }
@@ -193,8 +239,7 @@ export function Journey() {
   const nameRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const midRef = useRef<HTMLElement>(null);
-  const finalRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
+  const writeRef = useRef<HTMLElement>(null);
   const loaderRef = useRef<HTMLDivElement>(null);
   const burnRef = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
@@ -209,13 +254,12 @@ export function Journey() {
     const name = nameRef.current;
     const hero = heroRef.current;
     const mid = midRef.current;
-    const final = finalRef.current;
-    const cards = cardsRef.current;
+    const write = writeRef.current;
     const loader = loaderRef.current;
     const burnHost = burnRef.current;
     const counter = counterRef.current;
     const bar = barRef.current;
-    if (!main || !stage || !probe || !caveHost || !name || !hero || !mid || !final || !cards || !loader || !burnHost || !counter || !bar) return;
+    if (!main || !stage || !probe || !caveHost || !name || !hero || !mid || !write || !loader || !burnHost || !counter || !bar) return;
 
     let alive = true;
     const reduced = prefersReducedMotion();
@@ -278,7 +322,6 @@ export function Journey() {
       if (Number.isNaN(assembleFrom)) assembleFrom = performance.now();
     };
     const t0 = performance.now();
-    let frameNo = 0;
 
     const header = document.querySelector<HTMLElement>(".header");
     // La sección siguiente («01 — Estudio») sube por encima del escenario en
@@ -327,9 +370,37 @@ export function Journey() {
       detail: reveal ? el.querySelector<HTMLElement>("[data-detail]") : undefined,
       last: { o: Number.NaN, y: Number.NaN, v: "", reveal: [], detail: Number.NaN },
     });
-    const blocks = [block(name, TIMING.name), block(hero, TIMING.hero), block(mid, TIMING.mid, true), block(cards, TIMING.cards), block(final, TIMING.final, true)];
+    const blocks = [block(name, TIMING.name), block(hero, TIMING.hero), block(mid, TIMING.mid, true)];
     const nameBlock = blocks[0];
-    const cardsBlock = blocks[3];
+
+    // El texto que se escribe: letra a letra con el scroll (cada una aparece
+    // en una ventana de unas pocas letras, de borrosa a nítida) mientras el
+    // bloque sube despacio por delante del árbol.
+    const chars = Array.from(write.querySelectorAll<HTMLElement>("[data-char]"));
+    const charLast = chars.map(() => Number.NaN);
+    const writeLast = { o: Number.NaN, y: Number.NaN, v: "" };
+    const WINDOW = 7; // letras a la vez a medio aparecer
+    const applyWrite = () => {
+      const s = stateStyle(progress, TIMING.write);
+      const o = Math.round(s.opacity * 1000) / 1000;
+      // Sube de +9 a -9 % de la pantalla a lo largo de todo su tramo.
+      const span = invLerp(TIMING.write.enter[0], TIMING.write.exit[1], progress);
+      const y = Math.round(lerp(0.09, -0.09, span) * window.innerHeight * 10) / 10;
+      const v = s.visible ? "visible" : "hidden";
+      if (o !== writeLast.o) write.style.opacity = String((writeLast.o = o));
+      if (y !== writeLast.y) write.style.transform = `translate3d(0, ${(writeLast.y = y)}px, 0)`;
+      if (v !== writeLast.v) write.style.visibility = writeLast.v = v;
+      if (v === "hidden" && writeLast.o === 0 && progress < TIMING.write.enter[0]) return;
+      const typed = reduced ? 1 : invLerp(WRITE[0], WRITE[1], progress);
+      const head = typed * (chars.length + WINDOW);
+      chars.forEach((el, i) => {
+        const r = Math.round(smoothstep(clamp((head - i) / WINDOW)) * 100) / 100;
+        if (r === charLast[i]) return;
+        charLast[i] = r;
+        el.style.opacity = String(r);
+        el.style.filter = r > 0 && r < 1 ? `blur(${((1 - r) * 0.12).toFixed(3)}em)` : "";
+      });
+    };
 
     const applyBlocks = () => {
       for (const b of blocks) {
@@ -379,6 +450,7 @@ export function Journey() {
       const moved = progress !== lastProgress;
       if (moved) {
         applyBlocks();
+        applyWrite();
         lastProgress = progress;
         // Mientras se ve el nombre grande, la cabecera va sin logo (como en TIGRIS).
         const named = nameBlock.last.o > 0.5 ? "on" : "off";
@@ -398,15 +470,14 @@ export function Journey() {
         morph1: invLerp(MORPH.roots[0], MORPH.roots[1], progress),
         morph2: invLerp(MORPH.final[0], MORPH.final[1], progress),
         handoff,
+        // Mientras se lee el texto, el árbol baja algo de luz.
+        dim: writeLast.o || 0,
         pointer,
         energy: reduced ? 0 : energy,
         motion: !reduced,
       });
       drawnHandoff = handoff;
       needsDraw = false;
-      frameNo++;
-      // El vidrio copia la escena: cada dos fotogramas basta.
-      if (cardsBlock.last.v === "visible" && (still || frameNo % 2 === 0)) drawGlass(stage, canvas);
     };
     raf = requestAnimationFrame(loop);
 
@@ -598,18 +669,6 @@ export function Journey() {
         </div>
         <div className="journey__shade" aria-hidden="true" />
         <div className="journey__content">
-          <div ref={cardsRef} className="journey__cards">
-            {j.cards.map((card, i) => (
-              <Link key={card.slug} href={`/servicios/${card.slug}`} className={`journey-card journey-card--${i ? "right" : "left"}`} data-cursor-label={j.cardCursor}>
-                <canvas className="journey-card__glass" data-blur={CARD_BLUR} aria-hidden="true" />
-                <span className="journey-card__text">
-                  <span className="t-label journey-card__label">{card.label}</span>{" "}
-                  <span className="journey-card__title">{card.title}</span>{" "}
-                  <span className="journey-card__body">{card.body}</span>
-                </span>
-              </Link>
-            ))}
-          </div>
           <HeroState
             nameRef={nameRef}
             restRef={heroRef}
@@ -621,7 +680,7 @@ export function Journey() {
             intro={intro}
           />
           <CopyState ref={midRef} kind="mid" id="journey-mid" headline={j.mid.headline} body={j.mid.body} />
-          <CopyState ref={finalRef} kind="final" id="journey-final" headline={j.final.headline} body={j.final.body} />
+          <WriteState ref={writeRef} text={j.write} />
         </div>
       </div>
       <div ref={loaderRef} className="journey__loader" data-phase={phase} aria-hidden={phase === "done" ? true : undefined}>

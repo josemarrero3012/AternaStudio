@@ -46,9 +46,9 @@ export const CAMERA_Z = 5;
 /** Morfologías, en progreso del scroll del recorrido (0 a 1). */
 export const MORPH = {
   /** Del símbolo a las raíces («Lo que no se ve…»). */
-  roots: [0.04, 0.32] as const,
-  /** De las raíces al árbol: crece del tronco a la copa, con las tarjetas. */
-  final: [0.44, 0.64] as const,
+  roots: [0.03, 0.23] as const,
+  /** De las raíces al árbol: crece del tronco a la copa. */
+  final: [0.33, 0.47] as const,
 };
 
 /** La entrada: las partículas llegan desde la profundidad y forman el árbol. */

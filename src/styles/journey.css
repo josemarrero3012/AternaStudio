@@ -131,8 +131,7 @@ html[data-motion="on"] .journey__copy {
   --detail: 0;
 }
 
-.journey__copy--mid,
-.journey__copy--final {
+.journey__copy--mid {
   opacity: 0;
   visibility: hidden;
 }
@@ -427,105 +426,56 @@ html[data-motion="on"] .journey__hero:not(.is-intro) .journey__hero-rest > * {
   --to-opacity: 0.8;
 }
 
-/* Tarjetas de vidrio (pantalla final) --------------------------------------- */
+/* El texto que se escribe sobre el árbol (como el de TIGRIS) ---------------- */
 
-.journey__cards {
+/* Grande, centrado y en la letra de los titulares; cada letra la va
+   mostrando el scroll (Journey.tsx). Sube despacio por delante del árbol. */
+.journey__write {
   position: absolute;
   inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--journey-x);
   opacity: 0;
   visibility: hidden;
   will-change: opacity, transform;
 }
 
-.journey-card {
-  position: absolute;
-  display: block;
-  width: var(--card-w);
-  border: 1px solid var(--glass-edge);
-  border-radius: calc(20 * var(--u));
-  background: var(--glass-card-fill);
-  box-shadow: var(--glass-card-shadow);
-  overflow: hidden;
-  isolation: isolate;
-  pointer-events: auto;
-  transition: border-color var(--d-std) var(--e-out);
-}
-
-/* Alineadas con el contenedor mientras no tapen el árbol; en pantallas muy
-   anchas se apartan hacia los bordes, nunca más allá del margen. La copa del
-   árbol final mide de semiancho el 32 % de la altura (el 20 % del ancho en
-   pantallas más estrechas que 1,62:1; ver FINAL y layoutFor en
-   src/lib/tree/renderer.ts). */
-.journey__cards {
-  --card-w: calc(330 * var(--u));
-  --card-x: max(var(--margin), min(var(--journey-x), calc(50% - min(32vh, 20vw) - 24px - var(--card-w))));
-}
-
-/* La raíz, abajo junto al tronco; la copa, arriba junto a las ramas. */
-.journey-card--left {
-  left: var(--card-x);
-  top: 50%;
-}
-
-.journey-card--right {
-  right: var(--card-x);
-  top: 17%;
-}
-
-.journey-card__glass {
-  position: absolute;
-  z-index: 0;
-  max-width: none;
-  pointer-events: none;
-}
-
-.journey-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: var(--glass-card-tint);
-  transition: background-color var(--d-std) var(--e-out);
-}
-
-.journey-card__text {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  padding: calc(24 * var(--u)) calc(24 * var(--u)) calc(32 * var(--u));
-}
-
-.journey-card__label {
-  margin-bottom: calc(16 * var(--u));
-  color: var(--lavender);
-}
-
-.journey-card__title {
-  margin-bottom: calc(10 * var(--u));
+.journey__write-text {
+  max-width: calc(1120 * var(--u));
+  margin: 0;
   font-family: var(--font-display);
-  font-size: calc(28 * var(--u));
+  font-size: calc(62 * var(--u));
   font-weight: 400;
-  font-variation-settings: "opsz" 72;
-  line-height: 1.15;
-  letter-spacing: var(--ls-title);
-  color: var(--text-hi);
+  font-variation-settings: "opsz" 144;
+  line-height: 1.12;
+  letter-spacing: -0.012em;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--journey-name);
+  /* Una sombra amplia y suave: se lee también sobre la copa encendida. */
+  text-shadow: 0 0 calc(40 * var(--u)) var(--journey-name-shadow), 0 2px calc(14 * var(--u)) var(--journey-name-shadow);
 }
 
-.journey-card__body {
-  font-size: calc(17 * var(--u));
-  line-height: 1.3;
-  color: var(--text-support);
+.journey__write-word {
+  white-space: nowrap;
 }
 
-@media (hover: hover) {
-  .journey-card:hover {
-    border-color: color-mix(in srgb, var(--lavender) 60%, transparent);
-  }
+/* Sin movimiento (o sin JavaScript), el texto se ve entero. */
+html[data-motion="on"] .journey__char {
+  opacity: 0;
+}
 
-  .journey-card:hover::after {
-    background: var(--glass-card-tint-hover);
-  }
+/* Las palabras de acento, en cursiva y con la luz del logo: cada letra toma
+   su tramo del degradado (--g, de 0 a 1, lo pone el componente). */
+.journey__write-accent {
+  font-style: italic;
+  font-variation-settings: "opsz" 144;
+}
+
+.journey__write-accent .journey__char {
+  color: color-mix(in srgb, #f0b2f5 calc(var(--g, 0.5) * 100%), #b3bcff);
 }
 
 /* Pantalla de carga ------------------------------------------------------------ */
@@ -810,10 +760,6 @@ html[data-journey="over"] .header::after {
     row-gap: calc(18 * var(--u));
   }
 
-  .journey__copy--final {
-    bottom: calc(18 * var(--u));
-  }
-
   /* Centro del árbol al 41 %; el nombre, centrado al 43 %. */
   .journey__name-wrap {
     bottom: auto;
@@ -868,31 +814,9 @@ html[data-journey="over"] .header::after {
     font-size: calc(16 * var(--u));
   }
 
-  /* La copa del árbol queda a la vista entre las dos (del 29 % al 46 %). */
-  .journey-card--left {
-    left: var(--margin);
-    top: 47%;
-  }
-
-  .journey-card--right {
-    right: var(--margin);
-    top: 10%;
-  }
-
-  .journey-card__text {
-    padding: calc(20 * var(--u)) calc(20 * var(--u)) calc(24 * var(--u));
-  }
-
-  .journey-card__label {
-    margin-bottom: calc(12 * var(--u));
-  }
-
-  .journey-card__title {
-    font-size: calc(24 * var(--u));
-  }
-
-  .journey-card__body {
-    font-size: calc(15 * var(--u));
+  .journey__write-text {
+    font-size: calc(34 * var(--u));
+    line-height: 1.16;
   }
 
   .journey__counter {

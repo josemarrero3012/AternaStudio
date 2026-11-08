@@ -124,9 +124,19 @@ void main() {
 
   // Remolino a mitad de cada viaje y respiración en reposo.
   float swirl = (sin(3.14159 * t1) + sin(3.14159 * t2)) * (1.0 - dust) + 1.4 * sin(3.14159 * ta) + release * leaf * 0.6;
-  vec3 q = pos * 0.75 + vec3(0.0, uTime * 0.045, uTime * 0.02);
+  vec3 q = pos * 0.75 + vec3(0.0, uTime * 0.07, uTime * 0.035);
   vec3 n = vec3(snoise(q), snoise(q + 19.1), snoise(q + 37.7));
-  pos += n * ((0.011 + dust * 0.16) * uMotion + swirl * 0.3);
+  // Vida en reposo, aunque no se haga scroll: cada forma respira (un ruido
+  // que fluye despacio; poco en el símbolo, que tiene que leerse nítido), la
+  // copa del árbol final se mece con el viento (más cuanto más arriba) y sus
+  // hojas tiemblan, cada una a su ritmo.
+  float idle = mix(mix(0.016, 0.03, t1), mix(0.016, 0.032, leaf), t2);
+  pos += n * ((idle + dust * 0.16) * uMotion + swirl * 0.3);
+  float hgt = clamp(aFinal.y * 0.5 + 0.5, 0.0, 1.0);
+  float wind = sin(uTime * 0.55 + aFinal.y * 1.1) * 0.6 + sin(uTime * 0.23 + 1.7) * 0.4;
+  pos.x += wind * hgt * hgt * 0.04 * uFinalX.w * t2 * uMotion * (1.0 - dust);
+  float flutter = uTime * (1.3 + aRand.y * 1.4) + aRand.x * 40.0;
+  pos.xy += vec2(sin(flutter), cos(flutter * 0.8)) * 0.01 * uMotion * (leaf * t2 + (1.0 - t1) * (1.0 - t2) * 0.4 + t1 * (1.0 - t2) * 0.7) * (1.0 - dust);
 
   // El puntero no mueve nada: enciende las partículas que tiene cerca.
   float glow = 0.0;
@@ -305,13 +315,12 @@ export const HERO = {
 
 /**
  * El árbol final (del suelo, y = -1, a la copa, y = 1; la copa, de ±0,95
- * de ancho, nunca más de ±1,2): en ordenador, el 68 % del alto con el centro
- * al 47 % (las tarjetas, a los lados: journey.css); en móvil, casi todo el
- * ancho.
+ * de ancho, nunca más de ±1,2), grande y solo: en ordenador, el 84 % del
+ * alto con el centro al 51 %; en móvil, casi todo el ancho.
  */
 export const FINAL = {
-  desktop: { center: 0.47, height: 0.68 },
-  mobile: { center: 0.42, height: 0.44 },
+  desktop: { center: 0.51, height: 0.84 },
+  mobile: { center: 0.45, height: 0.62 },
 };
 
 export function layoutFor(aspect: number): Layout {
@@ -322,14 +331,14 @@ export function layoutFor(aspect: number): Layout {
     return {
       tree: [0, (1 - 2 * center) * H, 0, Math.min((diameter * H) / 0.89, (0.5 * W) / 0.89)],
       roots: [0, 0, 0, 0.8 * H],
-      final: [0, (1 - 2 * FINAL.desktop.center) * H, 0, Math.min(FINAL.desktop.height * H, 0.42 * W)],
+      final: [0, (1 - 2 * FINAL.desktop.center) * H, 0, Math.min(FINAL.desktop.height * H, 0.9 * W)],
     };
   }
   const { center, width } = HERO.mobile;
   return {
     tree: [0, (1 - 2 * center) * H, 0, Math.min(0.5 * H, (width * W) / 0.89)],
     roots: [0, 0.1 * H, 0, 0.72 * H],
-    final: [0, (1 - 2 * FINAL.mobile.center) * H, 0, Math.min(FINAL.mobile.height * H, (0.92 * W) / 1.2)],
+    final: [0, (1 - 2 * FINAL.mobile.center) * H, 0, Math.min(FINAL.mobile.height * H, (0.96 * W) / 1.0)],
   };
 }
 
@@ -341,6 +350,7 @@ export type TreeState = {
   morph1: number; // árbol → raíces, 0 a 1
   morph2: number; // raíces → árbol final, 0 a 1
   handoff: number; // paso a la sección siguiente, 0 a 1
+  dim?: number; // menos luz mientras se lee el texto de encima, 0 a 1
   pointer: { x: number; y: number }; // -1 a 1 (y hacia arriba)
   energy: number; // intensidad del brillo del puntero, 0 a 1
   motion: boolean; // false con movimiento reducido
@@ -380,8 +390,7 @@ export class ParticleRenderer implements TreeRenderer {
   constructor(canvas: HTMLCanvasElement, shapes: Shapes) {
     this.canvas = canvas;
     this.shapes = shapes;
-    // preserveDrawingBuffer: el vidrio de las tarjetas copia este lienzo.
-    const gl = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false, preserveDrawingBuffer: true, powerPreference: "high-performance" });
+    const gl = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false, powerPreference: "high-performance" });
     if (!gl) throw new Error("Sin WebGL");
     this.gl = gl;
     this.init();
@@ -519,13 +528,14 @@ export class ParticleRenderer implements TreeRenderer {
     // Primero un resplandor: un tercio de los puntos, grandes y muy tenues
     // (hace de «bloom» sin pasadas de desenfoque). En pantallas pequeñas no
     // compensa.
+    const gain = 1 - 0.38 * (s.dim ?? 0);
     if (!small) {
       gl.uniform1f(this.locs.uSizeMul, 3.6);
-      gl.uniform1f(this.locs.uGain, 0.17);
+      gl.uniform1f(this.locs.uGain, 0.17 * gain);
       gl.drawArrays(gl.POINTS, this.shapes.glow.first, this.shapes.glow.count);
     }
     gl.uniform1f(this.locs.uSizeMul, 1);
-    gl.uniform1f(this.locs.uGain, 1.45);
+    gl.uniform1f(this.locs.uGain, 1.45 * gain);
     gl.drawArrays(gl.POINTS, 0, this.shapes.count);
   }
 

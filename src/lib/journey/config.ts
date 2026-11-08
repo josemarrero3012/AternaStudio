@@ -35,15 +35,17 @@ export type Timing = { enter?: Range; exit?: Range };
 export const TIMING = {
   // El nombre grande se va en cuanto empieza el scroll; el resto de la
   // entrada, justo después (las partículas empiezan a bajar a las raíces).
-  name: { exit: [0.004, 0.04] },
-  hero: { exit: [0.015, 0.07] },
-  mid: { enter: [0.3, 0.36], exit: [0.46, 0.53] },
-  // El árbol, con sus tarjetas y su lema; todo se va antes de que llegue
-  // «01 — Estudio», que sube por encima en el último tramo (desde ~0,72 con
-  // --journey-scene-h: 460vh; ver --journey-handoff en tokens.css).
-  cards: { enter: [0.6, 0.66], exit: [0.7, 0.76] },
-  final: { enter: [0.61, 0.67], exit: [0.69, 0.75] },
+  name: { exit: [0.003, 0.03] },
+  hero: { exit: [0.01, 0.05] },
+  mid: { enter: [0.22, 0.26], exit: [0.33, 0.38] },
+  // Con el árbol ya formado, el texto que se escribe (WRITE); se va antes
+  // de que llegue «01 — Estudio», que sube por encima en el último tramo
+  // (desde 0,8 con --journey-scene-h: 600vh: (600 − 200) / (600 − 100)).
+  write: { enter: [0.46, 0.5], exit: [0.73, 0.78] },
 } satisfies Record<string, Timing>;
+
+/** Cuándo se escribe el texto, de la primera letra a la última. */
+export const WRITE: Range = [0.48, 0.7];
 
 export const ENTER_RISE = 24; // px de diseño
 export const EXIT_LIFT = -16; // px de diseño
@@ -52,4 +54,3 @@ export const MIN_LOADER_MS = 1500;
 export const LOADER_TIMEOUT_MS = 8000;
 export const BURN_MS = 1150;
 export const INTRO_AT_MS = 760;
-export const CARD_BLUR = 24; // px CSS

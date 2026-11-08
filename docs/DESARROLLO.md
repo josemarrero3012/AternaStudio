@@ -73,7 +73,7 @@ con imágenes.
 
 ## El recorrido de la portada
 
-La portada abre con una pantalla fijada de 460vh con el árbol de Aterna hecho
+La portada abre con una pantalla fijada de 600vh con el árbol de Aterna hecho
 de partículas (WebGL, sin librerías). Es la técnica de las portadas de
 partículas como la del tigre de TIGRIS: miles de puntos que dibujan una forma
 sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
@@ -115,9 +115,16 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   ya no la muestran).
 - **Scroll**: la entrada se va y el árbol baja a sus raíces
   («Lo que no se ve…»); luego las raíces suben y crece un árbol de verdad,
-  del tronco a la copa, junto a dos tarjetas de vidrio (la raíz abajo, que
-  enlaza a Diseño web; la copa arriba, a SEO) y el cierre. Los tiempos de los
-  textos están en `TIMING` (`src/lib/journey/config.ts`).
+  del tronco a la copa, grande y solo. Con el árbol formado, al seguir
+  bajando se escribe encima un texto grande y centrado, letra a letra según
+  el scroll (como el de TIGRIS; `journey.write`, con las palabras de acento
+  entre asteriscos), mientras sube despacio y el árbol baja algo de luz para
+  que se lea. Los tiempos de los textos están en `TIMING` y `WRITE`
+  (`src/lib/journey/config.ts`).
+- **Vida en reposo**: aunque no se haga scroll, las partículas nunca están
+  quietas: cada forma respira con un ruido que fluye despacio (poco en el
+  símbolo, para que se lea nítido), la copa del árbol se mece con el viento
+  y sus hojas tiemblan, y todas titilan (en el shader de `renderer.ts`).
 - **Paso a «01 — Estudio»**: en el último tramo (la última pantalla de
   scroll) la sección siguiente sube por encima del escenario, que sigue
   fijado. Su borde de arriba es transparente y se funde en la noche de la
@@ -127,10 +134,8 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   sección suben juntos y no hay costura. El paso lo mide `Journey.tsx` con el
   borde de la sección (no con el progreso), así va pegado a ella. Si se
   cambia `--journey-scene-h`, hay que revisar `TIMING` y `MORPH`: todo lo
-  del recorrido tiene que acabar antes de que llegue la sección (hacia 0,72
-  con 460vh).
-- **Vidrio**: las tarjetas no usan `backdrop-filter`: cada una lleva un lienzo
-  con una copia desenfocada de la escena que tiene detrás.
+  del recorrido tiene que acabar antes de que llegue la sección (en 0,8 con
+  600vh: (600 − 200) / (600 − 100)).
 - **Textos**: en `dict.ts` (`journey`), en los cuatro idiomas. El titular de
   entrada es el de siempre (`hero.headline`).
 - **Sin WebGL** y **sin JavaScript** se ve una imagen fija del árbol
