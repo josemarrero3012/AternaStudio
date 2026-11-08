@@ -82,9 +82,11 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   símbolo (`public/tree/v1/mark-mask.webp`, un tercio de las partículas en el
   contorno para que tenga filo); las raíces se generan con una semilla fija
   (siempre las mismas); el árbol final es un árbol de verdad, también
-  generado: tronco, siete ramas maestras repartidas que se abren en
-  horquillas y crecen hasta el contorno de una copa redonda (un elipsoide,
-  `CROWN`), racimos de hojas y raíces de superficie. Cada partícula tiene su
+  generado, con el concepto del símbolo: cabe en un círculo (`CIRCLE`), casi
+  simétrico (se genera la mitad y se refleja), con un tronco corto de tres
+  hebras trenzadas, ramas que suben como un jarrón y siguen el borde del
+  círculo curvándose hacia fuera, raíces anchas que también lo siguen y
+  racimos de hojas. Cada partícula tiene su
   sitio en las tres formas y en una nube de salida.
 - **Movimiento** (`src/lib/tree/renderer.ts`): el shader lleva cada partícula
   de una forma a otra con su propio retardo y un remolino de ruido a mitad de
@@ -103,7 +105,7 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   nombre y el lema en `journey.css` («Entrada»).
 - **Composición de la entrada** (como la de TIGRIS, sin antetítulo):
   «ATERNA» enorme sobre el árbol, el lema (el `h1`) debajo, «Desliza para
-  descubrir» abajo y el botón en una píldora abajo a la izquierda. El nombre
+  descubrir» abajo (sin botón: «Empezar un proyecto» ya está arriba). El nombre
   se va en cuanto empieza el scroll y entonces aparece el logo de la cabecera
   (mientras se ve el nombre, la cabecera va sin logo).
 - **Entrada**: una pantalla de carga (contador y línea de progreso) que espera

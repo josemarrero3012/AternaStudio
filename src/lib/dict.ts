@@ -57,7 +57,6 @@ const es = {
     "label": "El árbol de Aterna hecho de partículas de luz, que baja a sus raíces y vuelve a crecer",
     "loading": "Cargando",
     "scrollCue": "Desliza para descubrir",
-    "heroCursor": "Hablemos",
     "mid": {
       "headline": "Lo que no se ve\nsostiene lo que crece.",
       "body": "Estructura, velocidad y SEO desde la primera línea de código: las raíces que hacen que una web funcione."
@@ -712,7 +711,6 @@ const en: Dict = {
     "label": "The Aterna tree made of particles of light, sinking into its roots and growing back",
     "loading": "Loading",
     "scrollCue": "Scroll to discover",
-    "heroCursor": "Let’s talk",
     "mid": {
       "headline": "What you don’t see\nholds up what grows.",
       "body": "Structure, speed and SEO from the first line of code: the roots that make a website work."
@@ -1364,7 +1362,6 @@ const nl: Dict = {
     "label": "De Aterna-boom van lichtdeeltjes, die afdaalt naar zijn wortels en opnieuw groeit",
     "loading": "Laden",
     "scrollCue": "Scroll om te ontdekken",
-    "heroCursor": "Laten we praten",
     "mid": {
       "headline": "Wat je niet ziet,\ndraagt wat groeit.",
       "body": "Structuur, snelheid en SEO vanaf de eerste regel code: de wortels die een website laten werken."
@@ -2016,7 +2013,6 @@ const de: Dict = {
     "label": "Der Aterna-Baum aus Lichtpartikeln, der zu seinen Wurzeln hinabsinkt und neu wächst",
     "loading": "Wird geladen",
     "scrollCue": "Scrollen und entdecken",
-    "heroCursor": "Sprechen wir",
     "mid": {
       "headline": "Was man nicht sieht,\nträgt, was wächst.",
       "body": "Struktur, Tempo und SEO ab der ersten Codezeile: die Wurzeln, die eine Website tragen."

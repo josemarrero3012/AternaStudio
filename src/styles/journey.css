@@ -208,8 +208,8 @@ html[data-motion="on"] .journey__copy {
 /* Entrada (como TIGRIS) ------------------------------------------------------
 
    Centrada sobre el árbol (sin antetítulo): el nombre enorme encima del
-   árbol, el lema debajo, «desliza» abajo y el botón en una píldora abajo a la
-   izquierda. El árbol lo coloca el shader (HERO en src/lib/tree/renderer.ts:
+   árbol, el lema debajo y «desliza» abajo (sin botón: el de «Empezar un
+   proyecto» ya está en la cabecera). El árbol lo coloca el shader (HERO en src/lib/tree/renderer.ts:
    en ordenador, el 64 % del alto con el centro al 49 %; en móvil, el 90 % del
    ancho con el centro al 41 %): si se mueve allí, se mueve aquí. */
 
@@ -327,45 +327,6 @@ html[data-motion="on"] .journey__copy {
   }
 }
 
-/* El botón, en una píldora de borde fino (como las de TIGRIS). */
-.journey__pill {
-  position: absolute;
-  left: var(--journey-x);
-  bottom: calc(28 * var(--u));
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-2);
-  min-height: 48px;
-  padding: 0 calc(22 * var(--u)) 0 calc(24 * var(--u));
-  border: 1px solid var(--glass-edge);
-  border-radius: var(--r-pill);
-  font-family: var(--font-ui);
-  font-size: var(--t-label);
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--text-hi);
-  background: var(--glass-pill-fill);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  pointer-events: auto;
-  transition:
-    border-color var(--d-micro) var(--e-out),
-    background-color var(--d-micro) var(--e-out);
-}
-
-@media (hover: hover) {
-  .journey__pill:hover {
-    border-color: color-mix(in srgb, var(--lavender) 70%, transparent);
-    background-color: color-mix(in srgb, var(--night-4) 60%, transparent);
-  }
-
-  .journey__pill:hover .arrow {
-    transform: var(--arrow-nudge);
-  }
-}
-
 /* Con movimiento, la entrada empieza oculta (data-motion lo pone el script
    del <body> antes de pintar); sin JavaScript o con movimiento reducido se
    ve tal cual. */
@@ -401,8 +362,7 @@ html[data-motion="on"] .journey__hero:not(.is-intro) .journey__hero-rest > * {
   animation: journey-reveal 1.1s var(--e-out) 1.6s both;
 }
 
-.journey__hero.is-intro .journey__scroll,
-.journey__hero.is-intro .journey__pill {
+.journey__hero.is-intro .journey__scroll {
   --from-y: calc(10 * var(--u));
   --from-blur: 0px;
   animation: journey-reveal 0.9s var(--e-out) 2.1s both;
@@ -761,12 +721,6 @@ html[data-journey="over"] .header::after {
   .journey__tagline {
     top: calc(41% + 0.45 * 100vw + 22 * var(--u));
     font-size: calc(30 * var(--u));
-  }
-
-  .journey__pill {
-    left: 50%;
-    bottom: calc(96 * var(--u));
-    translate: -50% 0;
   }
 
   .journey__scroll {

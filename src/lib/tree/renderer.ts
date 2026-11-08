@@ -182,8 +182,9 @@ void main() {
   // Las manchas solo en el árbol (en las raíces manda el pulso de luz).
   alpha *= mix(1.0, 0.7 + fur * 0.6, clamp(1.0 - t1, 0.0, 1.0) * (1.0 - dust));
   alpha *= mix(1.0, 0.65 + furF * 0.7, t2 * (1.0 - dust));
-  // La madera del árbol final, algo más densa de luz (el tronco se lee).
-  alpha *= 1.0 + t2 * (1.0 - leaf) * (1.0 - dust) * 0.25;
+  // La madera del árbol final, algo más densa de luz (el tronco se lee), y
+  // las raíces más aún: abajo la escena lleva velo.
+  alpha *= 1.0 + t2 * (1.0 - leaf) * (1.0 - dust) * (0.25 + 0.8 * smoothstep(-0.2, -0.9, aFinal.y));
   // Al soltarse, las hojas se encienden un poco (luciérnagas) y la madera se
   // apaga; al final, todo, antes de que la sección llegue arriba.
   alpha *= 1.0 + release * leaf * 0.7 * (1.0 - uHandoff);
@@ -314,8 +315,8 @@ export const HERO = {
 };
 
 /**
- * El árbol final (del suelo, y = -1, a la copa, y = 1; la copa, de ±0,95
- * de ancho, nunca más de ±1,2), grande y solo: en ordenador, el 84 % del
+ * El árbol final (de la punta de las raíces, y = -1, a la copa, y = 1;
+ * unos ±1,1 de ancho, nunca más de ±1,2), grande y solo: en ordenador, el 84 % del
  * alto con el centro al 51 %; en móvil, casi todo el ancho.
  */
 export const FINAL = {
@@ -338,7 +339,7 @@ export function layoutFor(aspect: number): Layout {
   return {
     tree: [0, (1 - 2 * center) * H, 0, Math.min(0.5 * H, (width * W) / 0.89)],
     roots: [0, 0.1 * H, 0, 0.72 * H],
-    final: [0, (1 - 2 * FINAL.mobile.center) * H, 0, Math.min(FINAL.mobile.height * H, (0.96 * W) / 1.0)],
+    final: [0, (1 - 2 * FINAL.mobile.center) * H, 0, Math.min(FINAL.mobile.height * H, 0.86 * W)],
   };
 }
 

@@ -4,9 +4,10 @@
 //   start  dispersas en la profundidad (de donde llegan al abrir)
 //   tree   el árbol del símbolo, leído de su silueta (mark-mask.webp)
 //   roots  un sistema de raíces que llena la pantalla, generado aquí
-//   final  un árbol de verdad (tronco, ramas, copa redonda y raíces de
-//          superficie), generado aquí, que crece desde la base al subir de
-//          las raíces y que, al llegar «01 — Estudio», se suelta en luz
+//   final  un árbol de verdad con el concepto del símbolo (cabe en un
+//          círculo: tronco trenzado, ramas, copa y raíces), generado aquí,
+//          que crece desde la base al subir de las raíces y que, al llegar
+//          «01 — Estudio», se suelta en luz
 //
 // Todo sale de una semilla fija: la misma escena en cada carga. Las
 // coordenadas de los árboles van de -1 a 1 (el símbolo mide ±0,89; el árbol
@@ -219,32 +220,55 @@ function turn(dx: number, dy: number, dz: number, az: number, ang: number): [num
 }
 
 /**
- * Un árbol de copa ancha y redonda, como el del símbolo pero de verdad:
- * tronco, cinco ramas maestras repartidas (una guía hacia arriba, dos a cada
- * lado, delante y detrás), horquillas que se abren y buscan la luz, racimos
- * de hojas en las puntas y unas raíces de superficie que agarran el suelo.
- * Las ramas crecen hasta el contorno de la copa (un elipsoide, con algo de
- * azar en cada una): así la copa sale llena y en cúpula. Cada tramo y cada
- * racimo guardan su distancia a la base (g): el shader hace crecer el árbol
- * de abajo arriba.
+ * Un árbol de verdad, pero con el concepto del símbolo (el árbol de la vida):
+ * todo cabe en un círculo, casi simétrico. El tronco, corto, son tres hebras
+ * que se trenzan; arriba se abren en ramas maestras que suben como un jarrón
+ * y, al llegar al borde del círculo, lo siguen y se curvan hacia fuera y
+ * hacia abajo (como las del logo); abajo, las raíces se abren anchas y
+ * también siguen el círculo. Hojas en racimos en las puntas y a lo largo de
+ * las ramas finas. Se genera la mitad derecha y se refleja (con la
+ * profundidad invertida, para que no se vea calcada); el tronco va aparte.
+ * Cada tramo y cada racimo guardan su distancia a la base (g): el shader hace
+ * crecer el árbol de abajo arriba.
  */
-const CROWN = { y: 0.42, rx: 1.12, ry: 0.82, rz: 0.82 };
+const CIRCLE = { r: 1, z: 0.55 };
+const TRUNK = { base: -0.5, top: -0.04 };
 function growNaturalTree(r: Rand) {
   const wood: Wood[] = [];
   const leaves: Leaf[] = [];
   const MAX = 6;
-  const crownD = (x: number, y: number, z: number) => Math.hypot(x / CROWN.rx, (y - CROWN.y) / CROWN.ry, z / CROWN.rz);
+  /** Distancia al centro del círculo (en z, el círculo es más fino). */
+  const circD = (x: number, y: number, z: number) => Math.hypot(x, y, z / CIRCLE.z) / CIRCLE.r;
+
+  // Sigue el borde del círculo: la tangente que se aleja de la vertical
+  // (arriba, hacia fuera; a los lados, hacia abajo). Las raíces, al revés:
+  // desde abajo, hacia fuera y hacia arriba.
+  const follow = (x: number, y: number, dx: number, dy: number, k: number, up: boolean): [number, number] => {
+    const rr = Math.hypot(x, y) || 1;
+    const ux = x / rr;
+    const uy = y / rr;
+    const side = Math.sign(x || dx) || 1;
+    let tx = uy * side;
+    let ty = -ux * side;
+    if (!up) {
+      tx = -tx;
+      ty = -ty;
+    }
+    return [dx + (tx - dx) * k, dy + (ty - dy) * k];
+  };
+
   const branch = (x: number, y: number, z: number, dx: number, dy: number, dz: number, len: number, rad: number, depth: number, g: number) => {
-    const steps = Math.max(3, Math.ceil(len / 0.035));
+    const steps = Math.max(3, Math.ceil(len / 0.03));
     const step = len / steps;
-    // Hasta dónde llega esta rama: el contorno de la copa, algo irregular.
-    const edge = 0.9 + r() * 0.16;
+    const edge = 0.93 + r() * 0.1;
     for (let s = 0; s < steps; s++) {
-      // Algo de azar, la búsqueda de la luz y, en las ramas, abrirse hacia fuera.
-      dx += (r() - 0.5) * 0.1 + (depth > 1 ? Math.sign(x || dx) * 0.008 : 0);
-      dy += (r() - 0.5) * 0.06 + (depth > 1 ? 0.006 : 0);
-      dz += (r() - 0.5) * 0.1;
-      if (depth > 0 && dy < -0.1) dy = -0.1; // las ramas no caen
+      dx += (r() - 0.5) * 0.08;
+      dy += (r() - 0.5) * 0.05 + (depth > 1 ? 0.004 : 0);
+      dz += (r() - 0.5) * 0.08;
+      // Cerca del borde, lo sigue (cuanto más cerca, más).
+      const d0 = circD(x, y, z);
+      const k = Math.min(1, Math.max(0, (d0 - 0.7) / 0.26)) * 0.16;
+      if (k > 0) [dx, dy] = follow(x, y, dx, dy, k, true);
       const n = Math.hypot(dx, dy, dz) || 1;
       dx /= n;
       dy /= n;
@@ -252,9 +276,9 @@ function growNaturalTree(r: Rand) {
       const nx = x + dx * step;
       const ny = y + dy * step;
       const nz = z + dz * step;
-      const d = crownD(nx, ny, nz);
-      if (depth > 0 && d > edge && d > crownD(x, y, z)) {
-        leaves.push({ x, y, z, r: 0.11 + r() * 0.06, g });
+      const d = circD(nx, ny, nz);
+      if ((d > edge && d > d0) || ny < TRUNK.top - 0.05) {
+        leaves.push({ x, y, z, r: 0.09 + r() * 0.05, g });
         return;
       }
       wood.push({ ax: x, ay: y, az: z, bx: nx, by: ny, bz: nz, r: rad, g });
@@ -262,58 +286,124 @@ function growNaturalTree(r: Rand) {
       y = ny;
       z = nz;
       g += step;
-      rad *= 0.988;
-      // Hojas también a lo largo de las ramas, no solo en las puntas: en las
-      // finas y en todas las que ya están en la parte de fuera de la copa.
-      const outer = crownD(x, y, z);
-      if (depth >= 2 && r() < (depth >= MAX - 2 ? 0.4 : 0.12) + (outer > 0.55 ? 0.25 : 0)) leaves.push({ x, y, z, r: 0.07 + r() * 0.07 * outer, g });
+      rad *= 0.986;
+      const outer = circD(x, y, z);
+      if (depth >= 2 && r() < (depth >= MAX - 2 ? 0.38 : 0.1) + (outer > 0.6 ? 0.22 : 0)) leaves.push({ x, y, z, r: 0.06 + r() * 0.06 * outer, g });
     }
     if (depth >= MAX) {
-      leaves.push({ x, y, z, r: 0.1 + r() * 0.06, g });
+      leaves.push({ x, y, z, r: 0.09 + r() * 0.05, g });
       return;
     }
-    if (depth === 0) {
-      // Las ramas maestras, repartidas a mano para que la copa quede
-      // equilibrada (ángulo desde la vertical, hacia qué lado, largo).
-      const tilt = r() * 0.4;
-      const limbs: [number, number, number][] = [
-        [0.12, r() * 6.28, 0.95],
-        [0.92, tilt, 1.0],
-        [0.92, Math.PI + tilt, 1.0],
-        [0.62, Math.PI / 2 + 0.5 + tilt, 0.85],
-        [0.62, -Math.PI / 2 - 0.5 + tilt, 0.85],
-        [0.5, Math.PI / 2 - 0.6 + tilt, 0.8],
-        [0.5, -Math.PI / 2 + 0.6 + tilt, 0.8],
-      ];
-      for (const [th, ph, l] of limbs) {
-        const th1 = th + (r() - 0.5) * 0.12;
-        branch(x, y, z, Math.sin(th1) * Math.cos(ph), Math.cos(th1), Math.sin(th1) * Math.sin(ph), 0.62 * l, rad * 0.6, 1, g);
-      }
-      return;
-    }
-    const kids = depth < 3 ? 3 : r() < 0.3 ? 3 : 2;
+    const kids = depth < 2 ? 3 : r() < 0.3 ? 3 : 2;
     const az0 = r() * Math.PI * 2;
     for (let k = 0; k < kids; k++) {
       const az = az0 + (k / kids) * Math.PI * 2 + (r() - 0.5) * 0.6;
-      const spread = 0.42 + r() * 0.3;
-      const [nx, ny, nz] = turn(dx, dy, dz, az, spread);
-      branch(x, y, z, nx, ny, nz, len * (0.74 + r() * 0.14), rad * 0.66, depth + 1, g);
+      const [nx, ny, nz] = turn(dx, dy, dz, az, 0.36 + r() * 0.3);
+      branch(x, y, z, nx, ny, nz, len * (0.72 + r() * 0.12), rad * 0.66, depth + 1, g);
     }
   };
-  branch(0, -1, 0, 0, 1, 0, 0.78, 0.09, 0, 0);
+
+  const root = (x: number, y: number, z: number, dx: number, dy: number, dz: number, len: number, rad: number, depth: number) => {
+    const steps = Math.max(3, Math.ceil(len / 0.03));
+    const step = len / steps;
+    for (let s = 0; s < steps; s++) {
+      dx += (r() - 0.5) * 0.12;
+      dy += (r() - 0.5) * 0.08 - 0.01;
+      dz += (r() - 0.5) * 0.12;
+      const k = Math.min(1, Math.max(0, (circD(x, y, z) - 0.6) / 0.3)) * 0.26;
+      if (k > 0) [dx, dy] = follow(x, y, dx, dy, k, false);
+      const n = Math.hypot(dx, dy, dz) || 1;
+      dx /= n;
+      dy /= n;
+      dz /= n;
+      const nx = x + dx * step;
+      const ny = y + dy * step;
+      const nz = z + dz * step;
+      if (circD(nx, ny, nz) > 0.98 || ny > TRUNK.base + 0.25) return;
+      wood.push({ ax: x, ay: y, az: z, bx: nx, by: ny, bz: nz, r: rad, g: 0 });
+      x = nx;
+      y = ny;
+      z = nz;
+      rad *= 0.975;
+      // Raicillas que salen hacia abajo y hacia fuera.
+      if (depth < 2 && s > 2 && r() < 0.09) {
+        const [cx, cy, cz] = turn(dx, dy, dz, r() * Math.PI * 2, 0.5 + r() * 0.3);
+        root(x, y, z, cx, cy, cz, len * 0.45, rad * 0.6, depth + 1);
+      }
+    }
+  };
+
+  // El tronco: tres hebras que se trenzan (como en el símbolo).
+  const STRANDS = 3;
+  const twist = Math.PI * 1.1;
+  const tSteps = 22;
+  for (let k = 0; k < STRANDS; k++) {
+    const a0 = (k / STRANDS) * Math.PI * 2;
+    for (let s = 0; s < tSteps; s++) {
+      const t0 = s / tSteps;
+      const t1 = (s + 1) / tSteps;
+      // Más abiertas abajo (se van a las raíces) y arriba (a las ramas).
+      const spread = (t: number) => 0.05 + 0.06 * Math.pow(Math.abs(t - 0.45) / 0.55, 2);
+      const at = (t: number): [number, number, number] => {
+        const a = a0 + twist * t;
+        const sp = spread(t);
+        return [Math.cos(a) * sp, TRUNK.base + (TRUNK.top - TRUNK.base) * t, Math.sin(a) * sp * 0.8];
+      };
+      const [ax, ay, az] = at(t0);
+      const [bx, by, bz] = at(t1);
+      wood.push({ ax, ay, az, bx, by, bz, r: 0.04, g: (by - TRUNK.base) * 0.6 });
+    }
+  }
+  const gTop = (TRUNK.top - TRUNK.base) * 0.6;
+
+  // La mitad derecha: ramas maestras (ángulo desde la vertical, hacia qué
+  // lado en profundidad, largo) y raíces (ángulo bajo la horizontal).
+  const half0 = { wood: wood.length, leaves: leaves.length };
+  const limbs: [number, number, number][] = [
+    [0.1, 0.4, 0.9], // la guía (con su reflejo, dos hebras que suben trenzadas)
+    [0.42, -0.5, 0.86],
+    [0.62, 0.7, 0.82],
+    [0.95, -0.2, 0.74],
+    [1.2, 0.5, 0.62],
+  ];
+  for (const [th, ph, l] of limbs) {
+    const th1 = th + (r() - 0.5) * 0.08;
+    const zd = Math.sin(ph) * 0.35;
+    const x0 = 0.03;
+    branch(x0, TRUNK.top, 0, Math.sin(th1), Math.cos(th1), zd, 0.7 * l, 0.034, 1, gTop);
+  }
+  const rootsDef: [number, number, number][] = [
+    [0.25, 0.3, 0.95],
+    [0.55, -0.4, 0.8],
+    [0.9, 0.6, 0.6],
+  ];
+  for (const [down, ph, l] of rootsDef) {
+    const dzr = Math.sin(ph) * 0.4;
+    root(0.04, TRUNK.base + 0.04, 0, Math.cos(down), -Math.sin(down), dzr, 0.9 * l, 0.036, 0);
+  }
+  // El reflejo, a la izquierda.
+  const wEnd = wood.length;
+  for (let i = half0.wood; i < wEnd; i++) {
+    const w = wood[i];
+    wood.push({ ax: -w.ax, ay: w.ay, az: -w.az, bx: -w.bx, by: w.by, bz: -w.bz, r: w.r, g: w.g });
+  }
+  const lEnd = leaves.length;
+  for (let i = half0.leaves; i < lEnd; i++) {
+    const l = leaves[i];
+    leaves.push({ x: -l.x, y: l.y + (r() - 0.5) * 0.03, z: -l.z, r: l.r, g: l.g });
+  }
 
   // Relleno de la copa: donde quedan huecos junto a una rama fina, otro
   // racimo (entre un punto al azar de la copa y esa rama, más cerca del punto).
-  const twigs = wood.filter((w) => w.r < 0.04 && w.by > 0);
-  for (let i = 0; i < 140; i++) {
-    const u = r() * Math.PI * 2;
-    const v = Math.acos(2 * r() - 1);
-    const d = 0.3 + r() * 0.55;
-    const px = Math.sin(v) * Math.cos(u) * d * CROWN.rx;
-    const py = CROWN.y + Math.cos(v) * d * CROWN.ry;
-    const pz = Math.sin(v) * Math.sin(u) * d * CROWN.rz;
+  const twigs = wood.filter((w) => w.r < 0.025 && w.by > TRUNK.top);
+  for (let i = 0; i < 240; i++) {
+    const a = (r() - 0.5) * Math.PI * 1.15; // la mitad de arriba y algo más
+    const d = 0.35 + r() * 0.55;
+    const px = Math.sin(a) * d;
+    const py = Math.cos(a) * d;
+    const pz = (r() - 0.5) * 2 * CIRCLE.z * 0.6;
     let best: Wood | null = null;
-    let bestD = 0.45 * 0.45;
+    let bestD = 0.35 * 0.35;
     for (const w of twigs) {
       const dd = (w.bx - px) ** 2 + (w.by - py) ** 2 + (w.bz - pz) ** 2;
       if (dd < bestD) {
@@ -321,43 +411,12 @@ function growNaturalTree(r: Rand) {
         best = w;
       }
     }
-    if (best) leaves.push({ x: px + (best.bx - px) * 0.35, y: py + (best.by - py) * 0.35, z: pz + (best.bz - pz) * 0.35, r: 0.09 + r() * 0.05, g: best.g });
+    if (best) leaves.push({ x: px + (best.bx - px) * 0.35, y: py + (best.by - py) * 0.35, z: pz + (best.bz - pz) * 0.35, r: 0.08 + r() * 0.05, g: best.g });
   }
 
-  // Raíces de superficie: salen de la base, se abren y se hunden un poco.
-  const ROOTS = 8;
-  for (let k = 0; k < ROOTS; k++) {
-    const a = (k / ROOTS) * Math.PI * 2 + (r() - 0.5) * 0.5;
-    let x = 0;
-    let y = -0.9;
-    let z = 0;
-    let dx = Math.cos(a);
-    let dy = -0.3;
-    let dz = Math.sin(a) * 0.7;
-    let rad = 0.06;
-    const len = 0.35 + r() * 0.3;
-    const steps = Math.ceil(len / 0.03);
-    for (let s = 0; s < steps; s++) {
-      dx += (r() - 0.5) * 0.2;
-      dy += (r() - 0.5) * 0.1 - 0.02;
-      dz += (r() - 0.5) * 0.2;
-      const n = Math.hypot(dx, dy, dz) || 1;
-      dx /= n;
-      dy /= n;
-      dz /= n;
-      const nx = x + dx * 0.03;
-      const ny = y + dy * 0.03;
-      const nz = z + dz * 0.03;
-      wood.push({ ax: x, ay: y, az: z, bx: nx, by: ny, bz: nz, r: rad, g: 0 });
-      x = nx;
-      y = ny;
-      z = nz;
-      rad *= 0.93;
-    }
-  }
-
-  // Encaja el árbol: del suelo (y = -1) a la copa (y = 1), centrado en el
-  // tronco, sin pasar de ±1,2 de ancho, y algo más plano de fondo.
+  // Encaja el árbol: de la punta de las raíces (y = -1) a la copa (y = 1),
+  // centrado en el tronco, sin pasar de ±1,2 de ancho, y algo más plano de
+  // fondo.
   let minY = Infinity;
   let maxY = -Infinity;
   let maxX = 0;

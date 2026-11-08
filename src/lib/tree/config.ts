@@ -32,7 +32,7 @@ export function particleCount(width: number) {
 /** Polvo que flota en toda la escena. */
 export const DUST_SHARE = 0.07;
 /** Parte de las partículas (sin el polvo) que forman la copa del árbol final. */
-export const LEAF_SHARE = 0.68;
+export const LEAF_SHARE = 0.6;
 /** Parte de las partículas del árbol que se reservan al contorno: le da filo. */
 export const EDGE_SHARE = 0.22;
 

@@ -181,16 +181,12 @@ function HeroState({
   restRef,
   headline,
   scrollCue,
-  cta,
-  ctaCursor,
   intro,
 }: {
   nameRef: Ref<HTMLDivElement>;
   restRef: Ref<HTMLDivElement>;
   headline: string;
   scrollCue: string;
-  cta: string;
-  ctaCursor: string;
   intro: boolean;
 }) {
   const letters = Array.from("Aterna");
@@ -213,10 +209,6 @@ function HeroState({
           <span className="journey__scroll-line" />
           {scrollCue}
         </p>
-        <Link href="/contacto" className="journey__pill" data-cursor-label={ctaCursor}>
-          {cta}
-          <ArrowRight />
-        </Link>
       </div>
     </section>
   );
@@ -671,8 +663,6 @@ export function Journey() {
             restRef={heroRef}
             headline={t.hero.headline}
             scrollCue={j.scrollCue}
-            cta={t.cta}
-            ctaCursor={j.heroCursor}
             intro={intro}
           />
           <CopyState ref={midRef} kind="mid" id="journey-mid" headline={j.mid.headline} body={j.mid.body} />
