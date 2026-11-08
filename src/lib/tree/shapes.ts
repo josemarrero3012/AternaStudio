@@ -302,6 +302,28 @@ function growNaturalTree(r: Rand) {
   };
   branch(0, -1, 0, 0, 1, 0, 0.78, 0.09, 0, 0);
 
+  // Relleno de la copa: donde quedan huecos junto a una rama fina, otro
+  // racimo (entre un punto al azar de la copa y esa rama, más cerca del punto).
+  const twigs = wood.filter((w) => w.r < 0.04 && w.by > 0);
+  for (let i = 0; i < 140; i++) {
+    const u = r() * Math.PI * 2;
+    const v = Math.acos(2 * r() - 1);
+    const d = 0.3 + r() * 0.55;
+    const px = Math.sin(v) * Math.cos(u) * d * CROWN.rx;
+    const py = CROWN.y + Math.cos(v) * d * CROWN.ry;
+    const pz = Math.sin(v) * Math.sin(u) * d * CROWN.rz;
+    let best: Wood | null = null;
+    let bestD = 0.45 * 0.45;
+    for (const w of twigs) {
+      const dd = (w.bx - px) ** 2 + (w.by - py) ** 2 + (w.bz - pz) ** 2;
+      if (dd < bestD) {
+        bestD = dd;
+        best = w;
+      }
+    }
+    if (best) leaves.push({ x: px + (best.bx - px) * 0.35, y: py + (best.by - py) * 0.35, z: pz + (best.bz - pz) * 0.35, r: 0.09 + r() * 0.05, g: best.g });
+  }
+
   // Raíces de superficie: salen de la base, se abren y se hunden un poco.
   const ROOTS = 8;
   for (let k = 0; k < ROOTS; k++) {

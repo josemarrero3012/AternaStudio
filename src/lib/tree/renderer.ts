@@ -189,9 +189,11 @@ void main() {
   alpha *= mix(0.45, 1.0, ta);
   // El brillo: más luz, más tamaño y hacia el blanco.
   // (Algo menos donde las partículas van sueltas en remolino: se amontonan.)
-  alpha *= 1.0 + glow * mix(4.0, 2.2, clamp(swirl, 0.0, 1.0));
-  size *= 1.0 + glow * 1.6;
-  color = mix(color, mix(color * 1.5, vec3(1.0, 0.95, 1.0), 0.6), clamp(glow, 0.0, 1.0) * 0.85);
+  // En la copa del árbol final, mucho más densa, menos: si no, se quema en blanco.
+  float dense = t2 * leaf;
+  alpha *= 1.0 + glow * mix(4.0, 2.2, clamp(swirl, 0.0, 1.0)) * mix(1.0, 0.32, dense);
+  size *= 1.0 + glow * mix(1.6, 0.6, dense);
+  color = mix(color, mix(color * 1.5, vec3(1.0, 0.95, 1.0), 0.6), clamp(glow, 0.0, 1.0) * mix(0.85, 0.6, dense));
   alpha *= smoothstep(13.0, 3.2, -mv.z) * smoothstep(0.4, 1.4, -mv.z);
   gl_PointSize = clamp(size * uSizeMul, 1.0, 72.0);
   vColor = color;
