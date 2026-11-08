@@ -1896,6 +1896,30 @@ body[data-menu="open"] .assistant__orb {
   background: radial-gradient(closest-side, color-mix(in srgb, var(--violet) 14%, transparent), transparent);
 }
 
+/* Iconos de luz de los pilares (PillarArt.tsx): un canvas WebGL pinta el
+   vídeo con el negro transparente. El vídeo solo da los fotogramas: está en
+   la página (Safari no decodifica uno oculto con display: none) pero no se ve. */
+.pillar__art {
+  position: relative;
+  width: min(100%, 320px);
+  aspect-ratio: 12 / 5;
+}
+
+.pillar__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pillar__video {
+  position: absolute;
+  inset: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 @media (min-width: 768px) {
   .pillars {
     grid-template-columns: repeat(3, minmax(0, 1fr));

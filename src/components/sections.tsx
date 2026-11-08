@@ -13,6 +13,7 @@ import { PILLAR_GLYPHS, STEP_GLYPHS } from "./glyphs";
 import { ArrowRight, Check } from "./icons";
 import { ApproachRail } from "./ApproachRail";
 import { MethodRoot } from "./MethodRoot";
+import { PillarArt } from "./PillarArt";
 import { Rootlets } from "./Rootlets";
 import { ServiceGlyph } from "./ServiceTrace";
 import { useStepWire } from "./StepWire";
@@ -51,7 +52,7 @@ export function StudioStatement({ n }: { n?: number }) {
             <li className="pillar" key={i}>
               {PILLAR_GLYPHS[i] ? (
                 <div className="pillar__stage">
-                  <Trace drawing={PILLAR_GLYPHS[i]} size="lg" />
+                  <PillarArt index={i} />
                 </div>
               ) : null}
               <h3 className="t-title pillar__title">{p.title}</h3>

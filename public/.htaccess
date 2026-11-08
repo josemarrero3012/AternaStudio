@@ -16,12 +16,20 @@
   <FilesMatch "^(journey|depth)-[0-9]{3}\.webp$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
+
+  # Iconos de luz de «Estudio» (public/estudio/v1), un año: van en carpeta
+  # con versión (ver components/PillarArt.tsx).
+  <FilesMatch "^pillar-[0-9]\.(webm|mp4|webp)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
 </IfModule>
 
 # Modelo del asistente (public/semantic): el motor es WebAssembly y el
 # navegador solo lo compila al vuelo si llega con su tipo. Un mes de caché
 # para el motor y el modelo: pesan mucho y casi nunca cambian.
 AddType application/wasm .wasm
+AddType video/webm .webm
+AddType video/mp4 .mp4
 <IfModule mod_headers.c>
   <FilesMatch "\.(wasm|onnx)$">
     Header set Cache-Control "public, max-age=2592000"
