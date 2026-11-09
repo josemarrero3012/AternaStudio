@@ -10,3 +10,6 @@ public/php/mail-config.php
 # Modelo del asistente: lo descarga scripts/fetch-semantic.mjs al compilar.
 public/semantic/*
 !public/semantic/worker.js
+
+# Referencia Cycles (>3 MB); no se carga en la web.
+/scripts/estudio-v2/pillar-1/preview.mp4
