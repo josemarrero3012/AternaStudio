@@ -1920,6 +1920,81 @@ body[data-menu="open"] .assistant__orb {
   pointer-events: none;
 }
 
+/* Escena de partículas de un pilar (PillarScene.tsx): ocupa todo el ancho
+   de la tarjeta y, debajo, una línea con el paso que se está viendo. */
+.pillar-scene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+}
+
+.pillar-scene__view {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 12 / 5;
+}
+
+.pillar-scene__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pillar-scene__wait {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.pillar-scene__step {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 1.5em;
+  margin: 0;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  color: var(--lavender);
+}
+
+.pillar-scene__dots {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.pillar-scene__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--lavender) 28%, transparent);
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.pillar-scene__dot[data-on] {
+  background: var(--orchid);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--orchid) 70%, transparent);
+}
+
+.pillar-scene__label {
+  animation: pillar-step 0.5s ease both;
+}
+
+@keyframes pillar-step {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pillar-scene__label {
+    animation: none;
+  }
+}
+
 @media (min-width: 768px) {
   .pillars {
     grid-template-columns: repeat(3, minmax(0, 1fr));

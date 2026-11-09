@@ -137,15 +137,18 @@ const es = {
     "pillars": [
       {
         "title": "Quien diseña, programa",
-        "body": "La misma persona diseña tu web, la construye y te atiende. Nada se pierde entre equipos."
+        "body": "La misma persona diseña tu web, la construye y te atiende. Nada se pierde entre equipos.",
+        "steps": ["Diseño y código, por separado", "Una sola mano los trenza", "Tu web, de una pieza"]
       },
       {
         "title": "El código es tuyo",
-        "body": "Sin plantillas ni plugins que actualizar cada mes. Se lee, y cualquier otro estudio puede continuarlo."
+        "body": "Sin plantillas ni plugins que actualizar cada mes. Se lee, y cualquier otro estudio puede continuarlo.",
+        "steps": ["Encerrado en una plataforma", "Se abre y se lee", "La llave es tuya"]
       },
       {
         "title": "Pocos proyectos a la vez",
-        "body": "Aceptamos pocos encargos a la vez, así que tu proyecto no espera en la cola detrás de otros diez."
+        "body": "Aceptamos pocos encargos a la vez, así que tu proyecto no espera en la cola detrás de otros diez.",
+        "steps": ["Uno más en la cola", "Solo unos pocos", "Toda la atención"]
       }
     ]
   },
@@ -790,15 +793,18 @@ const en: Dict = {
     "pillars": [
       {
         "title": "The designer builds it",
-        "body": "The same person designs your site, builds it and looks after you. Nothing gets lost between teams."
+        "body": "The same person designs your site, builds it and looks after you. Nothing gets lost between teams.",
+        "steps": ["Design and code, apart", "One pair of hands weaves them", "Your site, in one piece"]
       },
       {
         "title": "The code is yours",
-        "body": "No templates, no plugins to update every month. It reads clearly, and any other studio can pick it up."
+        "body": "No templates, no plugins to update every month. It reads clearly, and any other studio can pick it up.",
+        "steps": ["Locked into a platform", "It opens, and it reads", "The key is yours"]
       },
       {
         "title": "Few projects at once",
-        "body": "We only take on a few jobs at a time, so your project isn’t stuck in a queue behind ten others."
+        "body": "We only take on a few jobs at a time, so your project isn’t stuck in a queue behind ten others.",
+        "steps": ["One more in the queue", "Only a few", "All the attention"]
       }
     ]
   },
@@ -1441,15 +1447,18 @@ const nl: Dict = {
     "pillars": [
       {
         "title": "Wie ontwerpt, bouwt ook",
-        "body": "Dezelfde persoon ontwerpt je website, bouwt hem en staat je te woord. Niets raakt kwijt tussen teams."
+        "body": "Dezelfde persoon ontwerpt je website, bouwt hem en staat je te woord. Niets raakt kwijt tussen teams.",
+        "steps": ["Ontwerp en code, apart", "Eén paar handen vlecht ze samen", "Je website, uit één stuk"]
       },
       {
         "title": "De code is van jou",
-        "body": "Geen templates of plug-ins die je elke maand moet bijwerken. Hij is leesbaar, en elke andere studio kan ermee verder."
+        "body": "Geen templates of plug-ins die je elke maand moet bijwerken. Hij is leesbaar, en elke andere studio kan ermee verder.",
+        "steps": ["Vast in een platform", "Het gaat open en is leesbaar", "De sleutel is van jou"]
       },
       {
         "title": "Weinig projecten tegelijk",
-        "body": "We nemen weinig opdrachten tegelijk aan, dus jouw project staat niet in de rij achter tien andere."
+        "body": "We nemen weinig opdrachten tegelijk aan, dus jouw project staat niet in de rij achter tien andere.",
+        "steps": ["Eén van velen in de rij", "Maar een paar", "Alle aandacht"]
       }
     ]
   },
@@ -2092,15 +2101,18 @@ const de: Dict = {
     "pillars": [
       {
         "title": "Wer gestaltet, programmiert",
-        "body": "Dieselbe Person gestaltet Ihre Website, baut sie und betreut Sie. Nichts geht zwischen Teams verloren."
+        "body": "Dieselbe Person gestaltet Ihre Website, baut sie und betreut Sie. Nichts geht zwischen Teams verloren.",
+        "steps": ["Design und Code, getrennt", "Eine Hand verflicht beides", "Ihre Website, aus einem Guss"]
       },
       {
         "title": "Der Code gehört Ihnen",
-        "body": "Keine Templates, keine Plugins, die jeden Monat aktualisiert werden müssen. Er ist lesbar, und jedes andere Studio kann daran weiterarbeiten."
+        "body": "Keine Templates, keine Plugins, die jeden Monat aktualisiert werden müssen. Er ist lesbar, und jedes andere Studio kann daran weiterarbeiten.",
+        "steps": ["In einer Plattform gefangen", "Er öffnet sich und ist lesbar", "Der Schlüssel gehört Ihnen"]
       },
       {
         "title": "Wenige Projekte gleichzeitig",
-        "body": "Wir nehmen nur wenige Aufträge gleichzeitig an. Ihr Projekt wartet also nicht hinter zehn anderen in der Schlange."
+        "body": "Wir nehmen nur wenige Aufträge gleichzeitig an. Ihr Projekt wartet also nicht hinter zehn anderen in der Schlange.",
+        "steps": ["Einer von vielen in der Schlange", "Nur wenige", "Die ganze Aufmerksamkeit"]
       }
     ]
   },
