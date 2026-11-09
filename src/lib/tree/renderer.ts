@@ -122,8 +122,17 @@ void main() {
   float ta = stagger(uAssemble, aRand.x, 0.55);
   pos = mix(aStart, pos, ta);
 
-  // Remolino a mitad de cada viaje y respiración en reposo.
-  float swirl = (sin(3.14159 * t1) + sin(3.14159 * t2)) * (1.0 - dust) + 1.4 * sin(3.14159 * ta) + release * leaf * 0.6;
+  // A mitad de cada viaje entre formas, las partículas no van en nube: giran
+  // juntas en espiral alrededor del eje del árbol (unas más que otras, así
+  // se abre en hélice) y suben un poco, y luego se posan. Encima, un poco de
+  // remolino suelto.
+  float travel = (sin(3.14159 * t1) + sin(3.14159 * t2)) * (1.0 - dust);
+  float spin = travel * (0.55 + aRand.y * 0.7);
+  float cs = cos(spin);
+  float sn = sin(spin);
+  pos.xz = vec2(pos.x * cs - pos.z * sn, pos.x * sn + pos.z * cs);
+  pos.y += travel * (aRand.z - 0.55) * 0.18;
+  float swirl = travel * 0.55 + 1.4 * sin(3.14159 * ta) + release * leaf * 0.6;
   vec3 q = pos * 0.75 + vec3(0.0, uTime * 0.07, uTime * 0.035);
   vec3 n = vec3(snoise(q), snoise(q + 19.1), snoise(q + 37.7));
   // Vida en reposo, aunque no se haga scroll: cada forma respira (un ruido
@@ -198,6 +207,15 @@ void main() {
   alpha *= 1.0 + spreadOut * 0.9;
   size *= 1.0 + spreadOut * 0.35;
   alpha *= mix(0.45, 1.0, ta);
+  // Un barrido de luz lento, en diagonal, cruza el símbolo y el árbol final
+  // cada nueve segundos (como el reflejo sobre una joya); en las raíces no.
+  vec2 local = mix(aTree.xy, aFinal.xy, t2);
+  float band = dot(local, vec2(0.83, 0.55)) - (fract(uTime / 9.0) * 5.2 - 2.6);
+  float sheen = exp(-band * band * 30.0) * (1.0 - t1 * (1.0 - t2)) * (1.0 - dust) * uMotion * ta;
+  alpha *= 1.0 + sheen * 0.9;
+  color = mix(color, vec3(1.0, 0.96, 1.0), sheen * 0.28);
+  // Profundidad en el árbol final: lo de detrás, más tenue.
+  alpha *= mix(1.0, clamp(0.8 + aFinal.z * 0.5, 0.55, 1.12), t2 * (1.0 - dust));
   // El brillo: más luz, más tamaño y hacia el blanco.
   // (Algo menos donde las partículas van sueltas en remolino: se amontonan.)
   // En la copa del árbol final, mucho más densa, menos: si no, se quema en blanco.

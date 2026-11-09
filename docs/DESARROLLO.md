@@ -89,8 +89,10 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   (retorcidas, ramificadas, con su propio azar para no cambiar la copa). Cada partícula tiene su
   sitio en las tres formas y en una nube de salida.
 - **Movimiento** (`src/lib/tree/renderer.ts`): el shader lleva cada partícula
-  de una forma a otra con su propio retardo y un remolino de ruido a mitad de
-  camino. Al abrir, llegan desde la profundidad y forman el árbol mientras se
+  de una forma a otra con su propio retardo; a mitad de camino giran juntas
+  en espiral alrededor del eje del árbol (con algo de remolino suelto) y se
+  posan. Un barrido de luz lento cruza el símbolo y el árbol final cada nueve
+  segundos, y en el árbol lo de detrás va más tenue (profundidad). Al abrir, llegan desde la profundidad y forman el árbol mientras se
   abre la pantalla de carga. El ratón no mueve nada: enciende las partículas
   que tiene cerca (y deja una estela corta que se apaga), en el árbol, en las
   raíces y en el árbol final. El árbol lleva textura fija (manchas de luz,
