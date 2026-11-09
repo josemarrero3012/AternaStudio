@@ -49,13 +49,13 @@ export function StudioStatement({ n }: { n?: number }) {
         <ul className="pillars" ref={pillars}>
           {t.studioHome.pillars.map((p, i) => (
             <li className="pillar" key={i}>
+              <h3 className="t-title pillar__title">{p.title}</h3>
+              <p className="t-small pillar__body">{p.body}</p>
               {PILLAR_GLYPHS[i] ? (
                 <div className="pillar__stage">
                   <Trace drawing={PILLAR_GLYPHS[i]} size="xl" />
                 </div>
               ) : null}
-              <h3 className="t-title pillar__title">{p.title}</h3>
-              <p className="t-small muted">{p.body}</p>
             </li>
           ))}
         </ul>
