@@ -102,6 +102,7 @@ uniform vec3 uScale;
 uniform vec3 uCenter;  // centro horizontal de A, B y C: se centran en la tarjeta
 uniform float uMorph;  // 0 = A, 1 = B, 2 = C, 3 = de vuelta en A
 uniform float uTime;
+uniform float uGlint;  // 1 con destellos, 0 sin ellos (movimiento reducido)
 uniform float uPx;
 uniform float uHalfH;  // semialto de la cámara según el lienzo (12:5 → 0,454)
 uniform vec2 uLook;    // hueA, dimA (LOOKS)     // píxeles de dispositivo por punto de tamaño 1
@@ -139,7 +140,7 @@ void main() {
 
   // Cada tramo avanza como una ola de izquierda a derecha.
   // La ola es suave: cada partícula sale un poco después que la de su
-  // izquierda, y el tramo entero dura lo que marque LOOP.
+  // izquierda.
   float m = clamp(uMorph, 0.0, 3.0);
   float t1 = smoother(m * 1.25 - (A.x * 0.5 + 0.5) * 0.25);
   float t2 = smoother((m - 1.0) * 1.25 - (B.x * 0.5 + 0.5) * 0.25);
@@ -177,15 +178,17 @@ void main() {
   d -= floor(d + 0.5);
   float head = exp(-(d * d) / 0.00018);
   float tail = d < 0.0 ? exp(d / 0.05) * 0.45 : 0.0;
-  float glint = max(head, tail) * aPath.y * (1.0 - clamp(flight, 0.0, 1.0));
-  gain *= 1.0 + 2.4 * glint;
+  float glint = max(head, tail) * aPath.y * (1.0 - clamp(flight, 0.0, 1.0)) * uGlint;
+  gain *= 1.0 + 1.7 * glint;
   px *= 1.0 + 0.45 * glint;
-  col = mix(col, vec3(1.0, 0.95, 1.0), 0.5 * glint);
+  // Violeta: orquídea en la estela y apenas más clara en la cabeza, sin
+  // llegar a blanco.
+  col = mix(col, mix(C3, vec3(0.92, 0.72, 1.0), 0.4 * head), 0.9 * glint);
 
   if (kind == 2.0) {
     // El nodo se enciende cuando le llega el destello (al final de cada
     // recorrido) y se apaga despacio, como los iconos de antes.
-    float flash = exp(-phase / 0.12) + exp(-(1.0 - phase) / 0.02) * 0.6;
+    float flash = (exp(-phase / 0.12) + exp(-(1.0 - phase) / 0.02) * 0.6) * uGlint;
     px *= 1.0 + 0.4 * flash;
     col = mix(col, vec3(1.0, 0.96, 1.0), 0.35 * size + 0.3 * flash);
     gain *= 1.1 + 0.9 * flash;
@@ -213,34 +216,13 @@ void main() {
 `;
 
 /**
- * El bucle, en segundos: pausa en A, viaje a B, pausa en B, viaje a C, pausa
- * en C y vuelta a A. Lo comparten todas las tarjetas y sale del reloj de la
- * página, así que van coordinadas: cambian a la vez.
+ * La forma que se ve en las tarjetas: B (la hélice, las llaves con el código
+ * y la órbita). A y C siguen en los datos por si se vuelve a animar el paso
+ * de una a otra.
  */
-export const LOOP = { holdA: 2.5, toB: 3.5, holdB: 2.5, toC: 3.5, holdC: 3.5, toA: 3.5 };
-const LOOP_LEN = Object.values(LOOP).reduce((a, b) => a + b, 0);
+export const SHOWN = 1;
 
-const ease = (x: number) => x * x * (3 - 2 * x);
-
-/** Estado (0 = A, 1 = B, 2 = C, 3 = A otra vez) en el segundo t del reloj. */
-export function loopMorph(t: number) {
-  let r = ((t % LOOP_LEN) + LOOP_LEN) % LOOP_LEN;
-  const steps: [number, number, number][] = [
-    [LOOP.holdA, 0, 0],
-    [LOOP.toB, 0, 1],
-    [LOOP.holdB, 1, 1],
-    [LOOP.toC, 1, 2],
-    [LOOP.holdC, 2, 2],
-    [LOOP.toA, 2, 3],
-  ];
-  for (const [d, from, to] of steps) {
-    if (r < d) return from + (to - from) * ease(r / d);
-    r -= d;
-  }
-  return 0;
-}
-
-export type FrameState = { morph: number; time: number };
+export type FrameState = { morph: number; time: number; glint: number };
 
 export class PillarRenderer {
   private gl: WebGLRenderingContext;
@@ -292,7 +274,7 @@ export class PillarRenderer {
     attrib("aAttr", data.attr, 4, gl.UNSIGNED_BYTE);
     attrib("aPath", data.path, 2, gl.UNSIGNED_BYTE);
 
-    for (const u of ["uScale", "uCenter", "uMorph", "uTime", "uPx", "uLook", "uHalfH"]) this.loc[u] = gl.getUniformLocation(program, u);
+    for (const u of ["uScale", "uCenter", "uMorph", "uTime", "uPx", "uLook", "uHalfH", "uGlint"]) this.loc[u] = gl.getUniformLocation(program, u);
     gl.uniform3f(this.loc.uScale, ...data.scales);
     gl.uniform3f(this.loc.uCenter, ...data.centers);
     gl.uniform2f(this.loc.uLook, data.look.hueA, data.look.dimA);
@@ -316,6 +298,7 @@ export class PillarRenderer {
     const { gl, loc } = this;
     gl.uniform1f(loc.uMorph, s.morph);
     gl.uniform1f(loc.uTime, s.time);
+    gl.uniform1f(loc.uGlint, s.glint);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.POINTS, 0, this.count);
   }

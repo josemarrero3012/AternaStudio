@@ -1921,8 +1921,8 @@ body[data-menu="open"] .assistant__orb {
   pointer-events: none;
 }
 
-/* Escena de partículas de un pilar (PillarScene.tsx): ocupa todo el ancho
-   de la tarjeta y, debajo, una línea con el paso que se está viendo. */
+/* Dibujo de luz de un pilar (PillarScene.tsx): ocupa todo el ancho de la
+   tarjeta. */
 .pillar-scene {
   display: flex;
   flex-direction: column;
@@ -1951,52 +1951,6 @@ body[data-menu="open"] .assistant__orb {
   inset: 0;
   display: grid;
   place-items: center;
-}
-
-.pillar-scene__step {
-  display: flex;
-  align-items: center;
-  gap: var(--s-3);
-  min-height: 1.5em;
-  margin: 0;
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--lavender) 72%, transparent);
-}
-
-/* Tres filetes, uno por paso: el del paso que se ve, encendido. */
-.pillar-scene__dots {
-  display: inline-flex;
-  gap: 4px;
-}
-
-.pillar-scene__dot {
-  width: 14px;
-  height: 1px;
-  background: color-mix(in srgb, var(--lavender) 24%, transparent);
-  transition: background-color 0.8s ease;
-}
-
-.pillar-scene__dot[data-on] {
-  background: var(--orchid);
-}
-
-.pillar-scene__label {
-  animation: pillar-step 0.9s ease both;
-}
-
-@keyframes pillar-step {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pillar-scene__label {
-    animation: none;
-  }
 }
 
 @media (min-width: 768px) {
