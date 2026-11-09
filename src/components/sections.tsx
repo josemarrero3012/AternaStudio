@@ -55,11 +55,11 @@ export function StudioStatement({ n }: { n?: number }) {
         </div>
         <ul className="pillars" ref={pillars}>
           {t.studioHome.pillars.map((p, i) => (
-            <li className="pillar" key={i}>
+            <li className={`pillar aurora-card${i % 2 ? " aurora-card--soft" : ""}`} key={i}>
               <h3 className="t-title pillar__title">{p.title}</h3>
               <p className="t-small pillar__body">{p.body}</p>
               {PILLAR_GLYPHS[i] ? (
-                <div className="pillar__stage">
+                <div className="pillar__stage aurora-panel">
                   <Trace drawing={PILLAR_GLYPHS[i]} size="xl" />
                 </div>
               ) : null}
@@ -153,30 +153,7 @@ export function Cases({ n }: { n?: number }) {
 /** Home: los cuatro servicios, cada uno con su página. */
 export function Services({ n }: { n?: number }) {
   const { t } = useI18n();
-  const list = useReveal<HTMLUListElement>({ selector: ".service", y: 24, stagger: 0.1 });
-
-  // El icono va centrado bajo su propio titular (su línea más larga, no la
-  // columna). Se rehace con el tamaño y el idioma.
-  useEffect(() => {
-    const el = list.current;
-    if (!el) return;
-    const measure = () => {
-      el.querySelectorAll<HTMLElement>(".service__head").forEach((head) => {
-        const title = head.querySelector(".service__title");
-        if (!title) return;
-        const range = document.createRange();
-        range.selectNodeContents(title);
-        const width = Math.max(0, ...Array.from(range.getClientRects(), (r) => r.width));
-        head.style.setProperty("--title-w", `${width}px`);
-      });
-    };
-    measure();
-    // Con la fuente definitiva los titulares cambian de ancho.
-    document.fonts?.ready.then(measure);
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [list]);
+  const list = useReveal<HTMLUListElement>({ selector: ".service", y: 32, stagger: 0.1 });
   return (
     <section className="section services" id="servicios" aria-labelledby="services-title">
       <div className="container">
@@ -198,33 +175,34 @@ export function Services({ n }: { n?: number }) {
             const includes = t.servicePages[slugToProduct[slug]].includes.slice(0, 3);
             return (
               <li className="service" key={slug}>
-                <Link href={`/servicios/${slug}`} className="service__inner" data-spot>
-                  <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
+                {/* Misma tarjeta que los pilares de «Estudio»: texto arriba,
+                    el dibujo del servicio en el panel negro y, debajo, qué
+                    incluye y el precio. En rejilla de 2×2, la intensidad del
+                    marco alterna en damero. */}
+                <Link href={`/servicios/${slug}`} className={`service__inner aurora-card${i === 1 || i === 2 ? " aurora-card--soft" : ""}`} data-spot>
                   <div className="service__head">
+                    <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
                     <h3 className="t-title service__title">{card.title}</h3>
-                    {/* El icono, un solo trazo centrado bajo el titular. */}
-                    <div className="service__wire" data-service={slug}>
-                      <ServiceGlyph slug={slug} size="lg" className="service__glyph" />
-                    </div>
                   </div>
-                  <div className="service__body">
-                    <p className="t-body muted">{card.body}</p>
-                    <ul className="t-small service__includes">
-                      {includes.map((item, j) => (
-                        <li key={j}>
-                          <Check />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="service__meta">
-                      <StartingPrice slug={slug} className="t-small" />
-                      <span className="link-cta">
-                        {card.cta}
-                        <ArrowRight />
-                      </span>
-                    </p>
+                  <p className="service__lead">{card.body}</p>
+                  <div className="service__wire aurora-panel" data-service={slug}>
+                    <ServiceGlyph slug={slug} size="xl" className="service__glyph" />
                   </div>
+                  <ul className="t-small service__includes">
+                    {includes.map((item, j) => (
+                      <li key={j}>
+                        <Check />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="service__meta">
+                    <StartingPrice slug={slug} className="t-small" />
+                    <span className="link-cta">
+                      {card.cta}
+                      <ArrowRight />
+                    </span>
+                  </p>
                 </Link>
               </li>
             );

@@ -1047,6 +1047,70 @@ html[data-veil="cover"] .page-veil {
   }
 }
 
+/* Polvo de luz (LightDust.tsx): una capa fija sobre las secciones, bajo la
+   cabecera y los botones flotantes. En «screen» solo aclara: sobre el texto
+   blanco no se nota y sobre la noche y el violeta brilla. */
+.light-dust {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-header) - 1);
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Entrada al hacer scroll (ScrollReveal.tsx). Con animación y no con
+   transición: así no pisa las transiciones de hover de cada bloque, y con
+   «translate» (no transform) tampoco su elevación. */
+[data-reveal="wait"] {
+  opacity: 0;
+}
+
+[data-reveal="in"] {
+  animation: reveal-rise 1.05s var(--e-aterna) both;
+  animation-delay: calc(var(--ri, 0) * 90ms);
+}
+
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    translate: 0 36px;
+  }
+  to {
+    opacity: 1;
+    translate: none;
+  }
+}
+
+/* El filamento del antetítulo se dibuja desde su nodo. */
+.eyebrow[data-reveal="in"] {
+  animation-name: reveal-fade;
+}
+
+.eyebrow[data-reveal="in"]::before {
+  animation: eyebrow-draw 1.3s var(--e-aterna) both;
+  animation-delay: calc(var(--ri, 0) * 90ms + 0.1s);
+}
+
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes eyebrow-draw {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
 /* Cursor (Chrome.tsx): un anillo de vidrio con un punto, que sigue al
    puntero con algo de retraso, crece sobre enlaces y botones y, sobre un
    elemento con data-cursor-label, dice qué hace. Solo con ratón, y cuando ya
@@ -1970,44 +2034,37 @@ body[data-menu="open"] .assistant__orb {
   }
 }
 
-/* Tres compromisos del estudio. El color va en el marco (degradado del logo
-   con unas motas de luz quietas) y el dibujo vive en un panel casi negro,
-   donde el trazo y el pulso violeta ganan contraste. */
-.pillars {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--gutter);
-  margin-top: var(--section-y);
-}
-
-.pillar {
-  --pillar-a: color-mix(in srgb, var(--indigo) 88%, #000);
-  --pillar-b: color-mix(in srgb, var(--violet) 82%, var(--indigo));
-  --pillar-rose: color-mix(in srgb, var(--orchid) 38%, transparent);
+/* Tarjetas de marca ---------------------------------------------------------
+   El diseño de los pilares de «01 — Estudio», para toda la web (servicios,
+   planes, creencias, ejemplos, formulario): el color va en el marco
+   (degradado del logo con unas motas de luz quietas), el texto en blanco
+   arriba y el dibujo, el precio o el formulario en un panel casi negro
+   (.aurora-panel), donde el trazo y el pulso violeta ganan contraste.
+   --soft baja la intensidad para dar ritmo a una fila o una rejilla. */
+.aurora-card {
+  --card-a: color-mix(in srgb, var(--indigo) 88%, #000);
+  --card-b: color-mix(in srgb, var(--violet) 82%, var(--indigo));
+  --card-rose: color-mix(in srgb, var(--orchid) 38%, transparent);
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-  padding: var(--s-6);
   border: 1px solid color-mix(in srgb, #fff 14%, transparent);
   border-radius: calc(var(--r-card) * 2);
   background:
-    radial-gradient(90% 55% at 100% 100%, var(--pillar-rose), transparent 70%),
-    linear-gradient(160deg, var(--pillar-a) 0%, var(--pillar-b) 100%);
+    radial-gradient(90% 55% at 100% 100%, var(--card-rose), transparent 70%),
+    linear-gradient(160deg, var(--card-a) 0%, var(--card-b) 100%);
   box-shadow: var(--shadow-card);
+  color: #fff;
 }
 
-/* La del medio, más suave: da ritmo a las tres. */
-.pillar:nth-child(2) {
-  --pillar-a: color-mix(in srgb, var(--indigo) 62%, var(--night-2));
-  --pillar-b: color-mix(in srgb, var(--violet) 58%, var(--night-2));
-  --pillar-rose: color-mix(in srgb, var(--orchid) 22%, transparent);
+.aurora-card--soft {
+  --card-a: color-mix(in srgb, var(--indigo) 62%, var(--night-2));
+  --card-b: color-mix(in srgb, var(--violet) 58%, var(--night-2));
+  --card-rose: color-mix(in srgb, var(--orchid) 22%, transparent);
 }
 
 /* Motas de luz, quietas. */
-.pillar::before {
+.aurora-card::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -2021,8 +2078,89 @@ body[data-menu="open"] .assistant__orb {
     radial-gradient(1.5px 1.5px at 58% 27%, #ffffffb3, transparent),
     radial-gradient(1px 1px at 22% 40%, #ffffff80, transparent),
     radial-gradient(1.5px 1.5px at 86% 52%, #ffffffa6, transparent),
-    radial-gradient(1px 1px at 6% 63%, #ffffff8c, transparent);
+    radial-gradient(1px 1px at 6% 63%, #ffffff8c, transparent),
+    radial-gradient(1px 1px at 48% 88%, #ffffff8c, transparent),
+    radial-gradient(1.5px 1.5px at 94% 84%, #ffffffa6, transparent);
   opacity: 0.9;
+}
+
+/* Sobre el marco de color, todo el texto en blanco (el gris de la noche se
+   perdía sobre el violeta). */
+.aurora-card :is(.muted, .dim, .t-label, .service__includes, .price-tag__soft) {
+  color: color-mix(in srgb, #fff 82%, transparent);
+}
+
+.aurora-card .check {
+  color: #fff;
+}
+
+/* El panel negro, con un filete de luz en el borde de arriba. */
+.aurora-panel {
+  position: relative;
+  border: 1px solid color-mix(in srgb, #fff 7%, transparent);
+  border-radius: calc(var(--r-card) * 1.4);
+  background:
+    radial-gradient(closest-side, color-mix(in srgb, var(--violet) 12%, transparent), transparent),
+    #07081a;
+  box-shadow: 0 18px 40px -20px #000000b3;
+  color: var(--on-surface-hi);
+}
+
+.aurora-panel::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 14%;
+  right: 14%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--lavender) 80%, transparent), color-mix(in srgb, var(--orchid) 80%, transparent), transparent);
+  transition: left var(--d-std) var(--e-aterna), right var(--d-std) var(--e-aterna), opacity var(--d-std) var(--e-out);
+}
+
+/* Dentro del panel, el texto vuelve a los tonos de la noche. */
+.aurora-panel :is(.muted, .dim, .t-label) {
+  color: var(--on-surface-mid);
+}
+
+/* Las que son enlace: se elevan, el marco gana luz y el filete del panel se
+   abre a lo ancho. */
+a.aurora-card {
+  transition:
+    transform var(--d-std) var(--e-aterna),
+    box-shadow var(--d-std) var(--e-out),
+    border-color var(--d-std) var(--e-out);
+}
+
+@media (hover: hover) {
+  a.aurora-card:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, #fff 26%, transparent);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  a.aurora-card:hover .aurora-panel::before {
+    left: 4%;
+    right: 4%;
+  }
+
+  a.aurora-card:hover .arrow {
+    transform: var(--arrow-nudge);
+  }
+}
+
+/* Tres compromisos del estudio. */
+.pillars {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gutter);
+  margin-top: var(--section-y);
+}
+
+.pillar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-6);
 }
 
 .pillar__title {
@@ -2049,30 +2187,16 @@ body[data-menu="open"] .assistant__orb {
   background: radial-gradient(closest-side, color-mix(in srgb, var(--violet) 14%, transparent), transparent);
 }
 
-/* En los pilares, el escenario es el panel negro del fondo de la tarjeta,
-   con un filete de luz en el borde de arriba. */
-.pillar .pillar__stage {
-  position: relative;
+/* En las tarjetas de marca, el escenario es el panel negro del pie. */
+.aurora-card :is(.pillar__stage, .svc-card__stage) {
   align-items: center;
   margin-top: auto;
   margin-bottom: 0;
   padding: var(--s-7) var(--s-5);
   border: 1px solid color-mix(in srgb, #fff 7%, transparent);
-  border-radius: calc(var(--r-card) * 1.4);
   background:
     radial-gradient(closest-side, color-mix(in srgb, var(--violet) 12%, transparent), transparent),
     #07081a;
-  box-shadow: 0 18px 40px -20px #000000b3;
-}
-
-.pillar .pillar__stage::before {
-  content: "";
-  position: absolute;
-  top: -1px;
-  left: 14%;
-  right: 14%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--lavender) 80%, transparent), color-mix(in srgb, var(--orchid) 80%, transparent), transparent);
 }
 
 @media (min-width: 768px) {
@@ -2205,99 +2329,60 @@ body[data-menu="open"] .assistant__orb {
   }
 }
 
-/* Lista de servicios / creencias ----------------------------------------- */
+/* Servicios de la portada: tarjetas de marca en rejilla de 2×2 ---------- */
 
 .services__list {
-  border-bottom: 1px solid var(--hair);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gutter);
 }
 
 .service {
-  border-top: 1px solid var(--hair);
+  display: flex;
 }
 
 .service__inner {
-  position: relative;
-  isolation: isolate;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: var(--s-5);
-  row-gap: var(--s-3);
-  padding-block: var(--s-7);
-  border-radius: var(--r-card);
-  transition:
-    background-color var(--d-micro) var(--e-out),
-    box-shadow var(--d-std) var(--e-out),
-    padding-inline var(--d-micro) var(--e-out);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  width: 100%;
+  padding: var(--s-6);
+}
+
+.service__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-4);
 }
 
 .service__index {
-  padding-top: 0.6em;
-  color: var(--on-surface-low);
+  color: color-mix(in srgb, #fff 70%, transparent);
   transition: color var(--d-micro) var(--e-out);
 }
 
-/* Titular y su icono en la misma celda: el icono llena el hueco que queda
-   bajo el titular cuando el texto de al lado es más alto. */
-.service__head {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--s-5);
-}
-
 .service__title {
-  transition: transform var(--d-micro) var(--e-out);
+  font-size: var(--t-card);
+  color: #fff;
 }
 
-/* Icono del servicio en la lista de la portada: contenido, para que el
-   titular mande (trazo compensado a cada tamaño). */
-.service__glyph {
-  --sw: 0.95;
-  --sw-halo: 3.6;
-  --sw-faint: 0.8;
-  --sw-pulse: 1.5;
-  flex: none;
-  width: 144px;
-}
-
-@media (min-width: 1024px) {
-  .service__glyph {
-    --sw: 0.78;
-    --sw-halo: 3.1;
-    --sw-faint: 0.66;
-    --sw-pulse: 1.25;
-    width: 184px;
-  }
-}
-
-/* El icono bajo el titular: un solo trazo, que nace en la nada por la
-   izquierda, centrado bajo la línea más larga del titular. Antes un hilo
-   aparte llevaba hasta él y se notaba la unión de los dos tramos. */
-.service__head {
-  align-items: stretch;
-}
-
-.service__head > .service__title {
-  align-self: flex-start;
+.service__lead {
+  max-width: 52ch;
+  margin-bottom: var(--s-4);
+  color: color-mix(in srgb, #fff 84%, transparent);
 }
 
 .service__wire {
   display: flex;
   justify-content: center;
-  width: min(100%, var(--title-w, 100%));
-}
-
-.service__body {
-  grid-column: 2;
-  max-width: 54ch;
+  align-items: center;
+  padding: var(--s-7) var(--s-5);
 }
 
 /* Tres puntos de «Qué incluye» de la ficha del servicio. */
 .service__includes {
   display: grid;
   gap: var(--s-2);
-  margin-top: var(--s-4);
-  color: var(--on-surface-mid);
+  margin-block: var(--s-4) var(--s-5);
 }
 
 .service__includes li {
@@ -2306,53 +2391,27 @@ body[data-menu="open"] .assistant__orb {
   gap: 10px;
 }
 
-/* Precio arriba y llamada debajo en móvil; en línea desde tablet. Antes un
-   precio largo partía la fila y descolocaba la llamada. */
+/* Precio y llamada al pie, sobre un filete. */
 .service__meta {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--s-1);
-  margin-top: var(--s-4);
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-6);
+  margin-top: auto;
+  padding-top: var(--s-4);
+  border-top: 1px solid color-mix(in srgb, #fff 16%, transparent);
 }
 
 @media (min-width: 768px) {
-  .service__meta {
-    flex-direction: row;
-    align-items: center;
-    gap: var(--s-6);
+  .services__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (hover: hover) {
-  a.service__inner:hover {
-    background-color: var(--glass);
-    box-shadow: var(--shadow-card);
-    padding-inline: var(--s-5);
-  }
-
   .service:hover .service__index {
-    color: var(--orchid);
-  }
-
-  .service:hover .service__title {
-    transform: translateX(8px);
-  }
-
-  a.service__inner:hover .arrow {
-    transform: var(--arrow-nudge);
-  }
-}
-
-@media (min-width: 1024px) {
-  .service__inner {
-    grid-template-columns: auto minmax(0, 5fr) minmax(0, 6fr);
-    align-items: baseline;
-    column-gap: var(--s-9);
-  }
-
-  .service__body {
-    grid-area: 1 / 3;
+    color: #fff;
   }
 }
 
@@ -3689,47 +3748,36 @@ body[data-menu="open"] .assistant__orb {
 }
 
 .svc-card {
-  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--s-3);
   padding: var(--s-6);
-  border: 1px solid var(--hair);
-  border-radius: var(--r-card);
-  background: var(--glass);
-  transition:
-    border-color var(--d-std) var(--e-out),
-    background-color var(--d-std) var(--e-out),
-    box-shadow var(--d-std) var(--e-out),
-    transform var(--d-std) var(--e-out);
 }
 
-
+.svc-card__title {
+  color: #fff;
+}
 
 .svc-card__body {
-  flex: 1;
+  max-width: 52ch;
+  margin-bottom: var(--s-4);
+  color: color-mix(in srgb, #fff 84%, transparent);
+}
+
+/* Importe y llamada al pie, sobre un filete. */
+.svc-card__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-5);
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid color-mix(in srgb, #fff 16%, transparent);
 }
 
 .svc-card__price {
-  margin-top: var(--s-2);
   font-size: 1.25rem;
-}
-
-.svc-card__cta {
-  margin-top: var(--s-2);
-  padding-top: var(--s-3);
-  border-top: 1px solid var(--hair);
-}
-
-@media (hover: hover) {
-  .svc-card:hover {
-    border-color: var(--hair-strong);
-    transform: translateY(-3px);
-  }
-
-  .svc-card:hover .arrow {
-    transform: var(--arrow-nudge);
-  }
 }
 
 @media (min-width: 768px) {
@@ -3910,33 +3958,14 @@ body[data-menu="open"] .assistant__orb {
   display: flex;
   flex-direction: column;
   gap: var(--s-2);
-  padding: var(--s-5);
-  border: 1px solid var(--hair);
-  border-radius: var(--r-card);
-  background: var(--glass);
-  transition:
-    border-color var(--d-std) var(--e-out),
-    background-color var(--d-std) var(--e-out),
-    box-shadow var(--d-std) var(--e-out),
-    transform var(--d-std) var(--e-out);
+  padding: var(--s-5) var(--s-6);
 }
 
 .ex-card__title {
   display: inline-flex;
   align-items: center;
   gap: var(--s-2);
-  color: var(--on-surface-hi);
-}
-
-@media (hover: hover) {
-  .ex-card:hover {
-    border-color: var(--hair-strong);
-    transform: translateY(-2px);
-  }
-
-  .ex-card:hover .arrow {
-    transform: var(--arrow-nudge);
-  }
+  color: #fff;
 }
 
 .svc-plans {
@@ -3968,28 +3997,22 @@ body[data-menu="open"] .assistant__orb {
   gap: var(--s-5);
 }
 
+/* Planes: tarjetas de marca. El recomendado, con el marco a plena luz; los
+   demás, suaves. El importe vive en el panel negro. */
 .plan {
   display: flex;
   flex-direction: column;
   gap: var(--s-5);
   padding: var(--s-6);
-  border: 1px solid var(--hair);
-  border-radius: var(--r-card);
-  background: var(--glass);
+  overflow: visible;
+}
+
+.plan .aurora-panel {
+  padding: var(--s-6) var(--s-5);
 }
 
 /* Vidrio: desenfoca lo que hay detrás (bandas y luces) y flota con sombra.
    El foco de luz sigue al puntero (--mx, --my, ver Spotlight en Chrome.tsx). */
-.svc-card,
-.ex-card,
-.plan {
-  position: relative;
-  isolation: isolate;
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: var(--shadow-card);
-}
-
 [data-spot]::after {
   content: "";
   position: absolute;
@@ -4006,23 +4029,18 @@ body[data-menu="open"] .assistant__orb {
   [data-spot]:hover::after {
     opacity: 1;
   }
-
-  .svc-card:hover,
-  .ex-card:hover,
-  .plan:hover {
-    background-color: var(--glass-hover);
-    box-shadow: var(--shadow-card-hover);
-  }
 }
 
 .plan--featured {
-  position: relative;
-  border: 1px solid transparent;
-  background:
-    radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--violet) 25%, transparent) 0%, transparent 70%) padding-box,
-    linear-gradient(var(--glass), var(--glass)) padding-box,
-    var(--brand-gradient) border-box;
-  box-shadow: 0 24px 60px -24px color-mix(in srgb, var(--violet) 50%, transparent);
+  box-shadow:
+    var(--shadow-card),
+    0 30px 70px -30px color-mix(in srgb, var(--violet) 70%, transparent);
+}
+
+/* Con overflow visible (la pastilla sobresale), las motas se recortan
+   con el radio de la propia capa. */
+.plan.aurora-card::before {
+  border-radius: inherit;
 }
 
 /* Pastilla de tinta con borde de marca, como el botón de WhatsApp: el texto
@@ -4053,12 +4071,11 @@ body[data-menu="open"] .assistant__orb {
 }
 
 .plan__name {
-  margin-bottom: var(--s-4);
-  color: var(--on-surface-mid);
+  margin-bottom: var(--s-3);
 }
 
-.plan--featured .plan__name {
-  color: var(--orchid);
+.aurora-card .plan__name {
+  color: #fff;
 }
 
 .plan__price {
@@ -4091,19 +4108,18 @@ body[data-menu="open"] .assistant__orb {
 }
 
 .plan__unit {
-  margin-top: var(--s-2);
+  margin-top: var(--s-3);
 }
 
 .plan__tagline {
-  margin-top: var(--s-4);
+  min-height: 3em;
+  color: color-mix(in srgb, #fff 84%, transparent);
 }
 
 .plan__features {
   display: flex;
   flex-direction: column;
   gap: var(--s-3);
-  padding-top: var(--s-5);
-  border-top: 1px solid var(--hair);
 }
 
 .svc-faq__list {
@@ -4256,17 +4272,17 @@ body[data-menu="open"] .assistant__orb {
     0 0 16px 2px color-mix(in srgb, var(--orchid) 60%, transparent);
 }
 
+/* La ilustración, en el panel negro de una tarjeta de marca (el marco de
+   color, como un bisel). */
 .belief__stage {
+  padding: var(--s-4);
+}
+
+.belief__panel {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--s-6) var(--s-5);
-  border: 1px solid var(--hair);
-  border-radius: var(--r-card);
-  background:
-    radial-gradient(closest-side, color-mix(in srgb, var(--violet) 14%, transparent), transparent),
-    var(--glass);
-  box-shadow: var(--shadow-card);
+  padding: var(--s-8) var(--s-5);
 }
 
 .belief__copy {
@@ -4561,17 +4577,32 @@ body[data-menu="open"] .assistant__orb {
     margin-top: var(--block-y);
   }
 
-  .contact-grid > .contact-form {
+  .contact-grid > .contact-frame {
     grid-column: 8 / span 5;
     grid-row: 2 / span 2;
-    padding-top: var(--s-4);
   }
+}
+
+/* El formulario, en el panel negro de una tarjeta de marca. */
+.contact-frame {
+  padding: var(--s-3);
 }
 
 .contact-form {
   display: flex;
   flex-direction: column;
   gap: var(--s-6);
+  padding: var(--s-6) var(--s-5);
+}
+
+@media (min-width: 768px) {
+  .contact-frame {
+    padding: var(--s-4);
+  }
+
+  .contact-form {
+    padding: var(--s-8) var(--s-7);
+  }
 }
 
 .contact-form__field {

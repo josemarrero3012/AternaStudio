@@ -48,26 +48,33 @@ export function HomeContent() {
 
 type Card = { slug: string; kicker: string; title: string; body: string; cta: string };
 
-/** Tarjeta de servicio: en /servicios y en «Otros servicios» de cada ficha. */
-function SvcCard({ card, heading = "h2" }: { card: Card; heading?: "h2" | "h3" }) {
+/**
+ * Tarjeta de servicio: en /servicios y en «Otros servicios» de cada ficha.
+ * El diseño de los pilares de la portada: texto arriba, el dibujo en el
+ * panel negro y, al pie, el importe y la llamada. `soft` baja la intensidad
+ * del marco para alternar en la rejilla.
+ */
+function SvcCard({ card, heading = "h2", soft = false }: { card: Card; heading?: "h2" | "h3"; soft?: boolean }) {
   const slug = card.slug as ServiceSlug;
   const Heading = heading;
   return (
-    <Link href={`/servicios/${slug}`} className="svc-card" data-spot>
-      <div className="svc-card__stage">
-        <ServiceGlyph slug={slug} size="lg" />
-      </div>
-      <p className="t-label dim svc-card__kicker">{card.kicker}</p>
+    <Link href={`/servicios/${slug}`} className={`svc-card aurora-card${soft ? " aurora-card--soft" : ""}`} data-spot>
+      <p className="t-label svc-card__kicker">{card.kicker}</p>
       <Heading className="t-card svc-card__title">{card.title}</Heading>
-      <p className="t-body muted svc-card__body">{card.body}</p>
+      <p className="t-small svc-card__body">{card.body}</p>
+      <div className="svc-card__stage aurora-panel">
+        <ServiceGlyph slug={slug} size="xl" />
+      </div>
       {/* La modalidad de pago ya la dice el antetítulo: aquí solo el importe. */}
-      <p className="svc-card__price">
-        <StartingPrice slug={slug} />
-      </p>
-      <span className="link-cta svc-card__cta">
-        {card.cta}
-        <ArrowRight />
-      </span>
+      <div className="svc-card__foot">
+        <p className="svc-card__price">
+          <StartingPrice slug={slug} />
+        </p>
+        <span className="link-cta svc-card__cta">
+          {card.cta}
+          <ArrowRight />
+        </span>
+      </div>
     </Link>
   );
 }
@@ -86,8 +93,8 @@ export function ServiciosContent() {
       <section className="section section--flush-top band-indigo" aria-label={page.eyebrow}>
         <div className="container">
           <div className="svc-cards">
-            {page.cards.map((card) => (
-              <SvcCard key={card.slug} card={card} />
+            {page.cards.map((card, i) => (
+              <SvcCard key={card.slug} card={card} soft={i === 1 || i === 2} />
             ))}
           </div>
         </div>
@@ -122,18 +129,21 @@ function Plan({
 }) {
   const { t } = useI18n();
   return (
-    <article className={`plan${featured ? " plan--featured" : ""}`} data-spot>
+    <article className={`plan aurora-card${featured ? " plan--featured" : " aurora-card--soft"}`} data-spot>
       {featured ? <span className="t-label plan__badge">{t.common.recommended}</span> : null}
       <header className="plan__head">
         <h3 className="t-label plan__name">{name}</h3>
+        <p className="t-small plan__tagline">{tagline}</p>
+      </header>
+      {/* El importe, en el panel negro: como el dibujo en las demás tarjetas. */}
+      <div className="plan__panel aurora-panel">
         <p className={`plan__price${priceSuffix === undefined && !/\d/.test(priceLabel) ? " plan__price--text" : ""}`}>
           {pricePrefix ? <span className="plan__prefix">{pricePrefix}</span> : null}
           {priceLabel}
           {priceSuffix ? <span className="plan__suffix">{priceSuffix}</span> : null}
         </p>
-        {unitNote ? <p className="t-label dim plan__unit">{unitNote}</p> : null}
-        <p className="t-small muted plan__tagline">{tagline}</p>
-      </header>
+        {unitNote ? <p className="t-label plan__unit">{unitNote}</p> : null}
+      </div>
       <ul className="plan__features">
         {features.map((f, i) => (
           <li key={i}>
@@ -237,8 +247,8 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
             <p className="t-body muted svc-examples__lead">{page.examplesLead}</p>
             <div className="ex-cards">
               {page.examples.map((ex, i) => (
-                <a key={i} className="ex-card" data-spot href={withBase(ex.href)} target="_blank" rel="noopener noreferrer">
-                  <span className="t-label dim ex-card__label">{ex.label}</span>
+                <a key={i} className="ex-card aurora-card aurora-card--soft" data-spot href={withBase(ex.href)} target="_blank" rel="noopener noreferrer">
+                  <span className="t-label ex-card__label">{ex.label}</span>
                   <span className="t-card ex-card__title">
                     {ex.title}
                     <ArrowExternal />
@@ -317,8 +327,8 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
         <div className="svc-cards svc-cards--three">
           {cards
             .filter((c) => c.slug !== slug)
-            .map((c) => (
-              <SvcCard key={c.slug} card={c} heading="h3" />
+            .map((c, i) => (
+              <SvcCard key={c.slug} card={c} heading="h3" soft={i === 1} />
             ))}
         </div>
       </section>
@@ -359,8 +369,11 @@ export function EstudioContent() {
           <ol className="manifesto" ref={manifesto}>
             {page.beliefs.map((b, i) => (
               <li className="belief" key={i}>
-                <div className="belief__stage">
-                  <BeliefArt index={i} />
+                {/* El dibujo, en el panel negro de una tarjeta de marca. */}
+                <div className={`belief__stage aurora-card${i % 2 ? " aurora-card--soft" : ""}`}>
+                  <div className="belief__panel aurora-panel">
+                    <BeliefArt index={i} />
+                  </div>
                 </div>
                 <div className="belief__copy">
                   <span className="t-index belief__index">{String(i + 1).padStart(2, "0")}</span>
@@ -432,54 +445,57 @@ function ContactForm() {
   const note = state === "sent" ? t.contactForm.sent : state === "error" ? t.contactForm.error : "";
 
   return (
-    <form className="contact-form" onSubmit={onSubmit} aria-busy={sending}>
-      <div className="contact-form__field">
-        <label htmlFor="cf-name">{t.contactForm.name}</label>
-        <input id="cf-name" name="name" type="text" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} disabled={sending} />
-      </div>
-      <div className="contact-form__field">
-        <label htmlFor="cf-email">{t.contactForm.email}</label>
-        <input id="cf-email" name="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={sending} />
-      </div>
-      <div className="contact-form__field">
-        <label htmlFor="cf-message">{t.contactForm.message}</label>
-        <textarea id="cf-message" name="message" required rows={5} value={message} onChange={(e) => setMessage(e.target.value)} disabled={sending} />
-      </div>
-      <fieldset className="contact-form__consent">
-        <legend>
-          {t.contactForm.consentLegend} <span aria-hidden="true">*</span>
-        </legend>
-        <label htmlFor="cf-consent">
-          <input id="cf-consent" name="consent" type="checkbox" required checked={consent} onChange={(e) => setConsent(e.target.checked)} disabled={sending} />
-          <span>
-            {t.contactForm.consentText} {t.contactForm.consentMore}{" "}
-            <Link href={t.contactForm.consentHref} className="link-underline">
-              {t.contactForm.consentLink}
-            </Link>
-            .
-          </span>
-        </label>
-      </fieldset>
-      <input
-        type="text"
-        name="company"
-        value={company}
-        onChange={(e) => setCompany(e.target.value)}
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden="true"
-        className="contact-form__trap"
-      />
-      <div className="contact-form__footer">
-        <button type="submit" className="btn-primary contact-form__submit" disabled={sending}>
-          {sending ? t.contactForm.sending : t.contactForm.submit}
-          {!sending ? <ArrowRight /> : null}
-        </button>
-        <p className="t-small contact-form__note" data-state={state} role="status" aria-live="polite">
-          {note}
-        </p>
-      </div>
-    </form>
+    // El formulario, en el panel negro de una tarjeta de marca.
+    <div className="contact-frame aurora-card">
+      <form className="contact-form aurora-panel" onSubmit={onSubmit} aria-busy={sending}>
+        <div className="contact-form__field">
+          <label htmlFor="cf-name">{t.contactForm.name}</label>
+          <input id="cf-name" name="name" type="text" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} disabled={sending} />
+        </div>
+        <div className="contact-form__field">
+          <label htmlFor="cf-email">{t.contactForm.email}</label>
+          <input id="cf-email" name="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={sending} />
+        </div>
+        <div className="contact-form__field">
+          <label htmlFor="cf-message">{t.contactForm.message}</label>
+          <textarea id="cf-message" name="message" required rows={5} value={message} onChange={(e) => setMessage(e.target.value)} disabled={sending} />
+        </div>
+        <fieldset className="contact-form__consent">
+          <legend>
+            {t.contactForm.consentLegend} <span aria-hidden="true">*</span>
+          </legend>
+          <label htmlFor="cf-consent">
+            <input id="cf-consent" name="consent" type="checkbox" required checked={consent} onChange={(e) => setConsent(e.target.checked)} disabled={sending} />
+            <span>
+              {t.contactForm.consentText} {t.contactForm.consentMore}{" "}
+              <Link href={t.contactForm.consentHref} className="link-underline">
+                {t.contactForm.consentLink}
+              </Link>
+              .
+            </span>
+          </label>
+        </fieldset>
+        <input
+          type="text"
+          name="company"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="contact-form__trap"
+        />
+        <div className="contact-form__footer">
+          <button type="submit" className="btn-primary contact-form__submit" disabled={sending}>
+            {sending ? t.contactForm.sending : t.contactForm.submit}
+            {!sending ? <ArrowRight /> : null}
+          </button>
+          <p className="t-small contact-form__note" data-state={state} role="status" aria-live="polite">
+            {note}
+          </p>
+        </div>
+      </form>
+    </div>
   );
 }
 
