@@ -181,12 +181,14 @@ function HeroState({
   restRef,
   headline,
   scrollCue,
+  cta,
   intro,
 }: {
   nameRef: Ref<HTMLDivElement>;
   restRef: Ref<HTMLDivElement>;
   headline: string;
   scrollCue: string;
+  cta: string;
   intro: boolean;
 }) {
   const letters = Array.from("Aterna");
@@ -209,6 +211,11 @@ function HeroState({
           <span className="journey__scroll-line" />
           {scrollCue}
         </p>
+        {/* Mientras se ve la portada, el botón va aquí y no en la cabecera. */}
+        <Link href="/contacto" className="journey__pill">
+          {cta}
+          <ArrowRight />
+        </Link>
       </div>
     </section>
   );
@@ -663,6 +670,7 @@ export function Journey() {
             restRef={heroRef}
             headline={t.hero.headline}
             scrollCue={j.scrollCue}
+            cta={t.cta}
             intro={intro}
           />
           <CopyState ref={midRef} kind="mid" id="journey-mid" headline={j.mid.headline} body={j.mid.body} />
