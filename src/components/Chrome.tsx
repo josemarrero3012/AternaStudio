@@ -34,8 +34,9 @@ export const CURTAIN_SCRIPT = `try{var d=document.documentElement;if(!matchMedia
 
 /**
  * Cortina de marca: solo la primera vez por sesión. Al subir da la salida a
- * la entrada (startIntro). En la portada no sale: allí tapa la pantalla de
- * carga del recorrido (Journey.tsx), que da ella la salida.
+ * la entrada (startIntro). En la portada no sale (ni en el HTML, ver
+ * globals.css): allí la entrada la da el recorrido (Journey.tsx), sin
+ * pantalla de carga.
  */
 export function Curtain() {
   const ref = useRef<HTMLDivElement>(null);
