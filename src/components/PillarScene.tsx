@@ -4,7 +4,7 @@
 // tarjeta contada en tres formas (src/lib/pillars/renderer.ts), en un bucle
 // lento A → B → C → A (LOOP). Todas las tarjetas comparten el reloj, que
 // arranca al ver la primera, así que cambian a la vez. No reacciona al puntero ni al scroll:
-// fuera de pantalla solo deja de pintarse. Debajo, tres puntos y una frase
+// fuera de pantalla solo deja de pintarse. Debajo, tres filetes y una frase
 // dicen qué se está viendo en cada paso.
 //
 // Mientras cargan los puntos (y sin JavaScript) se ve el icono SVG; si no hay
@@ -122,7 +122,7 @@ export function PillarScene({ index, steps }: { index: number; steps: string[] }
       <p className="pillar-scene__step" aria-hidden="true">
         <span className="pillar-scene__dots">
           {steps.map((_, i) => (
-            <span key={i} className="pillar-scene__dot" data-on={i <= step ? "" : undefined} />
+            <span key={i} className="pillar-scene__dot" data-on={i === step ? "" : undefined} />
           ))}
         </span>
         <span className="pillar-scene__label" key={step}>

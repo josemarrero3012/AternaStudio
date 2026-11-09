@@ -1,8 +1,9 @@
 // Escenas de partículas de las tarjetas de «01 — Estudio» (PillarScene.tsx).
 // La misma técnica que el árbol de la portada (src/lib/tree), en pequeño:
 // unas 7.000 partículas con un sitio en cada una de tres formas (A, B y C) y
-// el shader las lleva de una a otra. Las formas las modela Blender
-// (scripts/estudio-v2/pillar-N/build.py) y llegan como nubes de puntos:
+// el shader las lleva de una a otra. Las formas de la primera las modeló
+// Blender y las de las otras dos se dibujan con trazos; todas salen de
+// scripts/estudio-v2/pillar-N/build.py como nubes de puntos:
 //
 //   state-{a,b,c}.bin  N × (x, y, z) int16 LE; coord = q / 32767 × escala
 //   attr.bin           N × (tono, tamaño, tipo, grupo) uint8
@@ -14,7 +15,18 @@
 import { withBase } from "@/lib/base";
 
 /** Tarjetas con escena (índice en studioHome.pillars). Las demás, vídeo. */
-export const PILLAR_SCENES = new Set([0]);
+export const PILLAR_SCENES = new Set([0, 1, 2]);
+
+/**
+ * Cómo se pinta cada tarjeta. hueA: en A los grupos 0/2 van en azul y 1/3 en
+ * violeta (los dos oficios de la tarjeta 1; README de Blender). dimA: brillo
+ * en A, que sube hasta 1 en C (lo encerrado y la cola, apagados).
+ */
+const LOOKS: Record<number, { hueA: number; dimA: number }> = {
+  1: { hueA: 1, dimA: 0.85 },
+  2: { hueA: 0, dimA: 0.5 },
+  3: { hueA: 0, dimA: 0.55 },
+};
 
 const dir = (n: number) => withBase(`/estudio/v2/pillar-${n}`);
 /** Semiancho y semialto de la cámara de Blender. */
@@ -28,6 +40,7 @@ export type PillarData = {
   b: Int16Array;
   c: Int16Array;
   attr: Uint8Array;
+  look: { hueA: number; dimA: number };
   /** Centro horizontal de cada forma (sin el polvo), para centrarla en la tarjeta. */
   centers: [number, number, number];
 };
@@ -66,7 +79,7 @@ export async function loadPillar(n: number): Promise<PillarData> {
   }
   const sx = manifest.scales[0];
   const centers: [number, number, number] = [centerX(A, at, sx), centerX(B, at, sx), centerX(C, at, sx)];
-  return { count: manifest.count, scales: manifest.scales, a: A, b: B, c: C, attr: at, centers };
+  return { count: manifest.count, scales: manifest.scales, a: A, b: B, c: C, attr: at, centers, look: LOOKS[n] ?? { hueA: 0, dimA: 1 } };
 }
 
 const VERT = `
@@ -79,7 +92,8 @@ uniform vec3 uScale;
 uniform vec3 uCenter;  // centro horizontal de A, B y C: se centran en la tarjeta
 uniform float uMorph;  // 0 = A, 1 = B, 2 = C, 3 = de vuelta en A
 uniform float uTime;
-uniform float uPx;     // píxeles de dispositivo por punto de tamaño 1
+uniform float uPx;
+uniform vec2 uLook;    // hueA, dimA (LOOKS)     // píxeles de dispositivo por punto de tamaño 1
 varying vec3 vColor;
 varying float vGain;
 
@@ -123,9 +137,9 @@ void main() {
   vec3 p = mix(mix(mix(A, B, t1), C, t2), A, t3);
   // En pleno vuelo se separan apenas, para que se lea que viajan.
   float flight = sin(3.14159 * t1) + sin(3.14159 * t2) + sin(3.14159 * t3);
-  p.xy += (vec2(seed, fract(seed * 7.13)) - 0.5) * vec2(0.03, 0.025) * flight;
-  // Vida en reposo.
-  p.xy += vec2(sin(uTime * 0.8 + seed * 40.0), cos(uTime * 0.6 + seed * 25.0)) * 0.003;
+  p.xy += (vec2(seed, fract(seed * 7.13)) - 0.5) * vec2(0.014, 0.012) * flight;
+  // Vida en reposo, casi imperceptible.
+  p.xy += vec2(sin(uTime * 0.7 + seed * 40.0), cos(uTime * 0.5 + seed * 25.0)) * 0.0015;
 
   gl_Position = vec4(p.x / ${HALF_W.toFixed(4)}, p.y / ${HALF_H.toFixed(4)}, 0.0, 1.0);
 
@@ -134,15 +148,18 @@ void main() {
   float hueA = tone;
   if (group == 0.0 || group == 2.0) hueA = 0.08 + 0.28 * tone;
   else if (group == 1.0 || group == 3.0) hueA = 0.58 + 0.12 * tone;
-  float k = m <= 2.0 ? m * 0.5 : 3.0 - m;
-  vec3 col = palette(mix(hueA, tone, smoother(k)));
+  hueA = mix(tone, hueA, uLook.x);
+  float k = smoother(m <= 2.0 ? m * 0.5 : 3.0 - m);
+  vec3 col = palette(mix(hueA, tone, k));
 
-  float px = 1.1 + 3.4 * pow(size, 1.6);
-  float gain = 0.55 + 0.8 * size;
-  if (kind == 1.0) { px *= 0.7; gain *= 0.3; }
+  // Puntos finos y nítidos: la forma se lee por la densidad, no por el
+  // brillo de cada partícula.
+  float px = 0.9 + 2.6 * pow(size, 1.6);
+  float gain = (0.5 + 0.6 * size) * mix(uLook.y, 1.0, k);
+  if (kind == 1.0) { px *= 0.7; gain *= 0.18; }
   if (kind == 2.0) {
     // El nodo (la persona que te atiende) respira mientras se ve C.
-    float beat = 1.0 + 0.25 * (0.5 + 0.5 * sin(uTime * 2.0));
+    float beat = 1.0 + 0.2 * (0.5 + 0.5 * sin(uTime * 1.6));
     px *= mix(1.0, beat, t2 * (1.0 - t3));
     col = mix(col, vec3(1.0, 0.96, 1.0), 0.45 * size);
     gain *= 1.2;
@@ -161,7 +178,7 @@ void main() {
   vec2 d = gl_PointCoord - 0.5;
   float r2 = dot(d, d) * 4.0;
   if (r2 > 1.0) discard;
-  float a = exp(-r2 * 3.5) * vGain;
+  float a = exp(-r2 * 4.5) * vGain;
   vec3 c = vColor * a;
   // Premultiplicado, con la opacidad del canal más brillante: la luz se suma
   // al vidrio de la tarjeta y el resto queda transparente.
@@ -248,9 +265,10 @@ export class PillarRenderer {
     attrib("aC", data.c, 3, gl.SHORT);
     attrib("aAttr", data.attr, 4, gl.UNSIGNED_BYTE);
 
-    for (const u of ["uScale", "uCenter", "uMorph", "uTime", "uPx"]) this.loc[u] = gl.getUniformLocation(program, u);
+    for (const u of ["uScale", "uCenter", "uMorph", "uTime", "uPx", "uLook"]) this.loc[u] = gl.getUniformLocation(program, u);
     gl.uniform3f(this.loc.uScale, ...data.scales);
     gl.uniform3f(this.loc.uCenter, ...data.centers);
+    gl.uniform2f(this.loc.uLook, data.look.hueA, data.look.dimA);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE); // la luz se suma
     gl.clearColor(0, 0, 0, 0);

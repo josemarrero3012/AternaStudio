@@ -1952,34 +1952,34 @@ body[data-menu="open"] .assistant__orb {
 .pillar-scene__step {
   display: flex;
   align-items: center;
-  gap: var(--s-2);
+  gap: var(--s-3);
   min-height: 1.5em;
   margin: 0;
-  font-size: 0.8125rem;
-  letter-spacing: 0.02em;
-  color: var(--lavender);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--lavender) 72%, transparent);
 }
 
+/* Tres filetes, uno por paso: el del paso que se ve, encendido. */
 .pillar-scene__dots {
   display: inline-flex;
-  gap: 5px;
+  gap: 4px;
 }
 
 .pillar-scene__dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--lavender) 28%, transparent);
-  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+  width: 14px;
+  height: 1px;
+  background: color-mix(in srgb, var(--lavender) 24%, transparent);
+  transition: background-color 0.8s ease;
 }
 
 .pillar-scene__dot[data-on] {
   background: var(--orchid);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--orchid) 70%, transparent);
 }
 
 .pillar-scene__label {
-  animation: pillar-step 0.5s ease both;
+  animation: pillar-step 0.9s ease both;
 }
 
 @keyframes pillar-step {
