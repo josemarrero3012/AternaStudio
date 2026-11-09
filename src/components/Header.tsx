@@ -21,7 +21,7 @@ function LangToggle({ className = "" }: { className?: string }) {
   // En la 404 (la global o la de cada idioma) lleva a la portada de cada idioma.
   const path = lost || pathname === "/404" ? "/" : pathname;
   return (
-    <div className={`lang-toggle ${className}`.trim()} role="group" aria-label={t.a11y.language}>
+    <div className={`lang-toggle ${className}`.trim()} role="group" aria-label={t.a11y.language} data-no-veil>
       {LOCALES.map((l) => {
         const active = locale === l;
         return (

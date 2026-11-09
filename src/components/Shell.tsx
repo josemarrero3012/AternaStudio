@@ -6,6 +6,8 @@ import { CURTAIN_SCRIPT, Curtain, Cursor, PageTransition, SkipLink, SmoothScroll
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { JsonLd } from "@/components/JsonLd";
+import { LightDust } from "@/components/LightDust";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { withBase } from "@/lib/base";
 import type { Locale } from "@/lib/dict";
 import { LanguageProvider } from "@/lib/i18n";
@@ -75,6 +77,8 @@ export function Shell({ locale, lost, children }: { locale: Locale; lost?: boole
           <Curtain />
           <Cursor />
           <Spotlight />
+          <LightDust />
+          <ScrollReveal />
           <SmoothScroll>
             <Header />
             <main id="contenido" tabIndex={-1}>
