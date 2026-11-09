@@ -54,7 +54,7 @@ export function StudioStatement({ n }: { n?: number }) {
             <li className="pillar" key={i}>
               {PILLAR_GLYPHS[i] ? (
                 <div className="pillar__stage">
-                  {PILLAR_SCENES.has(i) ? <PillarScene index={i} steps={p.steps} /> : <PillarArt index={i} />}
+                  {PILLAR_SCENES.has(i) ? <PillarScene index={i} /> : <PillarArt index={i} />}
                 </div>
               ) : null}
               <h3 className="t-title pillar__title">{p.title}</h3>
