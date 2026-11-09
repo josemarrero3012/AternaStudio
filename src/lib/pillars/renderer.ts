@@ -1,16 +1,20 @@
 // Escenas de partículas de las tarjetas de «01 — Estudio» (PillarScene.tsx).
 // La misma técnica que el árbol de la portada (src/lib/tree), en pequeño:
-// unas 7.000 partículas con un sitio en cada una de tres formas (A, B y C) y
-// el shader las lleva de una a otra. Las formas de la primera las modeló
-// Blender y las de las otras dos se dibujan con trazos; todas salen de
-// scripts/estudio-v2/pillar-N/build.py como nubes de puntos:
+// unos 4.000-5.000 puntos con un sitio en cada una de tres formas (A, B y C)
+// y el shader los lleva de una a otra. Las formas se dibujan con trazos en
+// scripts/estudio/particles/ (la primera, sobre la composición que modeló
+// Blender) y llegan como nubes de puntos:
 //
 //   state-{a,b,c}.bin  N × (x, y, z) int16 LE; coord = q / 32767 × escala
 //   attr.bin           N × (tono, tamaño, tipo, grupo) uint8
+//   path.bin           N × (recorrido, peso del destello) uint8
 //
-// La cámara de Blender es ortográfica, 2,18 unidades de ancho en 12:5, y aquí
-// también: la escena se ve de frente y no reacciona al puntero. Solo se mueve
-// el bucle A → B → C → A (ver LOOP).
+// Los destellos son los pulsos de luz de los iconos de antes: recorren cada
+// grupo de principio a fin (path.bin) y, al llegar, el nodo se enciende.
+// Van con el mismo reloj que el bucle, así que en las tres tarjetas a la vez.
+//
+// La cámara es ortográfica, 2,18 unidades de ancho en 12:5: la escena se ve
+// de frente y no reacciona al puntero.
 
 import { withBase } from "@/lib/base";
 
@@ -19,7 +23,7 @@ export const PILLAR_SCENES = new Set([0, 1, 2]);
 
 /**
  * Cómo se pinta cada tarjeta. hueA: en A los grupos 0/2 van en azul y 1/3 en
- * violeta (los dos oficios de la tarjeta 1; README de Blender). dimA: brillo
+ * violeta (los dos oficios de la tarjeta 1). dimA: brillo
  * en A, que sube hasta 1 en C (lo encerrado y la cola, apagados).
  */
 const LOOKS: Record<number, { hueA: number; dimA: number }> = {
@@ -28,10 +32,10 @@ const LOOKS: Record<number, { hueA: number; dimA: number }> = {
   3: { hueA: 0, dimA: 0.55 },
 };
 
-const dir = (n: number) => withBase(`/estudio/v2/pillar-${n}`);
-/** Semiancho y semialto de la cámara de Blender. */
+/** Si cambian las formas, nueva carpeta (el .htaccess cachea un año). */
+const dir = (n: number) => withBase(`/estudio/v3/pillar-${n}`);
+/** Semiancho y semialto de la cámara. */
 const HALF_W = 1.09;
-const HALF_H = (HALF_W * 5) / 12;
 
 export type PillarData = {
   count: number;
@@ -40,6 +44,7 @@ export type PillarData = {
   b: Int16Array;
   c: Int16Array;
   attr: Uint8Array;
+  path: Uint8Array;
   look: { hueA: number; dimA: number };
   /** Centro horizontal de cada forma (sin el polvo), para centrarla en la tarjeta. */
   centers: [number, number, number];
@@ -65,22 +70,26 @@ export async function loadPillar(n: number): Promise<PillarData> {
       if (!r.ok) throw new Error(`${f}: ${r.status}`);
       return r.arrayBuffer();
     });
-  const [manifest, a, b, c, attr] = await Promise.all([
+  const [manifest, a, b, c, attr, path] = await Promise.all([
     fetch(`${base}/manifest.json`).then((r) => r.json() as Promise<{ count: number; scales: [number, number, number] }>),
     get("state-a.bin"),
     get("state-b.bin"),
     get("state-c.bin"),
     get("attr.bin"),
+    get("path.bin"),
   ]);
-  const [A, B, C, at] = [new Int16Array(a), new Int16Array(b), new Int16Array(c), new Uint8Array(attr)];
+  const [A, B, C, at, pa] = [new Int16Array(a), new Int16Array(b), new Int16Array(c), new Uint8Array(attr), new Uint8Array(path)];
   const n3 = manifest.count * 3;
-  if (A.length !== n3 || B.length !== n3 || C.length !== n3 || at.length !== manifest.count * 4) {
+  if (A.length !== n3 || B.length !== n3 || C.length !== n3 || at.length !== manifest.count * 4 || pa.length !== manifest.count * 2) {
     throw new Error("Nube de puntos incompleta");
   }
   const sx = manifest.scales[0];
   const centers: [number, number, number] = [centerX(A, at, sx), centerX(B, at, sx), centerX(C, at, sx)];
-  return { count: manifest.count, scales: manifest.scales, a: A, b: B, c: C, attr: at, centers, look: LOOKS[n] ?? { hueA: 0, dimA: 1 } };
+  return { count: manifest.count, scales: manifest.scales, a: A, b: B, c: C, attr: at, path: pa, centers, look: LOOKS[n] ?? { hueA: 0, dimA: 1 } };
 }
+
+/** Cada cuánto sale un destello (s). Mismo reloj que el bucle. */
+const GLINT = 3.2;
 
 const VERT = `
 precision highp float;
@@ -88,11 +97,13 @@ attribute vec3 aA;
 attribute vec3 aB;
 attribute vec3 aC;
 attribute vec4 aAttr; // tono, tamaño, tipo, grupo (0 a 1)
+attribute vec2 aPath; // recorrido del destello (0 a 1) y su peso
 uniform vec3 uScale;
 uniform vec3 uCenter;  // centro horizontal de A, B y C: se centran en la tarjeta
 uniform float uMorph;  // 0 = A, 1 = B, 2 = C, 3 = de vuelta en A
 uniform float uTime;
 uniform float uPx;
+uniform float uHalfH;  // semialto de la cámara según el lienzo (12:5 → 0,454)
 uniform vec2 uLook;    // hueA, dimA (LOOKS)     // píxeles de dispositivo por punto de tamaño 1
 varying vec3 vColor;
 varying float vGain;
@@ -137,14 +148,14 @@ void main() {
   vec3 p = mix(mix(mix(A, B, t1), C, t2), A, t3);
   // En pleno vuelo se separan apenas, para que se lea que viajan.
   float flight = sin(3.14159 * t1) + sin(3.14159 * t2) + sin(3.14159 * t3);
-  p.xy += (vec2(seed, fract(seed * 7.13)) - 0.5) * vec2(0.014, 0.012) * flight;
-  // Vida en reposo, casi imperceptible.
-  p.xy += vec2(sin(uTime * 0.7 + seed * 40.0), cos(uTime * 0.5 + seed * 25.0)) * 0.0015;
+  p.xy += (vec2(seed, fract(seed * 7.13)) - 0.5) * vec2(0.008, 0.006) * flight;
+  // Vida en reposo, casi imperceptible: el trazo tiene que seguir nítido.
+  p.xy += vec2(sin(uTime * 0.7 + seed * 40.0), cos(uTime * 0.5 + seed * 25.0)) * 0.0007;
 
-  gl_Position = vec4(p.x / ${HALF_W.toFixed(4)}, p.y / ${HALF_H.toFixed(4)}, 0.0, 1.0);
+  gl_Position = vec4(p.x / ${HALF_W.toFixed(4)}, p.y / uHalfH, 0.0, 1.0);
 
   // Color: en A cada oficio tiene su tono (diseño azul, código violeta) y
-  // hacia C se funden en el degradado de la marca (README de Blender).
+  // hacia C se funden en el degradado de la marca.
   float hueA = tone;
   if (group == 0.0 || group == 2.0) hueA = 0.08 + 0.28 * tone;
   else if (group == 1.0 || group == 3.0) hueA = 0.58 + 0.12 * tone;
@@ -155,14 +166,29 @@ void main() {
   // Puntos finos y nítidos: la forma se lee por la densidad, no por el
   // brillo de cada partícula.
   float px = 0.9 + 2.6 * pow(size, 1.6);
-  float gain = (0.5 + 0.6 * size) * mix(uLook.y, 1.0, k);
+  float gain = (0.62 + 0.7 * size) * mix(uLook.y, 1.0, k);
   if (kind == 1.0) { px *= 0.7; gain *= 0.18; }
+
+  // Destello: una cabeza de luz con estela que recorre el grupo de principio
+  // a fin (aPath.x) cada GLINT segundos. Mientras las partículas viajan de
+  // una forma a otra se apaga, para no ensuciar el cambio.
+  float phase = fract(uTime / ${GLINT.toFixed(2)});
+  float d = aPath.x - phase;
+  d -= floor(d + 0.5);
+  float head = exp(-(d * d) / 0.00018);
+  float tail = d < 0.0 ? exp(d / 0.05) * 0.45 : 0.0;
+  float glint = max(head, tail) * aPath.y * (1.0 - clamp(flight, 0.0, 1.0));
+  gain *= 1.0 + 2.4 * glint;
+  px *= 1.0 + 0.45 * glint;
+  col = mix(col, vec3(1.0, 0.95, 1.0), 0.5 * glint);
+
   if (kind == 2.0) {
-    // El nodo (la persona que te atiende) respira mientras se ve C.
-    float beat = 1.0 + 0.2 * (0.5 + 0.5 * sin(uTime * 1.6));
-    px *= mix(1.0, beat, t2 * (1.0 - t3));
-    col = mix(col, vec3(1.0, 0.96, 1.0), 0.45 * size);
-    gain *= 1.2;
+    // El nodo se enciende cuando le llega el destello (al final de cada
+    // recorrido) y se apaga despacio, como los iconos de antes.
+    float flash = exp(-phase / 0.12) + exp(-(1.0 - phase) / 0.02) * 0.6;
+    px *= 1.0 + 0.4 * flash;
+    col = mix(col, vec3(1.0, 0.96, 1.0), 0.35 * size + 0.3 * flash);
+    gain *= 1.1 + 0.9 * flash;
   }
   gl_PointSize = clamp(px * uPx, 1.0, 40.0);
   vColor = col;
@@ -264,8 +290,9 @@ export class PillarRenderer {
     attrib("aB", data.b, 3, gl.SHORT);
     attrib("aC", data.c, 3, gl.SHORT);
     attrib("aAttr", data.attr, 4, gl.UNSIGNED_BYTE);
+    attrib("aPath", data.path, 2, gl.UNSIGNED_BYTE);
 
-    for (const u of ["uScale", "uCenter", "uMorph", "uTime", "uPx", "uLook"]) this.loc[u] = gl.getUniformLocation(program, u);
+    for (const u of ["uScale", "uCenter", "uMorph", "uTime", "uPx", "uLook", "uHalfH"]) this.loc[u] = gl.getUniformLocation(program, u);
     gl.uniform3f(this.loc.uScale, ...data.scales);
     gl.uniform3f(this.loc.uCenter, ...data.centers);
     gl.uniform2f(this.loc.uLook, data.look.hueA, data.look.dimA);
@@ -281,6 +308,8 @@ export class PillarRenderer {
     gl.canvas.height = height;
     gl.viewport(0, 0, width, height);
     gl.uniform1f(this.loc.uPx, px);
+    // Las formas no se deforman aunque la caja no sea exactamente 12:5.
+    gl.uniform1f(this.loc.uHalfH, (HALF_W * height) / Math.max(1, width));
   }
 
   render(s: FrameState) {

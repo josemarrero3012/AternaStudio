@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "count": 3290,
+  "count": 4320,
   "scales": [
     1.0,
     0.42,
@@ -19,5 +19,5 @@
     "4": "Halo: la línea de la cola (A), un anillo junto a tu proyecto (B), el halo del centro (C).",
     "5": "Polvo: fijo en los tres estados."
   },
-  "notes": "Generado por scripts/estudio-v2/pillar-3/build.py (semilla 20261112), mismo contrato que pillar-1."
+  "notes": "scripts/estudio/particles/pillar_3.py, semilla 20261123."
 }

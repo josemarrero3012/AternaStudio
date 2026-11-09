@@ -23,8 +23,8 @@
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
-  # Nubes de puntos de las escenas de «Estudio» (public/estudio/v2), igual.
-  <FilesMatch "^(state-[abc]|attr)\.bin$">
+  # Nubes de puntos de las escenas de «Estudio» (public/estudio/v3), igual.
+  <FilesMatch "^(state-[abc]|attr|path)\.bin$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 </IfModule>

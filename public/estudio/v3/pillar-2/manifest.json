@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "count": 3350,
+  "count": 3860,
   "scales": [
     1.0,
     0.42,
@@ -18,5 +18,5 @@
     "3": "Nodos: ojo de la cerradura (A), «· · ·» bajo el código (B), los tres nodos del camino (C).",
     "4": "Polvo: fijo en los tres estados."
   },
-  "notes": "Generado por scripts/estudio-v2/pillar-2/build.py (semilla 20261111), mismo contrato que pillar-1."
+  "notes": "scripts/estudio/particles/pillar_2.py, semilla 20261122."
 }
