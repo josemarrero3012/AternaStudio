@@ -310,14 +310,22 @@ export function PageTransition({ children }: { children: ReactNode }) {
             }, 2500);
           },
         })
-        .fromTo(el, { y: 0, yPercent: 100 }, { yPercent: 0, duration: 0.6, ease: "power3.inOut" })
-        .fromTo(el.querySelector(".page-veil__mark"), { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" }, 0.2);
+        // La página se apaga en la noche y el símbolo se enciende en el centro,
+        // como la luz del árbol: un fundido, no una pared que barre la pantalla.
+        .fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.42, ease: "power2.inOut" })
+        .fromTo(
+          el.querySelector(".page-veil__mark"),
+          { opacity: 0, scale: 0.9, filter: "blur(6px)" },
+          { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "power2.out" },
+          0.12,
+        );
     };
     window.addEventListener("click", onClick, true);
     return () => window.removeEventListener("click", onClick, true);
   }, [router]);
 
-  // Entrada: el velo se va hacia arriba y la página sube a su sitio.
+  // Entrada: el símbolo se deshace en luz, la noche se abre y la página
+  // sube despacio a su sitio.
   const reveal = () => {
     const el = veil.current;
     const page = ref.current;
@@ -334,18 +342,18 @@ export function PageTransition({ children }: { children: ReactNode }) {
       .timeline({
         onComplete: () => {
           el.dataset.state = "idle";
-          gsap.set(el, { clearProps: "transform" });
+          gsap.set(el, { clearProps: "opacity" });
         },
       })
-      .set(el, { y: 0, yPercent: 0 })
-      .to(el.querySelector(".page-veil__mark"), { opacity: 0, scale: 1.06, duration: 0.3, ease: "power2.in" }, 0)
-      .to(el, { yPercent: -100, duration: 0.8, ease: "power3.inOut" }, 0.1);
+      .set(el, { opacity: 1 })
+      .to(el.querySelector(".page-veil__mark"), { opacity: 0, scale: 1.12, filter: "blur(8px)", duration: 0.4, ease: "power2.in" }, 0)
+      .to(el, { opacity: 0, duration: 0.6, ease: "power2.inOut" }, 0.15);
     if (page) {
       timeline.current.fromTo(
         page,
-        { opacity: 0, y: 32 },
-        { opacity: 1, y: 0, duration: 1, ease: ATERNA_EASE, clearProps: "transform,opacity" },
-        0.35,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.9, ease: ATERNA_EASE, clearProps: "transform,opacity" },
+        0.2,
       );
     }
   };
@@ -382,9 +390,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
     <>
       <div ref={ref}>{children}</div>
       <div ref={veil} className="page-veil" data-state="idle" aria-hidden="true">
-        <span className="page-veil__edge page-veil__edge--top" />
         <img className="page-veil__mark" src={withBase("/brand/aterna-symbol-light.webp")} alt="" width={319} height={320} decoding="async" />
-        <span className="page-veil__edge page-veil__edge--bottom" />
       </div>
     </>
   );
