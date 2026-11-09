@@ -652,9 +652,8 @@ html.lenis body {
   margin-inline-start: auto;
 }
 
-/* Los enlaces van dentro de una píldora que solo se ve sobre el recorrido
-   de la portada (journey.css). Fuera, borde y fondo transparentes: el
-   espacio entre textos es el de siempre (16 + 16 px). */
+/* Sobre el recorrido de la portada, los enlaces cambian de estilo (texto en
+   mayúsculas espaciadas, como TIGRIS: journey.css). */
 .header__nav ul {
   display: flex;
   padding: 3px;
@@ -938,7 +937,8 @@ body[data-menu="open"] .header::after {
 /* Viene en el HTML tapándolo todo; CURTAIN_SCRIPT la descarta antes de
    pintar si ya salió en esta sesión o con movimiento reducido. Por si el
    JavaScript no llegara a levantarla, se desvanece sola a los 4 s. */
-html[data-curtain="skip"] .curtain {
+html[data-curtain="skip"] .curtain,
+html:has(.journey) .curtain {
   display: none;
 }
 
@@ -1895,6 +1895,108 @@ body[data-menu="open"] .assistant__orb {
   margin-bottom: var(--s-3);
   border-bottom: 1px solid var(--hair);
   background: radial-gradient(closest-side, color-mix(in srgb, var(--violet) 14%, transparent), transparent);
+}
+
+/* Iconos de luz de los pilares (PillarArt.tsx): un canvas WebGL pinta el
+   vídeo con el negro transparente. El vídeo solo da los fotogramas: está en
+   la página (Safari no decodifica uno oculto con display: none) pero no se ve. */
+.pillar__art {
+  position: relative;
+  width: min(100%, 320px);
+  aspect-ratio: 12 / 5;
+}
+
+.pillar__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pillar__video {
+  position: absolute;
+  inset: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Escena de partículas de un pilar (PillarScene.tsx): ocupa todo el ancho
+   de la tarjeta y, debajo, una línea con el paso que se está viendo. */
+.pillar-scene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+}
+
+.pillar-scene__view {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 12 / 5;
+}
+
+/* Absoluto: si no, el tamaño propio del canvas (2:1) estira la caja. */
+.pillar-scene__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pillar-scene__wait {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.pillar-scene__step {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 1.5em;
+  margin: 0;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--lavender) 72%, transparent);
+}
+
+/* Tres filetes, uno por paso: el del paso que se ve, encendido. */
+.pillar-scene__dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.pillar-scene__dot {
+  width: 14px;
+  height: 1px;
+  background: color-mix(in srgb, var(--lavender) 24%, transparent);
+  transition: background-color 0.8s ease;
+}
+
+.pillar-scene__dot[data-on] {
+  background: var(--orchid);
+}
+
+.pillar-scene__label {
+  animation: pillar-step 0.9s ease both;
+}
+
+@keyframes pillar-step {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pillar-scene__label {
+    animation: none;
+  }
 }
 
 @media (min-width: 768px) {

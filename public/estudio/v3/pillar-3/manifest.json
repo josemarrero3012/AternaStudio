@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "count": 4320,
+  "scales": [
+    1.0,
+    0.42,
+    0.35
+  ],
+  "states": [
+    "a",
+    "b",
+    "c"
+  ],
+  "groups": {
+    "0": "Tu proyecto: en la cola (A), en la órbita (B), en el centro (C).",
+    "1": "Los otros dos que se quedan.",
+    "2": "Los que se van: nueve círculos (A) que se funden en la órbita (B y C).",
+    "3": "Núcleo de tu proyecto: un punto (A y B), el nodo encendido (C).",
+    "4": "Halo: la línea de la cola (A), un anillo junto a tu proyecto (B), el halo del centro (C).",
+    "5": "Polvo: fijo en los tres estados."
+  },
+  "notes": "scripts/estudio/particles/pillar_3.py, semilla 20261123."
+}

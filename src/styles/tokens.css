@@ -147,8 +147,8 @@
 
   /* Recorrido de la portada (Journey.tsx, styles/journey.css). Sus medidas
      van en px de diseño: --u (ver journey.css). */
-  --journey-scene-h: 380vh;
-  --journey-stage: #0b0d26; /* detrás del lienzo mientras cargan los fotogramas */
+  --journey-scene-h: 600vh;
+  --journey-stage: #0b0d26; /* detrás del lienzo mientras se forman las partículas (es el fondo del shader) */
   /* Velo sobre la escena: algo arriba (cabecera), mucho abajo (textos), y
      en el borde inferior, la noche de la página para fundirse con lo que sigue. */
   --journey-shade: linear-gradient(
@@ -159,17 +159,11 @@
     color-mix(in srgb, var(--night-0) 62%, transparent) 84%,
     color-mix(in srgb, var(--night-0) 88%, transparent) 100%
   );
-  /* Pantalla de carga: la noche, algo más clara en el centro (como el shader). */
-  --journey-veil: radial-gradient(circle 75vh at 50% 50%, #262c62 0%, #181c46 100%);
-  --journey-track: #e6e9ff14;
-  --journey-counter-shadow: #0d0b3a73;
-  /* Vidrio: borde, relleno bajo la copia desenfocada y tinte encima. */
+  /* El nombre grande de la entrada, sobre las partículas. */
+  --journey-name: #f4f1ff;
+  --journey-name-shadow: #0b0d2659;
+  /* Vidrio: borde fino (el separador de los idiomas en la cabecera). */
   --glass-edge: #e6e9ff40;
-  --glass-card-fill: #e6e9ff0d;
-  --glass-card-tint: color-mix(in srgb, var(--night-2) 42%, transparent);
-  --glass-card-tint-hover: color-mix(in srgb, var(--night-3) 34%, transparent);
-  --glass-pill-fill: color-mix(in srgb, var(--night-3) 34%, transparent);
-  --glass-card-shadow: 0 16px 50px #00001473, inset 0 1px 0 #e6e9ff1f;
 
   /* Cursor: anillo, punto y etiqueta. */
   --cursor-ring: #e6e9ff8c;

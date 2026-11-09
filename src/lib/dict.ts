@@ -54,33 +54,14 @@ const es = {
     "secondary": "Ver servicios"
   },
   "journey": {
-    "label": "Un recorrido entre raíces de luz hasta el símbolo de Aterna",
-    "loading": "Cargando",
-    "heroBody": "Diseñamos y programamos webs a medida, y después trabajamos para que te encuentren.",
-    "heroCursor": "Hablemos",
+    "label": "El árbol de Aterna hecho de partículas de luz, que baja a sus raíces y vuelve a crecer",
+    "scrollCue": "Desliza para descubrir",
     "mid": {
       "headline": "Lo que no se ve\nsostiene lo que crece.",
       "body": "Estructura, velocidad y SEO desde la primera línea de código: las raíces que hacen que una web funcione."
     },
-    "final": {
-      "headline": "Hecha para durar,\npensada para crecer.",
-      "body": "Diseño, desarrollo, SEO y asistente con IA, en manos del mismo estudio."
-    },
-    "cards": [
-      {
-        "slug": "web",
-        "label": "01 — Raíz",
-        "title": "Diseño y desarrollo",
-        "body": "Webs a medida, sin plantillas, que cargan rápido. El código es tuyo."
-      },
-      {
-        "slug": "seo",
-        "label": "02 — Copa",
-        "title": "SEO y crecimiento",
-        "body": "Contenido y posicionamiento, mes a mes, para que te encuentre quien ya te busca."
-      }
-    ],
-    "cardCursor": "Ver"
+    // *palabra*: va en cursiva y con la luz del logo.
+    "write": "Una web es como un árbol: lo que no se ve la sostiene y lo que se ve la hace *crecer*. Por eso cuidamos las dos cosas, de la raíz a la copa, para que tu web eche raíces y *dure*."
   },
   "cases": {
     "eyebrow": "Casos de uso",
@@ -155,15 +136,18 @@ const es = {
     "pillars": [
       {
         "title": "Quien diseña, programa",
-        "body": "La misma persona diseña tu web, la construye y te atiende. Nada se pierde entre equipos."
+        "body": "La misma persona diseña tu web, la construye y te atiende. Nada se pierde entre equipos.",
+        "steps": ["Diseño y código, por separado", "Una sola mano los trenza", "Tu web, de una pieza"]
       },
       {
         "title": "El código es tuyo",
-        "body": "Sin plantillas ni plugins que actualizar cada mes. Se lee, y cualquier otro estudio puede continuarlo."
+        "body": "Sin plantillas ni plugins que actualizar cada mes. Se lee, y cualquier otro estudio puede continuarlo.",
+        "steps": ["Encerrado en una plataforma", "Se abre y se lee", "La llave es tuya"]
       },
       {
         "title": "Pocos proyectos a la vez",
-        "body": "Aceptamos pocos encargos a la vez, así que tu proyecto no espera en la cola detrás de otros diez."
+        "body": "Aceptamos pocos encargos a la vez, así que tu proyecto no espera en la cola detrás de otros diez.",
+        "steps": ["Uno más en la cola", "Solo unos pocos", "Toda la atención"]
       }
     ]
   },
@@ -726,33 +710,13 @@ const en: Dict = {
     "secondary": "See services"
   },
   "journey": {
-    "label": "A journey through roots of light to the Aterna mark",
-    "loading": "Loading",
-    "heroBody": "We design and build bespoke websites, then work on getting you found.",
-    "heroCursor": "Let’s talk",
+    "label": "The Aterna tree made of particles of light, sinking into its roots and growing back",
+    "scrollCue": "Scroll to discover",
     "mid": {
       "headline": "What you don’t see\nholds up what grows.",
       "body": "Structure, speed and SEO from the first line of code: the roots that make a website work."
     },
-    "final": {
-      "headline": "Built to last,\ndesigned to grow.",
-      "body": "Design, development, SEO and an AI assistant, all in the hands of one studio."
-    },
-    "cards": [
-      {
-        "slug": "web",
-        "label": "01 — Roots",
-        "title": "Design and development",
-        "body": "Bespoke websites with no templates, built to load fast. The code is yours."
-      },
-      {
-        "slug": "seo",
-        "label": "02 — Canopy",
-        "title": "SEO and growth",
-        "body": "Content and search, month after month, so the people already looking can find you."
-      }
-    ],
-    "cardCursor": "View"
+    "write": "A website is like a tree: what you don’t see holds it up, and what you see makes it *grow*. So we look after both, from root to canopy, so your website takes root and *lasts*."
   },
   "cases": {
     "eyebrow": "Use cases",
@@ -827,15 +791,18 @@ const en: Dict = {
     "pillars": [
       {
         "title": "The designer builds it",
-        "body": "The same person designs your site, builds it and looks after you. Nothing gets lost between teams."
+        "body": "The same person designs your site, builds it and looks after you. Nothing gets lost between teams.",
+        "steps": ["Design and code, apart", "One pair of hands weaves them", "Your site, in one piece"]
       },
       {
         "title": "The code is yours",
-        "body": "No templates, no plugins to update every month. It reads clearly, and any other studio can pick it up."
+        "body": "No templates, no plugins to update every month. It reads clearly, and any other studio can pick it up.",
+        "steps": ["Locked into a platform", "It opens, and it reads", "The key is yours"]
       },
       {
         "title": "Few projects at once",
-        "body": "We only take on a few jobs at a time, so your project isn’t stuck in a queue behind ten others."
+        "body": "We only take on a few jobs at a time, so your project isn’t stuck in a queue behind ten others.",
+        "steps": ["One more in the queue", "Only a few", "All the attention"]
       }
     ]
   },
@@ -1396,33 +1363,13 @@ const nl: Dict = {
     "secondary": "Bekijk diensten"
   },
   "journey": {
-    "label": "Een reis door wortels van licht naar het Aterna-symbool",
-    "loading": "Laden",
-    "heroBody": "We ontwerpen en bouwen websites op maat en zorgen daarna dat je gevonden wordt.",
-    "heroCursor": "Laten we praten",
+    "label": "De Aterna-boom van lichtdeeltjes, die afdaalt naar zijn wortels en opnieuw groeit",
+    "scrollCue": "Scroll om te ontdekken",
     "mid": {
       "headline": "Wat je niet ziet,\ndraagt wat groeit.",
       "body": "Structuur, snelheid en SEO vanaf de eerste regel code: de wortels die een website laten werken."
     },
-    "final": {
-      "headline": "Gemaakt om te blijven,\nklaar om te groeien.",
-      "body": "Design, ontwikkeling, SEO en een AI-assistent, in handen van één studio."
-    },
-    "cards": [
-      {
-        "slug": "web",
-        "label": "01 — Wortels",
-        "title": "Ontwerp en ontwikkeling",
-        "body": "Websites op maat, zonder templates, die snel laden. De code is van jou."
-      },
-      {
-        "slug": "seo",
-        "label": "02 — Kruin",
-        "title": "SEO en groei",
-        "body": "Content en vindbaarheid, maand na maand, zodat wie je al zoekt je ook vindt."
-      }
-    ],
-    "cardCursor": "Bekijk"
+    "write": "Een website is als een boom: wat je niet ziet draagt hem, en wat je wel ziet laat hem *groeien*. Daarom zorgen we voor allebei, van wortel tot kruin, zodat je website wortel schiet en *blijft*."
   },
   "cases": {
     "eyebrow": "Praktijkvoorbeelden",
@@ -1497,15 +1444,18 @@ const nl: Dict = {
     "pillars": [
       {
         "title": "Wie ontwerpt, bouwt ook",
-        "body": "Dezelfde persoon ontwerpt je website, bouwt hem en staat je te woord. Niets raakt kwijt tussen teams."
+        "body": "Dezelfde persoon ontwerpt je website, bouwt hem en staat je te woord. Niets raakt kwijt tussen teams.",
+        "steps": ["Ontwerp en code, apart", "Eén paar handen vlecht ze samen", "Je website, uit één stuk"]
       },
       {
         "title": "De code is van jou",
-        "body": "Geen templates of plug-ins die je elke maand moet bijwerken. Hij is leesbaar, en elke andere studio kan ermee verder."
+        "body": "Geen templates of plug-ins die je elke maand moet bijwerken. Hij is leesbaar, en elke andere studio kan ermee verder.",
+        "steps": ["Vast in een platform", "Het gaat open en is leesbaar", "De sleutel is van jou"]
       },
       {
         "title": "Weinig projecten tegelijk",
-        "body": "We nemen weinig opdrachten tegelijk aan, dus jouw project staat niet in de rij achter tien andere."
+        "body": "We nemen weinig opdrachten tegelijk aan, dus jouw project staat niet in de rij achter tien andere.",
+        "steps": ["Eén van velen in de rij", "Maar een paar", "Alle aandacht"]
       }
     ]
   },
@@ -2066,33 +2016,13 @@ const de: Dict = {
     "secondary": "Leistungen ansehen"
   },
   "journey": {
-    "label": "Eine Reise durch Wurzeln aus Licht bis zum Aterna-Zeichen",
-    "loading": "Wird geladen",
-    "heroBody": "Wir gestalten und entwickeln Websites nach Maß und sorgen danach dafür, dass man Sie findet.",
-    "heroCursor": "Sprechen wir",
+    "label": "Der Aterna-Baum aus Lichtpartikeln, der zu seinen Wurzeln hinabsinkt und neu wächst",
+    "scrollCue": "Scrollen und entdecken",
     "mid": {
       "headline": "Was man nicht sieht,\nträgt, was wächst.",
       "body": "Struktur, Tempo und SEO ab der ersten Codezeile: die Wurzeln, die eine Website tragen."
     },
-    "final": {
-      "headline": "Gebaut, um zu bleiben,\ngemacht, um zu wachsen.",
-      "body": "Design, Entwicklung, SEO und KI-Assistent, betreut vom selben Studio."
-    },
-    "cards": [
-      {
-        "slug": "web",
-        "label": "01 — Wurzeln",
-        "title": "Design und Entwicklung",
-        "body": "Websites nach Maß, ohne Vorlagen, die schnell laden. Der Code gehört Ihnen."
-      },
-      {
-        "slug": "seo",
-        "label": "02 — Krone",
-        "title": "SEO und Wachstum",
-        "body": "Inhalte und Sichtbarkeit, Monat für Monat, damit Sie gefunden werden."
-      }
-    ],
-    "cardCursor": "Ansehen"
+    "write": "Eine Website ist wie ein Baum: Was man nicht sieht, trägt sie, und was man sieht, lässt sie *wachsen*. Darum kümmern wir uns um beides, von der Wurzel bis zur Krone, damit Ihre Website Wurzeln schlägt und *bleibt*."
   },
   "cases": {
     "eyebrow": "Fallbeispiele",
@@ -2167,15 +2097,18 @@ const de: Dict = {
     "pillars": [
       {
         "title": "Wer gestaltet, programmiert",
-        "body": "Dieselbe Person gestaltet Ihre Website, baut sie und betreut Sie. Nichts geht zwischen Teams verloren."
+        "body": "Dieselbe Person gestaltet Ihre Website, baut sie und betreut Sie. Nichts geht zwischen Teams verloren.",
+        "steps": ["Design und Code, getrennt", "Eine Hand verflicht beides", "Ihre Website, aus einem Guss"]
       },
       {
         "title": "Der Code gehört Ihnen",
-        "body": "Keine Templates, keine Plugins, die jeden Monat aktualisiert werden müssen. Er ist lesbar, und jedes andere Studio kann daran weiterarbeiten."
+        "body": "Keine Templates, keine Plugins, die jeden Monat aktualisiert werden müssen. Er ist lesbar, und jedes andere Studio kann daran weiterarbeiten.",
+        "steps": ["In einer Plattform gefangen", "Er öffnet sich und ist lesbar", "Der Schlüssel gehört Ihnen"]
       },
       {
         "title": "Wenige Projekte gleichzeitig",
-        "body": "Wir nehmen nur wenige Aufträge gleichzeitig an. Ihr Projekt wartet also nicht hinter zehn anderen in der Schlange."
+        "body": "Wir nehmen nur wenige Aufträge gleichzeitig an. Ihr Projekt wartet also nicht hinter zehn anderen in der Schlange.",
+        "steps": ["Einer von vielen in der Schlange", "Nur wenige", "Die ganze Aufmerksamkeit"]
       }
     ]
   },

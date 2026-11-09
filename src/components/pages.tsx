@@ -20,9 +20,10 @@ import { WordReveal } from "./WordReveal";
 
 // / -------------------------------------------------------------------------
 
-// La portada abre con el recorrido (Journey: de un túnel de raíces de luz al
-// símbolo de Aterna) y después cuenta quiénes somos (el estudio), después
-// cómo trabajamos (el método) y luego casos de uso; con eso ya presentado,
+// La portada abre con el recorrido (Journey: el árbol de Aterna en
+// partículas, que baja a sus raíces y vuelve a crecer) y después cuenta
+// quiénes somos (el estudio), después cómo trabajamos (el método) y luego
+// casos de uso; con eso ya presentado,
 // el catálogo de servicios y el contacto. Los casos solo salen cuando hay
 // alguno real: tres huecos «Pendiente» en la portada restaban más de lo que
 // contaban. La numeración se ajusta sola.

@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "count": 3860,
+  "scales": [
+    1.0,
+    0.42,
+    0.35
+  ],
+  "states": [
+    "a",
+    "b",
+    "c"
+  ],
+  "groups": {
+    "0": "Código: líneas en la caja (A), legibles (B), vástago de la llave y camino (C).",
+    "1": "Caja (A), llaves { } (B), ojo de la llave (C).",
+    "2": "Candado (A), cursor (B), dientes de la llave (C).",
+    "3": "Nodos: ojo de la cerradura (A), «· · ·» bajo el código (B), los tres nodos del camino (C).",
+    "4": "Polvo: fijo en los tres estados."
+  },
+  "notes": "scripts/estudio/particles/pillar_2.py, semilla 20261122."
+}
