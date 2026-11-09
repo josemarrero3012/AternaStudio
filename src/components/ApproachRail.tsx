@@ -19,7 +19,7 @@
 // está oculta y se ve la línea normal de Approach, que es también la de
 // movimiento reducido. Se usa una vez, en la portada.
 
-import { useEffect, type RefObject } from "react";
+import { useEffect, type ReactNode, type RefObject } from "react";
 import { SplitText } from "gsap/SplitText";
 import { Link, useI18n } from "@/lib/i18n";
 import { ScrollTrigger, gsap, registerGsap } from "@/lib/motion";
@@ -27,7 +27,7 @@ import { ArrowRight } from "./icons";
 import { MethodRoot } from "./MethodRoot";
 import { Rootlets } from "./Rootlets";
 
-export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElement | null>; eyebrow: string }) {
+export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElement | null>; eyebrow: ReactNode }) {
   const { t, locale } = useI18n();
   const ctas: Record<string, string> = Object.fromEntries(t.servicePages.index.cards.map((card) => [card.slug, card.cta]));
 
@@ -155,7 +155,7 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
       <div className="rail">
         <div className="rail__intro">
           <div className="rail__head">
-            <p className="t-label dim">{eyebrow}</p>
+            <p className="t-label dim eyebrow">{eyebrow}</p>
             <h2 className="t-display rail__title">{t.approach.title}</h2>
           </div>
           <MethodRoot variant="rail" />

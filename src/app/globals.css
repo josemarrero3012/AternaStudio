@@ -35,7 +35,22 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  font-optical-sizing: auto;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   overflow-x: clip;
+}
+
+/* Titulares con las líneas equilibradas (sin una palabra sola al final) y
+   párrafos sin viudas. La puntuación inicial cuelga fuera del margen donde
+   el navegador lo permite. */
+:is(h1, h2, h3, .t-hero, .t-display, .t-title, .t-card) {
+  text-wrap: balance;
+  hanging-punctuation: first;
+}
+
+:is(p, li, dd, figcaption) {
+  text-wrap: pretty;
 }
 
 body.has-cursor,
@@ -961,6 +976,77 @@ html:has(.journey) .curtain {
   }
 }
 
+/* Velo entre páginas (PageTransition, Chrome.tsx): noche con la luz del
+   foco, una raíz de luz en el borde que avanza y el símbolo en el centro.
+   Sube tapando, la nueva página se pinta debajo y sigue subiendo. */
+.page-veil {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-curtain);
+  display: grid;
+  place-items: center;
+  visibility: hidden;
+  background:
+    radial-gradient(60vmax 50vmax at 50% 50%, color-mix(in srgb, var(--violet) 16%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--night-1), var(--night-0) 60%);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.page-veil[data-state="cover"],
+.page-veil[data-state="reveal"],
+html[data-veil="cover"] .page-veil {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.page-veil__edge {
+  position: absolute;
+  inset-inline: 0;
+  height: 1px;
+  background-image: var(--brand-gradient-h);
+  box-shadow:
+    0 0 18px 1px color-mix(in srgb, var(--violet) 70%, transparent),
+    0 0 60px 6px color-mix(in srgb, var(--orchid) 22%, transparent);
+  opacity: 0;
+  transition: opacity 0.2s linear;
+}
+
+.page-veil__edge--top {
+  top: 0;
+}
+
+.page-veil__edge--bottom {
+  bottom: 0;
+}
+
+.page-veil[data-state="cover"] .page-veil__edge--top,
+.page-veil[data-state="reveal"] .page-veil__edge--bottom {
+  opacity: 1;
+}
+
+.page-veil__mark {
+  width: clamp(56px, 6vw, 76px);
+  height: auto;
+  opacity: 0;
+  filter: drop-shadow(0 0 24px color-mix(in srgb, var(--violet) 55%, transparent));
+}
+
+html[data-veil="cover"] .page-veil__mark {
+  opacity: 1;
+}
+
+/* Si el JavaScript no llegara a levantarlo, se desvanece solo. */
+html[data-veil="cover"] .page-veil {
+  animation: curtain-fallback 0.6s ease 4s forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-veil {
+    display: none;
+  }
+}
+
 /* Cursor (Chrome.tsx): un anillo de vidrio con un punto, que sigue al
    puntero con algo de retraso, crece sobre enlaces y botones y, sobre un
    elemento con data-cursor-label, dice qué hace. Solo con ratón, y cuando ya
@@ -1751,17 +1837,6 @@ body[data-menu="open"] .assistant__orb {
   margin-bottom: var(--block-y);
 }
 
-/* Filamento luminoso sobre la etiqueta, como una raíz del vídeo: nace en un
-   nodo y se apaga. */
-.section-head::before {
-  content: "";
-  width: 96px;
-  height: 1px;
-  margin-bottom: calc(var(--s-2) * -1);
-  background: linear-gradient(90deg, var(--orchid), color-mix(in srgb, var(--violet) 60%, transparent) 40%, transparent);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--violet) 70%, transparent);
-}
-
 .section-foot {
   display: flex;
   margin-top: var(--block-y);
@@ -1803,6 +1878,35 @@ body[data-menu="open"] .assistant__orb {
 
 .page-head__eyebrow {
   margin-bottom: var(--s-5);
+}
+
+/* Antetítulo: la misma firma en toda la web. Una raíz de luz que nace en un
+   nodo orquídea y se apaga hacia el texto; el número, en orquídea. */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  color: var(--on-surface-mid);
+}
+
+.eyebrow::before {
+  content: "";
+  flex: none;
+  width: 40px;
+  height: 5px;
+  background:
+    radial-gradient(circle at 2.5px 50%, var(--orchid) 0 2px, color-mix(in srgb, var(--orchid) 40%, transparent) 2.5px, transparent 4px),
+    linear-gradient(90deg, color-mix(in srgb, var(--orchid) 90%, transparent), color-mix(in srgb, var(--violet) 55%, transparent) 45%, transparent) 0 50% / 100% 1px no-repeat;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--violet) 70%, transparent));
+}
+
+.eyebrow__n {
+  color: var(--orchid);
+}
+
+.eyebrow__sep {
+  color: var(--on-surface-low);
+  opacity: 0.6;
 }
 
 .page-head__lead {
@@ -3073,20 +3177,6 @@ body[data-menu="open"] .assistant__orb {
   border-bottom: 1px solid var(--hair);
 }
 
-.final-cta__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-3);
-}
-
-.final-cta__eyebrow::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--accent-violet);
-}
-
 .final-cta__title {
   max-width: 17ch;
 }
@@ -3126,7 +3216,7 @@ body[data-menu="open"] .assistant__orb {
   .final-cta__inner {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--gutter);
-    align-items: end;
+    align-items: start;
   }
 
   .final-cta__marks {
@@ -3139,10 +3229,14 @@ body[data-menu="open"] .assistant__orb {
     max-width: none;
   }
 
+  /* Texto y contacto, en dos columnas que arrancan a la vez sobre el mismo
+     filete: antes la entradilla caía al fondo, lejos del botón. */
   .final-cta__copy {
     grid-column: 1 / span 5;
     grid-row: 3;
     margin-top: var(--block-y);
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--hair);
   }
 
   .final-cta__contact {
@@ -4657,8 +4751,81 @@ body[data-menu="open"] .assistant__orb {
   padding-bottom: var(--section-y);
 }
 
-.legal__body {
+.legal__layout {
   margin-top: var(--block-y);
+}
+
+/* Índice (LegalToc): solo en escritorio, fijo junto al texto, con una raíz
+   de luz que marca el apartado que se está leyendo. */
+.legal-toc {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .legal__layout {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: start;
+  }
+
+  .legal__body {
+    grid-column: 1 / span 7;
+  }
+
+  .legal-toc {
+    grid-column: 9 / span 4;
+    position: sticky;
+    top: calc(var(--header-h) + var(--s-8));
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+  }
+}
+
+.legal-toc__list {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--hair);
+}
+
+.legal-toc__link {
+  position: relative;
+  display: block;
+  padding: 7px 0 7px var(--s-5);
+  font-size: var(--t-small);
+  line-height: 1.4;
+  color: var(--on-surface-low);
+  transition: color var(--d-std) var(--e-out);
+}
+
+.legal-toc__link::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--orchid), var(--violet));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--violet) 80%, transparent);
+  transform: scaleY(0);
+  transition: transform var(--d-std) var(--e-aterna);
+}
+
+.legal-toc__link:hover {
+  color: var(--on-surface-hi);
+}
+
+.legal-toc__link[aria-current] {
+  color: var(--on-surface-hi);
+}
+
+.legal-toc__link[aria-current]::before {
+  transform: scaleY(1);
+}
+
+.legal__body h2 {
+  scroll-margin-top: calc(var(--header-h) + var(--s-6));
 }
 
 .legal__body h2 {

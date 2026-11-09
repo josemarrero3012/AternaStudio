@@ -2,7 +2,7 @@
 
 // Secciones compartidas entre páginas.
 
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import { Link, useI18n } from "@/lib/i18n";
 import { gsap, prefersReducedMotion, registerGsap } from "@/lib/motion";
 import { formatPrice, pricing, slugToProduct, startingPrice, type ServiceSlug } from "@/lib/pricing";
@@ -20,8 +20,15 @@ import { Trace } from "./Trace";
 import { WordReveal } from "./WordReveal";
 
 /** "01 — Estudio": la numeración la pone cada página según su orden real. */
-function eyebrow(text: string, n?: number) {
-  return n ? `${String(n).padStart(2, "0")} — ${text}` : text;
+function eyebrow(text: string, n?: number): ReactNode {
+  if (!n) return text;
+  return (
+    <>
+      <span className="eyebrow__n">{String(n).padStart(2, "0")}</span>
+      <span className="eyebrow__sep">—</span>
+      {text}
+    </>
+  );
 }
 
 export function StudioStatement({ n }: { n?: number }) {
@@ -31,7 +38,7 @@ export function StudioStatement({ n }: { n?: number }) {
   return (
     <section className="section section-lg band-indigo studio" id="estudio" aria-labelledby="studio-title">
       <div className="container studio__inner">
-        <p className="t-label studio__eyebrow">{eyebrow(t.studioHome.eyebrow, n)}</p>
+        <p className="t-label eyebrow studio__eyebrow">{eyebrow(t.studioHome.eyebrow, n)}</p>
         <WordReveal as="h2" id="studio-title" className="t-display studio__title" text={t.studioHome.title} accent={1} />
         {/* La entradilla presenta los pilares; para quién trabajamos ya lo
             dice el hero y lo amplía /estudio. */}
@@ -101,7 +108,7 @@ export function Cases({ n }: { n?: number }) {
     <section className="section cases" id="casos" aria-labelledby="cases-title">
       <div className="container">
         <header className="section-head">
-          <p className="t-label dim">{eyebrow(c.eyebrow, n)}</p>
+          <p className="t-label dim eyebrow">{eyebrow(c.eyebrow, n)}</p>
           <WordReveal as="h2" id="cases-title" className="t-display" text={c.title} />
           <p className="t-lead muted">{c.lead}</p>
         </header>
@@ -177,7 +184,7 @@ export function Services({ n }: { n?: number }) {
             solo en mucho espacio, y parecía una sección vacía. */}
         <div className="services__head">
           <header className="section-head">
-            <p className="t-label dim">{eyebrow(t.services.eyebrow, n)}</p>
+            <p className="t-label dim eyebrow">{eyebrow(t.services.eyebrow, n)}</p>
             <WordReveal as="h2" id="services-title" className="t-display" text={t.services.title} />
           </header>
           <Link href="/servicios" className="btn-ghost services__all">
@@ -328,7 +335,7 @@ export function Approach({ n }: { n?: number }) {
       <ApproachRail section={section} eyebrow={eyebrow(t.approach.eyebrow, n)} />
       <div className="container approach__static" ref={ref}>
         <header className="section-head">
-          <p className="t-label dim">{eyebrow(t.approach.eyebrow, n)}</p>
+          <p className="t-label dim eyebrow">{eyebrow(t.approach.eyebrow, n)}</p>
           <WordReveal as="h2" id="approach-title" className="t-display" text={t.approach.title} />
         </header>
         <MethodRoot variant="static" />
@@ -370,7 +377,7 @@ export function FinalCTA({ n }: { n?: number }) {
     <section className="section section-lg band-aurora final-cta" aria-labelledby="cta-title">
       <div className="container final-cta__inner" ref={tail}>
         <div className="final-cta__marks">
-          <p className="t-label final-cta__eyebrow">{eyebrow(t.finalCta.eyebrow, n)}</p>
+          <p className="t-label eyebrow final-cta__eyebrow">{eyebrow(t.finalCta.eyebrow, n)}</p>
         </div>
         <WordReveal as="h2" id="cta-title" className="t-hero final-cta__title" text={t.finalCta.title} accent={1} />
         {/* Una sola entradilla: que respondemos siempre lo cuenta el paso 2. */}

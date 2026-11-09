@@ -78,7 +78,7 @@ export function ServiciosContent() {
   return (
     <>
       <section className="container page-head">
-        <p className="t-label dim page-head__eyebrow">{page.eyebrow}</p>
+        <p className="t-label dim eyebrow page-head__eyebrow">{page.eyebrow}</p>
         <WordReveal as="h1" className="t-display" text={page.h1} onScroll={false} delay={0.1} />
         <p className="t-lead muted page-head__lead">{page.lead}</p>
       </section>
@@ -158,7 +158,7 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
     <>
       <section className="container page-head page-head--lit svc-head">
         <div className="svc-head__intro">
-          <nav aria-label="Breadcrumb" className="t-label crumbs page-head__eyebrow">
+          <nav aria-label="Breadcrumb" className="t-label eyebrow crumbs page-head__eyebrow">
             <ol>
               <li>
                 <Link href="/servicios" className="link-underline">
@@ -337,7 +337,7 @@ export function EstudioContent() {
   return (
     <>
       <section className="container page-head">
-        <p className="t-label dim page-head__eyebrow">{page.eyebrow}</p>
+        <p className="t-label dim eyebrow page-head__eyebrow">{page.eyebrow}</p>
         <WordReveal as="h1" className="t-display" text={page.h1} onScroll={false} delay={0.1} />
       </section>
       <section className="section band-indigo estudio-about" aria-label={page.eyebrow}>
@@ -488,7 +488,7 @@ export function ContactoContent() {
   const page = t.pages.contacto;
   return (
     <section className="container page-head page-head--lit contacto">
-      <p className="t-label dim page-head__eyebrow">{page.eyebrow}</p>
+      <p className="t-label dim eyebrow page-head__eyebrow">{page.eyebrow}</p>
       <WordReveal as="h1" className="t-hero contacto__title" text={page.h1} onScroll={false} delay={0.1} />
       <div className="contact-grid">
         {/* Canales y qué pasa después; qué contarnos y que respondemos
@@ -518,7 +518,7 @@ export function NotFoundContent() {
   return (
     <section className="container page-head page-head--lit not-found">
       <div className="not-found__copy">
-        <p className="t-label dim page-head__eyebrow">{page.eyebrow}</p>
+        <p className="t-label dim eyebrow page-head__eyebrow">{page.eyebrow}</p>
         <h1 className="t-display">{page.h1}</h1>
         <p className="t-lead muted page-head__lead">{page.lead}</p>
         <div className="not-found__actions">

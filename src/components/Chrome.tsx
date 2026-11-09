@@ -5,7 +5,7 @@
 // WhatsApp. Las animaciones se desactivan con prefers-reduced-motion.
 
 import Lenis from "lenis";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -19,6 +19,7 @@ import {
 import { startIntro } from "@/lib/intro";
 import { CURSOR_SMOOTHING } from "@/lib/journey/config";
 import { damp } from "@/lib/journey/motion";
+import { basePath, withBase } from "@/lib/base";
 import { site } from "@/lib/site";
 
 export const CURTAIN_KEY = "aterna:curtain";
@@ -30,7 +31,7 @@ export const CURTAIN_KEY = "aterna:curtain";
  * instante: antes aparecía al cargar el JavaScript y dejaba ver un momento
  * la página estática.
  */
-export const CURTAIN_SCRIPT = `try{var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches)d.dataset.motion="on";if(sessionStorage.getItem("${CURTAIN_KEY}")||d.dataset.motion!=="on")d.dataset.curtain="skip"}catch(e){document.documentElement.dataset.curtain="skip"}`;
+export const CURTAIN_SCRIPT = `try{var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches)d.dataset.motion="on";if(sessionStorage.getItem("${CURTAIN_KEY}")||d.dataset.motion!=="on")d.dataset.curtain="skip";if(d.dataset.motion==="on"&&sessionStorage.getItem("aterna:veil"))d.dataset.veil="cover";sessionStorage.removeItem("aterna:veil")}catch(e){document.documentElement.dataset.curtain="skip"}`;
 
 /**
  * Cortina de marca: solo la primera vez por sesión. Al subir da la salida a
@@ -253,19 +254,117 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+/** Al navegar con recarga completa (otro layout raíz) la nueva página nace tapada. */
+export const VEIL_KEY = "aterna:veil";
+
+/**
+ * Transición entre páginas. Al pulsar un enlace interno, un velo de noche
+ * sube desde abajo con una raíz de luz en el borde y el símbolo en el
+ * centro; cuando la nueva ruta ya está pintada, el velo sigue subiendo y la
+ * página entra desde debajo. Atrás/adelante del navegador, los idiomas
+ * (data-no-veil) y las anclas de la misma página no lo usan. Si la
+ * navegación recarga el documento (español ↔ otro idioma: otro layout
+ * raíz), CURTAIN_SCRIPT lo deja tapado desde el primer fotograma y aquí se
+ * levanta. Con movimiento reducido no hay velo.
+ */
 export function PageTransition({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
+  const veil = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const router = useRouter();
   const first = useRef(true);
+  // El velo tapa la pantalla y espera a la nueva ruta.
+  const covering = useRef(false);
+  const timeline = useRef<gsap.core.Timeline | null>(null);
+
+  // Salida: interceptamos los enlaces antes que Next (fase de captura en
+  // window); next/link respeta defaultPrevented y no navega por su cuenta.
+  useEffect(() => {
+    const el = veil.current;
+    if (!el) return;
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if (prefersReducedMotion() || covering.current) return;
+      const link = (e.target as Element | null)?.closest<HTMLAnchorElement>("a[href]");
+      if (!link || link.target === "_blank" || link.hasAttribute("download") || link.closest("[data-no-veil]")) return;
+      const url = new URL(link.href, location.href);
+      if (url.origin !== location.origin || url.pathname === location.pathname) return;
+      // Solo rutas de la web (no archivos como el PHP del formulario).
+      if (/\.[a-z0-9]+$/i.test(url.pathname)) return;
+      e.preventDefault();
+      covering.current = true;
+      registerGsap();
+      timeline.current?.kill();
+      const to = url.pathname.slice(basePath.length) + url.search + url.hash;
+      el.dataset.state = "cover";
+      timeline.current = gsap
+        .timeline({
+          onComplete: () => {
+            try {
+              sessionStorage.setItem(VEIL_KEY, "1");
+            } catch {}
+            router.push(to || "/");
+            // Si la ruta no llegara a cambiar, el velo no se queda puesto.
+            window.setTimeout(() => {
+              if (covering.current) reveal();
+            }, 2500);
+          },
+        })
+        .fromTo(el, { y: 0, yPercent: 100 }, { yPercent: 0, duration: 0.6, ease: "power3.inOut" })
+        .fromTo(el.querySelector(".page-veil__mark"), { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" }, 0.2);
+    };
+    window.addEventListener("click", onClick, true);
+    return () => window.removeEventListener("click", onClick, true);
+  }, [router]);
+
+  // Entrada: el velo se va hacia arriba y la página sube a su sitio.
+  const reveal = () => {
+    const el = veil.current;
+    const page = ref.current;
+    covering.current = false;
+    try {
+      sessionStorage.removeItem(VEIL_KEY);
+    } catch {}
+    delete document.documentElement.dataset.veil;
+    if (!el) return;
+    registerGsap();
+    timeline.current?.kill();
+    el.dataset.state = "reveal";
+    timeline.current = gsap
+      .timeline({
+        onComplete: () => {
+          el.dataset.state = "idle";
+          gsap.set(el, { clearProps: "transform" });
+        },
+      })
+      .set(el, { y: 0, yPercent: 0 })
+      .to(el.querySelector(".page-veil__mark"), { opacity: 0, scale: 1.06, duration: 0.3, ease: "power2.in" }, 0)
+      .to(el, { yPercent: -100, duration: 0.8, ease: "power3.inOut" }, 0.1);
+    if (page) {
+      timeline.current.fromTo(
+        page,
+        { opacity: 0, y: 32 },
+        { opacity: 1, y: 0, duration: 1, ease: ATERNA_EASE, clearProps: "transform,opacity" },
+        0.35,
+      );
+    }
+  };
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     if (first.current) {
       first.current = false;
+      // Llegada con recarga desde otra página: el documento nació tapado.
+      if (document.documentElement.dataset.veil === "cover") reveal();
       return;
     }
     if (prefersReducedMotion()) return;
+    if (covering.current) {
+      // Un fotograma para que la nueva página pinte debajo del velo.
+      const raf = requestAnimationFrame(() => reveal());
+      return () => cancelAnimationFrame(raf);
+    }
     registerGsap();
     const tween = gsap.fromTo(
       el,
@@ -276,9 +375,19 @@ export function PageTransition({ children }: { children: ReactNode }) {
       tween.kill();
       gsap.set(el, { clearProps: "transform,opacity" });
     };
+    // reveal solo usa refs: no hace falta en las dependencias.
   }, [pathname]);
 
-  return <div ref={ref}>{children}</div>;
+  return (
+    <>
+      <div ref={ref}>{children}</div>
+      <div ref={veil} className="page-veil" data-state="idle" aria-hidden="true">
+        <span className="page-veil__edge page-veil__edge--top" />
+        <img className="page-veil__mark" src={withBase("/brand/aterna-symbol-light.webp")} alt="" width={319} height={320} decoding="async" />
+        <span className="page-veil__edge page-veil__edge--bottom" />
+      </div>
+    </>
+  );
 }
 
 export function SkipLink() {
