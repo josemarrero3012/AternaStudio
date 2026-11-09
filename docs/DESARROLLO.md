@@ -106,8 +106,8 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   nombre y el lema en `journey.css` («Entrada»).
 - **Composición de la entrada** (como la de TIGRIS, sin antetítulo):
   «ATERNA» enorme sobre el árbol, el lema (el `h1`) debajo, «Desliza para
-  descubrir» abajo y «Empezar un proyecto» en una píldora abajo a la
-  izquierda (mientras, no va en la cabecera). El nombre
+  descubrir» abajo y «Empezar un proyecto» abajo a la izquierda, solo
+  texto y pegado al borde (mientras, no va en la cabecera). El nombre
   se va en cuanto empieza el scroll y entonces aparece el logo de la cabecera
   (mientras se ve el nombre, la cabecera va sin logo).
 - **Entrada**: sin pantalla de carga. La página se ve en cuanto llega: las

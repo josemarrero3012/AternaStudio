@@ -328,38 +328,31 @@ html[data-motion="on"] .journey__copy {
   }
 }
 
-/* El botón, en una píldora de borde fino (como las de TIGRIS). */
+/* «Empezar un proyecto»: solo texto, sin borde ni fondo, pegado al borde
+   izquierdo de la pantalla (más que el resto de la entrada). */
 .journey__pill {
   position: absolute;
-  left: var(--journey-x);
+  left: calc(var(--margin) * 0.55);
   bottom: calc(28 * var(--u));
   display: inline-flex;
   align-items: center;
-  gap: var(--s-2);
+  gap: calc(10 * var(--u));
   min-height: 44px;
-  padding: 0 calc(20 * var(--u)) 0 calc(22 * var(--u));
-  border: 1px solid var(--glass-edge);
-  border-radius: var(--r-pill);
+  padding: 0;
   font-family: var(--font-ui);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   white-space: nowrap;
   color: var(--text-hi);
-  background: var(--glass-pill-fill);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
   pointer-events: auto;
-  transition:
-    border-color var(--d-micro) var(--e-out),
-    background-color var(--d-micro) var(--e-out);
+  transition: color var(--d-micro) var(--e-out);
 }
 
 @media (hover: hover) {
   .journey__pill:hover {
-    border-color: color-mix(in srgb, var(--lavender) 70%, transparent);
-    background-color: color-mix(in srgb, var(--night-4) 60%, transparent);
+    color: var(--lavender);
   }
 
   .journey__pill:hover .arrow {
