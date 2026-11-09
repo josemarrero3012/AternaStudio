@@ -165,9 +165,9 @@ python3 scripts/tree/make-mask.py public/brand/aterna-mark.png public/tree/v2/ma
 
 Antes de las partículas, la portada era una secuencia de 120 fotogramas
 renderizados en Blender (un túnel de raíces de luz hasta el símbolo en 3D,
-con paralaje por mapas de profundidad). Los fotogramas siguen en
-`public/journey/v1/` y la escena en `scripts/journey/`, aunque la portada ya
-no los usa. Para volver a renderizarlos:
+con paralaje por mapas de profundidad). Los fotogramas se borraron del repo
+el 9 de noviembre de 2026 (siguen en el historial de git); la escena sigue en
+`scripts/journey/`. Para volver a renderizarlos:
 
 ```bash
 python -m venv .venv && .venv/bin/pip install bpy==5.2.3 numpy scipy opencv-python-headless pillow OpenEXR

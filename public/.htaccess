@@ -10,13 +10,6 @@
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
-  # Los fotogramas del recorrido de la portada, un año: la segunda visita
-  # ya no los descarga. Van en una carpeta con versión (public/journey/v1):
-  # si se vuelven a renderizar, cambia la carpeta (ver lib/journey/config.ts).
-  <FilesMatch "^(journey|depth)-[0-9]{3}\.webp$">
-    Header set Cache-Control "public, max-age=31536000, immutable"
-  </FilesMatch>
-
   # Iconos de luz de «Estudio» (public/estudio/v1), un año: van en carpeta
   # con versión (ver components/PillarArt.tsx).
   <FilesMatch "^pillar-[0-9]\.(webm|mp4|webp)$">
