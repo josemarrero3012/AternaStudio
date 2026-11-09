@@ -7,8 +7,9 @@
 //   state-{a,b,c}.bin  N × (x, y, z) int16 LE; coord = q / 32767 × escala
 //   attr.bin           N × (tono, tamaño, tipo, grupo) uint8
 //
-// La cámara de Blender es ortográfica, 2,18 unidades de ancho en 12:5. Aquí,
-// además, el puntero inclina un poco la escena para que se vea el volumen.
+// La cámara de Blender es ortográfica, 2,18 unidades de ancho en 12:5, y aquí
+// también: la escena se ve de frente y no reacciona al puntero. Solo se mueve
+// el bucle A → B → C → A (ver LOOP).
 
 import { withBase } from "@/lib/base";
 
@@ -76,11 +77,8 @@ attribute vec3 aC;
 attribute vec4 aAttr; // tono, tamaño, tipo, grupo (0 a 1)
 uniform vec3 uScale;
 uniform vec3 uCenter;  // centro horizontal de A, B y C: se centran en la tarjeta
-uniform float uMorph;  // 0 = A, 1 = B, 2 = C
+uniform float uMorph;  // 0 = A, 1 = B, 2 = C, 3 = de vuelta en A
 uniform float uTime;
-uniform float uSpin;   // giro de la hélice de B alrededor de X
-uniform float uPulse;  // latido del nodo (más con el puntero encima)
-uniform vec2 uTilt;    // inclinación con el puntero (radianes)
 uniform float uPx;     // píxeles de dispositivo por punto de tamaño 1
 varying vec3 vColor;
 varying float vGain;
@@ -115,48 +113,41 @@ void main() {
   float seed = hash(A + C * 1.7);
 
   // Cada tramo avanza como una ola de izquierda a derecha.
-  float m = clamp(uMorph, 0.0, 2.0);
-  float t1 = smoother(m * 1.4 - (A.x * 0.5 + 0.5) * 0.4);
-  float t2 = smoother((m - 1.0) * 1.4 - (B.x * 0.5 + 0.5) * 0.4);
+  // La ola es suave: cada partícula sale un poco después que la de su
+  // izquierda, y el tramo entero dura lo que marque LOOP.
+  float m = clamp(uMorph, 0.0, 3.0);
+  float t1 = smoother(m * 1.25 - (A.x * 0.5 + 0.5) * 0.25);
+  float t2 = smoother((m - 1.0) * 1.25 - (B.x * 0.5 + 0.5) * 0.25);
+  float t3 = smoother((m - 2.0) * 1.25 - (C.x * 0.5 + 0.5) * 0.25);
 
-  // La hélice de B gira sobre su eje (solo mientras se ve B).
-  float inB = t1 * (1.0 - t2);
-  float ang = uSpin * inB;
-  B.yz = mat2(cos(ang), sin(ang), -sin(ang), cos(ang)) * B.yz;
-
-  vec3 p = mix(mix(A, B, t1), C, t2);
-  // En pleno vuelo se abren un poco hacia la cámara: se nota que viajan.
-  float flight = sin(3.14159 * t1) + sin(3.14159 * t2);
-  p += (vec3(seed, fract(seed * 7.13), fract(seed * 3.71)) - 0.5) * vec3(0.06, 0.05, 0.3) * flight;
+  vec3 p = mix(mix(mix(A, B, t1), C, t2), A, t3);
+  // En pleno vuelo se separan apenas, para que se lea que viajan.
+  float flight = sin(3.14159 * t1) + sin(3.14159 * t2) + sin(3.14159 * t3);
+  p.xy += (vec2(seed, fract(seed * 7.13)) - 0.5) * vec2(0.03, 0.025) * flight;
   // Vida en reposo.
-  p += vec3(sin(uTime * 0.8 + seed * 40.0), cos(uTime * 0.6 + seed * 25.0), 0.0) * 0.0035;
+  p.xy += vec2(sin(uTime * 0.8 + seed * 40.0), cos(uTime * 0.6 + seed * 25.0)) * 0.003;
 
-  // Inclinación con el puntero y un poco de perspectiva.
-  float cy = cos(uTilt.x), sy = sin(uTilt.x);
-  p.xz = mat2(cy, -sy, sy, cy) * p.xz;
-  float cx = cos(uTilt.y), sx = sin(uTilt.y);
-  p.yz = mat2(cx, sx, -sx, cx) * p.yz;
-  float persp = 1.0 / (1.0 - p.z * 0.35);
-  gl_Position = vec4(p.x * persp / ${HALF_W.toFixed(4)}, p.y * persp / ${HALF_H.toFixed(4)}, 0.0, 1.0);
+  gl_Position = vec4(p.x / ${HALF_W.toFixed(4)}, p.y / ${HALF_H.toFixed(4)}, 0.0, 1.0);
 
   // Color: en A cada oficio tiene su tono (diseño azul, código violeta) y
   // hacia C se funden en el degradado de la marca (README de Blender).
   float hueA = tone;
   if (group == 0.0 || group == 2.0) hueA = 0.08 + 0.28 * tone;
   else if (group == 1.0 || group == 3.0) hueA = 0.58 + 0.12 * tone;
-  float k = clamp(m * 0.5, 0.0, 1.0);
+  float k = m <= 2.0 ? m * 0.5 : 3.0 - m;
   vec3 col = palette(mix(hueA, tone, smoother(k)));
 
   float px = 1.1 + 3.4 * pow(size, 1.6);
   float gain = 0.55 + 0.8 * size;
   if (kind == 1.0) { px *= 0.7; gain *= 0.3; }
   if (kind == 2.0) {
-    float beat = 1.0 + uPulse * (0.5 + 0.5 * sin(uTime * 3.2));
-    px *= mix(1.0, beat, t2);
+    // El nodo (la persona que te atiende) respira mientras se ve C.
+    float beat = 1.0 + 0.25 * (0.5 + 0.5 * sin(uTime * 2.0));
+    px *= mix(1.0, beat, t2 * (1.0 - t3));
     col = mix(col, vec3(1.0, 0.96, 1.0), 0.45 * size);
     gain *= 1.2;
   }
-  gl_PointSize = clamp(px * persp * uPx, 1.0, 40.0);
+  gl_PointSize = clamp(px * uPx, 1.0, 40.0);
   vColor = col;
   vGain = gain;
 }
@@ -178,7 +169,35 @@ void main() {
 }
 `;
 
-export type FrameState = { morph: number; time: number; spin: number; pulse: number; tilt: [number, number] };
+/**
+ * El bucle, en segundos: pausa en A, viaje a B, pausa en B, viaje a C, pausa
+ * en C y vuelta a A. Lo comparten todas las tarjetas y sale del reloj de la
+ * página, así que van coordinadas: cambian a la vez.
+ */
+export const LOOP = { holdA: 2.5, toB: 3.5, holdB: 2.5, toC: 3.5, holdC: 3.5, toA: 3.5 };
+const LOOP_LEN = Object.values(LOOP).reduce((a, b) => a + b, 0);
+
+const ease = (x: number) => x * x * (3 - 2 * x);
+
+/** Estado (0 = A, 1 = B, 2 = C, 3 = A otra vez) en el segundo t del reloj. */
+export function loopMorph(t: number) {
+  let r = ((t % LOOP_LEN) + LOOP_LEN) % LOOP_LEN;
+  const steps: [number, number, number][] = [
+    [LOOP.holdA, 0, 0],
+    [LOOP.toB, 0, 1],
+    [LOOP.holdB, 1, 1],
+    [LOOP.toC, 1, 2],
+    [LOOP.holdC, 2, 2],
+    [LOOP.toA, 2, 3],
+  ];
+  for (const [d, from, to] of steps) {
+    if (r < d) return from + (to - from) * ease(r / d);
+    r -= d;
+  }
+  return 0;
+}
+
+export type FrameState = { morph: number; time: number };
 
 export class PillarRenderer {
   private gl: WebGLRenderingContext;
@@ -229,7 +248,7 @@ export class PillarRenderer {
     attrib("aC", data.c, 3, gl.SHORT);
     attrib("aAttr", data.attr, 4, gl.UNSIGNED_BYTE);
 
-    for (const u of ["uScale", "uCenter", "uMorph", "uTime", "uSpin", "uPulse", "uTilt", "uPx"]) this.loc[u] = gl.getUniformLocation(program, u);
+    for (const u of ["uScale", "uCenter", "uMorph", "uTime", "uPx"]) this.loc[u] = gl.getUniformLocation(program, u);
     gl.uniform3f(this.loc.uScale, ...data.scales);
     gl.uniform3f(this.loc.uCenter, ...data.centers);
     gl.enable(gl.BLEND);
@@ -250,9 +269,6 @@ export class PillarRenderer {
     const { gl, loc } = this;
     gl.uniform1f(loc.uMorph, s.morph);
     gl.uniform1f(loc.uTime, s.time);
-    gl.uniform1f(loc.uSpin, s.spin);
-    gl.uniform1f(loc.uPulse, s.pulse);
-    gl.uniform2f(loc.uTilt, s.tilt[0], s.tilt[1]);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.POINTS, 0, this.count);
   }
