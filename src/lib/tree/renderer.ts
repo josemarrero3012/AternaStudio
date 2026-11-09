@@ -7,7 +7,7 @@
 //
 // Sin WebGL, PosterRenderer pinta la imagen fija (poster.webp).
 
-import { createProgram, sizeCanvas } from "@/lib/journey/depthRenderer";
+import { createProgram, sizeCanvas } from "@/lib/gl";
 import { CAMERA_Z, FOV, GLOW, POINT_SIZE } from "./config";
 import type { Shapes } from "./shapes";
 
