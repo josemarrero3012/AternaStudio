@@ -105,7 +105,8 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   nombre y el lema en `journey.css` («Entrada»).
 - **Composición de la entrada** (como la de TIGRIS, sin antetítulo):
   «ATERNA» enorme sobre el árbol, el lema (el `h1`) debajo, «Desliza para
-  descubrir» abajo (sin botón: «Empezar un proyecto» ya está arriba). El nombre
+  descubrir» abajo y «Empezar un proyecto» en una píldora abajo a la
+  izquierda (mientras, no va en la cabecera). El nombre
   se va en cuanto empieza el scroll y entonces aparece el logo de la cabecera
   (mientras se ve el nombre, la cabecera va sin logo).
 - **Entrada**: una pantalla de carga (contador y línea de progreso) que espera
@@ -145,9 +146,10 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   movimiento reducido**, sin fundido, sin entrada, sin giro ni empuje (el
   scroll sigue cambiando las formas).
 - Mientras el recorrido está en pantalla, la cabecera va sin velo y el menú
-  va como el de TIGRIS: arriba a la derecha, «Servicios», «Estudio»,
-  «Contacto» y «Empezar un proyecto →» en una fila de texto en mayúsculas
-  espaciadas (sin píldora ni botón relleno), y los idiomas al final, más
+  va como el de TIGRIS: arriba a la derecha, «Servicios», «Estudio» y
+  «Contacto» juntos en una fila de texto en mayúsculas espaciadas (sin
+  píldora; «Empezar un proyecto» va en la portada, abajo a la izquierda),
+  y los idiomas al final, más
   pequeños y tenues, tras un filete; en móvil y tableta, el asistente y
   WhatsApp esperan a que termine (los textos ocupan todo el ancho).
 
