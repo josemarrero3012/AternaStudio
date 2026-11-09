@@ -990,7 +990,7 @@ html:has(.journey) .curtain {
     radial-gradient(60vmax 50vmax at 50% 50%, color-mix(in srgb, var(--violet) 16%, transparent), transparent 70%),
     linear-gradient(180deg, var(--night-1), var(--night-0) 60%);
   pointer-events: none;
-  will-change: transform;
+  will-change: opacity;
 }
 
 .page-veil[data-state="cover"],
@@ -998,31 +998,6 @@ html:has(.journey) .curtain {
 html[data-veil="cover"] .page-veil {
   visibility: visible;
   pointer-events: auto;
-}
-
-.page-veil__edge {
-  position: absolute;
-  inset-inline: 0;
-  height: 1px;
-  background-image: var(--brand-gradient-h);
-  box-shadow:
-    0 0 18px 1px color-mix(in srgb, var(--violet) 70%, transparent),
-    0 0 60px 6px color-mix(in srgb, var(--orchid) 22%, transparent);
-  opacity: 0;
-  transition: opacity 0.2s linear;
-}
-
-.page-veil__edge--top {
-  top: 0;
-}
-
-.page-veil__edge--bottom {
-  bottom: 0;
-}
-
-.page-veil[data-state="cover"] .page-veil__edge--top,
-.page-veil[data-state="reveal"] .page-veil__edge--bottom {
-  opacity: 1;
 }
 
 .page-veil__mark {
