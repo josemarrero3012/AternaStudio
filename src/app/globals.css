@@ -1769,7 +1769,10 @@ body[data-menu="open"] .assistant__orb {
 .trace__halo {
   fill: none;
   stroke-linejoin: round;
-  stroke-dasharray: 1;
+  /* Algo más largo que el trazo (pathLength = 1): Chromium mide corto las
+     curvas cuadráticas y, con «1» justo, la última esquina de un rectángulo
+     redondeado se quedaba sin dibujar. El hueco (1,1) basta para ocultarlo. */
+  stroke-dasharray: 1.05 1.1;
   transition: stroke-dashoffset var(--t-dur, 2.4s) var(--e-inout) calc(var(--t-base, 0.4s) + var(--t-delay, 0s));
 }
 
@@ -1873,7 +1876,7 @@ body[data-menu="open"] .assistant__orb {
 
 @media (prefers-reduced-motion: no-preference) {
   .trace:not([data-draw="on"]) :is(.trace__line, .trace__halo) {
-    stroke-dashoffset: 1;
+    stroke-dashoffset: 1.05;
   }
 
   .trace:not([data-draw="on"]) :is(.trace__dot, .trace__glow, .trace__node) {
@@ -1946,22 +1949,26 @@ body[data-menu="open"] .assistant__orb {
 
 /* Antetítulo: la misma firma en toda la web. Una raíz de luz que nace en un
    nodo orquídea y se apaga hacia el texto; el número, en orquídea. */
+/* Más grande que el resto de etiquetas (13 px): es lo que abre cada
+   sección y tiene que leerse a la primera. */
 .eyebrow {
   display: flex;
   align-items: center;
-  gap: var(--s-3);
-  color: var(--on-surface-mid);
+  gap: var(--s-4);
+  font-size: clamp(0.875rem, 0.8rem + 0.3vw, 1.0625rem);
+  letter-spacing: 0.14em;
+  color: var(--on-surface-hi);
 }
 
 .eyebrow::before {
   content: "";
   flex: none;
-  width: 40px;
-  height: 5px;
+  width: 56px;
+  height: 9px;
   background:
-    radial-gradient(circle at 2.5px 50%, var(--orchid) 0 2px, color-mix(in srgb, var(--orchid) 40%, transparent) 2.5px, transparent 4px),
+    radial-gradient(circle at 4.5px 50%, var(--orchid) 0 3px, color-mix(in srgb, var(--orchid) 40%, transparent) 3.5px, transparent 5px),
     linear-gradient(90deg, color-mix(in srgb, var(--orchid) 90%, transparent), color-mix(in srgb, var(--violet) 55%, transparent) 45%, transparent) 0 50% / 100% 1px no-repeat;
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--violet) 70%, transparent));
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--violet) 75%, transparent));
 }
 
 .eyebrow__n {
@@ -3903,15 +3910,28 @@ a.aurora-card {
   gap: var(--s-6);
 }
 
-/* Dibujo de cada ficha (ServiceTrace.tsx), bajo «El servicio». */
+/* Dibujo de cada ficha (ServiceTrace.tsx), bajo «El servicio», en su
+   panel negro. */
 .svc-trace {
-  width: 220px;
+  display: flex;
+  justify-content: center;
+  width: min(100%, 320px);
+  padding: var(--s-7) var(--s-5);
 }
 
-@media (min-width: 768px) {
-  .svc-trace {
-    width: min(100%, 300px);
-  }
+/* En el panel negro los trazos nacen menos apagados: los dibujos son
+   escenas, no hilos que salen de la nada. */
+.aurora-panel .trace--icon .trace__from {
+  stop-opacity: 0.5;
+}
+
+.aurora-panel .trace--icon .trace__mid {
+  stop-opacity: 0.85;
+}
+
+/* El dibujo llena el panel como en los pilares, sea cual sea su ancho. */
+.aurora-panel .trace--xl {
+  width: min(78%, 330px);
 }
 
 .svc-prose {
@@ -4326,195 +4346,9 @@ a.aurora-card {
   }
 }
 
-/* Ilustraciones (BeliefArt.tsx). Trazo fino y nodo orquídea, como los
-   iconos; el rosa marca lo roto y lo falso. Cada una tiene su bucle. */
+/* Dibujos de las creencias (BeliefArt.tsx): trazos de Trace a tamaño xl. */
 .belief-art {
   width: min(100%, 260px);
-  height: auto;
-  overflow: visible;
-}
-
-.belief-art__line {
-  fill: none;
-  stroke: color-mix(in srgb, var(--lavender) 75%, transparent);
-  stroke-width: 1;
-  stroke-linecap: round;
-}
-
-.belief-art__line--faint {
-  stroke-opacity: 0.4;
-  stroke-width: 0.8;
-}
-
-.belief-art__dot {
-  fill: var(--lavender);
-  fill-opacity: 0.8;
-}
-
-.belief-art__flaw {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.belief-art__flaw--gap {
-  fill: var(--rose);
-  opacity: 0;
-}
-
-.belief-art__flaw--ghost {
-  fill: none;
-  stroke: var(--rose);
-  stroke-width: 0.9;
-  stroke-dasharray: 3 3;
-  opacity: 0;
-  transform-origin: bottom;
-}
-
-.belief-art__bar {
-  fill: color-mix(in srgb, var(--lavender) 70%, transparent);
-  transform-box: fill-box;
-  transform-origin: bottom;
-}
-
-.belief-art__bar--lit {
-  fill: var(--orchid);
-}
-
-.belief-art__rider {
-  fill: var(--orchid);
-  offset-rotate: 0deg;
-  filter: drop-shadow(0 0 4px var(--orchid));
-}
-
-.belief-art__slider {
-  fill: color-mix(in srgb, var(--orchid) 55%, #fff);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .belief-art__lens {
-    animation: art-lens 5s var(--e-inout) infinite;
-  }
-
-  .belief-art__flaw--gap {
-    animation: art-gap 5s linear infinite;
-  }
-
-  .belief-art__bar {
-    animation: art-bar 5s var(--e-aterna) infinite;
-  }
-
-  .belief-art__flaw--ghost {
-    animation: art-ghost 5s ease infinite;
-  }
-
-  .belief-art__rider {
-    animation: art-ride 3.4s var(--e-aterna) infinite;
-  }
-
-  .belief-art__slider {
-    animation: art-slide 3.4s var(--e-aterna) infinite;
-  }
-
-  /* Solo en pantalla. */
-  .belief-art:not([data-live="on"]) * {
-    animation-play-state: paused;
-  }
-}
-
-/* Sin movimiento: la rotura y la curva quedan señaladas, quietas. */
-@media (prefers-reduced-motion: reduce) {
-  .belief-art__lens {
-    transform: translateX(50px);
-  }
-
-  .belief-art__flaw--gap {
-    opacity: 1;
-  }
-
-  .belief-art__rider {
-    offset-distance: 100%;
-  }
-}
-
-@keyframes art-lens {
-  0% {
-    transform: translateX(0);
-  }
-  35%,
-  55% {
-    transform: translateX(50px);
-  }
-  90%,
-  100% {
-    transform: translateX(118px);
-  }
-}
-
-@keyframes art-gap {
-  0%,
-  33% {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-  40%,
-  52% {
-    opacity: 1;
-    transform: scale(1.6);
-  }
-  60%,
-  100% {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-}
-
-@keyframes art-bar {
-  0% {
-    transform: scaleY(0);
-  }
-  30%,
-  100% {
-    transform: scaleY(1);
-  }
-}
-
-@keyframes art-ghost {
-  0%,
-  30% {
-    opacity: 0;
-    transform: scaleY(0.4);
-  }
-  45% {
-    opacity: 0.9;
-    transform: scaleY(1);
-  }
-  62%,
-  100% {
-    opacity: 0;
-    transform: scaleY(0.4);
-  }
-}
-
-@keyframes art-ride {
-  0%,
-  8% {
-    offset-distance: 0%;
-  }
-  70%,
-  100% {
-    offset-distance: 100%;
-  }
-}
-
-@keyframes art-slide {
-  0%,
-  8% {
-    transform: translateX(0);
-  }
-  70%,
-  100% {
-    transform: translateX(124px);
-  }
 }
 
 /* Contacto ---------------------------------------------------------------- */
