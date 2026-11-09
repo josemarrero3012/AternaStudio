@@ -38,6 +38,13 @@ export type Shapes = {
    * (0 o 1), w: orden de crecimiento en el árbol final (0 la base, 1 la copa).
    */
   tone: Float32Array; // vec4
+  /**
+   * x: luz del cordón en el símbolo (0 sombra, ~1 de cara, más con brillo),
+   * y: savia en el símbolo (-1 puntas de las raíces, 0 pie del tronco, 1 copa),
+   * z: en el árbol final, la savia en la madera (igual) o, en la copa, el azar
+   * de su racimo, w: luz en el árbol final (0 sombra, 1 de cara).
+   */
+  mark: Float32Array; // vec4
 };
 
 /** Generador con semilla (mulberry32). */
@@ -65,7 +72,18 @@ const toneAt = (x: number, y: number) => Math.min(1, Math.max(0, (x * 0.55 + y *
 
 // Silueta ---------------------------------------------------------------------
 
-export type Mask = { size: number; inside: Uint32Array; edge: Uint32Array; alpha: Uint8ClampedArray };
+export type Mask = {
+  size: number;
+  inside: Uint32Array;
+  edge: Uint32Array;
+  alpha: Uint8ClampedArray;
+  /** Por píxel: luz del cordón (0 en sombra, ~1 de cara a la luz, más con brillo). */
+  lit: Float32Array;
+  /** Por píxel: cuánto de borde (0 en el centro del trazo, 1 en el filo). */
+  rim: Float32Array;
+  /** Por píxel: camino por el trazo desde el pie del tronco (-1 puntas de las raíces, 1 puntas de la copa). */
+  sap: Float32Array;
+};
 
 /** Lee la silueta: píxeles dentro del árbol y, de ellos, los del contorno. */
 export function readMask(img: HTMLImageElement | ImageBitmap): Mask {
@@ -90,10 +108,247 @@ export function readMask(img: HTMLImageElement | ImageBitmap): Mask {
       if (!on(x - 1, y) || !on(x + 1, y) || !on(x, y - 1) || !on(x, y + 1)) edge.push(i);
     }
   }
-  return { size, inside: Uint32Array.from(inside), edge: Uint32Array.from(edge), alpha };
+  return { size, inside: Uint32Array.from(inside), edge: Uint32Array.from(edge), alpha, ...analyzeMask(alpha, size) };
 }
 
-/** Un punto del árbol: de un píxel de la silueta, con un poco de relieve. */
+/** Luz de arriba a la izquierda y algo de frente (escena: y hacia arriba). */
+const LIGHT = (() => {
+  const v = [-0.5, 0.62, 0.6];
+  const n = Math.hypot(v[0], v[1], v[2]);
+  return [v[0] / n, v[1] / n, v[2] / n] as const;
+})();
+
+/**
+ * Lee la silueta como cordones en relieve (los trazos del símbolo son cintas
+ * entrelazadas): la distancia al borde da un perfil redondo, y de su
+ * pendiente sale la normal, con la que cada punto recibe luz o sombra y un
+ * brillo en el lomo. Además, el camino de cada punto por dentro del trazo
+ * desde el pie del tronco: por ahí sube la savia (pulsos de luz que van de
+ * las raíces a la copa). Los cruces del nudo cortan el trazo; el camino los
+ * salta, pero le cuesta.
+ */
+function analyzeMask(alpha: Uint8ClampedArray, size: number) {
+  const N = size * size;
+  const on = new Uint8Array(N);
+  for (let i = 0; i < N; i++) on[i] = alpha[i] > 127 ? 1 : 0;
+
+  // Distancia al borde (chaflán 3-4, dos pasadas), en píxeles.
+  const BIG = 1e9;
+  const dist = new Float32Array(N);
+  for (let i = 0; i < N; i++) dist[i] = on[i] ? BIG : 0;
+  const relax = (i: number, j: number, c: number) => {
+    if (dist[j] + c < dist[i]) dist[i] = dist[j] + c;
+  };
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const i = y * size + x;
+      if (!on[i]) continue;
+      if (x > 0) relax(i, i - 1, 3);
+      else dist[i] = Math.min(dist[i], 3);
+      if (y > 0) {
+        relax(i, i - size, 3);
+        if (x > 0) relax(i, i - size - 1, 4);
+        if (x < size - 1) relax(i, i - size + 1, 4);
+      }
+    }
+  }
+  for (let y = size - 1; y >= 0; y--) {
+    for (let x = size - 1; x >= 0; x--) {
+      const i = y * size + x;
+      if (!on[i]) continue;
+      if (x < size - 1) relax(i, i + 1, 3);
+      if (y < size - 1) {
+        relax(i, i + size, 3);
+        if (x < size - 1) relax(i, i + size + 1, 4);
+        if (x > 0) relax(i, i + size - 1, 4);
+      }
+    }
+  }
+  for (let i = 0; i < N; i++) dist[i] = on[i] ? dist[i] / 3 : 0;
+
+  // Media anchura del trazo alrededor de cada punto: el máximo cercano.
+  const R = 9;
+  const tmp = new Float32Array(N);
+  const half = new Float32Array(N);
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      let m = 0;
+      for (let k = Math.max(0, x - R); k <= Math.min(size - 1, x + R); k++) m = Math.max(m, dist[y * size + k]);
+      tmp[y * size + x] = m;
+    }
+  }
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      let m = 0;
+      for (let k = Math.max(0, y - R); k <= Math.min(size - 1, y + R); k++) m = Math.max(m, tmp[k * size + x]);
+      half[y * size + x] = Math.max(1.5, m);
+    }
+  }
+
+  // Perfil redondo (altura en píxeles) y luz.
+  const height = new Float32Array(N);
+  const rim = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    if (!on[i]) continue;
+    const u = Math.min(1, dist[i] / half[i]);
+    height[i] = Math.sqrt(1 - (1 - u) * (1 - u)) * half[i];
+    rim[i] = 1 - u;
+  }
+  // Suaviza el relieve (la silueta es WebP con pérdida: deja vetas).
+  for (let pass = 0; pass < 2; pass++) {
+    const src = height.slice();
+    for (let y = 1; y < size - 1; y++) {
+      for (let x = 1; x < size - 1; x++) {
+        const i = y * size + x;
+        if (!on[i]) continue;
+        let sum = 0;
+        let n = 0;
+        for (let k = -1; k <= 1; k++) {
+          for (let m = -1; m <= 1; m++) {
+            const j = i + k * size + m;
+            sum += src[j];
+            n++;
+          }
+        }
+        height[i] = sum / n;
+      }
+    }
+  }
+  const lit = new Float32Array(N);
+  const [lx, ly, lz] = LIGHT;
+  // Medio vector entre la luz y la cámara, para el brillo.
+  const hn = Math.hypot(lx, ly, lz + 1);
+  const hx = lx / hn;
+  const hy = ly / hn;
+  const hz = (lz + 1) / hn;
+  const H = (x: number, y: number) => height[Math.min(size - 1, Math.max(0, y)) * size + Math.min(size - 1, Math.max(0, x))];
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const i = y * size + x;
+      if (!on[i]) continue;
+      // Pendiente (escena: y hacia arriba), algo suavizada.
+      const gx = (H(x + 2, y) - H(x - 2, y)) / 4;
+      const gy = -(H(x, y + 2) - H(x, y - 2)) / 4;
+      const n = Math.hypot(gx, gy, 1);
+      const nx = -gx / n;
+      const ny = -gy / n;
+      const nz = 1 / n;
+      const diffuse = Math.max(0, nx * lx + ny * ly + nz * lz);
+      const spec = Math.pow(Math.max(0, nx * hx + ny * hy + nz * hz), 28);
+      lit[i] = diffuse + spec * 0.9;
+    }
+  }
+
+  // El camino desde el pie del tronco (Dijkstra a media resolución: dentro
+  // del trazo cuesta 1; fuera, para saltar los cruces, 7).
+  const S = size >> 1;
+  const SN = S * S;
+  const inS = new Uint8Array(SN);
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) inS[y * S + x] = on[2 * y * size + 2 * x] | on[(2 * y + 1) * size + 2 * x + 1];
+  const cost = new Float64Array(SN).fill(Infinity);
+  // El pie del tronco: centro, a la altura donde la copa se junta con las raíces.
+  const seedX = S >> 1;
+  const seedY = Math.round(S * 0.693);
+  let seed = seedY * S + seedX;
+  for (let r = 0; r < 20 && !inS[seed]; r++) seed = (seedY - r) * S + seedX;
+  const heap = new Heap();
+  cost[seed] = 0;
+  heap.push(seed, 0);
+  const NB = [
+    [1, 0, 1],
+    [-1, 0, 1],
+    [0, 1, 1],
+    [0, -1, 1],
+    [1, 1, Math.SQRT2],
+    [-1, 1, Math.SQRT2],
+    [1, -1, Math.SQRT2],
+    [-1, -1, Math.SQRT2],
+  ];
+  while (heap.size) {
+    const [i, c] = heap.pop();
+    if (c > cost[i]) continue;
+    const x = i % S;
+    const y = (i - x) / S;
+    for (const [dx, dy, w] of NB) {
+      const nx = x + dx;
+      const ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= S || ny >= S) continue;
+      const j = ny * S + nx;
+      const nc = c + w * (inS[j] ? 1 : 7);
+      if (nc < cost[j]) {
+        cost[j] = nc;
+        heap.push(j, nc);
+      }
+    }
+  }
+  let maxUp = 1;
+  let maxDown = 1;
+  for (let i = 0; i < SN; i++) {
+    if (!inS[i]) continue;
+    if (Math.floor(i / S) <= seedY) maxUp = Math.max(maxUp, cost[i]);
+    else maxDown = Math.max(maxDown, cost[i]);
+  }
+  const sap = new Float32Array(N);
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const i = y * size + x;
+      if (!on[i]) continue;
+      const sy = y >> 1;
+      const c = cost[sy * S + (x >> 1)];
+      sap[i] = sy <= seedY ? c / maxUp : -c / maxDown;
+    }
+  }
+  return { lit, rim, sap };
+}
+
+/** Montículo binario mínimo de (índice, coste). */
+class Heap {
+  private ids: number[] = [];
+  private keys: number[] = [];
+  get size() {
+    return this.ids.length;
+  }
+  push(id: number, key: number) {
+    const { ids, keys } = this;
+    let i = ids.length;
+    ids.push(id);
+    keys.push(key);
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (keys[p] <= key) break;
+      ids[i] = ids[p];
+      keys[i] = keys[p];
+      i = p;
+    }
+    ids[i] = id;
+    keys[i] = key;
+  }
+  pop(): [number, number] {
+    const { ids, keys } = this;
+    const top: [number, number] = [ids[0], keys[0]];
+    const id = ids.pop()!;
+    const key = keys.pop()!;
+    const n = ids.length;
+    if (n) {
+      let i = 0;
+      for (;;) {
+        const l = 2 * i + 1;
+        if (l >= n) break;
+        const r = l + 1;
+        const c = r < n && keys[r] < keys[l] ? r : l;
+        if (keys[c] >= key) break;
+        ids[i] = ids[c];
+        keys[i] = keys[c];
+        i = c;
+      }
+      ids[i] = id;
+      keys[i] = key;
+    }
+    return top;
+  }
+}
+
+/** Un punto del árbol: de un píxel de la silueta, con un poco de relieve. Devuelve el píxel. */
 function treePoint(mask: Mask, list: Uint32Array, r: Rand, out: Float32Array, o: number) {
   const i = list[Math.floor(r() * list.length)];
   const px = (i % mask.size) + r();
@@ -102,12 +357,13 @@ function treePoint(mask: Mask, list: Uint32Array, r: Rand, out: Float32Array, o:
   const y = (0.5 - py / mask.size) * 2;
   // Relieve: abombado hacia el centro, con volumen.
   const bulge = 0.24 * Math.max(0, 1 - (x * x + y * y));
-  // Borde suelto, como el pelaje del tigre: todas tiemblan un poco y algunas
-  // se escapan de la silueta.
-  const loose = r() < 0.06 ? 0.022 : 0.0025;
+  // El cordón tiene relieve (lomo hacia delante) y el borde es nítido: solo
+  // alguna partícula se escapa, como polvo de luz que suelta.
+  const loose = r() < 0.025 ? 0.016 : 0.0012;
   out[o] = x + gauss(r) * loose;
   out[o + 1] = y + gauss(r) * loose;
-  out[o + 2] = bulge + gauss(r) * 0.03;
+  out[o + 2] = bulge + (1 - mask.rim[i]) * 0.035 + gauss(r) * 0.012;
+  return i;
 }
 
 // Raíces ------------------------------------------------------------------------
@@ -188,7 +444,8 @@ function segmentPicker<T extends { ax: number; ay: number; az: number; bx: numbe
 
 // Árbol final ------------------------------------------------------------------
 
-type Wood = { ax: number; ay: number; az: number; bx: number; by: number; bz: number; r: number; g: number };
+/** g: orden de crecimiento (0 la base, 1 la copa); f: por dónde va la savia (-1 puntas de las raíces, 0 pie del tronco, 1 la copa). */
+type Wood = { ax: number; ay: number; az: number; bx: number; by: number; bz: number; r: number; g: number; f?: number };
 type Leaf = { x: number; y: number; z: number; r: number; g: number };
 
 /** Gira la dirección d un ángulo `ang` hacia el lado `az` (alrededor de d). */
@@ -318,7 +575,7 @@ function growNaturalTree(r: Rand) {
       };
       const [ax, ay, az] = at(t0);
       const [bx, by, bz] = at(t1);
-      wood.push({ ax, ay, az, bx, by, bz, r: 0.04, g: (by - TRUNK.base) * 0.6 });
+      wood.push({ ax, ay, az, bx, by, bz, r: 0.038, g: (by - TRUNK.base) * 0.6 });
     }
   }
   const gTop = (TRUNK.top - TRUNK.base) * 0.6;
@@ -382,7 +639,8 @@ function growNaturalTree(r: Rand) {
   // ellas, y se ramifican en otras más finas y en raicillas. Cada una, de
   // largo distinto. Con su propio azar: no tocan la copa.
   const rr = rng(SEED ^ 0x0de5ce5d);
-  const root = (x: number, y: number, z: number, dx: number, dy: number, dz: number, len: number, rad: number, depth: number) => {
+  let maxRoot = 0;
+  const root = (x: number, y: number, z: number, dx: number, dy: number, dz: number, len: number, rad: number, depth: number, run = 0) => {
     const steps = Math.max(2, Math.ceil(len / 0.022));
     const step = len / steps;
     for (let s = 0; s < steps; s++) {
@@ -399,14 +657,16 @@ function growNaturalTree(r: Rand) {
       const ny = y + dy * step;
       const nz = z + dz * step;
       if (ny < ROOT_BOTTOM || circD(nx, ny, nz) > 0.96) return;
-      wood.push({ ax: x, ay: y, az: z, bx: nx, by: ny, bz: nz, r: rad, g: 0 });
+      run += step;
+      maxRoot = Math.max(maxRoot, run);
+      wood.push({ ax: x, ay: y, az: z, bx: nx, by: ny, bz: nz, r: rad, g: 0, f: -run });
       x = nx;
       y = ny;
       z = nz;
       rad = Math.max(0.004, rad * (s < 3 && depth === 0 ? 0.9 : 0.972));
       if (depth < 3 && s > 1 && rr() < (depth === 0 ? 0.11 : 0.08)) {
         const [cx, cy, cz] = turn(dx, dy, dz, rr() * Math.PI * 2, 0.45 + rr() * 0.5);
-        root(x, y, z, cx, cy, cz, (len - s * step) * (0.4 + rr() * 0.35) + 0.05, rad * 0.62, depth + 1);
+        root(x, y, z, cx, cy, cz, (len - s * step) * (0.4 + rr() * 0.35) + 0.05, rad * 0.62, depth + 1, run);
       }
     }
   };
@@ -449,12 +709,38 @@ function growNaturalTree(r: Rand) {
     l.r *= k;
     maxG = Math.max(maxG, l.g);
   }
-  for (const w of wood) w.g /= maxG;
+  for (const w of wood) {
+    w.f = w.f === undefined ? w.g / maxG : w.f / maxRoot;
+    w.g /= maxG;
+  }
   for (const l of leaves) l.g /= maxG;
   return { wood, leaves };
 }
 
 // Todas ------------------------------------------------------------------------
+
+/** El centro y el radio de la copa del árbol final, ya encajado (para su luz). */
+const CROWN = { x: 0, y: 0.3, r: 0.85 };
+
+/** Un número fijo entre 0 y 1 para cada entero. */
+const hash = (n: number) => {
+  const v = Math.sin(n * 12.9898 + 78.233) * 43758.5453;
+  return v - Math.floor(v);
+};
+
+/** Dos ejes perpendiculares a la dirección d (unitaria) y entre sí. */
+function frame(dx: number, dy: number, dz: number): [number, number, number, number, number, number] {
+  const ax = Math.abs(dy) < 0.9 ? 0 : 1;
+  const ay = Math.abs(dy) < 0.9 ? 1 : 0;
+  let ux = dy * 0 - dz * ay;
+  let uy = dz * ax - dx * 0;
+  let uz = dx * ay - dy * ax;
+  const n = Math.hypot(ux, uy, uz) || 1;
+  ux /= n;
+  uy /= n;
+  uz /= n;
+  return [ux, uy, uz, dy * uz - dz * uy, dz * ux - dx * uz, dx * uy - dy * ux];
+}
 
 export function buildShapes(mask: Mask, count: number): Shapes {
   const r = rng(SEED);
@@ -464,6 +750,8 @@ export function buildShapes(mask: Mask, count: number): Shapes {
   const final = new Float32Array(count * 3);
   const rand = new Float32Array(count * 4);
   const tone = new Float32Array(count * 4);
+  const mark = new Float32Array(count * 4);
+  const [lx, ly, lz] = LIGHT;
 
   const { segs, maxT } = growRoots(r);
   const pickSeg = segmentPicker(segs);
@@ -508,9 +796,11 @@ export function buildShapes(mask: Mask, count: number): Shapes {
 
     // El árbol: parte de las partículas, al contorno.
     const edge = r() < EDGE_SHARE;
-    treePoint(mask, edge ? mask.edge : mask.inside, r, tree, o3);
+    const px = treePoint(mask, edge ? mask.edge : mask.inside, r, tree, o3);
     tone[o4] = toneAt(tree[o3], tree[o3 + 1]);
-    tone[o4 + 2] = edge ? 1 : 0;
+    tone[o4 + 2] = edge ? 1 : mask.rim[px] * 0.45;
+    mark[o4] = mask.lit[px];
+    mark[o4 + 1] = mask.sap[px];
 
     // Las raíces: un punto de un tramo, repartido en su grosor.
     const s = pickSeg(r());
@@ -523,27 +813,62 @@ export function buildShapes(mask: Mask, count: number): Shapes {
     tone[o4 + 1] = s.t / maxT;
 
     if (kind === KIND.leaf) {
-      // La copa: racimos mullidos alrededor de cada punto de hojas.
-      const l = natural.leaves[Math.floor(r() * natural.leaves.length)];
-      final[o3] = l.x + gauss(r) * l.r * 0.55;
-      final[o3 + 1] = l.y + gauss(r) * l.r * 0.42;
-      final[o3 + 2] = l.z + gauss(r) * l.r * 0.55;
+      // La copa: racimos mullidos, cada uno una bola de borde suave. La luz,
+      // la de la bola y algo la de toda la copa (más clara arriba a la
+      // izquierda, en sombra abajo y por dentro).
+      const li = Math.floor(r() * natural.leaves.length);
+      const l = natural.leaves[li];
+      let ox = gauss(r);
+      let oy = gauss(r);
+      let oz = gauss(r);
+      const on = Math.hypot(ox, oy, oz) || 1;
+      const rad = Math.cbrt(r()) * 0.7 + Math.abs(gauss(r)) * 0.1;
+      ox /= on;
+      oy /= on;
+      oz /= on;
+      final[o3] = l.x + ox * rad * l.r * 0.95;
+      final[o3 + 1] = l.y + oy * rad * l.r * 0.78;
+      final[o3 + 2] = l.z + oz * rad * l.r * 0.95;
       tone[o4 + 3] = Math.min(1, l.g + r() * 0.06);
+      const cx = l.x - CROWN.x;
+      const cy = l.y - CROWN.y;
+      const cz = l.z;
+      const cn = Math.hypot(cx, cy, cz) || 1;
+      const nx = ox * 0.6 + (cx / cn) * 0.55;
+      const ny = oy * 0.6 + (cy / cn) * 0.55;
+      const nz = oz * 0.6 + (cz / cn) * 0.55 + 0.25;
+      const nn = Math.hypot(nx, ny, nz) || 1;
+      const outer = Math.min(1, cn / CROWN.r);
+      mark[o4 + 2] = hash(li);
+      mark[o4 + 3] = Math.max(0, (nx * lx + ny * ly + nz * lz) / nn) * (0.55 + 0.45 * outer) * (0.6 + 0.4 * rad);
     } else {
-      // La madera: tronco, ramas y raíces de superficie, en su grosor.
+      // La madera: tronco, ramas y raíces, en la superficie de cada rama
+      // (un tubo), con su luz según hacia dónde mira ese punto del tubo.
       const w = pickWood(r());
       const u2 = r();
-      const sp = w.r * Math.sqrt(r());
+      const dx = w.bx - w.ax;
+      const dy = w.by - w.ay;
+      const dz = w.bz - w.az;
+      const dn = Math.hypot(dx, dy, dz) || 1;
+      const [ux, uy, uz, vx, vy, vz] = frame(dx / dn, dy / dn, dz / dn);
       const a2 = r() * Math.PI * 2;
-      final[o3] = w.ax + (w.bx - w.ax) * u2 + Math.cos(a2) * sp;
-      final[o3 + 1] = w.ay + (w.by - w.ay) * u2 + Math.sin(a2) * sp * 0.4;
-      final[o3 + 2] = w.az + (w.bz - w.az) * u2 + Math.sin(a2) * sp;
+      const ca = Math.cos(a2);
+      const sa = Math.sin(a2);
+      const nx = ca * ux + sa * vx;
+      const ny = ca * uy + sa * vy;
+      const nz = ca * uz + sa * vz;
+      const sp = w.r * (0.62 + 0.38 * Math.sqrt(r()));
+      final[o3] = w.ax + dx * u2 + nx * sp;
+      final[o3 + 1] = w.ay + dy * u2 + ny * sp;
+      final[o3 + 2] = w.az + dz * u2 + nz * sp;
       tone[o4 + 3] = w.g;
+      mark[o4 + 2] = w.f ?? w.g;
+      mark[o4 + 3] = 0.15 + 0.85 * Math.max(0, nx * lx + ny * ly + nz * lz);
     }
   }
 
   const glow = { first: dustN, count: Math.round((count - dustN) * 0.4) };
-  return { count, glow, start, tree, roots, final, rand, tone };
+  return { count, glow, start, tree, roots, final, rand, tone, mark };
 }
 
 /** Carga la silueta (mismo origen; crossOrigin como la precarga, para reutilizarla). */

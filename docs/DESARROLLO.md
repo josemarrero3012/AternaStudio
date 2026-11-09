@@ -88,6 +88,14 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   círculo curvándose hacia fuera, racimos de hojas y raíces naturales
   (retorcidas, ramificadas, con su propio azar para no cambiar la copa). Cada partícula tiene su
   sitio en las tres formas y en una nube de salida.
+- **Luz y savia** (`shapes.ts`, `analyzeMask`): la silueta del símbolo se
+  lee como cordones en relieve (de la distancia al borde sale un perfil
+  redondo y su normal), con la luz arriba a la izquierda: un lado en sombra
+  índigo y el lomo encendido. Las ramas del árbol final son tubos y la copa,
+  racimos redondos, con la misma luz. Por los trazos del símbolo y la madera
+  del árbol sube la savia: pulsos de luz de las puntas de las raíces al pie
+  del tronco y de ahí a la copa (en el símbolo, por el camino de cada trazo;
+  los cruces del nudo se saltan).
 - **Movimiento** (`src/lib/tree/renderer.ts`): el shader lleva cada partícula
   de una forma a otra con su propio retardo; a mitad de camino giran juntas
   en espiral alrededor del eje del árbol (con algo de remolino suelto) y se

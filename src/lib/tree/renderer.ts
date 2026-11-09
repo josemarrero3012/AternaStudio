@@ -66,6 +66,7 @@ attribute vec3 aRoots;
 attribute vec3 aFinal;
 attribute vec4 aRand;
 attribute vec4 aTone;
+attribute vec4 aMark;
 uniform mat4 uProj;
 uniform mat4 uView;
 uniform float uTime;
@@ -96,7 +97,7 @@ float stagger(float m, float d, float spread) { return ease(clamp((m - d * sprea
 vec3 brand(float g) {
   vec3 blue = vec3(0.16, 0.32, 1.0);
   vec3 violet = vec3(0.6, 0.3, 1.0);
-  vec3 rose = vec3(1.0, 0.24, 0.56);
+  vec3 rose = vec3(1.0, 0.17, 0.5);
   return g < 0.5 ? mix(blue, violet, g * 2.0) : mix(violet, rose, (g - 0.5) * 2.0);
 }
 void main() {
@@ -139,7 +140,8 @@ void main() {
   // que fluye despacio; poco en el símbolo, que tiene que leerse nítido), la
   // copa del árbol final se mece con el viento (más cuanto más arriba) y sus
   // hojas tiemblan, cada una a su ritmo.
-  float idle = mix(mix(0.016, 0.03, t1), mix(0.016, 0.032, leaf), t2);
+  // (Poco en el símbolo y en la madera: el relieve y las ramas, nítidos.)
+  float idle = mix(mix(0.008, 0.03, t1), mix(0.006, 0.022, leaf), t2);
   pos += n * ((idle + dust * 0.16) * uMotion + swirl * 0.3);
   float hgt = clamp(aFinal.y * 0.5 + 0.5, 0.0, 1.0);
   float wind = sin(uTime * 0.55 + aFinal.y * 1.1) * 0.6 + sin(uTime * 0.23 + 1.7) * 0.4;
@@ -169,28 +171,45 @@ void main() {
   // Color: el degradado del logo en el símbolo; en las raíces, índigo y
   // lavanda con pulsos de orquídea que bajan; en el árbol final, la madera
   // de índigo a violeta y la copa de violeta a rosa (también con manchas).
-  vec3 cTree = brand(clamp(aTone.x + (fur - 0.5) * 0.3, 0.0, 1.0));
-  cTree = mix(cTree, vec3(1.0, 0.36, 0.78) * 1.25, streak * 0.55);
+  vec3 cTree = brand(clamp(aTone.x + (fur - 0.5) * 0.18, 0.0, 1.0));
+  cTree = mix(cTree, vec3(1.0, 0.36, 0.78) * 1.25, streak * 0.25);
+  // El símbolo, en relieve: cada cinta del nudo es un cordón redondo con
+  // la luz arriba a la izquierda (aMark.x, de shapes.ts): el lado en sombra
+  // se va a índigo y el lomo de cara a la luz se enciende hacia el blanco.
+  float lit = aMark.x;
+  cTree = mix(cTree * vec3(0.5, 0.48, 1.0), cTree, smoothstep(0.1, 0.85, lit));
+  cTree = mix(cTree, vec3(1.0, 0.9, 1.0), smoothstep(1.0, 1.6, lit) * 0.6);
   float wave = fract(aTone.y * 2.4 - uTime * 0.14 * uMotion);
   float pulse = exp(-pow((wave - 0.5) * 9.0, 2.0));
   vec3 cRoot = mix(vec3(0.3, 0.34, 0.86), vec3(0.62, 0.66, 1.0), aTone.y * 0.7);
   cRoot = mix(cRoot, vec3(1.15, 0.65, 1.3), pulse * 0.8);
   float gF = clamp(aFinal.y * 0.42 + 0.5 + aFinal.x * 0.1, 0.0, 1.0);
   float furF = snoise(aFinal * 3.6 + 2.1) * 0.5 + 0.5;
-  vec3 cWood = mix(vec3(0.2, 0.3, 0.95), vec3(0.56, 0.34, 1.0), gF);
-  vec3 cLeaf = brand(clamp(0.38 + gF * 0.62 + (furF - 0.5) * 0.35, 0.0, 1.0));
+  vec3 cWood = mix(vec3(0.16, 0.28, 1.0), vec3(0.54, 0.32, 1.0), gF);
+  vec3 cLeaf = brand(clamp(0.42 + gF * 0.66 + (furF - 0.5) * 0.3 + (aMark.z - 0.5) * 0.24, 0.0, 1.0));
   cLeaf = mix(cLeaf, vec3(1.0, 0.4, 0.8) * 1.2, smoothstep(0.72, 0.92, furF) * 0.5);
   vec3 cFinal = mix(cWood, cLeaf, leaf);
+  // Luz en el árbol final (aMark.w): las ramas son tubos y la copa, racimos
+  // redondos; lo que da a la sombra se va a índigo.
+  float shadeF = aMark.w;
+  cFinal = mix(cFinal * vec3(0.5, 0.46, 1.0), cFinal, smoothstep(0.05, 0.8, shadeF));
   vec3 color = mix(mix(cTree, cRoot, t1), cFinal, t2);
+  // Algo más de saturación en las dos formas (al sumarse, la luz se lava).
+  float lum = dot(color, vec3(0.3, 0.5, 0.2));
+  color = max(vec3(0.0), mix(vec3(lum), color, 1.0 + 0.25 * (1.0 - t1 * (1.0 - t2))));
   color = mix(color, vec3(0.62, 0.66, 1.0), dust);
   // Destellos: una de cada treinta y tantas, casi blanca.
   color = mix(color, vec3(1.0, 0.94, 1.0), spark * 0.75);
 
   float twinkle = 0.7 + 0.3 * sin(uTime * (0.7 + aRand.y * 2.3) * uMotion + aRand.y * 40.0);
   float alpha = twinkle * mix(0.5, 0.95, aTone.z * (1.0 - t1 * (1.0 - t2)));
-  // Las manchas solo en el árbol (en las raíces manda el pulso de luz).
-  alpha *= mix(1.0, 0.7 + fur * 0.6, clamp(1.0 - t1, 0.0, 1.0) * (1.0 - dust));
-  alpha *= mix(1.0, 0.65 + furF * 0.7, t2 * (1.0 - dust));
+  // Las manchas solo en el árbol (en las raíces manda el pulso de luz), ya
+  // suaves: el relieve es el que dibuja.
+  float sym = (1.0 - t1) * (1.0 - dust);
+  alpha *= mix(1.0, 0.85 + fur * 0.3, sym);
+  alpha *= mix(1.0, 0.26 + lit * 1.05, sym);
+  alpha *= mix(1.0, (0.8 + furF * 0.4) * 1.3, t2 * (1.0 - dust));
+  alpha *= mix(1.0, mix(0.3 + shadeF * 1.1, 0.16 + shadeF * 1.6, leaf), t2 * (1.0 - dust));
   // La madera del árbol final, algo más densa de luz (el tronco se lee), y
   // las raíces más aún: abajo la escena lleva velo.
   alpha *= 1.0 + t2 * (1.0 - leaf) * (1.0 - dust) * (0.25 + 0.8 * smoothstep(-0.2, -0.9, aFinal.y));
@@ -214,6 +233,16 @@ void main() {
   float sheen = exp(-band * band * 30.0) * (1.0 - t1 * (1.0 - t2)) * (1.0 - dust) * uMotion * ta;
   alpha *= 1.0 + sheen * 0.9;
   color = mix(color, vec3(1.0, 0.96, 1.0), sheen * 0.28);
+  // La savia: pulsos de luz que suben de las puntas de las raíces al pie del
+  // tronco y de ahí a la copa, siguiendo cada trazo (en el símbolo, aMark.y;
+  // en la madera del árbol final, aMark.z; en la copa, su orden de
+  // crecimiento: los racimos se encienden cuando les llega).
+  float sapAt = mix(aMark.y, mix(aMark.z, aTone.w, leaf), t2);
+  float sapPh = fract(sapAt * 1.5 - uTime * 0.11);
+  float sap = exp(-pow((sapPh - 0.5) * 13.0, 2.0)) * uMotion * ta * (1.0 - dust) * (1.0 - t1 * (1.0 - t2));
+  sap *= mix(1.0, 0.55, leaf * t2);
+  alpha *= 1.0 + sap * 1.2;
+  color = mix(color, vec3(1.0, 0.78, 0.98), sap * 0.4);
   // Profundidad en el árbol final: lo de detrás, más tenue.
   alpha *= mix(1.0, clamp(0.8 + aFinal.z * 0.5, 0.55, 1.12), t2 * (1.0 - dust));
   // El brillo: más luz, más tamaño y hacia el blanco.
@@ -389,6 +418,7 @@ const ATTRS = [
   ["aFinal", 3, "final"],
   ["aRand", 4, "rand"],
   ["aTone", 4, "tone"],
+  ["aMark", 4, "mark"],
 ] as const;
 
 export class ParticleRenderer implements TreeRenderer {
