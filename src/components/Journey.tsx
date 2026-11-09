@@ -3,31 +3,26 @@
 // La portada: el árbol de Aterna hecho de partículas (WebGL). Al abrir, las
 // partículas llegan desde la profundidad y forman el árbol del símbolo; al
 // hacer scroll se deshacen en un sistema de raíces («Lo que no se ve…») y
-// de ellas crece un árbol de verdad, junto a dos tarjetas de vidrio; al subir
-// «01 — Estudio» por encima, la copa se suelta en luz y la escena se funde en
-// la noche de la página. El puntero no las mueve: las enciende. Abre
-// con una pantalla de carga (contador y línea de progreso) que se funde desde
-// el centro con un filo de luz; luego entran la cabecera y el titular,
-// palabra a palabra. Las formas y el shader están en src/lib/tree/.
+// de ellas crece un árbol de verdad, sobre el que se escribe un texto letra a
+// letra; al subir «01 — Estudio» por encima, la copa se suelta en luz y la
+// escena se funde en la noche de la página. El puntero no las mueve: las
+// enciende. No hay pantalla de carga: la página se ve en cuanto llega y el
+// titular entra palabra a palabra mientras se forma el árbol. Las formas y
+// el shader están en src/lib/tree/.
 //
-// Todo el movimiento sale de un solo efecto de montaje (su cierre lleva la
-// carga, el fundido y el bucle del scroll) y se limpia al desmontar: con
+// Todo el movimiento sale de un solo efecto de montaje (su cierre lleva el
+// bucle del scroll) y se limpia al desmontar: con
 // StrictMode el efecto se monta dos veces en desarrollo. Los lienzos WebGL se
 // crean dentro del efecto (un <canvas> de JSX se reutilizaría con el
 // contexto ya perdido del primer montaje).
 
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type Ref } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode, type Ref } from "react";
 import { CURTAIN_KEY } from "./Chrome";
 import { ArrowRight } from "./icons";
 import { Link, useI18n } from "@/lib/i18n";
 import { startIntro } from "@/lib/intro";
 import { prefersReducedMotion } from "@/lib/motion";
-import { BurnRenderer } from "@/lib/journey/burnRenderer";
 import {
-  BURN_MS,
-  INTRO_AT_MS,
-  LOADER_TIMEOUT_MS,
-  MIN_LOADER_MS,
   POINTER_SMOOTHING,
   SCROLL_SMOOTHING,
   TIMING,
@@ -38,8 +33,6 @@ import { clamp, damp, invLerp, lerp, smoothstep, stateStyle } from "@/lib/journe
 import { ASSEMBLE_AGAIN_MS, ASSEMBLE_MS, MASK_URL, MORPH, POSTER_URL, particleCount } from "@/lib/tree/config";
 import { ParticleRenderer, PosterRenderer, type TreeRenderer } from "@/lib/tree/renderer";
 import { buildShapes, loadMask, type Shapes } from "@/lib/tree/shapes";
-
-type Phase = "loading" | "burning" | "ready" | "done";
 
 /** La pantalla de carga ya salió en esta vida de la página (al volver a la portada sin recargar no se repite). */
 let played = false;
@@ -54,19 +47,6 @@ function getShapes(count: number) {
     });
   }
   return shapesCache.shapes;
-}
-
-/** Espera a las fuentes con las que se pintan estos elementos (no a todas: document.fonts.ready). */
-function loadFonts(els: (HTMLElement | null)[]) {
-  if (!document.fonts?.load) return Promise.resolve();
-  const specs = new Set<string>();
-  for (const el of els) {
-    if (!el) continue;
-    const cs = getComputedStyle(el);
-    const family = cs.fontFamily.split(",")[0]?.trim();
-    if (family) specs.add(`${cs.fontStyle} ${cs.fontWeight} 1em ${family}`);
-  }
-  return Promise.all([...specs].map((spec) => document.fonts.load(spec))).then(() => undefined);
 }
 
 /** Cada palabra, su propio span (numeradas a lo largo de las dos líneas). */
@@ -224,9 +204,9 @@ function HeroState({
 export function Journey() {
   const { t } = useI18n();
   const j = t.journey;
-  // Al volver a la portada sin recargar, sin pantalla de carga: ya salió.
-  const [phase, setPhase] = useState<Phase>(() => (played ? "done" : "loading"));
-  const intro = phase === "ready" || phase === "done";
+  // Sin pantalla de carga: la entrada (las letras del nombre, el lema…)
+  // empieza en cuanto se pinta la página.
+  const intro = true;
 
   const mainRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -236,10 +216,6 @@ export function Journey() {
   const heroRef = useRef<HTMLDivElement>(null);
   const midRef = useRef<HTMLElement>(null);
   const writeRef = useRef<HTMLElement>(null);
-  const loaderRef = useRef<HTMLDivElement>(null);
-  const burnRef = useRef<HTMLDivElement>(null);
-  const counterRef = useRef<HTMLSpanElement>(null);
-  const barRef = useRef<HTMLSpanElement>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -251,19 +227,13 @@ export function Journey() {
     const hero = heroRef.current;
     const mid = midRef.current;
     const write = writeRef.current;
-    const loader = loaderRef.current;
-    const burnHost = burnRef.current;
-    const counter = counterRef.current;
-    const bar = barRef.current;
-    if (!main || !stage || !probe || !caveHost || !name || !hero || !mid || !write || !loader || !burnHost || !counter || !bar) return;
+    if (!main || !stage || !probe || !caveHost || !name || !hero || !mid || !write) return;
 
     let alive = true;
     const reduced = prefersReducedMotion();
     const root = document.documentElement;
+    // Al volver a la portada sin recargar, las partículas llegan más deprisa.
     const skip = played;
-    const go = (next: Phase) => {
-      if (alive) setPhase(next);
-    };
 
     // El lienzo del árbol --------------------------------------------------
     const canvas = document.createElement("canvas");
@@ -494,143 +464,29 @@ export function Journey() {
     window.addEventListener("resize", onScroll);
     window.addEventListener("pointermove", onPointer, { passive: true });
     root.addEventListener("mouseleave", onLeave);
-    let burn: BurnRenderer | null = null;
-    let burnCanvas: HTMLCanvasElement | null = null;
-    let loading = !skip;
     const ro = new ResizeObserver(() => {
       measureUnit();
       measure();
       paintGradients();
       needsDraw = true;
       lastProgress = Number.NaN; // los desplazamientos van en px de diseño
-      if (loading) burn?.draw(0);
     });
     ro.observe(stage);
 
-    // Carga, fundido y entrada ---------------------------------------------
-    let loaderRaf = 0;
-    let burnRaf = 0;
-    let readyTimer = 0;
-    let introTimer = 0;
-    let doneTimer = 0;
-    let fontTimer = 0;
-    const disposeBurn = () => {
-      burn?.dispose();
-      burn = null;
-      burnCanvas?.remove();
-      burnCanvas = null;
-    };
-    const startEntrance = () => {
-      root.dataset.journeyIntro = "on";
-      startIntro();
-      startAssemble();
-    };
-    const finish = () => {
-      if (!alive) return;
-      played = true;
-      go("done");
-      disposeBurn();
-    };
-
-    if (skip) {
-      void treeReady.then(startAssemble);
-      startIntro();
-      document.fonts?.ready.then(() => alive && paintGradients());
-    } else {
-      root.dataset.journeyIntro = "pending";
-      // La pantalla de carga hace de cortina de esta sesión (ver Curtain).
-      try {
-        sessionStorage.setItem(CURTAIN_KEY, "1");
-      } catch {}
-      if (!reduced) {
-        burnCanvas = document.createElement("canvas");
-        burnCanvas.className = "journey__burn";
-        burnHost.appendChild(burnCanvas);
-        try {
-          burn = new BurnRenderer(burnCanvas);
-          burn.draw(0);
-          loader.dataset.burn = "on";
-        } catch (err) {
-          console.warn("[recorrido] sin WebGL para el fundido:", err);
-          disposeBurn();
-        }
-      }
-
-      let ready = false;
-      const fontsIn = () => {
-        if (!alive) return;
-        loader.dataset.fonts = "ready";
-        paintGradients();
-      };
-      // Si la fuente se atasca, el contador sale igual (con la de respaldo).
-      fontTimer = window.setTimeout(fontsIn, 2500);
-      const fonts = loadFonts([counter, name.querySelector(".journey__name"), hero.querySelector(".journey__tagline")])
-        .catch((err) => console.warn("[recorrido] fuentes:", err))
-        .finally(fontsIn);
-      void Promise.all([treeReady, fonts]).then(() => {
-        ready = true;
-      });
-      // Una petición atascada no deja la pantalla en 99.
-      readyTimer = window.setTimeout(() => {
-        ready = true;
-      }, LOADER_TIMEOUT_MS);
-
-      const burnOut = () => {
-        loading = false;
-        counter.textContent = "100";
-        bar.style.transform = "scaleX(1)";
-        if (!burn) {
-          // Sin fundido (movimiento reducido o sin WebGL): la pantalla se desvanece.
-          go("ready");
-          startEntrance();
-          doneTimer = window.setTimeout(finish, reduced ? 200 : 600);
-          return;
-        }
-        go("burning");
-        // Las partículas empiezan a llegar mientras se abre el velo.
-        assembleMs = ASSEMBLE_MS;
-        startAssemble();
-        const burnStart = performance.now();
-        introTimer = window.setTimeout(() => {
-          go("ready");
-          startEntrance();
-        }, INTRO_AT_MS);
-        const step = (now: number) => {
-          if (!alive || !burn) return;
-          const t = Math.min(Math.max(0, now - burnStart) / BURN_MS, 1);
-          burn.draw(t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-          if (t < 1) burnRaf = requestAnimationFrame(step);
-          else finish();
-        };
-        burnRaf = requestAnimationFrame(step);
-      };
-
-      const start = performance.now();
-      let shown = -1;
-      const tick = (now: number) => {
-        if (!alive) return;
-        const elapsed = Math.max(0, now - start);
-        const value = Math.floor(Math.min(elapsed / MIN_LOADER_MS, 1, ready ? 1 : 0.99) * 100);
-        if (value !== shown) {
-          shown = value;
-          counter.textContent = String(value);
-          bar.style.transform = `scaleX(${value / 100})`;
-        }
-        if (elapsed >= MIN_LOADER_MS && ready) burnOut();
-        else loaderRaf = requestAnimationFrame(tick);
-      };
-      loaderRaf = requestAnimationFrame(tick);
-    }
+    // Entrada: sin pantalla de carga. Las partículas llegan en cuanto está
+    // la silueta y el resto entra con su animación de CSS. Haber pasado por
+    // la portada cuenta como la cortina de esta sesión (ver Curtain).
+    try {
+      sessionStorage.setItem(CURTAIN_KEY, "1");
+    } catch {}
+    void treeReady.then(startAssemble);
+    startIntro();
+    played = true;
+    document.fonts?.ready.then(() => alive && paintGradients());
 
     return () => {
       alive = false;
       cancelAnimationFrame(raf);
-      cancelAnimationFrame(loaderRaf);
-      cancelAnimationFrame(burnRaf);
-      window.clearTimeout(readyTimer);
-      window.clearTimeout(introTimer);
-      window.clearTimeout(doneTimer);
-      window.clearTimeout(fontTimer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       window.removeEventListener("pointermove", onPointer);
@@ -639,11 +495,7 @@ export function Journey() {
       renderer?.dispose();
       canvas.remove();
       canvasRef.current = null;
-      disposeBurn();
-      delete loader.dataset.burn;
-      delete loader.dataset.fonts;
       delete root.dataset.journey;
-      delete root.dataset.journeyIntro;
       delete root.dataset.journeyName;
     };
   }, []);
@@ -675,20 +527,6 @@ export function Journey() {
           />
           <CopyState ref={midRef} kind="mid" id="journey-mid" headline={j.mid.headline} body={j.mid.body} />
           <WriteState ref={writeRef} text={j.write} />
-        </div>
-      </div>
-      <div ref={loaderRef} className="journey__loader" data-phase={phase} aria-hidden={phase === "done" ? true : undefined}>
-        <div ref={burnRef} className="journey__veil" />
-        <div className="journey__loader-ui">
-          {/* El número no se anuncia en cada paso: solo «Cargando». */}
-          <p className="journey__counter trim" role="status" aria-label={j.loading}>
-            <span aria-hidden="true">
-              <span ref={counterRef}>0</span>%
-            </span>
-          </p>
-          <span className="journey__track" aria-hidden="true">
-            <span ref={barRef} className="journey__bar" />
-          </span>
         </div>
       </div>
     </div>

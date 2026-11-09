@@ -37,7 +37,7 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 | Páginas en inglés, neerlandés y alemán (`/en`, `/nl`, `/de`) | `src/app/[lang]/` |
 | Tokens de diseño (color, tipo, espacio, forma, movimiento) | `src/styles/tokens.css` |
 | Recorrido de la portada (componente, estilos) | `src/components/Journey.tsx`, `src/styles/journey.css` |
-| Recorrido: tiempos de los textos, carga, vidrio | `src/lib/journey/` (`config.ts`) |
+| Recorrido: tiempos de los textos y del texto que se escribe | `src/lib/journey/` (`config.ts`) |
 | Árbol de partículas: formas, shader, números | `src/lib/tree/` (todos los números en `config.ts`) |
 | Silueta del árbol para las partículas | `scripts/tree/make-mask.py` |
 | Estilos de componentes y páginas | `src/app/globals.css` |
@@ -92,8 +92,7 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   de una forma a otra con su propio retardo; a mitad de camino giran juntas
   en espiral alrededor del eje del árbol (con algo de remolino suelto) y se
   posan. Un barrido de luz lento cruza el símbolo y el árbol final cada nueve
-  segundos, y en el árbol lo de detrás va más tenue (profundidad). Al abrir, llegan desde la profundidad y forman el árbol mientras se
-  abre la pantalla de carga. El ratón no mueve nada: enciende las partículas
+  segundos, y en el árbol lo de detrás va más tenue (profundidad). Al abrir, llegan desde la profundidad y forman el árbol. El ratón no mueve nada: enciende las partículas
   que tiene cerca (y deja una estela corta que se apaga), en el árbol, en las
   raíces y en el árbol final. El árbol lleva textura fija (manchas de luz,
   vetas de rosa y algún destello casi blanco) y el borde algo suelto. Se
@@ -111,13 +110,11 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   izquierda (mientras, no va en la cabecera). El nombre
   se va en cuanto empieza el scroll y entonces aparece el logo de la cabecera
   (mientras se ve el nombre, la cabecera va sin logo).
-- **Entrada**: una pantalla de carga (contador y línea de progreso) que espera
-  a la silueta y a las fuentes, como mínimo 1,5 s y como mucho 8 s, y se
-  funde desde el centro con un filo de luz (shader WebGL). Después entran la
-  cabecera y el titular, palabra a palabra. Sale una vez por carga de página:
-  al volver a la portada sin recargar ya no se repite (las partículas vuelven
-  a formarse, más deprisa). Hace de cortina de la sesión (las demás páginas
-  ya no la muestran).
+- **Entrada**: sin pantalla de carga. La página se ve en cuanto llega: las
+  partículas se forman en el árbol y el titular entra palabra a palabra. Al
+  volver a la portada sin recargar, las partículas se forman más deprisa. La
+  portada cuenta como la cortina de la sesión (las demás páginas ya no la
+  muestran) y en ella la cortina no sale nunca.
 - **Scroll**: la entrada se va y el árbol baja a sus raíces
   («Lo que no se ve…»); luego las raíces suben y crece un árbol de verdad,
   del tronco a la copa, grande y solo. Con el árbol formado, al seguir

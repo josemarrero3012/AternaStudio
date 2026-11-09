@@ -937,7 +937,8 @@ body[data-menu="open"] .header::after {
 /* Viene en el HTML tapándolo todo; CURTAIN_SCRIPT la descarta antes de
    pintar si ya salió en esta sesión o con movimiento reducido. Por si el
    JavaScript no llegara a levantarla, se desvanece sola a los 4 s. */
-html[data-curtain="skip"] .curtain {
+html[data-curtain="skip"] .curtain,
+html:has(.journey) .curtain {
   display: none;
 }
 

@@ -49,8 +49,3 @@ export const WRITE: Range = [0.48, 0.7];
 
 export const ENTER_RISE = 24; // px de diseño
 export const EXIT_LIFT = -16; // px de diseño
-
-export const MIN_LOADER_MS = 1500;
-export const LOADER_TIMEOUT_MS = 8000;
-export const BURN_MS = 1150;
-export const INTRO_AT_MS = 760;

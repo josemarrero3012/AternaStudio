@@ -67,7 +67,7 @@ export function Shell({ locale, lost, children }: { locale: Locale; lost?: boole
         {/* Antes que nada: decide si la cortina de entrada sale (ver Chrome.tsx). */}
         <script dangerouslySetInnerHTML={{ __html: CURTAIN_SCRIPT }} />
         <noscript>
-          <style>{".curtain,.journey__loader{display:none}"}</style>
+          <style>{".curtain{display:none}"}</style>
         </noscript>
         <JsonLd data={organization(locale)} />
         <LanguageProvider locale={locale} lost={lost}>
