@@ -41,8 +41,8 @@ export type Drawing = {
   flow?: Flow;
 };
 
-/** `glyph`: icono a 96 px; `md` y `lg`, el mismo lienzo a 144 y 192 px; `wide`: el dibujo de la ficha. */
-export type TraceSize = "wide" | "glyph" | "md" | "lg";
+/** `glyph`: icono a 96 px; `md`, `lg` y `xl`, el mismo lienzo a 144, 192 y 240 px; `wide`: el dibujo de la ficha. */
+export type TraceSize = "wide" | "glyph" | "md" | "lg" | "xl";
 
 /** Lienzo de los iconos: 96 × 40, el nodo final suele caer en x = 88. */
 export const glyph = (lines: Drawing["lines"], dots: Drawing["dots"], node: Drawing["node"], flow?: Flow): Drawing => ({
@@ -71,6 +71,7 @@ const RADII: Record<TraceSize, { glow: number; node: number; dot: number }> = {
   glyph: { glow: 10, node: 3, dot: 1.75 },
   md: { glow: 8, node: 2.4, dot: 1.4 },
   lg: { glow: 7, node: 2, dot: 1.2 },
+  xl: { glow: 6, node: 1.7, dot: 1 },
 };
 
 /** Largo por defecto de un pulso y margen para que su punta redonda no asome (fracciones del trazo). */

@@ -1606,6 +1606,15 @@ body[data-menu="open"] .assistant__orb {
   width: 192px;
 }
 
+/* Los compromisos de la portada: ×2,5, con el mismo trazo en pantalla que lg. */
+.trace--xl {
+  --sw: 0.6;
+  --sw-halo: 2.4;
+  --sw-faint: 0.55;
+  --sw-pulse: 0.96;
+  width: min(100%, 240px);
+}
+
 .trace__line,
 .trace__halo {
   fill: none;
@@ -1895,62 +1904,6 @@ body[data-menu="open"] .assistant__orb {
   margin-bottom: var(--s-3);
   border-bottom: 1px solid var(--hair);
   background: radial-gradient(closest-side, color-mix(in srgb, var(--violet) 14%, transparent), transparent);
-}
-
-/* Iconos de luz de los pilares (PillarArt.tsx): un canvas WebGL pinta el
-   vídeo con el negro transparente. El vídeo solo da los fotogramas: está en
-   la página (Safari no decodifica uno oculto con display: none) pero no se ve. */
-.pillar__art {
-  position: relative;
-  width: min(100%, 320px);
-  aspect-ratio: 12 / 5;
-}
-
-.pillar__canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.pillar__video {
-  position: absolute;
-  inset: 0;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Dibujo de luz de un pilar (PillarScene.tsx): ocupa todo el ancho de la
-   tarjeta. */
-.pillar-scene {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--s-2);
-  width: 100%;
-}
-
-.pillar-scene__view {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 12 / 5;
-}
-
-/* Absoluto: si no, el tamaño propio del canvas (2:1) estira la caja. */
-.pillar-scene__canvas {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.pillar-scene__wait {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
 }
 
 @media (min-width: 768px) {
