@@ -194,7 +194,7 @@ function HeroState({
         {/* Mientras se ve la portada, el botón va aquí y no en la cabecera. */}
         <Link href="/contacto" className="journey__pill">
           {cta}
-          <ArrowRight />
+          <ArrowRight size={12} />
         </Link>
       </div>
     </section>

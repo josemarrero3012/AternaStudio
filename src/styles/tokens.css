@@ -162,9 +162,8 @@
   /* El nombre grande de la entrada, sobre las partículas. */
   --journey-name: #f4f1ff;
   --journey-name-shadow: #0b0d2659;
-  /* Vidrio: borde y relleno (la píldora de la entrada). */
+  /* Vidrio: borde fino (el separador de los idiomas en la cabecera). */
   --glass-edge: #e6e9ff40;
-  --glass-pill-fill: color-mix(in srgb, var(--night-3) 34%, transparent);
 
   /* Cursor: anillo, punto y etiqueta. */
   --cursor-ring: #e6e9ff8c;
