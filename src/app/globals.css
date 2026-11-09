@@ -1866,8 +1866,9 @@ body[data-menu="open"] .assistant__orb {
   }
 }
 
-/* Tres compromisos del estudio, en vidrio. Cada uno abre con su icono de luz
-   (glyphs.ts), como las raíces del vídeo. */
+/* Tres compromisos del estudio. El color va en el marco (degradado del logo
+   con unas motas de luz quietas) y el dibujo vive en un panel casi negro,
+   donde el trazo y el pulso violeta ganan contraste. */
 .pillars {
   display: grid;
   grid-template-columns: 1fr;
@@ -1876,21 +1877,59 @@ body[data-menu="open"] .assistant__orb {
 }
 
 .pillar {
+  --pillar-a: color-mix(in srgb, var(--indigo) 88%, #000);
+  --pillar-b: color-mix(in srgb, var(--violet) 82%, var(--indigo));
+  --pillar-rose: color-mix(in srgb, var(--orchid) 38%, transparent);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: var(--s-3);
   padding: var(--s-6);
-  border: 1px solid var(--hair);
-  border-radius: var(--r-card);
-  background: var(--glass);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
+  border: 1px solid color-mix(in srgb, #fff 14%, transparent);
+  border-radius: calc(var(--r-card) * 2);
+  background:
+    radial-gradient(90% 55% at 100% 100%, var(--pillar-rose), transparent 70%),
+    linear-gradient(160deg, var(--pillar-a) 0%, var(--pillar-b) 100%);
   box-shadow: var(--shadow-card);
+}
+
+/* La del medio, más suave: da ritmo a las tres. */
+.pillar:nth-child(2) {
+  --pillar-a: color-mix(in srgb, var(--indigo) 62%, var(--night-2));
+  --pillar-b: color-mix(in srgb, var(--violet) 58%, var(--night-2));
+  --pillar-rose: color-mix(in srgb, var(--orchid) 22%, transparent);
+}
+
+/* Motas de luz, quietas. */
+.pillar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff, transparent),
+    radial-gradient(1px 1px at 34% 9%, #ffffffb3, transparent),
+    radial-gradient(2px 2px at 78% 14%, #ffffffd9, transparent),
+    radial-gradient(1px 1px at 91% 31%, #ffffff99, transparent),
+    radial-gradient(1.5px 1.5px at 58% 27%, #ffffffb3, transparent),
+    radial-gradient(1px 1px at 22% 40%, #ffffff80, transparent),
+    radial-gradient(1.5px 1.5px at 86% 52%, #ffffffa6, transparent),
+    radial-gradient(1px 1px at 6% 63%, #ffffff8c, transparent);
+  opacity: 0.9;
 }
 
 .pillar__title {
   margin-bottom: var(--s-1);
   font-size: var(--t-card);
+  color: #fff;
+}
+
+.pillar__body {
+  margin-bottom: var(--s-5);
+  color: color-mix(in srgb, #fff 84%, transparent);
 }
 
 /* Escenario del icono en las tarjetas (pilares y servicios): centrado, a
@@ -1904,6 +1943,32 @@ body[data-menu="open"] .assistant__orb {
   margin-bottom: var(--s-3);
   border-bottom: 1px solid var(--hair);
   background: radial-gradient(closest-side, color-mix(in srgb, var(--violet) 14%, transparent), transparent);
+}
+
+/* En los pilares, el escenario es el panel negro del fondo de la tarjeta,
+   con un filete de luz en el borde de arriba. */
+.pillar .pillar__stage {
+  position: relative;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 0;
+  padding: var(--s-7) var(--s-5);
+  border: 1px solid color-mix(in srgb, #fff 7%, transparent);
+  border-radius: calc(var(--r-card) * 1.4);
+  background:
+    radial-gradient(closest-side, color-mix(in srgb, var(--violet) 12%, transparent), transparent),
+    #07081a;
+  box-shadow: 0 18px 40px -20px #000000b3;
+}
+
+.pillar .pillar__stage::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 14%;
+  right: 14%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--lavender) 80%, transparent), color-mix(in srgb, var(--orchid) 80%, transparent), transparent);
 }
 
 @media (min-width: 768px) {
