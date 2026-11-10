@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tarjeta de contacto · Aterna Studio</title>
+<!--
+  Tarjeta de visita de Aterna Studio, lista para imprenta.
+
+  Formato final (corte): 85 × 55 mm. Sangrado: 3 mm por lado → cada página
+  mide 91 × 61 mm. Margen de seguridad: 5 mm desde el corte (todo el texto
+  vive dentro). Página 1 = anverso, página 2 = reverso.
+
+  Para cambiar un dato, edita el texto de abajo y vuelve a generar el PDF:
+    node exportar.mjs
+  Abrir con ?guias muestra en pantalla el corte (línea continua) y el margen
+  de seguridad (discontinua). Con ?marcas la página crece a 101 × 71 mm y
+  lleva marcas de corte, para imprentas que las pidan.
+-->
+<style>
+  @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 300 700; src: url(fonts/Fraunces.woff2) format("woff2"); }
+  @font-face { font-family: "Fraunces"; font-style: italic; font-weight: 300 700; src: url(fonts/Fraunces-Italic.woff2) format("woff2"); }
+  @font-face { font-family: "Geist"; font-weight: 300 700; src: url(fonts/Geist.woff2) format("woff2"); }
+  @font-face { font-family: "Geist Mono"; font-weight: 400 600; src: url(fonts/GeistMono.woff2) format("woff2"); }
+
+  :root {
+    /* Los tokens de la web (src/styles/tokens.css). */
+    --indigo: #4b55d6;
+    --violet: #9a5cf0;
+    --lavender: #9aa3ff;
+    --orchid: #d77cf5;
+    --panel: #07081a;
+    --text-hi: #eef0fa;
+    --text-mid: #a9adc8;
+    /* Marco de las tarjetas (.aurora-card), con los color-mix ya resueltos. */
+    --card-a: #424bbc;
+    --card-b: #8c5beb;
+    --card-rose: rgb(215 124 245 / 0.38);
+
+    --bleed: 3mm;
+    --safe: 5mm;          /* desde el corte */
+    --trim-w: 85mm;
+    --trim-h: 55mm;
+    --marks: 0mm;         /* espacio para marcas de corte (solo con ?marcas) */
+  }
+  html.marcas { --marks: 5mm; }
+
+  @page { size: 91mm 61mm; margin: 0; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #2a2d45; }
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    font-family: "Geist", sans-serif;
+    color: var(--text-hi);
+    font-kerning: normal;
+    text-rendering: geometricPrecision;
+  }
+
+  /* Una página por cara: corte + sangrado (+ marcas si se piden). */
+  .page {
+    position: relative;
+    width: calc(var(--trim-w) + 2 * var(--bleed) + 2 * var(--marks));
+    height: calc(var(--trim-h) + 2 * var(--bleed) + 2 * var(--marks));
+    overflow: hidden;
+    break-after: page;
+    background: #fff;
+  }
+  .page:last-child { break-after: auto; }
+
+  /* La cara con sangrado. */
+  .sheet {
+    position: absolute;
+    inset: var(--marks);
+    overflow: hidden;
+  }
+  /* La zona de corte, dentro del sangrado. */
+  .trim {
+    position: absolute;
+    inset: var(--bleed);
+  }
+
+  /* ───────────── Anverso: marco degradado + panel negro ───────────── */
+  .front .sheet {
+    background:
+      radial-gradient(90% 55% at 100% 100%, var(--card-rose), transparent 70%),
+      linear-gradient(160deg, var(--card-a) 0%, var(--card-b) 100%);
+  }
+  .dust { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .panel {
+    position: absolute;
+    inset: 4.5mm;
+    border-radius: 3.2mm;
+    border: 0.12mm solid rgb(255 255 255 / 0.07);
+    background:
+      radial-gradient(closest-side, rgb(154 92 240 / 0.14), transparent),
+      var(--panel);
+    box-shadow: 0 2.5mm 6mm -3mm rgb(0 0 0 / 0.55);
+  }
+  /* Filete de luz en el borde de arriba, como en la web. */
+  .panel::before {
+    content: "";
+    position: absolute;
+    top: -0.12mm;
+    left: 14%;
+    right: 14%;
+    height: 0.18mm;
+    background: linear-gradient(90deg, transparent, rgb(154 163 255 / 0.85), rgb(215 124 245 / 0.85), transparent);
+  }
+
+  .lockup {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3.6mm;
+    padding-bottom: 2.2mm;
+  }
+  .lockup__symbol { width: 21mm; height: 21mm; display: block; }
+  .lockup__word { width: 31mm; height: auto; display: block; }
+
+  .panel__foot {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 3.4mm;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* La etiqueta de la web (.eyebrow): nodo orquídea + raíz de luz + texto. */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.2mm;
+    font-family: "Geist Mono", monospace;
+    font-size: 5.6pt;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    white-space: nowrap;
+  }
+  .eyebrow__node {
+    width: 1.1mm;
+    height: 1.1mm;
+    border-radius: 50%;
+    background: var(--orchid);
+    box-shadow: 0 0 1.2mm rgb(215 124 245 / 0.8);
+    flex: none;
+  }
+  .eyebrow__root {
+    width: 3.6mm;
+    height: 0.2mm;
+    background: linear-gradient(90deg, var(--orchid), rgb(215 124 245 / 0.15));
+    flex: none;
+  }
+
+  /* ───────────── Reverso: noche, contacto y QR ───────────── */
+  .back .sheet {
+    background:
+      radial-gradient(70% 90% at 100% 0%, rgb(154 92 240 / 0.20), transparent 70%),
+      radial-gradient(60% 80% at 0% 100%, rgb(75 85 214 / 0.16), transparent 70%),
+      var(--panel);
+  }
+  /* El árbol, grande y casi apagado, saliéndose por la derecha. */
+  .back__tree {
+    position: absolute;
+    width: 58mm;
+    height: 58mm;
+    right: -14mm;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.09;
+  }
+  .content {
+    position: absolute;
+    inset: var(--safe);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto 1fr auto;
+  }
+  .content .eyebrow { grid-column: 1 / -1; }
+
+  .headline {
+    grid-column: 1 / -1;
+    align-self: center;
+    font-family: "Fraunces", serif;
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 48;
+    font-weight: 400;
+    font-size: 13.5pt;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    color: var(--text-hi);
+  }
+  .headline em {
+    font-style: italic;
+    font-weight: 380;
+    color: #d9b7fb;
+  }
+
+  .contact {
+    list-style: none;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 2.6mm;
+    row-gap: 1.05mm;
+    align-self: end;
+    align-items: baseline;
+  }
+  .contact dt {
+    font-family: "Geist Mono", monospace;
+    font-size: 5pt;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--lavender);
+  }
+  .contact dd {
+    font-size: 7.2pt;
+    font-weight: 400;
+    letter-spacing: 0.005em;
+    color: var(--text-hi);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .qr {
+    align-self: end;
+    justify-self: end;
+    width: 15mm;
+    padding: 1.4mm;
+    border-radius: 1.6mm;
+    background: var(--text-hi);
+  }
+  .qr img { display: block; width: 100%; height: auto; }
+
+  /* ───────────── Marcas de corte (?marcas) ───────────── */
+  .marks { display: none; position: absolute; inset: 0; width: 100%; height: 100%; }
+  html.marcas .marks { display: block; }
+
+  /* ───────────── Guías en pantalla (?guias) ───────────── */
+  .guides { display: none; }
+  html.guias .guides {
+    display: block;
+    position: absolute;
+    inset: calc(var(--marks) + var(--bleed));
+    outline: 0.15mm solid #00e5ff;
+    pointer-events: none;
+    z-index: 10;
+  }
+  html.guias .guides::after {
+    content: "";
+    position: absolute;
+    inset: var(--safe);
+    outline: 0.15mm dashed #ff4d8f;
+  }
+
+  @media screen {
+    body { display: flex; flex-wrap: wrap; gap: 24px; padding: 32px; justify-content: center; zoom: 3; }
+    .page { box-shadow: 0 8px 24px rgb(0 0 0 / 0.4); }
+  }
+  @media screen and (max-width: 900px) { body { zoom: 1.4; padding: 16px; } }
+</style>
+<script>
+  // ?marcas → página con marcas de corte; ?guias → corte y margen en pantalla.
+  const q = new URLSearchParams(location.search);
+  if (q.has("marcas")) {
+    document.documentElement.classList.add("marcas");
+    document.write("<style>@page { size: 101mm 71mm; margin: 0; }</style>");
+  }
+  if (q.has("guias")) document.documentElement.classList.add("guias");
+</script>
+</head>
+<body>
+
+<!-- ═══════════════ ANVERSO ═══════════════ -->
+<section class="page front" aria-label="Anverso">
+  <div class="sheet">
+    <!-- Motas de luz quietas, como en .aurora-card::before -->
+    <svg class="dust" viewBox="0 0 91 61" preserveAspectRatio="none" aria-hidden="true">
+      <g fill="#fff">
+        <circle cx="10.9" cy="11"  r="0.28" opacity="1"/>
+        <circle cx="30.9" cy="5.5" r="0.2"  opacity="0.7"/>
+        <circle cx="71"   cy="8.5" r="0.34" opacity="0.85"/>
+        <circle cx="82.8" cy="18.9" r="0.2" opacity="0.6"/>
+        <circle cx="52.8" cy="2.6" r="0.24" opacity="0.7"/>
+        <circle cx="2.4"  cy="24.4" r="0.2" opacity="0.5"/>
+        <circle cx="88.1" cy="31.7" r="0.26" opacity="0.65"/>
+        <circle cx="5.5"  cy="38.4" r="0.2" opacity="0.55"/>
+        <circle cx="19.2" cy="58.2" r="0.26" opacity="0.7"/>
+        <circle cx="41.4" cy="59.3" r="0.2" opacity="0.55"/>
+        <circle cx="66.3" cy="58.4" r="0.3" opacity="0.8"/>
+        <circle cx="86.4" cy="50.1" r="0.2" opacity="0.6"/>
+        <circle cx="88.8" cy="4.2" r="0.2" opacity="0.6"/>
+      </g>
+    </svg>
+    <div class="trim">
+      <div class="panel">
+        <div class="lockup">
+          <img class="lockup__symbol" src="assets/aterna-simbolo.svg" alt="">
+          <img class="lockup__word" src="assets/aterna-logotipo.svg" alt="Aterna Studio">
+        </div>
+        <div class="panel__foot">
+          <span class="eyebrow"><span class="eyebrow__node"></span><span class="eyebrow__root"></span>Estudio digital independiente</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <svg class="marks" aria-hidden="true"></svg>
+  <div class="guides"></div>
+</section>
+
+<!-- ═══════════════ REVERSO ═══════════════ -->
+<section class="page back" aria-label="Reverso">
+  <div class="sheet">
+    <img class="back__tree" src="assets/aterna-simbolo.svg" alt="">
+    <div class="trim">
+      <div class="content">
+        <span class="eyebrow"><span class="eyebrow__node"></span><span class="eyebrow__root"></span>Aterna Studio</span>
+
+        <p class="headline">Una web mejor<br>es solo <em>el principio.</em></p>
+
+        <dl class="contact">
+          <dt>Email</dt>    <dd>contacto@aternastudio.com</dd>
+          <dt>WhatsApp</dt> <dd>+49 162 1017369</dd>
+          <dt>Web</dt>      <dd>aternastudio.com</dd>
+        </dl>
+
+        <div class="qr"><img src="assets/qr-web.svg" alt="QR a aternastudio.com"></div>
+      </div>
+    </div>
+  </div>
+  <svg class="marks" aria-hidden="true"></svg>
+  <div class="guides"></div>
+</section>
+
+<script>
+  // Marcas de corte: 0,25 pt, fuera del sangrado, alineadas con el corte.
+  if (document.documentElement.classList.contains("marcas")) {
+    const M = 5, B = 3, W = 85, H = 55;              // mm
+    const PW = W + 2 * (B + M), PH = H + 2 * (B + M);
+    const x1 = M + B, x2 = M + B + W, y1 = M + B, y2 = M + B + H;
+    const L = [];
+    for (const x of [x1, x2]) { L.push([x, 0, x, M - 0.5]); L.push([x, PH - M + 0.5, x, PH]); }
+    for (const y of [y1, y2]) { L.push([0, y, M - 0.5, y]); L.push([PW - M + 0.5, y, PW, y]); }
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${PW} ${PH}"><g stroke="#000" stroke-width="0.088">` +
+      L.map(([a, b, c, d]) => `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}"/>`).join("") + `</g></svg>`;
+    document.querySelectorAll(".marks").forEach((el) => {
+      el.setAttribute("viewBox", `0 0 ${PW} ${PH}`);
+      el.innerHTML = svg.replace(/^<svg[^>]*>|<\/svg>$/g, "");
+    });
+  }
+</script>
+</body>
+</html>
