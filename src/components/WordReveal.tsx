@@ -94,6 +94,7 @@ export function WordReveal({ text, as = "h2", className, id, delay = 0, onScroll
               {wi < words.length - 1 ? " " : null}
             </span>
           ))}
+          {li < lines.length - 1 ? " " : null}
         </span>
       );
     }),

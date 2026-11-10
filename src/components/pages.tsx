@@ -419,15 +419,19 @@ function ContactForm() {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (sending) return;
     const form = e.currentTarget;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 45_000);
     setState("sending");
     try {
       const res = await fetch("/contacto.php", {
         method: "POST",
+        signal: controller.signal,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, message, consent, company }),
       });
-      if (!res.ok) throw new Error("request_failed");
+      if (!res.ok || (await res.json())?.ok !== true) throw new Error("request_failed");
       // reset() nativo: además de vaciar, olvida que los campos se tocaron y
       // así no aparecen marcados como inválidos tras un envío correcto.
       form.reset();
@@ -438,6 +442,8 @@ function ContactForm() {
       setConsent(false);
     } catch {
       setState("error");
+    } finally {
+      window.clearTimeout(timeout);
     }
   }
 
@@ -518,7 +524,7 @@ export function ContactoContent() {
               <ArrowExternal />
             </a>
           </div>
-          <NextSteps />
+          <NextSteps heading="h2" />
         </div>
         <ContactForm />
       </div>
