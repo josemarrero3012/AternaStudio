@@ -54,33 +54,14 @@ const es = {
     "secondary": "Ver servicios"
   },
   "journey": {
-    "label": "Un recorrido entre raíces de luz hasta el símbolo de Aterna",
-    "loading": "Cargando",
-    "heroBody": "Diseñamos y programamos webs a medida, y después trabajamos para que te encuentren.",
-    "heroCursor": "Hablemos",
+    "label": "El árbol de Aterna hecho de partículas de luz, que baja a sus raíces y vuelve a crecer",
+    "scrollCue": "Desliza para descubrir",
     "mid": {
       "headline": "Lo que no se ve\nsostiene lo que crece.",
       "body": "Estructura, velocidad y SEO desde la primera línea de código: las raíces que hacen que una web funcione."
     },
-    "final": {
-      "headline": "Hecha para durar,\npensada para crecer.",
-      "body": "Diseño, desarrollo, SEO y asistente con IA, en manos del mismo estudio."
-    },
-    "cards": [
-      {
-        "slug": "web",
-        "label": "01 — Raíz",
-        "title": "Diseño y desarrollo",
-        "body": "Webs a medida, sin plantillas, que cargan rápido. El código es tuyo."
-      },
-      {
-        "slug": "seo",
-        "label": "02 — Copa",
-        "title": "SEO y crecimiento",
-        "body": "Contenido y posicionamiento, mes a mes, para que te encuentre quien ya te busca."
-      }
-    ],
-    "cardCursor": "Ver"
+    // *palabra*: va en cursiva y con la luz del logo.
+    "write": "Una web es como un árbol: lo que no se ve la sostiene y lo que se ve la hace *crecer*. Por eso cuidamos las dos cosas, de la raíz a la copa, para que tu web eche raíces y *dure*."
   },
   "cases": {
     "eyebrow": "Casos de uso",
@@ -726,33 +707,13 @@ const en: Dict = {
     "secondary": "See services"
   },
   "journey": {
-    "label": "A journey through roots of light to the Aterna mark",
-    "loading": "Loading",
-    "heroBody": "We design and build bespoke websites, then work on getting you found.",
-    "heroCursor": "Let’s talk",
+    "label": "The Aterna tree made of particles of light, sinking into its roots and growing back",
+    "scrollCue": "Scroll to discover",
     "mid": {
       "headline": "What you don’t see\nholds up what grows.",
       "body": "Structure, speed and SEO from the first line of code: the roots that make a website work."
     },
-    "final": {
-      "headline": "Built to last,\ndesigned to grow.",
-      "body": "Design, development, SEO and an AI assistant, all in the hands of one studio."
-    },
-    "cards": [
-      {
-        "slug": "web",
-        "label": "01 — Roots",
-        "title": "Design and development",
-        "body": "Bespoke websites with no templates, built to load fast. The code is yours."
-      },
-      {
-        "slug": "seo",
-        "label": "02 — Canopy",
-        "title": "SEO and growth",
-        "body": "Content and search, month after month, so the people already looking can find you."
-      }
-    ],
-    "cardCursor": "View"
+    "write": "A website is like a tree: what you don’t see holds it up, and what you see makes it *grow*. So we look after both, from root to canopy, so your website takes root and *lasts*."
   },
   "cases": {
     "eyebrow": "Use cases",
@@ -1396,33 +1357,13 @@ const nl: Dict = {
     "secondary": "Bekijk diensten"
   },
   "journey": {
-    "label": "Een reis door wortels van licht naar het Aterna-symbool",
-    "loading": "Laden",
-    "heroBody": "We ontwerpen en bouwen websites op maat en zorgen daarna dat je gevonden wordt.",
-    "heroCursor": "Laten we praten",
+    "label": "De Aterna-boom van lichtdeeltjes, die afdaalt naar zijn wortels en opnieuw groeit",
+    "scrollCue": "Scroll om te ontdekken",
     "mid": {
       "headline": "Wat je niet ziet,\ndraagt wat groeit.",
       "body": "Structuur, snelheid en SEO vanaf de eerste regel code: de wortels die een website laten werken."
     },
-    "final": {
-      "headline": "Gemaakt om te blijven,\nklaar om te groeien.",
-      "body": "Design, ontwikkeling, SEO en een AI-assistent, in handen van één studio."
-    },
-    "cards": [
-      {
-        "slug": "web",
-        "label": "01 — Wortels",
-        "title": "Ontwerp en ontwikkeling",
-        "body": "Websites op maat, zonder templates, die snel laden. De code is van jou."
-      },
-      {
-        "slug": "seo",
-        "label": "02 — Kruin",
-        "title": "SEO en groei",
-        "body": "Content en vindbaarheid, maand na maand, zodat wie je al zoekt je ook vindt."
-      }
-    ],
-    "cardCursor": "Bekijk"
+    "write": "Een website is als een boom: wat je niet ziet draagt hem, en wat je wel ziet laat hem *groeien*. Daarom zorgen we voor allebei, van wortel tot kruin, zodat je website wortel schiet en *blijft*."
   },
   "cases": {
     "eyebrow": "Praktijkvoorbeelden",
@@ -2066,33 +2007,13 @@ const de: Dict = {
     "secondary": "Leistungen ansehen"
   },
   "journey": {
-    "label": "Eine Reise durch Wurzeln aus Licht bis zum Aterna-Zeichen",
-    "loading": "Wird geladen",
-    "heroBody": "Wir gestalten und entwickeln Websites nach Maß und sorgen danach dafür, dass man Sie findet.",
-    "heroCursor": "Sprechen wir",
+    "label": "Der Aterna-Baum aus Lichtpartikeln, der zu seinen Wurzeln hinabsinkt und neu wächst",
+    "scrollCue": "Scrollen und entdecken",
     "mid": {
       "headline": "Was man nicht sieht,\nträgt, was wächst.",
       "body": "Struktur, Tempo und SEO ab der ersten Codezeile: die Wurzeln, die eine Website tragen."
     },
-    "final": {
-      "headline": "Gebaut, um zu bleiben,\ngemacht, um zu wachsen.",
-      "body": "Design, Entwicklung, SEO und KI-Assistent, betreut vom selben Studio."
-    },
-    "cards": [
-      {
-        "slug": "web",
-        "label": "01 — Wurzeln",
-        "title": "Design und Entwicklung",
-        "body": "Websites nach Maß, ohne Vorlagen, die schnell laden. Der Code gehört Ihnen."
-      },
-      {
-        "slug": "seo",
-        "label": "02 — Krone",
-        "title": "SEO und Wachstum",
-        "body": "Inhalte und Sichtbarkeit, Monat für Monat, damit Sie gefunden werden."
-      }
-    ],
-    "cardCursor": "Ansehen"
+    "write": "Eine Website ist wie ein Baum: Was man nicht sieht, trägt sie, und was man sieht, lässt sie *wachsen*. Darum kümmern wir uns um beides, von der Wurzel bis zur Krone, damit Ihre Website Wurzeln schlägt und *bleibt*."
   },
   "cases": {
     "eyebrow": "Fallbeispiele",

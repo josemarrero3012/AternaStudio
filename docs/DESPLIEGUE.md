@@ -54,13 +54,17 @@ Hostinger con PHPMailer (ya incluido en `public/php/PHPMailer/`). Necesita un
 archivo con los datos del correo, `php/mail-config.php`, que **no está en
 git** porque lleva la contraseña.
 
-- Si el servidor ya lo tiene (`public_html/php/mail-config.php`), no hay que
-  hacer nada: solo no borrarlo al subir.
-- Si no, copia la plantilla [`docs/mail-config.example.php`](mail-config.example.php)
-  a `public/php/mail-config.php`, rellena la contraseña y compila: irá
-  dentro de `out/php/`. Otra opción es subirla rellenada directamente al
-  servidor. Nadie puede abrirla desde el navegador: `php/.htaccess` lo
-  impide.
+- Si el servidor ya tiene `public_html/php/mail-config.php`, consérvalo.
+- Si falta, rellena [la plantilla](mail-config.example.php) y súbela directamente
+  al servidor en esa ruta. No copies las credenciales a `public/` ni a `out/`.
+  La compilación se detiene si encuentra la configuración o el contador
+  dentro de `public/php/`.
+- PHP necesita crear y actualizar `public_html/php/.contact-rate.json` con
+  permisos privados. Si la carpeta no es escribible por PHP, crea un archivo
+  vacío con permiso de lectura y escritura para su usuario. El contador
+  limita los intentos SMTP a 5 por IP y 60 en total por ventana de 10 minutos.
+  Conserva el archivo al desplegar y comprueba que `php/.htaccess` devuelve 403
+  al acceder por HTTP a la configuración o al contador.
 
 ## 3. Subir
 

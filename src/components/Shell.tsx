@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Fraunces, Geist_Mono } from "next/font/google";
+import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { Assistant } from "@/components/Assistant";
 import { CURTAIN_SCRIPT, Curtain, Cursor, PageTransition, SkipLink, SmoothScroll, Spotlight, WhatsAppWidget } from "@/components/Chrome";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { JsonLd } from "@/components/JsonLd";
+import { LightDust } from "@/components/LightDust";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { withBase } from "@/lib/base";
 import type { Locale } from "@/lib/dict";
 import { LanguageProvider } from "@/lib/i18n";
@@ -16,7 +18,9 @@ import "@/app/globals.css";
 
 // La cursiva es la segunda línea de los titulares del recorrido y su contador.
 const fraunces = Fraunces({ subsets: ["latin"], style: ["normal", "italic"], axes: ["opsz"], variable: "--font-fraunces", display: "swap" });
-const archivo = Archivo({ subsets: ["latin"], variable: "--font-archivo", display: "swap" });
+// Texto en Geist: de la misma familia que la mono de las etiquetas, más
+// estrecha y fina que Archivo; contrasta mejor con Fraunces.
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
 
 /** Lo común a los dos layouts raíz; cada página pone sus propios metadatos. */
@@ -62,12 +66,12 @@ function organization(locale: Locale) {
 export function Shell({ locale, lost, children }: { locale: Locale; lost?: boolean; children: ReactNode }) {
   return (
     // data-curtain lo pone CURTAIN_SCRIPT antes de hidratar: no es un desajuste.
-    <html lang={locale} className={`${fraunces.variable} ${archivo.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang={locale} className={`${fraunces.variable} ${geist.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <body>
         {/* Antes que nada: decide si la cortina de entrada sale (ver Chrome.tsx). */}
         <script dangerouslySetInnerHTML={{ __html: CURTAIN_SCRIPT }} />
         <noscript>
-          <style>{".curtain,.journey__loader{display:none}"}</style>
+          <style>{".curtain{display:none}"}</style>
         </noscript>
         <JsonLd data={organization(locale)} />
         <LanguageProvider locale={locale} lost={lost}>
@@ -75,6 +79,8 @@ export function Shell({ locale, lost, children }: { locale: Locale; lost?: boole
           <Curtain />
           <Cursor />
           <Spotlight />
+          <LightDust />
+          <ScrollReveal />
           <SmoothScroll>
             <Header />
             <main id="contenido" tabIndex={-1}>

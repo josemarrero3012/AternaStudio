@@ -6,7 +6,11 @@ next-env.d.ts
 
 # Credenciales SMTP: viven solo en el servidor y en esta copia local.
 public/php/mail-config.php
+public/php/.contact-rate.json
 
 # Modelo del asistente: lo descarga scripts/fetch-semantic.mjs al compilar.
 public/semantic/*
 !public/semantic/worker.js
+
+# Referencia Cycles (>3 MB); no se carga en la web.
+/scripts/estudio-v2/pillar-1/preview.mp4

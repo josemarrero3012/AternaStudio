@@ -131,8 +131,7 @@ html[data-motion="on"] .journey__copy {
   --detail: 0;
 }
 
-.journey__copy--mid,
-.journey__copy--final {
+.journey__copy--mid {
   opacity: 0;
   visibility: hidden;
 }
@@ -206,13 +205,170 @@ html[data-motion="on"] .journey__copy {
   text-wrap: pretty;
 }
 
-.journey__cta {
-  margin-top: calc(28 * var(--u));
-  white-space: nowrap;
-  pointer-events: auto;
+/* Entrada (como TIGRIS) ------------------------------------------------------
+
+   Centrada sobre el árbol (sin antetítulo): el nombre enorme encima del
+   árbol, el lema debajo, «desliza» abajo y «Empezar un proyecto» en una
+   píldora abajo a la izquierda (mientras, no va en la cabecera). El árbol lo coloca el shader (HERO en src/lib/tree/renderer.ts:
+   en ordenador, el 64 % del alto con el centro al 49 %; en móvil, el 90 % del
+   ancho con el centro al 41 %): si se mueve allí, se mueve aquí. */
+
+.journey__hero,
+.journey__name-wrap,
+.journey__hero-rest {
+  position: absolute;
+  inset: 0;
 }
 
-/* Entrada (M3): palabra a palabra, luego la columna. */
+.journey__name-wrap,
+.journey__hero-rest {
+  will-change: opacity, transform;
+}
+
+.journey__name-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* El nombre: Fraunces fina y de mucho contraste (opsz 144), en mayúsculas,
+   del color de la luz; se lee sobre las partículas como TIGRIS sobre el
+   tigre. */
+.journey__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(212 * var(--u));
+  font-weight: 300;
+  font-variation-settings: "opsz" 144;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--journey-name);
+  text-shadow: 0 0 calc(40 * var(--u)) var(--journey-name-shadow);
+  /* La última letra no arrastra su espaciado: el nombre queda centrado. */
+  margin-right: -0.04em;
+}
+
+.journey__letter {
+  display: inline-block;
+}
+
+.journey__tagline,
+.journey__scroll {
+  position: absolute;
+  left: var(--journey-x);
+  right: var(--journey-x);
+  margin: 0;
+  text-align: center;
+}
+
+.journey__tagline {
+  top: calc(81% + 26 * var(--u));
+  font-family: var(--font-display);
+  font-size: calc(29 * var(--u));
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings: "opsz" 72;
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+  color: var(--lavender);
+  text-wrap: balance;
+}
+
+/* La luz del logo en el lema (como el oro de TIGRIS). */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .journey__tagline {
+    background-image: var(--brand-gradient-light);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* El degradado, del ancho del texto y no de la caja. */
+    width: fit-content;
+    margin-inline: auto;
+    padding-bottom: 0.12em;
+  }
+}
+
+.journey__scroll {
+  bottom: calc(30 * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(12 * var(--u));
+  color: var(--text-low);
+  font-size: 9.5px;
+  letter-spacing: 0.36em;
+  text-indent: 0.36em;
+  opacity: 0.8;
+}
+
+/* Una línea que cae despacio, invitando a bajar. */
+.journey__scroll-line {
+  display: block;
+  width: 1px;
+  height: calc(26 * var(--u));
+  background: linear-gradient(to bottom, transparent, var(--lavender));
+  transform-origin: top;
+  animation: journey-scroll-line 2.4s var(--e-out) infinite;
+}
+
+@keyframes journey-scroll-line {
+  0% {
+    transform: scaleY(0);
+    opacity: 1;
+  }
+  60% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
+/* «Empezar un proyecto»: solo texto, sin borde ni fondo, pegado al borde
+   izquierdo de la pantalla (más que el resto de la entrada). */
+.journey__pill {
+  position: absolute;
+  left: calc(var(--margin) * 0.55);
+  bottom: calc(28 * var(--u));
+  display: inline-flex;
+  align-items: center;
+  gap: calc(10 * var(--u));
+  min-height: 44px;
+  padding: 0;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--text-hi);
+  pointer-events: auto;
+  transition: color var(--d-micro) var(--e-out);
+}
+
+@media (hover: hover) {
+  .journey__pill:hover {
+    color: var(--lavender);
+  }
+
+  .journey__pill:hover .arrow {
+    transform: var(--arrow-nudge);
+  }
+}
+
+/* Con movimiento, la entrada empieza oculta (data-motion lo pone el script
+   del <body> antes de pintar); sin JavaScript o con movimiento reducido se
+   ve tal cual. */
+html[data-motion="on"] .journey__hero:not(.is-intro) .journey__letter,
+html[data-motion="on"] .journey__hero:not(.is-intro) .journey__hero-rest > * {
+  opacity: 0;
+}
+
+/* Entrada (M3): letra a letra el nombre, luego lo demás. */
 @keyframes journey-reveal {
   from {
     opacity: 0;
@@ -220,243 +376,141 @@ html[data-motion="on"] .journey__copy {
     filter: blur(var(--from-blur));
   }
   to {
-    opacity: 1;
+    opacity: var(--to-opacity, 1);
     transform: none;
     filter: blur(0);
   }
 }
 
-.journey__copy.is-intro .journey__word {
-  --from-y: calc(28 * var(--u));
-  --from-blur: 7px;
-  animation: journey-reveal 1.3s var(--e-out) calc(0.8s + var(--i) * 0.11s) both;
+.journey__hero.is-intro .journey__letter {
+  --from-y: calc(36 * var(--u));
+  --from-blur: 14px;
+  animation: journey-reveal 1.6s var(--e-out) calc(0.9s + var(--i) * 0.09s) both;
 }
 
-.journey__copy.is-intro .journey__detail {
-  --from-y: calc(18 * var(--u));
-  --from-blur: 5px;
-  animation: journey-reveal 0.8s var(--e-out) 1.65s both;
+
+.journey__hero.is-intro .journey__tagline {
+  --from-y: calc(16 * var(--u));
+  --from-blur: 6px;
+  animation: journey-reveal 1.1s var(--e-out) 1.6s both;
 }
 
-/* Tarjetas de vidrio (pantalla final) --------------------------------------- */
+.journey__hero.is-intro .journey__scroll,
+.journey__hero.is-intro .journey__pill {
+  --from-y: calc(10 * var(--u));
+  --from-blur: 0px;
+  animation: journey-reveal 0.9s var(--e-out) 2.1s both;
+}
 
-.journey__cards {
+.journey__hero.is-intro .journey__scroll {
+  --to-opacity: 0.8;
+}
+
+/* El texto que se escribe sobre el árbol (como el de TIGRIS) ---------------- */
+
+/* Grande, centrado y en la letra de los titulares; cada letra la va
+   mostrando el scroll (Journey.tsx). Sube despacio por delante del árbol. */
+.journey__write {
   position: absolute;
   inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--journey-x);
   opacity: 0;
   visibility: hidden;
   will-change: opacity, transform;
 }
 
-.journey-card {
-  position: absolute;
-  display: block;
-  width: var(--card-w);
-  border: 1px solid var(--glass-edge);
-  border-radius: calc(20 * var(--u));
-  background: var(--glass-card-fill);
-  box-shadow: var(--glass-card-shadow);
-  overflow: hidden;
-  isolation: isolate;
-  pointer-events: auto;
-  transition: border-color var(--d-std) var(--e-out);
-}
-
-/* Alineadas con el contenedor mientras no tapen el símbolo; en pantallas
-   muy anchas (el fotograma se amplía para cubrir) se apartan hacia los
-   bordes, nunca más allá del margen. El símbolo mide de ancho ~0,33 del
-   fotograma, que a su vez mide max(100vw, 100svh × 16/9). */
-.journey__cards {
-  --card-w: calc(330 * var(--u));
-  --card-x: max(var(--margin), min(var(--journey-x), calc(50% - 0.165 * max(100vw, 100vh * 16 / 9) - 24px - var(--card-w))));
-}
-
-.journey-card--left {
-  left: var(--card-x);
-  top: 22%;
-}
-
-.journey-card--right {
-  right: var(--card-x);
-  top: 49%;
-}
-
-.journey-card__glass {
-  position: absolute;
-  z-index: 0;
-  max-width: none;
-  pointer-events: none;
-}
-
-.journey-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: var(--glass-card-tint);
-  transition: background-color var(--d-std) var(--e-out);
-}
-
-.journey-card__text {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  padding: calc(24 * var(--u)) calc(24 * var(--u)) calc(32 * var(--u));
-}
-
-.journey-card__label {
-  margin-bottom: calc(16 * var(--u));
-  color: var(--lavender);
-}
-
-.journey-card__title {
-  margin-bottom: calc(10 * var(--u));
-  font-family: var(--font-display);
-  font-size: calc(28 * var(--u));
-  font-weight: 400;
-  font-variation-settings: "opsz" 72;
-  line-height: 1.15;
-  letter-spacing: var(--ls-title);
-  color: var(--text-hi);
-}
-
-.journey-card__body {
-  font-size: calc(17 * var(--u));
-  line-height: 1.3;
-  color: var(--text-support);
-}
-
-@media (hover: hover) {
-  .journey-card:hover {
-    border-color: color-mix(in srgb, var(--lavender) 60%, transparent);
-  }
-
-  .journey-card:hover::after {
-    background: var(--glass-card-tint-hover);
-  }
-}
-
-/* Pantalla de carga ------------------------------------------------------------ */
-
-/* Por encima de todo, también de la cabecera. Viene en el HTML tapando desde
-   el primer pintado; sin JavaScript no se muestra (ver Shell). */
-.journey__loader {
-  position: fixed;
-  inset: 0;
-  z-index: calc(var(--z-curtain) + 1);
-}
-
-.journey__veil {
-  position: absolute;
-  inset: 0;
-  background: var(--journey-veil);
-}
-
-/* El velo lo pinta el shader del fundido. */
-.journey__loader[data-burn="on"] .journey__veil {
-  background: none;
-}
-
-.journey__burn {
-  display: block;
-  width: 100%;
-  height: 100%;
-  max-width: none;
-}
-
-.journey__loader-ui {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-}
-
-@keyframes journey-drop {
-  to {
-    opacity: 0;
-    transform: translate3d(0, calc(10 * var(--u)), 0);
-  }
-}
-
-.journey__loader:not([data-phase="loading"]) .journey__loader-ui {
-  animation: journey-drop 0.35s ease forwards;
-}
-
-.journey__loader[data-phase="done"] {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-/* Sin fundido (sin WebGL): la pantalla se desvanece. */
-.journey__loader:not([data-burn="on"])[data-phase="ready"] {
-  opacity: 0;
-  transition: opacity 0.6s linear;
-}
-
-.journey__counter {
-  --lh: calc(92 * 0.8 * var(--u));
-  position: absolute;
-  left: var(--journey-x);
-  bottom: calc(36.8 * var(--u));
+.journey__write-text {
+  max-width: calc(1120 * var(--u));
   margin: 0;
   font-family: var(--font-display);
-  font-size: calc(92 * var(--u));
-  font-style: italic;
+  font-size: calc(62 * var(--u));
   font-weight: 400;
   font-variation-settings: "opsz" 144;
-  letter-spacing: -0.03em;
-  color: var(--text-hi);
-  text-shadow: 0 calc(2 * var(--u)) calc(24 * var(--u)) var(--journey-counter-shadow);
+  line-height: 1.12;
+  letter-spacing: -0.012em;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--journey-name);
+  /* Una sombra amplia y suave: se lee también sobre la copa encendida. */
+  text-shadow: 0 0 calc(40 * var(--u)) var(--journey-name-shadow), 0 2px calc(14 * var(--u)) var(--journey-name-shadow);
+}
+
+.journey__write-word {
   white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-  /* Hasta que llega su fuente: nunca se ve con la de respaldo. */
+}
+
+/* Sin movimiento (o sin JavaScript), el texto se ve entero. */
+html[data-motion="on"] .journey__char {
   opacity: 0;
-  transition: opacity 0.25s ease;
 }
 
-.journey__loader[data-fonts="ready"] .journey__counter {
-  opacity: 1;
+/* Las palabras de acento, en cursiva y con la luz del logo: cada letra toma
+   su tramo del degradado (--g, de 0 a 1, lo pone el componente). */
+.journey__write-accent {
+  font-style: italic;
+  font-variation-settings: "opsz" 144;
 }
 
-.journey__track {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: var(--journey-track);
+.journey__write-accent .journey__char {
+  color: color-mix(in srgb, #f0b2f5 calc(var(--g, 0.5) * 100%), #b3bcff);
 }
 
-.journey__bar {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background-image: var(--brand-gradient-h);
-  transform: scaleX(0);
-  transform-origin: left center;
+/* Paso a la sección siguiente («01 — Estudio») ---------------------------- */
+
+/* En el último tramo del recorrido, la sección siguiente sube por encima del
+   escenario, que sigue fijado: su borde de arriba es transparente y se funde
+   en la noche de la página a lo largo de --handoff-fade, mientras el árbol se
+   suelta en luz y el fondo de la escena pasa a ser esa misma noche (uHandoff
+   y uFade en src/lib/tree/renderer.ts; el paso lo mide Journey.tsx con el
+   borde de esta sección). Al acabar, escenario y sección suben juntos y no
+   hay costura. La banda de la sección empieza donde acaba el fundido. */
+.journey + .section {
+  --handoff-fade: 52vh;
+  margin-top: -100vh;
+  padding-top: calc(var(--section-y-lg) * 0.7 + var(--handoff-fade) * 0.6);
+  background-image: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--night-0) 55%, transparent) 50%, var(--night-0) 100%), var(--band, linear-gradient(var(--night-0), var(--night-0)));
+  background-position:
+    0 0,
+    0 var(--handoff-fade),
+    0 var(--handoff-fade);
+  background-size:
+    100% var(--handoff-fade),
+    100% calc(100% - var(--handoff-fade)),
+    100% calc(100% - var(--handoff-fade));
+  background-repeat: no-repeat;
+}
+
+@supports (height: 100svh) {
+  .journey + .section {
+    --handoff-fade: 52svh;
+    margin-top: -100svh;
+  }
+}
+
+/* La luz que deriva sobre la banda, también debajo del fundido. */
+.journey + .section::before {
+  top: var(--handoff-fade);
 }
 
 /* La cabecera durante el recorrido ---------------------------------------- */
 
-/* Entra con el titular (M3); hasta entonces, tapada por la pantalla de carga. */
-@keyframes journey-header-in {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 18px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+/* Mientras se ve el nombre grande, la cabecera va sin logo; aparece al
+   empezar el scroll, cuando el nombre se va (como en TIGRIS). */
+.header__brand {
+  transition:
+    opacity 0.6s var(--e-out),
+    transform 0.6s var(--e-out);
 }
 
-html[data-journey-intro="pending"] .header {
+/* Desde el primer fotograma: si esperara al JavaScript, el logo se vería un
+   instante y luego se iría, como un error. Aparece cuando el nombre se va. */
+html:has(.journey):not([data-journey-name="off"]) .header__brand {
   opacity: 0;
-}
-
-html[data-journey-intro="on"] .header {
-  animation: journey-header-in 0.8s var(--e-out) 0.15s both;
+  transform: translate3d(0, -6px, 0);
+  pointer-events: none;
 }
 
 /* Sobre la escena, sin velo ni filete: la escena llega hasta arriba. */
@@ -470,13 +524,69 @@ html[data-journey="over"] .header::after {
   opacity: 0;
 }
 
-/* Y los enlaces, en una píldora de vidrio. */
+/* Y el menú, como el de TIGRIS: arriba a la derecha, una sola fila de texto
+   en mayúsculas muy espaciadas y juntas, sin píldoras. Los idiomas, al
+   final, más pequeños y tenues, tras un filete. */
 @media (min-width: 1024px) {
-  html[data-journey="over"] .header__nav ul {
-    border-color: var(--glass-edge);
-    background-color: var(--glass-pill-fill);
-    -webkit-backdrop-filter: blur(16px) saturate(1.2);
-    backdrop-filter: blur(16px) saturate(1.2);
+  html[data-journey="over"] .header__nav a {
+    font-family: var(--font-ui);
+    font-size: 10.5px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  html[data-journey="over"] .header__nav a {
+    padding: 14px 8px;
+    color: color-mix(in srgb, var(--journey-name) 78%, transparent);
+    transition: color var(--d-std) var(--e-out);
+  }
+
+  html[data-journey="over"] .header__nav a:hover,
+  html[data-journey="over"] .header__nav a[aria-current="page"] {
+    color: var(--journey-name);
+  }
+
+  html[data-journey="over"] .header__nav .link-underline::after {
+    inset-inline: 8px calc(8px + 0.22em);
+    bottom: 7px;
+  }
+
+  html[data-journey="over"] .header__end {
+    gap: 0;
+  }
+
+  /* «Empezar un proyecto» sale de la fila: en la portada va abajo a la
+     izquierda (.journey__pill). */
+  html[data-journey="over"] .header__cta {
+    display: none;
+  }
+
+  /* Sin el botón, los idiomas pegados al menú (sin el hueco de la fila). */
+  html[data-journey="over"] .header__inner {
+    gap: 0;
+  }
+
+  html[data-journey="over"] .header__lang {
+    order: 2;
+    margin-left: 8px;
+    padding-left: 8px;
+    border-left: 1px solid var(--glass-edge);
+  }
+
+  html[data-journey="over"] .header__lang .lang-toggle__btn {
+    min-width: 0;
+    padding: 8px 4px;
+    border-left: 0;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    color: color-mix(in srgb, var(--journey-name) 58%, transparent);
+  }
+
+  html[data-journey="over"] .header__lang .lang-toggle__btn[data-active="true"],
+  html[data-journey="over"] .header__lang .lang-toggle__btn:hover {
+    color: var(--journey-name);
   }
 }
 
@@ -507,8 +617,31 @@ html[data-journey="over"] .header::after {
     row-gap: calc(18 * var(--u));
   }
 
-  .journey__copy--final {
-    bottom: calc(18 * var(--u));
+  /* Centro del árbol al 41 %; el nombre, centrado al 43 %. */
+  .journey__name-wrap {
+    bottom: auto;
+    height: 86%;
+  }
+
+  .journey__name {
+    font-size: calc(84 * var(--u));
+    letter-spacing: 0.03em;
+    margin-right: -0.03em;
+  }
+
+  .journey__tagline {
+    top: calc(41% + 0.45 * 100vw + 22 * var(--u));
+    font-size: calc(25 * var(--u));
+  }
+
+  .journey__pill {
+    left: 50%;
+    bottom: calc(92 * var(--u));
+    translate: -50% 0;
+  }
+
+  .journey__scroll {
+    bottom: calc(24 * var(--u));
   }
 
   .journey__headline {
@@ -532,30 +665,9 @@ html[data-journey="over"] .header::after {
     font-size: calc(16 * var(--u));
   }
 
-  .journey-card--left {
-    left: var(--margin);
-    top: 16%;
-  }
-
-  .journey-card--right {
-    right: var(--margin);
-    top: 39%;
-  }
-
-  .journey-card__text {
-    padding: calc(20 * var(--u)) calc(20 * var(--u)) calc(24 * var(--u));
-  }
-
-  .journey-card__label {
-    margin-bottom: calc(12 * var(--u));
-  }
-
-  .journey-card__title {
-    font-size: calc(24 * var(--u));
-  }
-
-  .journey-card__body {
-    font-size: calc(15 * var(--u));
+  .journey__write-text {
+    font-size: calc(34 * var(--u));
+    line-height: 1.16;
   }
 
   .journey__counter {
@@ -568,22 +680,18 @@ html[data-journey="over"] .header::after {
 /* Movimiento reducido ------------------------------------------------------------ */
 
 @media (prefers-reduced-motion: reduce) {
-  .journey__copy.is-intro .journey__word,
-  .journey__copy.is-intro .journey__detail {
+  .journey__hero.is-intro .journey__letter,
+  .journey__hero.is-intro .journey__hero-rest > * {
     animation-duration: 0.01ms;
     animation-delay: 0s;
+  }
+
+  .journey__scroll-line {
+    animation: none;
   }
 
   .journey__word {
     transition: none;
   }
 
-  .journey__loader:not([data-burn="on"])[data-phase="ready"] {
-    transition-duration: 0.2s;
-  }
-
-  html[data-journey-intro="on"] .header {
-    animation-duration: 0.01ms;
-    animation-delay: 0s;
-  }
 }

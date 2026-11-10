@@ -1,4 +1,7 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type { NextConfig } from "next";
+import { PHASE_PRODUCTION_BUILD } from "next/constants";
 
 // Exportación estática (carpeta `out/`) para el hosting compartido de
 // Hostinger: sin Node.js en el servidor. Las cabeceras y las URLs limpias
@@ -14,4 +17,13 @@ const nextConfig: NextConfig = {
   experimental: { globalNotFound: true },
 };
 
-export default nextConfig;
+export default function config(phase: string): NextConfig {
+  if (phase === PHASE_PRODUCTION_BUILD) {
+    for (const file of ["mail-config.php", ".contact-rate.json"]) {
+      if (existsSync(join(__dirname, "public", "php", file))) {
+        throw new Error(`Retira public/php/${file} antes de compilar. Es un archivo privado del servidor.`);
+      }
+    }
+  }
+  return nextConfig;
+}

@@ -2,7 +2,7 @@
 
 // Secciones compartidas entre páginas.
 
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import { Link, useI18n } from "@/lib/i18n";
 import { gsap, prefersReducedMotion, registerGsap } from "@/lib/motion";
 import { formatPrice, pricing, slugToProduct, startingPrice, type ServiceSlug } from "@/lib/pricing";
@@ -20,8 +20,15 @@ import { Trace } from "./Trace";
 import { WordReveal } from "./WordReveal";
 
 /** "01 — Estudio": la numeración la pone cada página según su orden real. */
-function eyebrow(text: string, n?: number) {
-  return n ? `${String(n).padStart(2, "0")} — ${text}` : text;
+function eyebrow(text: string, n?: number): ReactNode {
+  if (!n) return text;
+  return (
+    <>
+      <span className="eyebrow__n">{String(n).padStart(2, "0")}</span>
+      <span className="eyebrow__sep">—</span>
+      {text}
+    </>
+  );
 }
 
 export function StudioStatement({ n }: { n?: number }) {
@@ -31,7 +38,7 @@ export function StudioStatement({ n }: { n?: number }) {
   return (
     <section className="section section-lg band-indigo studio" id="estudio" aria-labelledby="studio-title">
       <div className="container studio__inner">
-        <p className="t-label studio__eyebrow">{eyebrow(t.studioHome.eyebrow, n)}</p>
+        <p className="t-label eyebrow studio__eyebrow">{eyebrow(t.studioHome.eyebrow, n)}</p>
         <WordReveal as="h2" id="studio-title" className="t-display studio__title" text={t.studioHome.title} accent={1} />
         {/* La entradilla presenta los pilares; para quién trabajamos ya lo
             dice el hero y lo amplía /estudio. */}
@@ -48,14 +55,14 @@ export function StudioStatement({ n }: { n?: number }) {
         </div>
         <ul className="pillars" ref={pillars}>
           {t.studioHome.pillars.map((p, i) => (
-            <li className="pillar" key={i}>
+            <li className={`pillar aurora-card${i % 2 ? " aurora-card--soft" : ""}`} key={i}>
+              <h3 className="t-title pillar__title">{p.title}</h3>
+              <p className="t-small pillar__body">{p.body}</p>
               {PILLAR_GLYPHS[i] ? (
-                <div className="pillar__stage">
-                  <Trace drawing={PILLAR_GLYPHS[i]} size="lg" />
+                <div className="pillar__stage aurora-panel">
+                  <Trace drawing={PILLAR_GLYPHS[i]} size="xl" />
                 </div>
               ) : null}
-              <h3 className="t-title pillar__title">{p.title}</h3>
-              <p className="t-small muted">{p.body}</p>
             </li>
           ))}
         </ul>
@@ -101,7 +108,7 @@ export function Cases({ n }: { n?: number }) {
     <section className="section cases" id="casos" aria-labelledby="cases-title">
       <div className="container">
         <header className="section-head">
-          <p className="t-label dim">{eyebrow(c.eyebrow, n)}</p>
+          <p className="t-label dim eyebrow">{eyebrow(c.eyebrow, n)}</p>
           <WordReveal as="h2" id="cases-title" className="t-display" text={c.title} />
           <p className="t-lead muted">{c.lead}</p>
         </header>
@@ -146,30 +153,7 @@ export function Cases({ n }: { n?: number }) {
 /** Home: los cuatro servicios, cada uno con su página. */
 export function Services({ n }: { n?: number }) {
   const { t } = useI18n();
-  const list = useReveal<HTMLUListElement>({ selector: ".service", y: 24, stagger: 0.1 });
-
-  // El icono va centrado bajo su propio titular (su línea más larga, no la
-  // columna). Se rehace con el tamaño y el idioma.
-  useEffect(() => {
-    const el = list.current;
-    if (!el) return;
-    const measure = () => {
-      el.querySelectorAll<HTMLElement>(".service__head").forEach((head) => {
-        const title = head.querySelector(".service__title");
-        if (!title) return;
-        const range = document.createRange();
-        range.selectNodeContents(title);
-        const width = Math.max(0, ...Array.from(range.getClientRects(), (r) => r.width));
-        head.style.setProperty("--title-w", `${width}px`);
-      });
-    };
-    measure();
-    // Con la fuente definitiva los titulares cambian de ancho.
-    document.fonts?.ready.then(measure);
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [list]);
+  const list = useReveal<HTMLUListElement>({ selector: ".service", y: 32, stagger: 0.1 });
   return (
     <section className="section services" id="servicios" aria-labelledby="services-title">
       <div className="container">
@@ -177,7 +161,7 @@ export function Services({ n }: { n?: number }) {
             solo en mucho espacio, y parecía una sección vacía. */}
         <div className="services__head">
           <header className="section-head">
-            <p className="t-label dim">{eyebrow(t.services.eyebrow, n)}</p>
+            <p className="t-label dim eyebrow">{eyebrow(t.services.eyebrow, n)}</p>
             <WordReveal as="h2" id="services-title" className="t-display" text={t.services.title} />
           </header>
           <Link href="/servicios" className="btn-ghost services__all">
@@ -191,33 +175,34 @@ export function Services({ n }: { n?: number }) {
             const includes = t.servicePages[slugToProduct[slug]].includes.slice(0, 3);
             return (
               <li className="service" key={slug}>
-                <Link href={`/servicios/${slug}`} className="service__inner" data-spot>
-                  <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
+                {/* Misma tarjeta que los pilares de «Estudio»: texto arriba,
+                    el dibujo del servicio en el panel negro y, debajo, qué
+                    incluye y el precio. En rejilla de 2×2, la intensidad del
+                    marco alterna en damero. */}
+                <Link href={`/servicios/${slug}`} className={`service__inner aurora-card${i === 1 || i === 2 ? " aurora-card--soft" : ""}`} data-spot>
                   <div className="service__head">
+                    <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
                     <h3 className="t-title service__title">{card.title}</h3>
-                    {/* El icono, un solo trazo centrado bajo el titular. */}
-                    <div className="service__wire" data-service={slug}>
-                      <ServiceGlyph slug={slug} size="lg" className="service__glyph" />
-                    </div>
                   </div>
-                  <div className="service__body">
-                    <p className="t-body muted">{card.body}</p>
-                    <ul className="t-small service__includes">
-                      {includes.map((item, j) => (
-                        <li key={j}>
-                          <Check />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="service__meta">
-                      <StartingPrice slug={slug} className="t-small" />
-                      <span className="link-cta">
-                        {card.cta}
-                        <ArrowRight />
-                      </span>
-                    </p>
+                  <p className="service__lead">{card.body}</p>
+                  <div className="service__wire aurora-panel" data-service={slug}>
+                    <ServiceGlyph slug={slug} size="xl" className="service__glyph" />
                   </div>
+                  <ul className="t-small service__includes">
+                    {includes.map((item, j) => (
+                      <li key={j}>
+                        <Check />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="service__meta">
+                    <StartingPrice slug={slug} className="t-small" />
+                    <span className="link-cta">
+                      {card.cta}
+                      <ArrowRight />
+                    </span>
+                  </p>
                 </Link>
               </li>
             );
@@ -328,7 +313,7 @@ export function Approach({ n }: { n?: number }) {
       <ApproachRail section={section} eyebrow={eyebrow(t.approach.eyebrow, n)} />
       <div className="container approach__static" ref={ref}>
         <header className="section-head">
-          <p className="t-label dim">{eyebrow(t.approach.eyebrow, n)}</p>
+          <p className="t-label dim eyebrow">{eyebrow(t.approach.eyebrow, n)}</p>
           <WordReveal as="h2" id="approach-title" className="t-display" text={t.approach.title} />
         </header>
         <MethodRoot variant="static" />
@@ -370,7 +355,7 @@ export function FinalCTA({ n }: { n?: number }) {
     <section className="section section-lg band-aurora final-cta" aria-labelledby="cta-title">
       <div className="container final-cta__inner" ref={tail}>
         <div className="final-cta__marks">
-          <p className="t-label final-cta__eyebrow">{eyebrow(t.finalCta.eyebrow, n)}</p>
+          <p className="t-label eyebrow final-cta__eyebrow">{eyebrow(t.finalCta.eyebrow, n)}</p>
         </div>
         <WordReveal as="h2" id="cta-title" className="t-hero final-cta__title" text={t.finalCta.title} accent={1} />
         {/* Una sola entradilla: que respondemos siempre lo cuenta el paso 2. */}
@@ -396,14 +381,14 @@ export function FinalCTA({ n }: { n?: number }) {
 }
 
 /** Qué pasa después de escribirnos: tres pasos unidos por un hilo y la disponibilidad. */
-export function NextSteps({ className }: { className?: string }) {
+export function NextSteps({ className, heading: Heading = "h3" }: { className?: string; heading?: "h2" | "h3" }) {
   const { t } = useI18n();
   const list = useReveal<HTMLDivElement>({ selector: ".next-step", y: 20, stagger: 0.1 });
   const flow = useRef<HTMLDivElement>(null);
   useStepWire(flow, `wire${useId().replace(/[^\w-]/g, "")}`);
   return (
     <div className={`next-steps${className ? ` ${className}` : ""}`} ref={list}>
-      <h3 className="t-label dim">{t.finalCta.nextTitle}</h3>
+      <Heading className="t-label dim">{t.finalCta.nextTitle}</Heading>
       <div className="next-steps__flow" ref={flow}>
         <ol className="next-steps__list">
           {t.finalCta.next.map((step, i) => (

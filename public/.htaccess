@@ -6,27 +6,20 @@
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Frame-Options "SAMEORIGIN"
 
-  <FilesMatch "^(aterna-symbol-light|aterna-wordmark-light|aterna-mark|aterna-lockup|aterna-lockup-light|icon|apple-icon|og)\.(webp|png|jpg)$">
-    Header set Cache-Control "public, max-age=31536000, immutable"
+  # Las páginas y sus datos de navegación deben poder actualizarse al publicar.
+  <FilesMatch "\.(html|txt|xml|json)$">
+    Header set Cache-Control "no-cache"
   </FilesMatch>
 
-  # Los fotogramas del recorrido de la portada, un año: la segunda visita
-  # ya no los descarga. Van en una carpeta con versión (public/journey/v1):
-  # si se vuelven a renderizar, cambia la carpeta (ver lib/journey/config.ts).
-  <FilesMatch "^(journey|depth)-[0-9]{3}\.webp$">
-    Header set Cache-Control "public, max-age=31536000, immutable"
-  </FilesMatch>
+  # Estos recursos tienen URLs de compilación o una versión explícita.
+  Header set Cache-Control "public, max-age=31536000, immutable" "expr=%{REQUEST_STATUS} -lt 400 && %{REQUEST_URI} =~ m#^/(?:_next/static/|tree/v1/)#"
+
+  # Las URLs estables de marca y del asistente pueden cambiar entre versiones.
+  Header set Cache-Control "no-cache" "expr=%{REQUEST_URI} =~ m#^/(?:brand/|semantic/|favicon\.ico$)#"
 </IfModule>
 
-# Modelo del asistente (public/semantic): el motor es WebAssembly y el
-# navegador solo lo compila al vuelo si llega con su tipo. Un mes de caché
-# para el motor y el modelo: pesan mucho y casi nunca cambian.
+# El navegador necesita este tipo MIME para compilar el motor WebAssembly.
 AddType application/wasm .wasm
-<IfModule mod_headers.c>
-  <FilesMatch "\.(wasm|onnx)$">
-    Header set Cache-Control "public, max-age=2592000"
-  </FilesMatch>
-</IfModule>
 
 # Compresión de texto (HTML, CSS, JS, JSON, SVG). Las imágenes y los vídeos
 # ya van comprimidos. Si el servidor no tiene el módulo, no hace nada.
