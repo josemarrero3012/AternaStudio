@@ -7,68 +7,106 @@
  * garantiza).
  */
 
-header('Content-Type: application/json; charset=utf-8');
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['ok' => false, 'error' => 'method_not_allowed']);
-    exit;
-}
-
-require __DIR__ . '/php/mail-config.php';
-require __DIR__ . '/php/PHPMailer/Exception.php';
-require __DIR__ . '/php/PHPMailer/PHPMailer.php';
-require __DIR__ . '/php/PHPMailer/SMTP.php';
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
-$raw = file_get_contents('php://input');
-$body = json_decode($raw, true);
-if (!is_array($body)) {
-    http_response_code(400);
-    echo json_encode(['ok' => false, 'error' => 'invalid_body']);
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
+
+function contactError(int $status, string $code): void
+{
+    http_response_code($status);
+    echo json_encode(['ok' => false, 'error' => $code]);
     exit;
 }
 
-$name = trim((string) ($body['name'] ?? ''));
-$email = trim((string) ($body['email'] ?? ''));
-$message = trim((string) ($body['message'] ?? ''));
-$consent = ($body['consent'] ?? false) === true; // casilla RGPD
-$company = trim((string) ($body['company'] ?? '')); // honeypot
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    header('Allow: POST');
+    contactError(405, 'method_not_allowed');
+}
 
-// Bot: responde como si todo hubiera ido bien, pero no envía nada.
-if ($company !== '') {
+// También limita cuerpos sin Content-Length. Hay margen para JSON escapado.
+$maxBody = 32768;
+if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > $maxBody) {
+    contactError(413, 'body_too_large');
+}
+$raw = file_get_contents('php://input', false, null, 0, $maxBody + 1);
+if ($raw === false) {
+    contactError(400, 'invalid_body');
+}
+if (strlen($raw) > $maxBody) {
+    contactError(413, 'body_too_large');
+}
+
+$body = json_decode($raw);
+if (!$body instanceof stdClass) {
+    contactError(400, 'invalid_body');
+}
+foreach (['name', 'email', 'message', 'company'] as $field) {
+    if (property_exists($body, $field) && !is_string($body->$field)) {
+        contactError(400, 'invalid_body');
+    }
+}
+
+$name = trim($body->name ?? '');
+$email = trim($body->email ?? '');
+$message = trim($body->message ?? '');
+
+if (trim($body->company ?? '') !== '') {
     echo json_encode(['ok' => true]);
     exit;
 }
-
 if ($name === '' || $email === '' || $message === '') {
-    http_response_code(400);
-    echo json_encode(['ok' => false, 'error' => 'missing_fields']);
-    exit;
+    contactError(400, 'missing_fields');
 }
-// Sin consentimiento expreso (casilla RGPD) no se procesa nada.
-if (!$consent) {
-    http_response_code(400);
-    echo json_encode(['ok' => false, 'error' => 'consent_required']);
-    exit;
+if (($body->consent ?? false) !== true) {
+    contactError(400, 'consent_required');
 }
 if (strlen($name) > 200 || strlen($email) > 200 || strlen($message) > 5000) {
-    http_response_code(400);
-    echo json_encode(['ok' => false, 'error' => 'too_long']);
-    exit;
+    contactError(400, 'too_long');
 }
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    http_response_code(400);
-    echo json_encode(['ok' => false, 'error' => 'invalid_email']);
-    exit;
+    contactError(400, 'invalid_email');
 }
+
+$config = __DIR__ . '/php/mail-config.php';
+if (!is_readable($config)) {
+    error_log('[contacto.php] No se puede leer mail-config.php.');
+    contactError(503, 'mail_unavailable');
+}
+try {
+    require $config;
+    foreach (['SMTP_HOST', 'SMTP_PORT', 'SMTP_SECURE', 'SMTP_USER', 'SMTP_PASSWORD', 'CONTACT_TO_EMAIL'] as $key) {
+        if (!defined($key) || !is_scalar(constant($key)) || trim((string) constant($key)) === '') {
+            throw new RuntimeException('Configuración SMTP incompleta.');
+        }
+    }
+} catch (Throwable $e) {
+    error_log('[contacto.php] Configuración SMTP no válida.');
+    contactError(503, 'mail_unavailable');
+}
+
+require __DIR__ . '/php/contact-rate.php';
+try {
+    $retryAfter = reserveContactAttempt($_SERVER['REMOTE_ADDR'] ?? '');
+} catch (RuntimeException $e) {
+    error_log('[contacto.php] Almacenamiento del límite de envíos no disponible.');
+    contactError(503, 'mail_unavailable');
+}
+if ($retryAfter > 0) {
+    header('Retry-After: ' . $retryAfter);
+    contactError(429, 'rate_limited');
+}
+
+require __DIR__ . '/php/PHPMailer/Exception.php';
+require __DIR__ . '/php/PHPMailer/PHPMailer.php';
+require __DIR__ . '/php/PHPMailer/SMTP.php';
 
 $mail = new PHPMailer(true);
 
 try {
     $mail->isSMTP();
+    $mail->Timeout = 10;
     $mail->Host = SMTP_HOST;
     $mail->Port = SMTP_PORT;
     $mail->SMTPSecure = SMTP_SECURE;
@@ -95,6 +133,5 @@ try {
     echo json_encode(['ok' => true]);
 } catch (PHPMailerException $e) {
     error_log('[contacto.php] Error al enviar: ' . $mail->ErrorInfo);
-    http_response_code(502);
-    echo json_encode(['ok' => false, 'error' => 'send_failed']);
+    contactError(502, 'send_failed');
 }

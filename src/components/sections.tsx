@@ -381,14 +381,14 @@ export function FinalCTA({ n }: { n?: number }) {
 }
 
 /** Qué pasa después de escribirnos: tres pasos unidos por un hilo y la disponibilidad. */
-export function NextSteps({ className }: { className?: string }) {
+export function NextSteps({ className, heading: Heading = "h3" }: { className?: string; heading?: "h2" | "h3" }) {
   const { t } = useI18n();
   const list = useReveal<HTMLDivElement>({ selector: ".next-step", y: 20, stagger: 0.1 });
   const flow = useRef<HTMLDivElement>(null);
   useStepWire(flow, `wire${useId().replace(/[^\w-]/g, "")}`);
   return (
     <div className={`next-steps${className ? ` ${className}` : ""}`} ref={list}>
-      <h3 className="t-label dim">{t.finalCta.nextTitle}</h3>
+      <Heading className="t-label dim">{t.finalCta.nextTitle}</Heading>
       <div className="next-steps__flow" ref={flow}>
         <ol className="next-steps__list">
           {t.finalCta.next.map((step, i) => (

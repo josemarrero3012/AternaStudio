@@ -33,7 +33,7 @@ function LangToggle({ className = "" }: { className?: string }) {
             className="lang-toggle__btn t-label"
             data-active={active}
             aria-current={active ? "true" : undefined}
-            aria-label={LOCALE_NAMES[l]}
+            aria-label={`${l.toUpperCase()} — ${LOCALE_NAMES[l]}`}
             hrefLang={l}
             lang={l}
           >

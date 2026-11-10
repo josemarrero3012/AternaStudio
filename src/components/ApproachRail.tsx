@@ -111,6 +111,7 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
         const lines = SplitText.create(phase.querySelectorAll(".rail-phase__title, .rail-phase__body"), {
           type: "lines",
           mask: "lines",
+          aria: "none",
         }).lines;
         const link = phase.querySelector(".rail-phase__link");
         const tl = gsap
