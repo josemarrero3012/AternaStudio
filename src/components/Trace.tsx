@@ -58,9 +58,12 @@ export const glyph = (lines: Drawing["lines"], dots: Drawing["dots"], node: Draw
 export const ring = (cx: number, cy: number, r: number) =>
   `M${cx - r} ${cy} A${r} ${r} 0 1 1 ${cx + r} ${cy} A${r} ${r} 0 1 1 ${cx - r} ${cy}`;
 
+/** Ritmo del dibujo de entrada: 0,75 = un 25 % más rápido que los tiempos de glyphs.ts. */
+const SPEED = 0.75;
+
 /** Retardo y duración de cada trazo, en segundos (los lee el CSS). */
 const timing = (delay = 0, dur?: number) =>
-  ({ "--t-delay": `${delay}s`, ...(dur ? { "--t-dur": `${dur}s` } : {}) }) as CSSProperties;
+  ({ "--t-delay": `${delay * SPEED}s`, ...(dur ? { "--t-dur": `${dur * SPEED}s` } : {}) }) as CSSProperties;
 
 /**
  * Radios del halo del nodo, del nodo y de los puntos, en unidades del lienzo.
@@ -78,13 +81,12 @@ const RADII: Record<TraceSize, { glow: number; node: number; dot: number }> = {
 const PULSE = 0.2;
 const PAD = 0.12;
 
-/** Cuándo acaba el dibujo de entrada, en segundos (con los 0,4 s de espera del CSS). */
+/** Cuándo acaba el dibujo de entrada, en segundos (sin contar la espera --t-base del CSS). */
 const drawEnd = ({ lines, dots, node }: Drawing) =>
-  0.4 +
   Math.max(
-    ...lines.map((l) => (l.delay ?? 0) + (l.dur ?? 2.4)),
-    ...(dots ?? []).map((d) => d.delay + 0.9),
-    node ? node.delay + 0.9 : 0,
+    ...lines.map((l) => ((l.delay ?? 0) + (l.dur ?? 2.4)) * SPEED),
+    ...(dots ?? []).map((d) => d.delay * SPEED + 0.9),
+    node ? node.delay * SPEED + 0.9 : 0,
   );
 
 /**
@@ -191,13 +193,13 @@ export function Trace({ drawing, size, className }: { drawing: Drawing; size: Tr
         el.dataset.draw = "on";
         if (!flow) return;
         // --t-base (CSS) puede retrasar el dibujo; el bucle espera a que acabe.
-        const base = parseFloat(getComputedStyle(el).getPropertyValue("--t-base")) || 0.4;
+        const base = parseFloat(getComputedStyle(el).getPropertyValue("--t-base")) || 0;
         timer = window.setTimeout(() => {
           anims = runFlow(el, flow);
           if (!visible) anims.forEach((a) => a.pause());
-        }, (drawEnd(drawing) - 0.4 + base) * 1000);
+        }, (drawEnd(drawing) + base) * 1000);
       },
-      { threshold: 0.6, rootMargin: "0px 0px -8% 0px" },
+      { threshold: 0.1 },
     );
     // Fuera de pantalla el movimiento continuo se pausa: no gasta batería.
     const view = new IntersectionObserver((entries) => {

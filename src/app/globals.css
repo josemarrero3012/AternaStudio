@@ -1748,7 +1748,7 @@ body[data-menu="open"] .assistant__orb {
      curvas cuadráticas y, con «1» justo, la última esquina de un rectángulo
      redondeado se quedaba sin dibujar. El hueco (1,1) basta para ocultarlo. */
   stroke-dasharray: 1.05 1.1;
-  transition: stroke-dashoffset var(--t-dur, 2.4s) var(--e-inout) calc(var(--t-base, 0.4s) + var(--t-delay, 0s));
+  transition: stroke-dashoffset var(--t-dur, 1.8s) var(--e-inout) calc(var(--t-base, 0s) + var(--t-delay, 0s));
 }
 
 .trace__line {
@@ -1759,7 +1759,7 @@ body[data-menu="open"] .assistant__orb {
   stroke-width: var(--sw-halo);
   opacity: 0.16;
   transition:
-    stroke-dashoffset var(--t-dur, 2.4s) var(--e-inout) calc(var(--t-base, 0.4s) + var(--t-delay, 0s)),
+    stroke-dashoffset var(--t-dur, 1.8s) var(--e-inout) calc(var(--t-base, 0s) + var(--t-delay, 0s)),
     opacity var(--d-std) var(--e-out);
 }
 
@@ -1808,14 +1808,14 @@ body[data-menu="open"] .assistant__orb {
 .trace__node {
   transform-box: fill-box;
   transform-origin: center;
-  transition: opacity var(--d-cine) var(--e-out) calc(var(--t-base, 0.4s) + var(--t-delay, 0s));
+  transition: opacity var(--d-cine) var(--e-out) calc(var(--t-base, 0s) + var(--t-delay, 0s));
 }
 
 .trace__glow {
   transform-box: fill-box;
   transform-origin: center;
   transition:
-    opacity var(--d-cine) var(--e-out) calc(var(--t-base, 0.4s) + var(--t-delay, 0s)),
+    opacity var(--d-cine) var(--e-out) calc(var(--t-base, 0s) + var(--t-delay, 0s)),
     transform var(--d-std) var(--e-out);
 }
 
