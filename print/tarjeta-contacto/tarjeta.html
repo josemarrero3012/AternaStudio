@@ -81,34 +81,19 @@
     inset: var(--bleed);
   }
 
-  /* ───────────── Anverso: marco degradado + panel negro ───────────── */
+  /* ───────────── Anverso: noche a sangre, sin marco ───────────── */
+  /* El panel negro de las tarjetas de la web ocupa toda la cara; la luz del
+     marco degradado queda como brillo violeta y orquídea en el fondo. */
   .front .sheet {
     background:
-      radial-gradient(90% 55% at 100% 100%, var(--card-rose), transparent 70%),
-      linear-gradient(160deg, var(--card-a) 0%, var(--card-b) 100%);
-  }
-  .dust { position: absolute; inset: 0; width: 100%; height: 100%; }
-
-  .panel {
-    position: absolute;
-    inset: 4.5mm;
-    border-radius: 3.2mm;
-    border: 0.12mm solid rgb(255 255 255 / 0.07);
-    background:
-      radial-gradient(closest-side, rgb(154 92 240 / 0.14), transparent),
+      radial-gradient(55% 70% at 50% 46%, rgb(154 92 240 / 0.16), transparent 72%),
+      radial-gradient(60% 75% at 100% 100%, rgb(215 124 245 / 0.14), transparent 70%),
+      radial-gradient(55% 70% at 0% 0%, rgb(75 85 214 / 0.16), transparent 70%),
       var(--panel);
-    box-shadow: 0 2.5mm 6mm -3mm rgb(0 0 0 / 0.55);
   }
-  /* Filete de luz en el borde de arriba, como en la web. */
-  .panel::before {
-    content: "";
-    position: absolute;
-    top: -0.12mm;
-    left: 14%;
-    right: 14%;
-    height: 0.18mm;
-    background: linear-gradient(90deg, transparent, rgb(154 163 255 / 0.85), rgb(215 124 245 / 0.85), transparent);
-  }
+  .dust { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.45; }
+
+  .panel { position: absolute; inset: 0; }
 
   .lockup {
     position: absolute;
@@ -119,14 +104,14 @@
     gap: 3.6mm;
     padding-bottom: 2.2mm;
   }
-  .lockup__symbol { width: 21mm; height: 21mm; display: block; }
-  .lockup__word { width: 31mm; height: auto; display: block; }
+  .lockup__symbol { width: 23mm; height: 23mm; display: block; }
+  .lockup__word { width: 34mm; height: auto; display: block; }
 
   .panel__foot {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 3.4mm;
+    bottom: var(--safe);
     display: flex;
     justify-content: center;
   }

@@ -1,7 +1,7 @@
 # Tarjeta de contacto de Aterna Studio
 
-Tarjeta de visita con la identidad de la web: anverso con el marco degradado y el
-panel negro de las tarjetas (`.aurora-card` + `.aurora-panel`), símbolo y logotipo;
+Tarjeta de visita con la identidad de la web: anverso en negro a sangre (el panel
+de las tarjetas de la web, sin el marco degradado) con brillo violeta, símbolo y logotipo;
 reverso en noche con la etiqueta de la web, el titular en Fraunces, los datos en
 Geist / Geist Mono y un QR a aternastudio.com.
 
