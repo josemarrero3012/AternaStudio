@@ -105,8 +105,8 @@
   --s-9: 64px;
   --s-10: 80px;
   --s-12: 128px;
-  --section-y: clamp(80px, 9vw, 160px);
-  --section-y-lg: clamp(104px, 13vw, 220px);
+  --section-y: clamp(72px, 8.1vw, 144px);
+  --section-y-lg: clamp(94px, 11.7vw, 198px);
   --block-y: clamp(40px, 4vw, 64px);
   --head-top: clamp(120px, 10vw, 152px);
   --header-h: 68px;

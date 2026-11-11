@@ -187,6 +187,40 @@ export function Spotlight() {
 export function SmoothScroll({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
+  // Al llegar desde otra ruta, espera al montaje de las secciones fijadas
+  // y a las fuentes antes de situar el destino del enlace.
+  useEffect(() => {
+    if (!location.hash) return;
+    let cancelled = false;
+    let frame = 0;
+    const hash = location.hash;
+    const cancel = () => { cancelled = true; };
+    window.addEventListener("wheel", cancel, { passive: true });
+    window.addEventListener("touchstart", cancel, { passive: true });
+    window.addEventListener("keydown", cancel);
+    document.fonts.ready.then(() => {
+      frame = requestAnimationFrame(() => {
+        if (cancelled || location.hash !== hash) return;
+        let id: string;
+        try { id = decodeURIComponent(hash.slice(1)); } catch { return; }
+        const target = document.getElementById(id);
+        if (!target) return;
+        registerGsap();
+        ScrollTrigger.refresh();
+        target.scrollIntoView({ block: "start", behavior: "instant" });
+        if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+        target.focus({ preventScroll: true });
+      });
+    });
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+      window.removeEventListener("wheel", cancel);
+      window.removeEventListener("touchstart", cancel);
+      window.removeEventListener("keydown", cancel);
+    };
+  }, [pathname]);
+
   useEffect(() => {
     if (prefersReducedMotion()) return;
     registerGsap();
@@ -219,18 +253,18 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const link = (e.target as Element | null)?.closest<HTMLAnchorElement>('a[href*="#"]');
-      if (!link || link.classList.contains("skip-link")) return;
+      if (!link || link.classList.contains("skip-link") || link.target === "_blank" || link.hasAttribute("download")) return;
       const url = new URL(link.href);
       if (url.origin !== location.origin || url.pathname !== location.pathname || !url.hash) return;
       const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
       if (!target) return;
       e.preventDefault();
       instance.scrollTo(target);
-      history.pushState(null, "", url.hash);
+      history.pushState(history.state, "", url.hash);
       if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
       target.focus({ preventScroll: true });
     };
-    document.addEventListener("click", onClick);
+    document.addEventListener("click", onClick, true);
 
     // Con el menú móvil abierto la página de detrás no se mueve.
     const menu = new MutationObserver(() => {
@@ -241,7 +275,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
 
     return () => {
       cancelAnimationFrame(raf);
-      document.removeEventListener("click", onClick);
+      document.removeEventListener("click", onClick, true);
       menu.disconnect();
       instance.destroy();
     };
