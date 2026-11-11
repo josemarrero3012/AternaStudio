@@ -2628,6 +2628,7 @@ a.aurora-card {
 .root__line {
   stroke-width: 1.2;
   stroke-linecap: round;
+  stroke-linejoin: round;
   filter: drop-shadow(0 0 4px color-mix(in srgb, var(--violet) 70%, transparent));
 }
 
@@ -2838,6 +2839,7 @@ a.aurora-card {
 .rootlets__line {
   stroke-width: 1.1;
   stroke-linecap: round;
+  stroke-linejoin: round;
   filter: drop-shadow(0 0 3px color-mix(in srgb, var(--violet) 70%, transparent));
 }
 
@@ -3073,11 +3075,11 @@ a.aurora-card {
 }
 
 .rail-phase[data-side="top"] .rail-phase__copy {
-  top: 3%;
+  bottom: calc(50% + var(--s-5));
 }
 
 .rail-phase[data-side="bottom"] .rail-phase__copy {
-  bottom: 3%;
+  top: calc(50% + var(--s-5));
 }
 
 /* El número de la fase, grande y con la luz del vídeo. Espera apagado y se

@@ -15,20 +15,26 @@
 import { useEffect, useId, useRef, type CSSProperties } from "react";
 import { useI18n } from "@/lib/i18n";
 import { prefersReducedMotion } from "@/lib/motion";
+import { rootBranch, rootPath, type RootCurve } from "@/lib/root-curves";
 
 /** Lienzo de 460 × 250: y = 0 es la línea del suelo. */
-const ROOTS: { d: string; delay: number; faint?: boolean }[] = [
-  { d: "M0 0 C2 52 30 84 24 140 C20 178 36 206 30 240", delay: 0.2 },
-  { d: "M118 0 C116 46 88 80 94 128 C98 166 80 192 84 226", delay: 0.45 },
-  { d: "M100 64 C124 84 146 104 144 152", delay: 0.8, faint: true },
-  { d: "M252 0 C254 38 282 66 276 114 C272 150 292 170 288 200", delay: 0.6 },
-  { d: "M268 52 C246 70 232 92 236 124", delay: 0.95, faint: true },
-  { d: "M372 0 C370 30 352 50 358 92", delay: 0.75 },
+const MAIN: RootCurve[][] = [
+  [[[0, 0], [2, 52], [30, 84], [24, 140]], [[24, 140], [21, 168], [36, 206], [30, 240]]],
+  [[[118, 0], [116, 46], [88, 80], [94, 128]], [[94, 128], [98, 160], [80, 192], [84, 226]]],
+  [[[252, 0], [254, 38], [282, 66], [276, 114]], [[276, 114], [272, 146], [292, 170], [288, 200]]],
+];
+const ROOTS: { d: string; delay: number; faint?: boolean; tip?: boolean }[] = [
+  { d: rootPath(...MAIN[0]), delay: 0.2, tip: true },
+  { d: rootPath(...MAIN[1]), delay: 0.45, tip: true },
+  { d: rootPath(rootBranch(MAIN[1][0], 0.52, 24, [146, 104], [144, 152])), delay: 0.8, faint: true, tip: true },
+  { d: rootPath(...MAIN[2]), delay: 0.6, tip: true },
+  { d: rootPath(rootBranch(MAIN[2][0], 0.48, 20, [232, 92], [236, 124])), delay: 0.95, faint: true, tip: true },
+  { d: "M372 0 C370 30 352 50 358 92", delay: 0.75, tip: true },
   // Raicillas: más finas y tenues, salen de las raíces principales.
-  { d: "M18 112 C4 128 -2 150 6 172", delay: 1.1, faint: true },
-  { d: "M88 160 C104 176 112 196 108 214", delay: 1.2, faint: true },
+  { d: rootPath(rootBranch(MAIN[0][0], 0.8, 18, [-2, 150], [6, 172])), delay: 1.1, faint: true },
+  { d: rootPath(rootBranch(MAIN[1][1], 0.35, 16, [112, 196], [108, 214])), delay: 1.2, faint: true },
   { d: "M196 0 C198 22 186 40 190 66", delay: 0.9, faint: true },
-  { d: "M280 140 C300 150 312 166 312 184", delay: 1.25, faint: true },
+  { d: rootPath(rootBranch(MAIN[2][1], 0.32, 14, [312, 166], [312, 184])), delay: 1.25, faint: true },
   { d: "M420 0 C421 18 432 30 430 50", delay: 1, faint: true },
 ];
 
@@ -88,6 +94,11 @@ export function MethodRoot({ variant }: { variant: "rail" | "static" }) {
             <stop offset="0.45" stopColor="var(--violet)" stopOpacity="0.7" />
             <stop offset="1" stopColor="var(--indigo)" stopOpacity="0" />
           </linearGradient>
+          <linearGradient id={`${id}-tip`} href={`#${id}`}>
+            <stop offset="0" stopColor="var(--orchid)" />
+            <stop offset="0.45" stopColor="var(--violet)" stopOpacity="0.7" />
+            <stop offset="1" stopColor="var(--violet)" stopOpacity="0.35" />
+          </linearGradient>
         </defs>
         {ROOTS.map((r, i) => (
           <path
@@ -95,7 +106,7 @@ export function MethodRoot({ variant }: { variant: "rail" | "static" }) {
             className={`root__line${r.faint ? " root__line--faint" : ""}`}
             d={r.d}
             pathLength={1}
-            stroke={`url(#${id})`}
+            stroke={`url(#${id}${r.tip ? "-tip" : ""})`}
             style={{ "--d": `${r.delay}s` } as CSSProperties}
           />
         ))}
