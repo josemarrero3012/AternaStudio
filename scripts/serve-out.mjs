@@ -77,6 +77,12 @@ createServer((req, res) => {
   if (!file) {
     file = notFoundPage(urlPath);
     status = 404;
+    // Una carpeta sin 404.html (los prototipos): un 404 a secas.
+    if (!isFile(file)) {
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end("404");
+      return;
+    }
   }
   res.writeHead(status, {
     // Se leen en cada petición: así valen tras recompilar sin reiniciar.
@@ -86,5 +92,5 @@ createServer((req, res) => {
   });
   createReadStream(file).pipe(res);
 }).listen(PORT, () => {
-  console.log(`out/ en http://localhost:${PORT}`);
+  console.log(`${ROOT} en http://localhost:${PORT}`);
 });

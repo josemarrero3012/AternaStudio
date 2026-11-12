@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Diseño y desarrollo web — Aterna Studio (prototipo)</title>
+<link rel="preload" href="../../base/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../base/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../base/base.css">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+<header class="header">
+  <div class="container header__inner">
+    <a class="header__brand" href="#" aria-label="Aterna Studio — inicio">
+      <img class="header__symbol" src="../../base/brand/aterna-symbol-light.webp" alt="" width="319" height="320">
+      <img class="header__wordmark" src="../../base/brand/aterna-wordmark-light.webp" alt="Aterna Studio" width="917" height="256">
+    </a>
+    <nav class="header__nav" aria-label="Principal">
+      <ul>
+        <li><a class="t-small link-underline" href="#" aria-current="page">Servicios</a></li>
+        <li><a class="t-small link-underline" href="#">Estudio</a></li>
+        <li><a class="t-small link-underline" href="#">Contacto</a></li>
+      </ul>
+    </nav>
+    <div class="header__end">
+      <div class="lang-toggle t-label" role="group" aria-label="Idioma">
+        <a href="#" aria-current="true" aria-label="ES — Español">ES</a>
+        <a href="#" aria-label="EN — English">EN</a>
+        <a href="#" aria-label="NL — Nederlands">NL</a>
+        <a href="#" aria-label="DE — Deutsch">DE</a>
+      </div>
+      <a class="btn-primary" href="#">Empezar un proyecto
+        <svg class="arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
+      </a>
+    </div>
+    <button class="menu-toggle t-label" type="button" aria-expanded="false">Menú <span class="menu-toggle__icon" aria-hidden="true"></span></button>
+  </div>
+</header>
+
+<main id="contenido" class="ficha-page">
+  <div class="container f-layout">
+
+    <section class="f-head">
+      <nav class="f-crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a class="link-underline" href="#">Servicios</a></li>
+          <li aria-current="page">Diseño y desarrollo web</li>
+        </ol>
+      </nav>
+      <h1 class="f-h1"><span>Una web que se parezca</span> <span>a tu negocio.</span></h1>
+      <p class="f-lead">Diseño, dirección de arte y desarrollo web a medida, sin plantillas ni plugins que mantener. Al terminar, el código es tuyo.</p>
+    </section>
+
+    <!-- La ficha: la única pieza encendida de la página. Acompaña al lector
+         (fija en escritorio) y lleva la decisión: plan, precio y llamada. -->
+    <aside class="f-card" id="planes" aria-labelledby="ficha-titulo">
+      <div class="f-card__art"><svg class="dibujo" viewBox="0 0 96 40" aria-hidden="true" focusable="false"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 H87 Q90 3 90 6 V34 Q90 37 87 37 H9 Q6 37 6 34 V6 Q6 3 9 3"/><path class="dibujo__tenue" d="M6 10 H90"/><path d="M14 14 H54 Q56 14 56 16 V24 Q56 26 54 26 H14 Q12 26 12 24 V16 Q12 14 14 14"/><path d="M62 15 H84"/><path class="dibujo__tenue" d="M62 19.5 H78"/><path class="dibujo__tenue" d="M62 24 H82"/><path class="dibujo__tenue" d="M12 31.5 H26"/><path class="dibujo__tenue" d="M33 31.5 H47"/><path class="dibujo__tenue" d="M54 31.5 H68"/></g><circle class="dibujo__punto" cx="10.5" cy="6.5" r="1"/><circle class="dibujo__punto" cx="14.5" cy="6.5" r="1"/><circle class="dibujo__punto" cx="18.5" cy="6.5" r="1"/><circle class="dibujo__halo" cx="81" cy="31.5" r="6"/><circle class="dibujo__nodo" cx="81" cy="31.5" r="1.7"/></svg></div>
+      <h2 class="f-card__title" id="ficha-titulo">Planes</h2>
+      <fieldset class="f-seg">
+        <legend class="sr-only">Elige un plan</legend>
+        <input class="sr-only" type="radio" name="plan" id="plan-1" value="Esencial"><label for="plan-1">Esencial</label>
+        <input class="sr-only" type="radio" name="plan" id="plan-2" value="A medida" checked><label for="plan-2">A medida</label>
+        <input class="sr-only" type="radio" name="plan" id="plan-3" value="Premium"><label for="plan-3">Premium</label>
+      </fieldset>
+
+      <div class="f-plan" data-plan="1">
+        <h3 class="f-plan__name">Esencial</h3>
+        <p class="f-plan__price"><span>desde</span> 1490 € <span>pago único</span></p>
+        <p class="f-plan__tagline">Una web de una página o de pocas secciones, para empezar bien.</p>
+        <ul class="f-plan__features">
+          <li>Hasta 3 secciones</li>
+          <li>Diseño a medida</li>
+          <li>Formulario de contacto</li>
+          <li>Responsive y accesible</li>
+        </ul>
+        <a class="btn-primary f-plan__cta" href="#fin">Empezar con Esencial</a>
+      </div>
+      <div class="f-plan" data-plan="2">
+        <h3 class="f-plan__name">A medida <span class="f-plan__flag">Recomendado</span></h3>
+        <p class="f-plan__price"><span>desde</span> 2900 € <span>pago único</span></p>
+        <p class="f-plan__tagline">La que más hacemos: una web completa de varias páginas.</p>
+        <ul class="f-plan__features">
+          <li>Páginas a medida sin límite fijo</li>
+          <li>Dirección de arte completa</li>
+          <li>Motion e interacción donde aporta</li>
+          <li>SEO técnico + datos estructurados</li>
+        </ul>
+        <a class="btn-primary f-plan__cta" href="#fin">Empezar con A medida</a>
+      </div>
+      <div class="f-plan" data-plan="3">
+        <h3 class="f-plan__name">Premium</h3>
+        <p class="f-plan__price"><span>desde</span> 5900 € <span>pago único</span></p>
+        <p class="f-plan__tagline">Para cuando la web tiene que hacer más cosas.</p>
+        <ul class="f-plan__features">
+          <li>Multi-idioma</li>
+          <li>Reservas o tienda</li>
+          <li>Experiencias 3D / motion avanzado</li>
+          <li>Todo lo anterior</li>
+        </ul>
+        <a class="btn-primary f-plan__cta" href="#fin">Empezar con Premium</a>
+      </div>
+      <p class="f-card__note">Precio orientativo según alcance. IVA no incluido.</p>
+    </aside>
+
+    <section class="f-block f-statement" aria-label="El servicio">
+      <p>Muchas webs se parecen porque salen del mismo puñado de plantillas. Nosotros empezamos por otra pregunta: qué tiene que conseguir la tuya. Que te encuentren, que te reserven, que te compren. Con eso claro, decidimos la estructura, la dirección de arte y el código.</p>
+    </section>
+
+    <section class="f-block" aria-labelledby="incluye">
+      <h2 class="f-h2" id="incluye">Qué incluye</h2>
+      <ol class="f-steps">
+        <li><span class="f-n">1</span><span>Auditoría y estrategia antes de diseñar nada</span></li>
+        <li><span class="f-n">2</span><span>Dirección de arte a medida: tipografía, color, imagen y tono</span></li>
+        <li><span class="f-n">3</span><span>Diseño de la experiencia completa, de escritorio a móvil</span></li>
+        <li><span class="f-n">4</span><span>Código propio, rápido y accesible (Core Web Vitals como objetivo)</span></li>
+        <li><span class="f-n">5</span><span>SEO técnico de base y datos estructurados</span></li>
+        <li><span class="f-n">6</span><span>Publicación, pruebas y entrega del código</span></li>
+      </ol>
+    </section>
+
+    <section class="f-block" aria-labelledby="faq">
+      <h2 class="f-h2" id="faq">Preguntas frecuentes</h2>
+      <dl class="f-faq">
+        <div>
+          <dt>¿Cuánto tarda?</dt>
+          <dd>Depende del alcance, pero una web a medida suele estar entre 3 y 6 semanas desde que tenemos el contenido. Te damos un calendario antes de empezar.</dd>
+        </div>
+        <div>
+          <dt>¿El código es mío?</dt>
+          <dd>Sí. Te entregamos el código y es tuyo. Está escrito para que otro estudio pueda seguir con él si algún día cambias de proveedor.</dd>
+        </div>
+        <div>
+          <dt>¿Incluye el mantenimiento?</dt>
+          <dd>El mantenimiento (hosting, copias, actualizaciones, soporte) es un servicio aparte y opcional. Puedes contratarlo o llevar la web por tu cuenta.</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+
+  <section class="container f-others" aria-labelledby="otros">
+    <h2 class="f-h2" id="otros">Otros servicios</h2>
+    <ul class="f-others__list">
+      <li>
+        <a class="f-other" href="#">
+          <span class="f-other__art"><svg class="dibujo" viewBox="0 0 96 40" aria-hidden="true" focusable="false"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3 H85.5 Q90 3 90 7.5 V7.5 Q90 12 85.5 12 H10.5 Q6 12 6 7.5 V7.5 Q6 3 10.5 3"/><path class="dibujo__tenue" d="M9.9 7.5 A2.1 2.1 0 1 1 14.1 7.5 A2.1 2.1 0 1 1 9.9 7.5"/><path d="M19 7.5 H46"/><path d="M10 19 H58"/><path class="dibujo__tenue" d="M10 23 H68"/><path class="dibujo__tenue" d="M10 29.5 H48"/><path class="dibujo__tenue" d="M10 33.5 H62"/><path d="M60.8 19 A3.2 3.2 0 1 1 67.2 19 A3.2 3.2 0 1 1 60.8 19"/><path d="M82 36 V17"/><path d="M77.5 21.5 L82 17 L86.5 21.5"/></g><circle class="dibujo__halo" cx="64" cy="19" r="6"/><circle class="dibujo__nodo" cx="64" cy="19" r="1.7"/></svg></span>
+          <span class="f-other__name">SEO y crecimiento orgánico</span>
+          <span class="f-other__body">Que te encuentre la gente que ya busca lo que ofreces. Trabajo mensual, con un informe claro de lo que cambia.</span>
+          <span class="f-other__price">Desde <strong>390 €</strong>/mes</span>
+        </a>
+      </li>
+      <li>
+        <a class="f-other" href="#">
+          <span class="f-other__art"><svg class="dibujo" viewBox="0 0 96 40" aria-hidden="true" focusable="false"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4 H46 Q48 4 48 6 V11 Q48 13 46 13 H8 Q6 13 6 11 V6 Q6 4 8 4"/><path d="M8 15.5 H46 Q48 15.5 48 17.5 V22.5 Q48 24.5 46 24.5 H8 Q6 24.5 6 22.5 V17.5 Q6 15.5 8 15.5"/><path d="M8 27 H46 Q48 27 48 29 V34 Q48 36 46 36 H8 Q6 36 6 34 V29 Q6 27 8 27"/><path class="dibujo__tenue" d="M18 8.5 H40"/><path class="dibujo__tenue" d="M18 20 H40"/><path class="dibujo__tenue" d="M18 31.5 H40"/><path class="dibujo__tenue" d="M48 8.5 H54 V31.5 H48 M54 20 H64"/><path d="M76 4 L88 8 V18 Q88 30 76 36 Q64 30 64 18 V8 L76 4"/><path d="M70 19.5 L74.5 24 L82.5 15"/></g><circle class="dibujo__punto" cx="11.5" cy="8.5" r="1"/><circle class="dibujo__punto" cx="11.5" cy="20" r="1"/><circle class="dibujo__punto" cx="11.5" cy="31.5" r="1"/><circle class="dibujo__halo" cx="74.5" cy="24" r="6"/><circle class="dibujo__nodo" cx="74.5" cy="24" r="1.7"/></svg></span>
+          <span class="f-other__name">Mantenimiento y soporte</span>
+          <span class="f-other__body">Nos ocupamos del hosting, las copias y las actualizaciones para que tú no tengas que pensar en ello.</span>
+          <span class="f-other__price">Desde <strong>59 €</strong>/mes</span>
+        </a>
+      </li>
+      <li>
+        <a class="f-other" href="#">
+          <span class="f-other__art"><svg class="dibujo" viewBox="0 0 96 40" aria-hidden="true" focusable="false"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11 9 Q8 9 7 12 Q5 20 13 29 Q21 37 28 34 Q30.5 33 30 30.5 L27.5 27.5 Q26.5 26 24.5 27 L22 28.5 Q17 25.5 14 20 L15.5 17.5 Q16.5 15.5 15 14 L12.5 10 Q12 9 11 9"/><path d="M35 15 Q38 20 35 25"/><path class="dibujo__tenue" d="M39 11 Q44 20 39 29"/><path d="M46 20 Q49 11 52 20 Q55 31 58 20 Q61 5 64 20 Q67 35 70 20 Q73 13 76 20"/><path d="M76 20 H88"/></g><circle class="dibujo__halo" cx="88" cy="20" r="6"/><circle class="dibujo__nodo" cx="88" cy="20" r="1.7"/></svg></span>
+          <span class="f-other__name">Asistente telefónico con IA</span>
+          <span class="f-other__body">Un asistente de voz que contesta las llamadas de tu negocio las 24 horas, también cuando estás ocupado o ya has cerrado.</span>
+          <span class="f-other__price">Precio personalizado</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <section class="container f-end" id="fin" aria-labelledby="fin-titulo">
+    <h2 class="f-end__title" id="fin-titulo"><span>Si tu web ya no</span> <span>representa a tu negocio,</span> <span>hablemos.</span></h2>
+    <div class="f-end__row">
+      <p class="f-lead">Cuéntanos a qué te dedicas y qué esperas de tu web.</p>
+      <div class="f-end__actions">
+        <a class="btn-primary" href="#">Empezar un proyecto
+          <svg class="arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
+        </a>
+        <p class="f-end__mail">O escríbenos directamente: <a class="link-underline" href="#">contacto@aternastudio.com</a></p>
+      </div>
+    </div>
+    <div class="f-next">
+      <h3 class="f-next__title">Qué pasa después</h3>
+      <ol class="f-next__list">
+        <li><span class="f-n">1</span><strong>Nos escribes</strong><span>Con lo que tengas: qué hay ahora y para cuándo. No hace falta un briefing.</span></li>
+        <li><span class="f-n">2</span><strong>Te respondemos</strong><span>Siempre, aunque sea para decir que no somos el estudio adecuado. Si no encaja, lo decimos pronto.</span></li>
+        <li><span class="f-n">3</span><strong>Lo ponemos por escrito</strong><span>Una propuesta con qué haríamos, en qué plazo y por cuánto, antes de empezar nada.</span></li>
+      </ol>
+      <p class="f-next__note">Agenda limitada: pregunta por fechas y te decimos.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div>
+      <img class="footer__lockup" src="../../base/brand/aterna-lockup-light.webp" alt="Aterna Studio" width="808" height="320" loading="lazy">
+      <p class="t-small muted">Estudio digital independiente.<br>Webs premium y crecimiento orgánico.</p>
+    </div>
+    <div class="footer__cols">
+      <nav class="footer__col" aria-label="Servicios">
+        <p class="t-label dim">Servicios</p>
+        <ul>
+          <li><a class="t-small link-underline" href="#">Diseño y desarrollo web</a></li>
+          <li><a class="t-small link-underline" href="#">SEO y crecimiento orgánico</a></li>
+          <li><a class="t-small link-underline" href="#">Mantenimiento y soporte</a></li>
+          <li><a class="t-small link-underline" href="#">Asistente telefónico con IA</a></li>
+        </ul>
+      </nav>
+      <nav class="footer__col" aria-label="Aterna">
+        <p class="t-label dim">Aterna</p>
+        <ul>
+          <li><a class="t-small link-underline" href="#">Servicios</a></li>
+          <li><a class="t-small link-underline" href="#">Estudio</a></li>
+          <li><a class="t-small link-underline" href="#">Cómo trabajamos</a></li>
+          <li><a class="t-small link-underline" href="#">Contacto</a></li>
+        </ul>
+      </nav>
+      <div class="footer__col">
+        <p class="t-label dim">Contacto</p>
+        <ul>
+          <li><a class="t-small link-underline" href="#">contacto@aternastudio.com</a></li>
+          <li><a class="t-small link-underline" href="#">WhatsApp</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="container"><p class="footer__giant" aria-hidden="true">Aterna</p></div>
+  <div class="container footer__base">
+    <p class="t-label dim">© 2026 Aterna Studio</p>
+    <ul class="footer__legal">
+      <li><a class="t-label dim link-underline" href="#">Impressum</a></li>
+      <li><a class="t-label dim link-underline" href="#">Datenschutz</a></li>
+      <li><a class="t-label dim link-underline" href="#">Aviso legal y privacidad</a></li>
+    </ul>
+  </div>
+</footer>
+
+<div class="floats" aria-hidden="true"><span></span><span></span></div>
+</body>
+</html>

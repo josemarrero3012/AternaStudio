@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Diseño y desarrollo web — Aterna Studio (prototipo)</title>
+<link rel="preload" href="../../base/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../base/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../base/base.css">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+<header class="header">
+  <div class="container header__inner">
+    <a class="header__brand" href="#" aria-label="Aterna Studio — inicio">
+      <img class="header__symbol" src="../../base/brand/aterna-symbol-light.webp" alt="" width="319" height="320">
+      <img class="header__wordmark" src="../../base/brand/aterna-wordmark-light.webp" alt="Aterna Studio" width="917" height="256">
+    </a>
+    <nav class="header__nav" aria-label="Principal">
+      <ul>
+        <li><a class="t-small link-underline" href="#" aria-current="page">Servicios</a></li>
+        <li><a class="t-small link-underline" href="#">Estudio</a></li>
+        <li><a class="t-small link-underline" href="#">Contacto</a></li>
+      </ul>
+    </nav>
+    <div class="header__end">
+      <div class="lang-toggle t-label" role="group" aria-label="Idioma">
+        <a href="#" aria-current="true" aria-label="ES — Español">ES</a>
+        <a href="#" aria-label="EN — English">EN</a>
+        <a href="#" aria-label="NL — Nederlands">NL</a>
+        <a href="#" aria-label="DE — Deutsch">DE</a>
+      </div>
+      <a class="btn-primary" href="#">Empezar un proyecto
+        <svg class="arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
+      </a>
+    </div>
+    <button class="menu-toggle t-label" type="button" aria-expanded="false">Menú <span class="menu-toggle__icon" aria-hidden="true"></span></button>
+  </div>
+</header>
+
+<main id="contenido" class="raiz">
+  <div class="container raiz__cuerpo">
+   <div class="raiz__tronco">
+    <!-- La raíz: una línea de luz que baja desde el árbol del logo. La luz
+         la recorre a medida que se baja por la página. -->
+    <div class="raiz__linea" aria-hidden="true"><span class="raiz__luz"></span></div>
+
+    <section class="tramo r-head">
+      <nav class="r-crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a class="link-underline" href="#">Servicios</a></li>
+          <li aria-current="page">Diseño y desarrollo web</li>
+        </ol>
+      </nav>
+      <h1 class="r-h1"><span>Una web que se parezca</span> <span>a tu negocio.</span></h1>
+      <div class="r-head__grid">
+        <div class="r-head__copy">
+          <p class="r-lead">Diseño, dirección de arte y desarrollo web a medida, sin plantillas ni plugins que mantener. Al terminar, el código es tuyo.</p>
+          <div class="r-offer">
+            <p class="r-price"><span class="r-price__from">Desde</span> <span class="r-price__amount">1490 €</span><span class="r-price__unit">Pago único</span></p>
+            <div class="r-offer__actions">
+              <a class="btn-primary" href="#fin">Empezar un proyecto
+                <svg class="arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
+              </a>
+              <a class="btn-ghost" href="#planes">Ver planes</a>
+            </div>
+          </div>
+        </div>
+        <div class="r-head__art"><svg class="dibujo" viewBox="0 0 96 40" aria-hidden="true" focusable="false"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 H87 Q90 3 90 6 V34 Q90 37 87 37 H9 Q6 37 6 34 V6 Q6 3 9 3"/><path class="dibujo__tenue" d="M6 10 H90"/><path d="M14 14 H54 Q56 14 56 16 V24 Q56 26 54 26 H14 Q12 26 12 24 V16 Q12 14 14 14"/><path d="M62 15 H84"/><path class="dibujo__tenue" d="M62 19.5 H78"/><path class="dibujo__tenue" d="M62 24 H82"/><path class="dibujo__tenue" d="M12 31.5 H26"/><path class="dibujo__tenue" d="M33 31.5 H47"/><path class="dibujo__tenue" d="M54 31.5 H68"/></g><circle class="dibujo__punto" cx="10.5" cy="6.5" r="1"/><circle class="dibujo__punto" cx="14.5" cy="6.5" r="1"/><circle class="dibujo__punto" cx="18.5" cy="6.5" r="1"/><circle class="dibujo__halo" cx="81" cy="31.5" r="6"/><circle class="dibujo__nodo" cx="81" cy="31.5" r="1.7"/></svg></div>
+      </div>
+    </section>
+
+    <section class="tramo r-statement" aria-label="El servicio">
+      <p class="nodo">Muchas webs se parecen porque salen del mismo puñado de plantillas. Nosotros empezamos por otra pregunta: qué tiene que conseguir la tuya. Que te encuentren, que te reserven, que te compren. Con eso claro, decidimos la estructura, la dirección de arte y el código.</p>
+    </section>
+
+    <section class="tramo r-steps" aria-labelledby="incluye">
+      <h2 class="r-h2 nodo" id="incluye">Qué incluye</h2>
+      <ol class="r-steps__list">
+        <li><span class="r-steps__n">1</span><span>Auditoría y estrategia antes de diseñar nada</span></li>
+        <li><span class="r-steps__n">2</span><span>Dirección de arte a medida: tipografía, color, imagen y tono</span></li>
+        <li><span class="r-steps__n">3</span><span>Diseño de la experiencia completa, de escritorio a móvil</span></li>
+        <li><span class="r-steps__n">4</span><span>Código propio, rápido y accesible (Core Web Vitals como objetivo)</span></li>
+        <li><span class="r-steps__n">5</span><span>SEO técnico de base y datos estructurados</span></li>
+        <li><span class="r-steps__n">6</span><span>Publicación, pruebas y entrega del código</span></li>
+      </ol>
+    </section>
+
+    <section class="tramo r-plans" id="planes" aria-labelledby="planes-titulo">
+      <header class="r-plans__head">
+        <h2 class="r-h2 nodo" id="planes-titulo">Planes</h2>
+        <p class="r-note">Precio orientativo según alcance. IVA no incluido.</p>
+      </header>
+      <div class="r-plans__grid">
+        <figure class="r-rings">
+          <svg viewBox="0 0 400 400" role="img" aria-labelledby="anillos-desc">
+            <desc id="anillos-desc">Tres anillos de crecimiento, uno dentro de otro: Esencial en el centro, A medida alrededor y Premium por fuera.</desc>
+            <g class="anillo" data-nivel="1"><path d="M225 200C225 201.3 224.9 202.6 224.7 203.9C224.4 205.2 224.1 206.5 223.6 207.7C223.1 208.9 222.6 210.1 221.9 211.2C221.3 212.3 220.6 213.4 219.8 214.4C219 215.4 218.2 216.4 217.3 217.3C216.4 218.2 215.5 219.1 214.4 219.9C213.4 220.7 212.3 221.4 211.2 222C210.1 222.6 208.8 223 207.6 223.4C206.4 223.8 205.1 224 203.8 224.1C202.6 224.3 201.3 224.3 200 224.2C198.7 224.2 197.5 224 196.2 223.8C195 223.5 193.8 223.2 192.6 222.8C191.4 222.4 190.3 221.9 189.1 221.3C188 220.7 187 220.1 186 219.3C185 218.6 184 217.8 183.1 216.9C182.2 216 181.4 215.1 180.6 214.1C179.9 213.1 179.2 212 178.6 210.9C178 209.8 177.5 208.6 177.1 207.4C176.7 206.3 176.4 205 176.2 203.8C176.1 202.5 176 201.2 176.1 200C176.1 198.8 176.3 197.5 176.6 196.3C176.8 195.1 177.1 193.9 177.5 192.7C178 191.5 178.5 190.4 179.1 189.3C179.7 188.3 180.4 187.2 181.2 186.3C181.9 185.4 182.8 184.5 183.8 183.8C184.7 183 185.7 182.3 186.7 181.7C187.7 181.1 188.8 180.5 189.8 180.1C190.9 179.6 192 179.1 193.1 178.8C194.2 178.4 195.3 178 196.5 177.8C197.6 177.5 198.8 177.3 200 177.1C201.2 177 202.4 177 203.6 177.1C204.8 177.1 206.1 177.3 207.3 177.5C208.5 177.8 209.7 178.2 210.9 178.6C212.1 179.1 213.2 179.6 214.3 180.3C215.4 181 216.5 181.7 217.4 182.6C218.4 183.4 219.3 184.4 220.1 185.4C220.9 186.4 221.6 187.5 222.2 188.7C222.8 189.8 223.3 191.1 223.7 192.3C224.1 193.5 224.5 194.8 224.7 196.1C224.9 197.4 225 198.7 225 200Z"/><path d="M239.6 200C239.6 202.1 239.2 204.1 238.8 206.1C238.4 208.2 237.8 210.1 237.1 212C236.4 214 235.6 215.8 234.6 217.6C233.7 219.4 232.7 221.2 231.5 222.9C230.3 224.5 229 226.2 227.6 227.6C226.2 229.1 224.6 230.4 223 231.6C221.3 232.8 219.5 233.8 217.7 234.7C215.9 235.6 213.9 236.3 212 236.9C210 237.5 208 237.9 206 238.1C204 238.4 202 238.5 200 238.4C198 238.3 196 238.1 194 237.7C192.1 237.3 190.1 236.7 188.3 236.1C186.4 235.4 184.6 234.6 182.8 233.7C181.1 232.8 179.4 231.7 177.8 230.6C176.2 229.5 174.6 228.2 173.2 226.8C171.7 225.5 170.4 224 169.2 222.4C168 220.8 167 219.1 166.1 217.3C165.2 215.5 164.5 213.6 163.9 211.7C163.3 209.8 162.9 207.9 162.6 205.9C162.4 204 162.2 202 162.2 200C162.2 198 162.3 196 162.7 194.1C163 192.1 163.5 190.2 164.2 188.4C164.8 186.5 165.7 184.7 166.8 183.1C167.8 181.4 169 179.9 170.3 178.4C171.6 177 173 175.7 174.5 174.5C175.9 173.2 177.5 172.1 179 171.1C180.6 170.1 182.2 169.2 183.9 168.4C185.5 167.5 187.3 166.8 189 166.2C190.8 165.6 192.6 165.1 194.4 164.7C196.2 164.3 198.1 164 200 163.8C201.9 163.7 203.8 163.6 205.7 163.7C207.7 163.8 209.6 164 211.6 164.4C213.5 164.8 215.4 165.4 217.3 166.1C219.1 166.8 220.9 167.8 222.7 168.8C224.4 169.9 226 171.1 227.5 172.5C229 173.9 230.4 175.4 231.7 177C233 178.6 234.2 180.3 235.2 182.1C236.2 183.9 237.1 185.8 237.8 187.7C238.5 189.7 239 191.7 239.3 193.8C239.6 195.8 239.7 197.9 239.6 200Z"/><path d="M253.9 200C253.7 202.8 253.4 205.6 252.9 208.4C252.4 211.1 251.7 213.9 250.8 216.5C250 219.2 248.9 221.8 247.6 224.3C246.4 226.7 244.9 229.2 243.2 231.4C241.6 233.7 239.7 235.8 237.8 237.8C235.8 239.7 233.6 241.5 231.4 243.2C229.1 244.8 226.7 246.3 224.2 247.5C221.7 248.7 219.1 249.8 216.4 250.5C213.8 251.3 211 251.9 208.3 252.2C205.5 252.5 202.7 252.5 200 252.4C197.3 252.3 194.5 251.9 191.9 251.4C189.2 250.9 186.5 250.2 184 249.4C181.4 248.5 178.8 247.5 176.4 246.3C174 245.1 171.6 243.7 169.4 242.1C167.2 240.5 165.1 238.7 163.2 236.8C161.4 234.8 159.6 232.7 158.1 230.4C156.5 228.2 155.2 225.9 154 223.5C152.7 221.1 151.7 218.5 150.8 216C149.9 213.4 149.1 210.8 148.7 208.1C148.2 205.5 147.9 202.7 147.9 200C147.9 197.3 148.2 194.5 148.7 191.9C149.2 189.2 150.1 186.6 151.1 184.1C152.1 181.6 153.4 179.2 154.8 176.9C156.2 174.7 157.8 172.5 159.5 170.6C161.2 168.6 163.1 166.7 165 165C167 163.3 169.1 161.8 171.2 160.4C173.4 159 175.6 157.8 177.9 156.7C180.2 155.6 182.6 154.6 185 153.8C187.4 153 189.8 152.2 192.3 151.7C194.8 151.1 197.4 150.6 200 150.4C202.6 150.1 205.3 150 207.9 150.2C210.5 150.4 213.2 150.7 215.8 151.4C218.4 152 221 152.8 223.5 153.9C226 154.9 228.5 156.2 230.8 157.6C233.2 159 235.5 160.6 237.6 162.4C239.7 164.2 241.8 166.2 243.6 168.3C245.4 170.5 247.1 172.8 248.5 175.3C249.9 177.8 251 180.4 251.9 183.2C252.7 185.9 253.3 188.7 253.6 191.5C253.9 194.3 254 197.2 253.9 200Z"/><path class="anillo__borde" d="M268.4 200C268.3 203.6 268 207.2 267.3 210.7C266.7 214.2 265.8 217.6 264.6 221C263.4 224.3 262 227.6 260.4 230.8C258.8 233.9 256.9 237 254.9 239.9C252.8 242.7 250.5 245.5 248 248C245.5 250.5 242.8 252.9 239.9 254.9C237 257 233.9 258.8 230.7 260.3C227.5 261.7 224.1 262.9 220.7 263.8C217.4 264.8 213.9 265.4 210.4 265.8C207 266.3 203.5 266.5 200 266.4C196.5 266.4 193 266.2 189.6 265.6C186.2 265.1 182.8 264.3 179.5 263.2C176.2 262.1 173 260.6 169.9 259C166.9 257.3 164 255.3 161.3 253.2C158.6 251.1 156.1 248.8 153.7 246.3C151.3 243.8 149.1 241.2 147 238.5C145 235.7 143.1 232.9 141.4 229.8C139.8 226.8 138.3 223.7 137.2 220.4C136 217.2 135.2 213.8 134.6 210.4C134.1 207 133.8 203.4 133.9 200C134 196.6 134.4 193.1 135 189.7C135.7 186.4 136.7 183 137.9 179.8C139.2 176.7 140.7 173.6 142.5 170.7C144.3 167.8 146.4 165.1 148.6 162.6C150.8 160.1 153.2 157.8 155.7 155.7C158.2 153.6 160.9 151.7 163.6 149.9C166.3 148.1 169.1 146.5 172 145C174.9 143.5 177.8 142.2 180.8 141C183.9 139.9 187 138.9 190.2 138.3C193.4 137.6 196.7 137.1 200 136.9C203.3 136.8 206.6 136.8 210 137.1C213.3 137.4 216.6 138 219.9 138.7C223.2 139.5 226.5 140.4 229.7 141.6C233 142.8 236.2 144.2 239.3 145.9C242.3 147.7 245.3 149.7 248.1 151.9C250.8 154.2 253.4 156.8 255.6 159.6C257.8 162.4 259.8 165.5 261.4 168.7C263.1 171.9 264.4 175.3 265.5 178.7C266.5 182.2 267.3 185.7 267.8 189.3C268.3 192.8 268.5 196.4 268.4 200Z"/></g><g class="anillo" data-nivel="2"><path d="M284.8 200C284.7 204.4 284.2 208.9 283.4 213.2C282.7 217.6 281.6 221.9 280.3 226.1C278.9 230.3 277.3 234.4 275.4 238.4C273.4 242.3 271.1 246.2 268.5 249.8C265.9 253.3 262.9 256.7 259.7 259.7C256.5 262.7 253 265.5 249.3 267.9C245.7 270.3 241.8 272.4 237.9 274.3C233.9 276.2 229.8 277.8 225.7 279.1C221.6 280.4 217.3 281.5 213 282.2C208.7 282.8 204.3 283.2 200 283.2C195.7 283.1 191.3 282.7 187 281.9C182.8 281.1 178.6 279.8 174.6 278.3C170.5 276.8 166.6 274.9 162.9 272.8C159.1 270.8 155.5 268.4 152.1 265.9C148.7 263.3 145.4 260.6 142.4 257.6C139.4 254.6 136.5 251.4 134 248C131.4 244.6 129.1 240.9 127.1 237.1C125.1 233.4 123.4 229.4 122 225.3C120.6 221.3 119.5 217.1 118.8 212.9C118.1 208.6 117.7 204.3 117.7 200C117.8 195.7 118.2 191.4 119.1 187.2C119.9 183 121.3 178.9 122.9 175C124.6 171.1 126.7 167.3 128.9 163.8C131.2 160.3 133.8 157 136.5 153.8C139.1 150.7 142 147.8 145 145C148 142.3 151.2 139.7 154.5 137.4C157.8 135.1 161.3 132.9 164.9 131.1C168.5 129.3 172.3 127.8 176.1 126.5C180 125.3 183.9 124.4 187.9 123.7C191.9 123 195.9 122.5 200 122.3C204.1 122.1 208.2 122 212.3 122.3C216.4 122.5 220.6 122.9 224.8 123.7C228.9 124.5 233.1 125.6 237.2 127C241.2 128.5 245.2 130.4 249 132.6C252.7 134.8 256.4 137.4 259.7 140.3C263 143.2 266.1 146.5 268.8 150C271.6 153.5 274.1 157.3 276.2 161.2C278.3 165.1 280 169.3 281.4 173.6C282.7 177.8 283.7 182.2 284.3 186.7C284.8 191.1 285 195.6 284.8 200Z"/><path d="M301.3 200C301.3 205.3 301 210.6 300.2 215.9C299.5 221.1 298.3 226.4 296.6 231.4C295 236.4 292.8 241.4 290.3 246C287.8 250.6 284.8 255.1 281.5 259.2C278.3 263.4 274.6 267.2 270.8 270.8C267 274.4 263 277.8 258.7 280.8C254.5 283.8 250 286.7 245.4 289C240.7 291.4 235.9 293.5 230.9 295.1C226 296.7 220.8 297.9 215.6 298.6C210.5 299.3 205.2 299.5 200 299.3C194.8 299.1 189.6 298.5 184.6 297.5C179.5 296.5 174.5 295.1 169.7 293.4C164.8 291.6 160.1 289.5 155.6 287.1C151.1 284.7 146.8 281.9 142.7 278.8C138.7 275.8 134.8 272.3 131.3 268.7C127.7 265.1 124.3 261.2 121.3 257.2C118.2 253.1 115.4 248.9 112.9 244.4C110.4 239.9 108.1 235.2 106.4 230.4C104.7 225.6 103.3 220.5 102.5 215.4C101.7 210.4 101.4 205.1 101.6 200C101.8 194.9 102.7 189.7 103.8 184.8C105 179.8 106.7 174.9 108.6 170.3C110.5 165.6 112.8 161.1 115.3 156.8C117.8 152.5 120.6 148.4 123.7 144.6C126.8 140.7 130.1 137 133.8 133.8C137.4 130.5 141.3 127.5 145.4 124.8C149.5 122.2 153.8 119.9 158.2 117.9C162.6 115.9 167.1 114.3 171.7 112.8C176.2 111.3 180.9 110.1 185.6 109.2C190.3 108.2 195.1 107.5 200 107.1C204.9 106.6 209.8 106.5 214.8 106.7C219.7 107 224.8 107.6 229.7 108.6C234.6 109.6 239.6 111 244.4 112.8C249.2 114.7 254 116.9 258.5 119.5C263 122.1 267.4 125.2 271.4 128.6C275.4 132 279.2 135.9 282.5 140.1C285.7 144.3 288.6 148.9 291 153.6C293.4 158.4 295.4 163.4 296.9 168.5C298.4 173.6 299.5 178.9 300.2 184.1C301 189.4 301.3 194.7 301.3 200Z"/><path class="anillo__borde" d="M318.8 200C318.8 206.2 318.2 212.5 317.1 218.5C316 224.6 314.2 230.6 312.1 236.4C310 242.2 307.3 247.8 304.3 253.2C301.4 258.5 298 263.7 294.4 268.6C290.7 273.5 286.8 278.2 282.5 282.5C278.2 286.8 273.5 290.8 268.6 294.4C263.6 297.9 258.4 301.2 252.9 303.9C247.5 306.6 241.7 308.8 235.9 310.6C230.1 312.4 224.1 313.7 218.1 314.6C212.2 315.4 206 315.8 200 315.6C194 315.4 187.9 314.8 182 313.6C176.1 312.5 170.3 310.7 164.7 308.6C159.1 306.5 153.7 303.9 148.6 301C143.4 298.1 138.4 294.8 133.7 291.3C128.9 287.8 124.4 284 120.1 279.9C115.8 275.8 111.6 271.5 108 266.9C104.3 262.2 100.8 257.2 97.9 252C95.1 246.8 92.7 241.2 90.9 235.5C89 229.8 87.8 223.8 87.1 217.9C86.4 212 86.2 205.9 86.5 200C86.7 194.1 87.5 188.1 88.6 182.4C89.7 176.6 91.3 170.8 93.3 165.3C95.4 159.9 97.8 154.5 100.8 149.4C103.7 144.4 107.1 139.6 110.8 135.2C114.5 130.8 118.7 126.7 123 123C127.4 119.3 132 116 136.8 113C141.5 109.9 146.5 107.2 151.5 104.8C156.5 102.4 161.7 100.3 167 98.5C172.3 96.8 177.7 95.3 183.2 94.2C188.7 93.1 194.3 92.3 200 91.9C205.7 91.5 211.4 91.4 217.1 91.7C222.9 92 228.8 92.6 234.5 93.7C240.3 94.8 246.2 96.2 251.8 98.3C257.5 100.3 263.1 102.8 268.3 105.9C273.5 109 278.6 112.8 283.1 116.9C287.6 121 291.8 125.7 295.4 130.7C299.1 135.6 302.3 140.9 305.2 146.4C308 151.9 310.5 157.6 312.4 163.5C314.4 169.3 316.1 175.4 317.1 181.4C318.2 187.5 318.8 193.8 318.8 200Z"/></g><g class="anillo" data-nivel="3"><path d="M337.4 200C337.2 207.2 336.3 214.4 335 221.4C333.6 228.4 331.7 235.3 329.4 242C327 248.7 324.2 255.3 320.9 261.6C317.5 267.8 313.7 273.9 309.5 279.5C305.3 285.2 300.5 290.6 295.5 295.5C290.5 300.4 285 305 279.3 309.1C273.6 313.2 267.5 317 261.3 320.2C255 323.5 248.4 326.3 241.7 328.5C235 330.6 228.1 332.3 221.1 333.2C214.1 334.1 207 334.3 200 333.9C193 333.5 186 332.4 179.3 330.9C172.5 329.4 165.9 327.3 159.4 324.9C153 322.5 146.7 319.7 140.6 316.6C134.5 313.5 128.5 310.1 122.9 306.2C117.2 302.3 111.7 298 106.7 293.3C101.7 288.5 97.1 283.3 93 277.8C88.9 272.2 85.3 266.2 82.2 260C79.1 253.9 76.6 247.3 74.5 240.8C72.5 234.2 70.9 227.4 69.9 220.6C68.9 213.8 68.3 206.9 68.4 200C68.5 193.1 69.1 186.2 70.4 179.5C71.7 172.8 73.6 166.1 76.1 159.7C78.5 153.4 81.6 147.2 85.1 141.5C88.6 135.7 92.6 130.2 96.9 125.1C101.2 120 105.9 115.2 110.9 110.9C115.8 106.5 121.2 102.6 126.7 99.1C132.1 95.5 137.9 92.5 143.8 89.8C149.7 87.1 155.8 84.8 161.9 82.9C168.1 80.9 174.3 79.4 180.7 78C187 76.7 193.5 75.6 200 74.9C206.5 74.3 213.2 73.8 220 74C226.7 74.2 233.6 74.7 240.3 76.1C247 77.4 253.8 79.3 260.2 81.9C266.6 84.5 272.9 87.8 278.8 91.6C284.6 95.4 290.3 99.8 295.5 104.5C300.7 109.3 305.6 114.5 310.1 120C314.5 125.6 318.6 131.5 322.1 137.8C325.7 144 328.7 150.6 331.1 157.4C333.4 164.2 335.2 171.3 336.2 178.4C337.3 185.5 337.6 192.8 337.4 200Z"/><path d="M356 200C355.9 208.1 355 216.4 353.5 224.3C352.1 232.3 349.8 240.2 347.1 247.8C344.3 255.4 340.8 262.8 337 269.8C333.2 276.9 328.7 283.6 324 290.1C319.2 296.5 314 302.7 308.5 308.5C302.9 314.2 296.9 319.7 290.5 324.6C284.1 329.4 277.2 333.9 270.1 337.5C262.9 341.1 255.2 344.1 247.5 346.3C239.8 348.5 231.8 349.8 223.9 350.6C215.9 351.4 207.9 351.4 200 351C192.1 350.6 184.2 349.6 176.5 348.1C168.8 346.7 161.2 344.8 153.7 342.4C146.3 340 138.9 337 132 333.5C125 330 118.2 325.9 111.9 321.3C105.6 316.7 99.6 311.4 94.1 305.9C88.6 300.3 83.6 294.2 79 287.9C74.4 281.6 70.2 274.9 66.6 268C63 261 59.8 253.8 57.4 246.3C54.9 238.9 53 231.2 51.8 223.5C50.6 215.7 50.2 207.8 50.3 200C50.5 192.2 51.4 184.3 52.9 176.7C54.4 169.1 56.5 161.5 59.2 154.3C61.9 147 65.3 139.9 69.1 133.3C73 126.7 77.5 120.3 82.4 114.6C87.3 108.8 92.9 103.5 98.7 98.7C104.5 93.9 110.7 89.7 117.1 85.9C123.4 82 130 78.7 136.6 75.6C143.2 72.5 150 69.7 156.9 67.2C163.7 64.7 170.7 62.4 177.9 60.7C185.1 58.9 192.5 57.4 200 56.7C207.5 55.9 215.2 55.7 222.8 56.2C230.4 56.7 238.1 57.8 245.6 59.6C253.1 61.4 260.6 63.8 267.9 66.8C275.1 69.8 282.3 73.3 289.1 77.4C295.8 81.5 302.5 86.2 308.6 91.4C314.7 96.6 320.6 102.4 325.7 108.7C330.8 115 335.4 121.9 339.3 129C343.2 136.2 346.4 143.9 348.9 151.6C351.5 159.4 353.3 167.5 354.5 175.5C355.7 183.6 356.2 191.9 356 200Z"/><path class="anillo__borde" d="M374.8 200C374.4 209.1 373.1 218.3 371.2 227.1C369.4 236 366.8 244.7 363.8 253.2C360.7 261.7 357.2 270 353.2 278C349.1 286.1 344.6 294 339.5 301.4C334.4 308.8 328.7 316 322.4 322.4C316.1 328.9 309.1 334.9 301.8 340.1C294.4 345.2 286.4 349.7 278.2 353.5C270.1 357.2 261.4 360.2 252.8 362.6C244.2 365 235.4 366.7 226.6 367.8C217.8 369 208.8 369.5 200 369.3C191.2 369.2 182.2 368.4 173.6 366.8C164.9 365.3 156.3 363.1 148 360.2C139.7 357.3 131.5 353.6 123.8 349.5C116.1 345.4 108.6 340.6 101.6 335.5C94.5 330.3 87.8 324.6 81.6 318.4C75.4 312.3 69.5 305.6 64.4 298.6C59.2 291.5 54.5 284 50.5 276.2C46.6 268.4 43.2 260.1 40.6 251.8C37.9 243.5 35.9 234.8 34.6 226.2C33.2 217.6 32.4 208.7 32.4 200C32.4 191.3 33 182.4 34.5 173.8C36 165.2 38.3 156.6 41.4 148.5C44.5 140.4 48.5 132.4 53.1 125.2C57.7 117.9 63.2 111.1 69 104.8C74.7 98.5 81 92.8 87.5 87.5C93.9 82.1 100.6 77.3 107.5 72.7C114.4 68.1 121.4 63.9 128.7 60.1C136 56.4 143.5 52.9 151.3 50.1C159 47.2 167 44.8 175.2 43.1C183.3 41.4 191.6 40.3 200 39.7C208.4 39.2 216.9 39.2 225.4 39.8C233.8 40.5 242.4 41.6 250.9 43.4C259.3 45.3 267.8 47.6 276 50.8C284.2 54 292.4 57.8 300 62.4C307.6 66.9 315 72.3 321.8 78.2C328.6 84.1 335 90.7 340.7 97.8C346.3 104.9 351.5 112.6 355.9 120.5C360.3 128.5 364.2 137 367.1 145.7C370.1 154.4 372.3 163.5 373.6 172.5C374.8 181.6 375.2 190.9 374.8 200Z"/></g>
+            <circle class="r-rings__halo" cx="200" cy="200" r="16"/>
+            <circle class="r-rings__pith" cx="200" cy="200" r="3.5"/>
+          </svg>
+          <figcaption>Cada plan contiene al anterior.</figcaption>
+        </figure>
+
+        <fieldset class="r-plans__list">
+          <legend class="sr-only">Elige un plan</legend>
+
+          <div class="r-plan" data-nivel="1">
+            <input class="r-plan__radio" type="radio" name="plan" id="plan-1" value="Esencial">
+            <h3 class="r-plan__name"><label for="plan-1">Esencial</label></h3>
+            <p class="r-plan__price"><span>desde</span> 1490 € <span class="r-plan__unit">pago único</span></p>
+            <p class="r-plan__tagline">Una web de una página o de pocas secciones, para empezar bien.</p>
+            <ul class="r-plan__features">
+              <li>Hasta 3 secciones</li>
+              <li>Diseño a medida</li>
+              <li>Formulario de contacto</li>
+              <li>Responsive y accesible</li>
+            </ul>
+          </div>
+
+          <div class="r-plan" data-nivel="2">
+            <input class="r-plan__radio" type="radio" name="plan" id="plan-2" value="A medida" checked>
+            <h3 class="r-plan__name"><label for="plan-2">A medida</label> <span class="r-plan__flag">Recomendado</span></h3>
+            <p class="r-plan__price"><span>desde</span> 2900 € <span class="r-plan__unit">pago único</span></p>
+            <p class="r-plan__tagline">La que más hacemos: una web completa de varias páginas.</p>
+            <ul class="r-plan__features">
+              <li>Páginas a medida sin límite fijo</li>
+              <li>Dirección de arte completa</li>
+              <li>Motion e interacción donde aporta</li>
+              <li>SEO técnico + datos estructurados</li>
+            </ul>
+          </div>
+
+          <div class="r-plan" data-nivel="3">
+            <input class="r-plan__radio" type="radio" name="plan" id="plan-3" value="Premium">
+            <h3 class="r-plan__name"><label for="plan-3">Premium</label></h3>
+            <p class="r-plan__price"><span>desde</span> 5900 € <span class="r-plan__unit">pago único</span></p>
+            <p class="r-plan__tagline">Para cuando la web tiene que hacer más cosas.</p>
+            <ul class="r-plan__features">
+              <li>Multi-idioma</li>
+              <li>Reservas o tienda</li>
+              <li>Experiencias 3D / motion avanzado</li>
+              <li>Todo lo anterior</li>
+            </ul>
+          </div>
+
+          <!-- En la web real, cada enlace lleva a /contacto con el plan ya
+               escrito en el mensaje (el formulario lee ?mensaje=). -->
+          <p class="r-plans__cta">
+            <a class="btn-primary" data-plan="1" href="#fin">Empezar con Esencial</a>
+            <a class="btn-primary" data-plan="2" href="#fin">Empezar con A medida</a>
+            <a class="btn-primary" data-plan="3" href="#fin">Empezar con Premium</a>
+            <a class="btn-primary" data-plan="0" href="#fin">Empezar un proyecto</a>
+          </p>
+        </fieldset>
+      </div>
+    </section>
+
+    <section class="tramo r-faq" aria-labelledby="faq">
+      <h2 class="r-h2 nodo" id="faq">Preguntas frecuentes</h2>
+      <dl class="r-faq__list">
+        <div>
+          <dt>¿Cuánto tarda?</dt>
+          <dd>Depende del alcance, pero una web a medida suele estar entre 3 y 6 semanas desde que tenemos el contenido. Te damos un calendario antes de empezar.</dd>
+        </div>
+        <div>
+          <dt>¿El código es mío?</dt>
+          <dd>Sí. Te entregamos el código y es tuyo. Está escrito para que otro estudio pueda seguir con él si algún día cambias de proveedor.</dd>
+        </div>
+        <div>
+          <dt>¿Incluye el mantenimiento?</dt>
+          <dd>El mantenimiento (hosting, copias, actualizaciones, soporte) es un servicio aparte y opcional. Puedes contratarlo o llevar la web por tu cuenta.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="tramo r-others" aria-labelledby="otros">
+      <h2 class="r-h2 nodo" id="otros">Otros servicios</h2>
+      <ul class="r-others__list">
+        <li>
+          <a class="r-other" href="#">
+            <span class="r-other__art"><svg class="dibujo" viewBox="0 0 96 40" aria-hidden="true" focusable="false"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3 H85.5 Q90 3 90 7.5 V7.5 Q90 12 85.5 12 H10.5 Q6 12 6 7.5 V7.5 Q6 3 10.5 3"/><path class="dibujo__tenue" d="M9.9 7.5 A2.1 2.1 0 1 1 14.1 7.5 A2.1 2.1 0 1 1 9.9 7.5"/><path d="M19 7.5 H46"/><path d="M10 19 H58"/><path class="dibujo__tenue" d="M10 23 H68"/><path class="dibujo__tenue" d="M10 29.5 H48"/><path class="dibujo__tenue" d="M10 33.5 H62"/><path d="M60.8 19 A3.2 3.2 0 1 1 67.2 19 A3.2 3.2 0 1 1 60.8 19"/><path d="M82 36 V17"/><path d="M77.5 21.5 L82 17 L86.5 21.5"/></g><circle class="dibujo__halo" cx="64" cy="19" r="6"/><circle class="dibujo__nodo" cx="64" cy="19" r="1.7"/></svg></span>
+            <span class="r-other__name">SEO y crecimiento orgánico</span>
+            <span class="r-other__body">Que te encuentre la gente que ya busca lo que ofreces. Trabajo mensual, con un informe claro de lo que cambia.</span>
+            <span class="r-other__price">Desde <strong>390 €</strong>/mes</span>
+          </a>
+        </li>
+        <li>
+          <a class="r-other" href="#">
+            <span class="r-other__art"><svg class="dibujo" viewBox="0 0 96 40" aria-hidden="true" focusable="false"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4 H46 Q48 4 48 6 V11 Q48 13 46 13 H8 Q6 13 6 11 V6 Q6 4 8 4"/><path d="M8 15.5 H46 Q48 15.5 48 17.5 V22.5 Q48 24.5 46 24.5 H8 Q6 24.5 6 22.5 V17.5 Q6 15.5 8 15.5"/><path d="M8 27 H46 Q48 27 48 29 V34 Q48 36 46 36 H8 Q6 36 6 34 V29 Q6 27 8 27"/><path class="dibujo__tenue" d="M18 8.5 H40"/><path class="dibujo__tenue" d="M18 20 H40"/><path class="dibujo__tenue" d="M18 31.5 H40"/><path class="dibujo__tenue" d="M48 8.5 H54 V31.5 H48 M54 20 H64"/><path d="M76 4 L88 8 V18 Q88 30 76 36 Q64 30 64 18 V8 L76 4"/><path d="M70 19.5 L74.5 24 L82.5 15"/></g><circle class="dibujo__punto" cx="11.5" cy="8.5" r="1"/><circle class="dibujo__punto" cx="11.5" cy="20" r="1"/><circle class="dibujo__punto" cx="11.5" cy="31.5" r="1"/><circle class="dibujo__halo" cx="74.5" cy="24" r="6"/><circle class="dibujo__nodo" cx="74.5" cy="24" r="1.7"/></svg></span>
+            <span class="r-other__name">Mantenimiento y soporte</span>
+            <span class="r-other__body">Nos ocupamos del hosting, las copias y las actualizaciones para que tú no tengas que pensar en ello.</span>
+            <span class="r-other__price">Desde <strong>59 €</strong>/mes</span>
+          </a>
+        </li>
+        <li>
+          <a class="r-other" href="#">
+            <span class="r-other__art"><svg class="dibujo" viewBox="0 0 96 40" aria-hidden="true" focusable="false"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11 9 Q8 9 7 12 Q5 20 13 29 Q21 37 28 34 Q30.5 33 30 30.5 L27.5 27.5 Q26.5 26 24.5 27 L22 28.5 Q17 25.5 14 20 L15.5 17.5 Q16.5 15.5 15 14 L12.5 10 Q12 9 11 9"/><path d="M35 15 Q38 20 35 25"/><path class="dibujo__tenue" d="M39 11 Q44 20 39 29"/><path d="M46 20 Q49 11 52 20 Q55 31 58 20 Q61 5 64 20 Q67 35 70 20 Q73 13 76 20"/><path d="M76 20 H88"/></g><circle class="dibujo__halo" cx="88" cy="20" r="6"/><circle class="dibujo__nodo" cx="88" cy="20" r="1.7"/></svg></span>
+            <span class="r-other__name">Asistente telefónico con IA</span>
+            <span class="r-other__body">Un asistente de voz que contesta las llamadas de tu negocio las 24 horas, también cuando estás ocupado o ya has cerrado.</span>
+            <span class="r-other__price">Precio personalizado</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <div class="raiz__cabo" aria-hidden="true"></div>
+   </div>
+
+    <!-- Donde acaba la raíz. -->
+    <section class="tramo r-end" id="fin" aria-labelledby="fin-titulo">
+      <h2 class="r-end__title nodo nodo--fin" id="fin-titulo"><span>Si tu web ya no</span> <span>representa a tu negocio,</span> <span>hablemos.</span></h2>
+      <div class="r-end__row">
+        <p class="r-lead">Cuéntanos a qué te dedicas y qué esperas de tu web.</p>
+        <div class="r-end__actions">
+          <a class="btn-primary" href="#">Empezar un proyecto
+            <svg class="arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
+          </a>
+          <p class="r-end__mail">O escríbenos directamente: <a class="link-underline" href="#">contacto@aternastudio.com</a></p>
+        </div>
+      </div>
+      <div class="r-next">
+        <h3 class="r-next__title">Qué pasa después</h3>
+        <ol class="r-next__list">
+          <li><span class="r-steps__n">1</span><strong>Nos escribes</strong><span>Con lo que tengas: qué hay ahora y para cuándo. No hace falta un briefing.</span></li>
+          <li><span class="r-steps__n">2</span><strong>Te respondemos</strong><span>Siempre, aunque sea para decir que no somos el estudio adecuado. Si no encaja, lo decimos pronto.</span></li>
+          <li><span class="r-steps__n">3</span><strong>Lo ponemos por escrito</strong><span>Una propuesta con qué haríamos, en qué plazo y por cuánto, antes de empezar nada.</span></li>
+        </ol>
+        <p class="r-next__note">Agenda limitada: pregunta por fechas y te decimos.</p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div>
+      <img class="footer__lockup" src="../../base/brand/aterna-lockup-light.webp" alt="Aterna Studio" width="808" height="320" loading="lazy">
+      <p class="t-small muted">Estudio digital independiente.<br>Webs premium y crecimiento orgánico.</p>
+    </div>
+    <div class="footer__cols">
+      <nav class="footer__col" aria-label="Servicios">
+        <p class="t-label dim">Servicios</p>
+        <ul>
+          <li><a class="t-small link-underline" href="#">Diseño y desarrollo web</a></li>
+          <li><a class="t-small link-underline" href="#">SEO y crecimiento orgánico</a></li>
+          <li><a class="t-small link-underline" href="#">Mantenimiento y soporte</a></li>
+          <li><a class="t-small link-underline" href="#">Asistente telefónico con IA</a></li>
+        </ul>
+      </nav>
+      <nav class="footer__col" aria-label="Aterna">
+        <p class="t-label dim">Aterna</p>
+        <ul>
+          <li><a class="t-small link-underline" href="#">Servicios</a></li>
+          <li><a class="t-small link-underline" href="#">Estudio</a></li>
+          <li><a class="t-small link-underline" href="#">Cómo trabajamos</a></li>
+          <li><a class="t-small link-underline" href="#">Contacto</a></li>
+        </ul>
+      </nav>
+      <div class="footer__col">
+        <p class="t-label dim">Contacto</p>
+        <ul>
+          <li><a class="t-small link-underline" href="#">contacto@aternastudio.com</a></li>
+          <li><a class="t-small link-underline" href="#">WhatsApp</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="container"><p class="footer__giant" aria-hidden="true">Aterna</p></div>
+  <div class="container footer__base">
+    <p class="t-label dim">© 2026 Aterna Studio</p>
+    <ul class="footer__legal">
+      <li><a class="t-label dim link-underline" href="#">Impressum</a></li>
+      <li><a class="t-label dim link-underline" href="#">Datenschutz</a></li>
+      <li><a class="t-label dim link-underline" href="#">Aviso legal y privacidad</a></li>
+    </ul>
+  </div>
+</footer>
+
+<div class="floats" aria-hidden="true"><span></span><span></span></div>
+</body>
+</html>

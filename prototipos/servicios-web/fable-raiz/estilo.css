@@ -1,0 +1,776 @@
+/* «Raíz» — la página sigue una raíz de luz hacia abajo.
+   La luz se gasta en una línea y sus nodos; las superficies son noche sobre
+   noche. Lo único que se enciende de verdad son los anillos del plan. */
+
+.raiz {
+  /* Dónde va la línea (el centro del árbol del logo) y cuánto se aparta el
+     contenido de ella. */
+  --line-x: 13px;
+  --rail: 32px;
+  --line: color-mix(in srgb, var(--lavender) 46%, transparent);
+  --lit: #c9a6ff;
+  --end-size: clamp(2.25rem, 1rem + 5vw, 5.25rem);
+  padding-top: var(--header-h);
+}
+
+/* El tronco lleva todos los tramos menos el último; la línea baja por él y
+   se alarga lo justo para llegar al nodo del titular final. */
+.raiz__tronco {
+  position: relative;
+}
+.raiz__cabo {
+  height: clamp(64px, 8vw, 136px);
+}
+
+.raiz__linea {
+  position: absolute;
+  top: 0;
+  bottom: calc(var(--end-size) * -0.6);
+  left: var(--line-x);
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent 0,
+    var(--line) 72px,
+    color-mix(in srgb, var(--indigo) 70%, transparent) 55%,
+    var(--line) 100%
+  );
+}
+
+/* La luz que baja por la raíz: se queda a media pantalla mientras la página
+   pasa, así que avanza por la línea con el scroll. Sin animación. */
+.raiz__luz {
+  position: sticky;
+  top: 46vh;
+  display: block;
+  width: 1px;
+  height: 1px;
+}
+.raiz__luz::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  height: 34vh;
+  background: linear-gradient(180deg, transparent, var(--lit));
+}
+.raiz__luz::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  translate: -50% -50%;
+  background: #f1e3ff;
+  box-shadow: 0 0 10px 3px color-mix(in srgb, var(--orchid) 70%, transparent), 0 0 34px 10px color-mix(in srgb, var(--violet) 45%, transparent);
+}
+
+.tramo {
+  position: relative;
+  padding-left: var(--rail);
+  padding-block: clamp(44px, 5.2vw, 88px);
+}
+
+/* Nodo: donde un bloque se agarra a la raíz, con su raicilla. */
+.nodo {
+  position: relative;
+}
+.nodo::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--line-x) - var(--rail));
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  translate: -50% -50%;
+  background: var(--orchid);
+  box-shadow: 0 0 0 4px var(--ink), 0 0 14px 2px color-mix(in srgb, var(--orchid) 55%, transparent);
+}
+.nodo::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--line-x) - var(--rail) + 8px);
+  top: 0.62em;
+  width: calc(var(--rail) - var(--line-x) - 18px);
+  height: 1px;
+  background: linear-gradient(90deg, var(--line), transparent);
+}
+
+.r-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1.25rem + 1.9vw, 3rem);
+  font-weight: 460;
+  font-variation-settings: "opsz" 72;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+}
+
+.r-lead {
+  max-width: 46ch;
+  color: var(--text-support);
+  font-size: clamp(1.125rem, 1.05rem + 0.4vw, 1.375rem);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+.r-note {
+  color: var(--text-low);
+  font-size: var(--t-small);
+}
+
+/* Dibujos de línea de la web, sin panel: luz sobre la noche. */
+.dibujo {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.dibujo path {
+  stroke: var(--lavender);
+  stroke-width: 1.2px;
+  vector-effect: non-scaling-stroke;
+}
+.dibujo .dibujo__tenue {
+  opacity: 0.42;
+}
+.dibujo__punto {
+  fill: var(--lavender);
+  opacity: 0.6;
+}
+.dibujo__halo {
+  fill: color-mix(in srgb, var(--orchid) 26%, transparent);
+}
+.dibujo__nodo {
+  fill: var(--orchid);
+}
+
+/* Cabecera de página -------------------------------------------------------- */
+.r-head {
+  padding-top: clamp(56px, 6vw, 104px);
+  isolation: isolate;
+}
+.r-head::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: calc(var(--margin) * -1);
+  width: min(900px, 100vw);
+  height: 620px;
+  background: radial-gradient(closest-side at 62% 44%, color-mix(in srgb, var(--indigo) 26%, transparent), transparent);
+  pointer-events: none;
+}
+.r-crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 10px;
+  color: var(--text-mid);
+  font-size: var(--t-small);
+}
+.r-crumbs li + li::before {
+  content: "/";
+  margin-right: 10px;
+  color: var(--text-low);
+}
+.r-crumbs [aria-current] {
+  color: var(--text-hi);
+}
+.r-crumbs a {
+  display: inline-block;
+  padding-block: 4px;
+}
+.r-h1 {
+  margin-top: var(--s-5);
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 0.9rem + 6.4vw, 6.25rem);
+  font-weight: 500;
+  font-variation-settings: "opsz" 144;
+  line-height: 0.96;
+  letter-spacing: -0.025em;
+}
+.r-head__grid {
+  display: grid;
+  gap: var(--s-8);
+  margin-top: clamp(28px, 3.4vw, 56px);
+}
+.r-offer {
+  display: grid;
+  gap: var(--s-5);
+  margin-top: var(--s-7);
+}
+.r-price {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 2px 10px;
+}
+.r-price__from {
+  color: var(--text-mid);
+}
+.r-price__amount {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.6rem + 1.4vw, 2.75rem);
+  font-variation-settings: "opsz" 72;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.r-price__unit {
+  grid-column: 1 / -1;
+  color: var(--text-low);
+  font-size: var(--t-small);
+}
+.r-offer__actions .btn-primary {
+  white-space: nowrap;
+}
+.r-offer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3) var(--s-6);
+}
+.r-head__art {
+  max-width: 300px;
+}
+
+/* El servicio: una sola idea, dicha en grande --------------------------- */
+.r-statement p {
+  max-width: 27em;
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 1.05rem + 1.45vw, 2.25rem);
+  font-weight: 400;
+  font-variation-settings: "opsz" 36;
+  line-height: 1.26;
+  letter-spacing: -0.012em;
+}
+
+/* Qué incluye: seis pasos en orden, cada uno una raicilla --------------- */
+.r-steps__list {
+  max-width: 46rem;
+  margin-top: var(--s-6);
+}
+.r-steps__list li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2ch 1fr;
+  gap: var(--s-4);
+  padding-block: 13px;
+  font-family: var(--font-display);
+  font-size: clamp(1.125rem, 1rem + 0.62vw, 1.5rem);
+  font-variation-settings: "opsz" 36;
+  line-height: 1.25;
+  letter-spacing: -0.008em;
+}
+.r-steps__list li::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--line-x) - var(--rail));
+  top: calc(13px + 0.62em);
+  width: calc(var(--rail) - var(--line-x) - 8px);
+  height: 1px;
+  background: linear-gradient(90deg, var(--line), color-mix(in srgb, var(--lavender) 14%, transparent));
+}
+.r-steps__n {
+  color: var(--lavender);
+  font-family: var(--font-display);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* Planes: anillos de crecimiento ---------------------------------------- */
+.r-plans__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-6);
+}
+.r-plans__grid {
+  display: grid;
+  gap: var(--s-6);
+  margin-top: var(--s-6);
+}
+.r-rings {
+  justify-self: center;
+  width: min(100%, 300px);
+  text-align: center;
+}
+.r-rings svg {
+  overflow: visible;
+}
+.r-rings figcaption {
+  margin-top: var(--s-3);
+  color: var(--text-mid);
+  font-size: var(--t-small);
+}
+.anillo path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--lavender) 24%, transparent);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  transition: stroke var(--d-std) var(--e-out), fill var(--d-std) var(--e-out);
+}
+.anillo .anillo__borde {
+  stroke: color-mix(in srgb, var(--lavender) 42%, transparent);
+  stroke-width: 1.5px;
+}
+.r-rings__pith {
+  fill: var(--orchid);
+}
+.r-rings__halo {
+  fill: color-mix(in srgb, var(--orchid) 22%, transparent);
+}
+
+.r-plans__list {
+  min-width: 0;
+  border: 0;
+}
+.r-plan {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px var(--s-5);
+  padding: var(--s-5) var(--s-4) var(--s-5) 44px;
+  border-top: 1px solid var(--ink-hair);
+  border-radius: var(--r-card);
+  cursor: pointer;
+  transition: background-color var(--d-std) var(--e-out);
+}
+/* La fila entera elige el plan. */
+.r-plan__name label {
+  cursor: pointer;
+}
+.r-plan__name label::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+/* El selector de cada plan es su propio anillo: uno, dos o tres. */
+.r-plan__radio {
+  --c: var(--field-line);
+  position: absolute;
+  left: 8px;
+  top: calc(var(--s-5) + 2px);
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  appearance: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--c) 0 1.5px, transparent 2px 4.3px, var(--c) 4.8px 5.8px, transparent 6.3px);
+  transition: filter var(--d-std) var(--e-out);
+}
+.r-plan[data-nivel="2"] .r-plan__radio {
+  background: radial-gradient(circle, var(--c) 0 1.5px, transparent 2px 4.3px, var(--c) 4.8px 5.8px, transparent 6.3px 7.9px, var(--c) 8.4px 9.4px, transparent 9.9px);
+}
+.r-plan[data-nivel="3"] .r-plan__radio {
+  background: radial-gradient(circle, var(--c) 0 1.5px, transparent 2px 4.3px, var(--c) 4.8px 5.8px, transparent 6.3px 7.9px, var(--c) 8.4px 9.4px, transparent 9.9px 11.3px, var(--c) 11.8px 12.8px, transparent 13px);
+}
+.r-plan__radio:checked {
+  --c: var(--orchid);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--orchid) 70%, transparent));
+}
+.r-plan__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--s-3);
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 1.2rem + 0.7vw, 1.875rem);
+  font-variation-settings: "opsz" 72;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+.r-plan__flag {
+  color: var(--orchid);
+  font-family: var(--font-ui);
+  font-size: var(--t-small);
+  letter-spacing: 0;
+}
+.r-plan__price {
+  align-self: start;
+  text-align: right;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.25rem + 1vw, 2.25rem);
+  font-variation-settings: "opsz" 72;
+  font-variant-numeric: lining-nums tabular-nums;
+  line-height: 1.1;
+  white-space: nowrap;
+  color: var(--text-support);
+}
+.r-plan__price span {
+  color: var(--text-mid);
+  font-family: var(--font-ui);
+  font-size: var(--t-small);
+  letter-spacing: 0;
+}
+.r-plan__price .r-plan__unit {
+  display: block;
+  margin-top: 4px;
+}
+.r-plan__tagline {
+  grid-column: 1 / -1;
+  max-width: 44ch;
+  color: var(--text-mid);
+}
+.r-plan__features {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 6px var(--s-6);
+  margin-top: var(--s-3);
+  color: var(--text-mid);
+  font-size: var(--t-small);
+  transition: color var(--d-std) var(--e-out);
+}
+.r-plan__features li {
+  position: relative;
+  padding-left: 16px;
+}
+.r-plan__features li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+  width: 6px;
+  height: 1px;
+  background: var(--lavender);
+}
+.r-plan:has(.r-plan__radio:checked) {
+  background-color: color-mix(in srgb, var(--night-3) 62%, transparent);
+  border-top-color: transparent;
+}
+.r-plan:has(.r-plan__radio:checked) + .r-plan {
+  border-top-color: transparent;
+}
+.r-plan:has(.r-plan__radio:checked) .r-plan__price,
+.r-plan:has(.r-plan__radio:checked) .r-plan__features {
+  color: var(--text-hi);
+}
+.r-plan:has(.r-plan__radio:focus-visible) {
+  outline: 2px solid var(--lavender);
+  outline-offset: 3px;
+}
+.r-plan__radio:focus-visible {
+  outline: none;
+}
+@media (hover: hover) {
+  .r-plan:hover {
+    background-color: color-mix(in srgb, var(--night-3) 38%, transparent);
+  }
+  .r-plan:hover .r-plan__radio:not(:checked) {
+    --c: var(--lavender);
+  }
+}
+
+.r-plans__cta {
+  margin-top: var(--s-6);
+  padding-left: 44px;
+}
+/* Sin :has, una sola llamada genérica y los anillos como están. */
+.r-plans__cta [data-plan]:not([data-plan="0"]) {
+  display: none;
+}
+@supports selector(:has(*)) {
+  .r-plans__cta [data-plan="0"] {
+    display: none;
+  }
+  .r-plans:has(#plan-1:checked) .r-plans__cta [data-plan="1"],
+  .r-plans:has(#plan-2:checked) .r-plans__cta [data-plan="2"],
+  .r-plans:has(#plan-3:checked) .r-plans__cta [data-plan="3"] {
+    display: inline-flex;
+  }
+  /* Los anillos se encienden hasta el plan elegido: cada plan contiene al
+     anterior. */
+  .r-plans:has(#plan-1:checked) .anillo[data-nivel="1"] path,
+  .r-plans:has(#plan-2:checked) .anillo:is([data-nivel="1"], [data-nivel="2"]) path,
+  .r-plans:has(#plan-3:checked) .anillo path {
+    stroke: var(--lit);
+  }
+  .r-plans:has(#plan-1:checked) .anillo[data-nivel="1"] .anillo__borde,
+  .r-plans:has(#plan-2:checked) .anillo:is([data-nivel="1"], [data-nivel="2"]) .anillo__borde,
+  .r-plans:has(#plan-3:checked) .anillo .anillo__borde {
+    fill: color-mix(in srgb, var(--violet) 9%, transparent);
+  }
+  .r-plans:has(#plan-1:checked) .anillo[data-nivel="1"],
+  .r-plans:has(#plan-2:checked) .anillo:is([data-nivel="1"], [data-nivel="2"]),
+  .r-plans:has(#plan-3:checked) .anillo {
+    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--orchid) 50%, transparent));
+  }
+}
+
+/* Preguntas ------------------------------------------------------------- */
+.r-faq__list {
+  display: grid;
+  gap: var(--s-6);
+  margin-top: var(--s-6);
+}
+.r-faq__list dt {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem);
+  font-variation-settings: "opsz" 36;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.r-faq__list dd {
+  max-width: 44ch;
+  margin-top: var(--s-2);
+  color: var(--text-mid);
+}
+
+/* Otros servicios: un índice, no tres tarjetas -------------------------- */
+.r-others__list {
+  margin-top: var(--s-5);
+}
+.r-other {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px var(--s-6);
+  padding-block: var(--s-5);
+  border-top: 1px solid var(--ink-hair);
+  transition: border-color var(--d-std) var(--e-out);
+}
+.r-others__list li:last-child .r-other {
+  border-bottom: 1px solid var(--ink-hair);
+}
+.r-other__art {
+  display: none;
+}
+.r-other__name {
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 1.2rem + 0.7vw, 1.875rem);
+  font-variation-settings: "opsz" 72;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+  transition: text-decoration-color var(--d-micro) var(--e-out);
+}
+.r-other__body {
+  max-width: 48ch;
+  color: var(--text-mid);
+  font-size: var(--t-small);
+  line-height: 1.5;
+}
+.r-other__price {
+  color: var(--text-mid);
+}
+.r-other__price strong {
+  color: var(--text-hi);
+  font-weight: 500;
+}
+@media (hover: hover) {
+  .r-other:hover {
+    border-top-color: var(--lavender);
+  }
+  .r-other:hover .r-other__name {
+    text-decoration-color: currentColor;
+  }
+}
+
+/* Donde acaba la raíz --------------------------------------------------- */
+.r-end {
+  padding-block: 0;
+  isolation: isolate;
+}
+.r-end::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: calc(var(--margin) * -1);
+  top: 0;
+  width: min(1100px, 100vw);
+  height: 640px;
+  background: radial-gradient(closest-side at 26% 46%, color-mix(in srgb, var(--violet) 22%, transparent), transparent);
+  pointer-events: none;
+}
+.r-end__title {
+  font-family: var(--font-display);
+  font-size: var(--end-size);
+  font-weight: 500;
+  font-variation-settings: "opsz" 144;
+  line-height: 0.98;
+  letter-spacing: -0.022em;
+}
+/* La raíz termina aquí: un nodo más grande, encendido. */
+.nodo--fin::before {
+  width: 11px;
+  height: 11px;
+  background: #f1e3ff;
+  box-shadow: 0 0 16px 5px color-mix(in srgb, var(--orchid) 75%, transparent), 0 0 70px 26px color-mix(in srgb, var(--violet) 42%, transparent);
+}
+.r-end__row {
+  display: grid;
+  gap: var(--s-5);
+  margin-top: var(--s-7);
+}
+.r-end__actions {
+  display: grid;
+  justify-items: start;
+  gap: var(--s-3);
+}
+.r-end__mail {
+  color: var(--text-mid);
+  font-size: var(--t-small);
+}
+.r-end__mail a {
+  color: var(--text-hi);
+  padding-block: 4px;
+  display: inline-block;
+}
+.r-next {
+  margin-top: clamp(56px, 6vw, 96px);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--ink-hair);
+}
+.r-next__title {
+  color: var(--text-mid);
+  font-size: var(--t-body);
+}
+.r-next__list {
+  display: grid;
+  gap: var(--s-5);
+  margin-top: var(--s-5);
+}
+.r-next__list li {
+  display: grid;
+  grid-template-columns: 2ch 1fr;
+  gap: 4px var(--s-4);
+}
+.r-next__list .r-steps__n {
+  grid-row: span 2;
+  font-size: 1.375rem;
+  line-height: 1.2;
+}
+.r-next__list strong {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 400;
+  font-variation-settings: "opsz" 36;
+  line-height: 1.2;
+}
+.r-next__list li > span:last-child {
+  grid-column: 2;
+  max-width: 40ch;
+  color: var(--text-mid);
+  font-size: var(--t-small);
+  line-height: 1.5;
+}
+.r-next__note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--s-6);
+  color: var(--text-mid);
+  font-size: var(--t-small);
+}
+.r-next__note::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ok-on-ink);
+}
+
+/* Tableta ---------------------------------------------------------------- */
+@media (min-width: 700px) {
+  .r-h1 span,
+  .r-end__title span {
+    display: block;
+  }
+  .r-plan__price {
+    grid-row: span 2;
+  }
+  .r-plan__tagline {
+    grid-column: 1;
+  }
+  .r-plan__features {
+    grid-template-columns: 1fr 1fr;
+  }
+  .r-faq__list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .r-next__list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .r-other {
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+  }
+  .r-other__body {
+    grid-column: 1;
+  }
+  .r-other__price {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .r-rings {
+    width: min(100%, 360px);
+  }
+}
+
+/* Escritorio ------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .raiz {
+    --line-x: 17px;
+    --rail: 88px;
+  }
+  .r-head__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: end;
+  }
+  .r-head__art {
+    justify-self: end;
+    width: 100%;
+    max-width: 440px;
+    padding-bottom: var(--s-3);
+  }
+  .r-plans__grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: center;
+    gap: clamp(32px, 5vw, 96px);
+    margin-top: var(--s-8);
+  }
+  .r-rings {
+    width: min(100%, 460px);
+  }
+  .r-other {
+    grid-template-columns: 132px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 6px var(--s-7);
+    padding-block: var(--s-6);
+  }
+  .r-other__art {
+    display: block;
+    grid-row: span 2;
+  }
+  .r-other__name,
+  .r-other__body {
+    grid-column: 2;
+  }
+  .r-other__price {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+  .r-end__row {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: start;
+  }
+  .r-faq__list {
+    gap: var(--s-9);
+  }
+}
+
+@media (min-width: 1240px) {
+  .r-offer {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--s-7);
+  }
+}
