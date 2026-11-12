@@ -22,66 +22,25 @@ import { damp } from "@/lib/journey/motion";
 import { basePath, withBase } from "@/lib/base";
 import { site } from "@/lib/site";
 
-export const CURTAIN_KEY = "aterna:curtain";
+/**
+ * Antes de pintar nada (va en línea al principio del <body>): marca si hay
+ * movimiento y, si se llega recargando desde otra página con el velo puesto
+ * (español ↔ otro idioma: otro layout raíz), que el documento nazca tapado.
+ */
+export const BOOT_SCRIPT = `try{var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches)d.dataset.motion="on";if(d.dataset.motion==="on"&&sessionStorage.getItem("aterna:veil"))d.dataset.veil="cover";sessionStorage.removeItem("aterna:veil")}catch(e){}`;
 
 /**
- * Antes de pintar nada (va en línea al principio del <body>): si la cortina
- * ya salió en esta sesión o se prefiere menos movimiento, la marca para no
- * mostrarse. Así la cortina puede venir en el HTML tapando desde el primer
- * instante: antes aparecía al cargar el JavaScript y dejaba ver un momento
- * la página estática.
+ * Da la salida a la entrada (startIntro) en cuanto hay JavaScript. Antes la
+ * daba una cortina de marca que tapaba la página en la primera visita hasta
+ * que el JavaScript la levantaba: en un móvil lento eran segundos de pantalla
+ * vacía. Ahora la página se ve en cuanto llega. En la portada la salida la da
+ * el recorrido (Journey.tsx).
  */
-export const CURTAIN_SCRIPT = `try{var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches)d.dataset.motion="on";if(sessionStorage.getItem("${CURTAIN_KEY}")||d.dataset.motion!=="on")d.dataset.curtain="skip";if(d.dataset.motion==="on"&&sessionStorage.getItem("aterna:veil"))d.dataset.veil="cover";sessionStorage.removeItem("aterna:veil")}catch(e){document.documentElement.dataset.curtain="skip"}`;
-
-/**
- * Cortina de marca: solo la primera vez por sesión. Al subir da la salida a
- * la entrada (startIntro). En la portada no sale (ni en el HTML, ver
- * globals.css): allí la entrada la da el recorrido (Journey.tsx), sin
- * pantalla de carga.
- */
-export function Curtain() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [gone, setGone] = useState(false);
-
+export function IntroStart() {
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (document.querySelector(".journey")) {
-      setGone(true);
-      return;
-    }
-    if (document.documentElement.dataset.curtain === "skip") {
-      setGone(true);
-      startIntro();
-      return;
-    }
-    try {
-      sessionStorage.setItem(CURTAIN_KEY, "1");
-    } catch {}
-    registerGsap();
-    let tl: gsap.core.Timeline | null = null;
-    const lift = () => {
-      startIntro();
-      tl = gsap
-        .timeline({ onComplete: () => setGone(true) })
-        .to(el, { yPercent: -100, duration: 0.9, ease: ATERNA_EASE })
-        .to(el.querySelector(".curtain__rule"), { scaleX: 0, duration: 0.5, ease: "none" }, "<0.2");
-    };
-    // Un respiro mínimo para que la marca se vea.
-    const wait = window.setTimeout(lift, 200);
-    return () => {
-      window.clearTimeout(wait);
-      tl?.kill();
-      gsap.set(el, { clearProps: "transform" });
-    };
+    if (!document.querySelector(".journey")) startIntro();
   }, []);
-
-  if (gone) return null;
-  return (
-    <div ref={ref} className="curtain" aria-hidden="true">
-      <span className="curtain__rule brand-rule" />
-    </div>
-  );
+  return null;
 }
 
 /**
@@ -298,7 +257,7 @@ export const VEIL_KEY = "aterna:veil";
  * página entra desde debajo. Atrás/adelante del navegador, los idiomas
  * (data-no-veil) y las anclas de la misma página no lo usan. Si la
  * navegación recarga el documento (español ↔ otro idioma: otro layout
- * raíz), CURTAIN_SCRIPT lo deja tapado desde el primer fotograma y aquí se
+ * raíz), BOOT_SCRIPT lo deja tapado desde el primer fotograma y aquí se
  * levanta. Con movimiento reducido no hay velo.
  */
 export function PageTransition({ children }: { children: ReactNode }) {

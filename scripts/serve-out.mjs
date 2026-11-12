@@ -11,10 +11,14 @@
 //   - Si nada existe: 404 del idioma (/en/... -> en/404.html) o la de la raíz.
 //   - Las cabeceras `Header always set` del .htaccess de la raíz (seguridad,
 //     política de contenido) se envían igual, para que las pruebas las usen.
+//   - Texto comprimido (brotli o gzip, según pida el navegador), como hace
+//     Hostinger. Sin esto, Lighthouse mide en local tres veces más peso del
+//     real y el LCP en móvil sale inflado.
 // Los .php no se ejecutan (no hay PHP en local): responden 404.
 
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
+import { constants, createBrotliCompress, createGzip } from "node:zlib";
 import { extname, join, normalize, resolve } from "node:path";
 
 const ROOT = resolve(process.argv[3] ?? "out");
@@ -28,7 +32,7 @@ const TYPES = {
   ".json": "application/json",
   ".txt": "text/plain; charset=utf-8",
   ".xml": "application/xml",
-  ".svg": "image/svg+xml",
+  ".svg": "image/svg+xml; charset=utf-8",
   ".png": "image/png",
   ".jpg": "image/jpeg",
   ".webp": "image/webp",
@@ -84,13 +88,22 @@ createServer((req, res) => {
       return;
     }
   }
+  const type = TYPES[extname(file)] ?? "application/octet-stream";
+  const accept = String(req.headers["accept-encoding"] ?? "");
+  const compressible = /^(text\/|application\/(json|xml|wasm)|image\/svg)/.test(type);
+  const encoding = !compressible ? null : /\bbr\b/.test(accept) ? "br" : /\bgzip\b/.test(accept) ? "gzip" : null;
   res.writeHead(status, {
     // Se leen en cada petición: así valen tras recompilar sin reiniciar.
     ...htaccessHeaders(),
-    "Content-Type": TYPES[extname(file)] ?? "application/octet-stream",
+    "Content-Type": type,
     "Cache-Control": "no-cache",
+    Vary: "Accept-Encoding",
+    ...(encoding ? { "Content-Encoding": encoding } : {}),
   });
-  createReadStream(file).pipe(res);
+  const stream = createReadStream(file);
+  if (encoding === "br") stream.pipe(createBrotliCompress({ params: { [constants.BROTLI_PARAM_QUALITY]: 5 } })).pipe(res);
+  else if (encoding === "gzip") stream.pipe(createGzip()).pipe(res);
+  else stream.pipe(res);
 }).listen(PORT, () => {
   console.log(`${ROOT} en http://localhost:${PORT}`);
 });
