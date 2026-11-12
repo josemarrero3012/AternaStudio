@@ -94,7 +94,7 @@ su motivo y fallan con cualquier problema nuevo.
 | Problema | Dónde | Cuándo se corrige |
 |---|---|---|
 | Los idiomas de la cabecera miden menos de 24 px (WCAG 2.2, criterio 2.5.8) | Portada, escritorio | Dirección de arte (rediseño de la cabecera) |
-| El texto principal aparece tarde en móvil (LCP de 7–8 s) | Todas las páginas | Movimiento |
+| El texto principal aparece tarde en móvil (LCP de 7–8 s). Causa: la cortina de entrada (`Curtain`, `components/Chrome.tsx`) tapa cada página interior en la primera visita hasta que el JavaScript la retira; con el móvil lento de Lighthouse, a los ~7 s | Todas las páginas interiores | Movimiento |
 | 8 avisos de ESLint de las reglas del compilador de React (refs escritas al pintar, `setState` dentro de efectos) | `Assistant`, `Chrome`, `WordReveal`, formulario | Arquitectura |
 | `npm audit`: 7 avisos moderados (`minimatch`) | Solo herramientas de desarrollo (ESLint); no llega a `out/` | Al actualizar ESLint |
 
@@ -103,3 +103,18 @@ su motivo y fallan con cualquier problema nuevo.
 - **La web publicada es antigua.** `aternastudio.com` es la versión del 21 de
   octubre (sin el árbol de partículas). Lo de `main` solo está en la demo de
   GitHub Pages. Hay que avisar al responsable del despliegue.
+
+## Cambios medidos
+
+### Fichas de servicio con la dirección «Raíz» (12 de noviembre de 2026)
+
+| Página (móvil) | Rendimiento | LCP | TBT | Accesib. |
+|---|---|---|---|---|
+| /servicios/web, antes | 75 | 8,0 s | 25 ms | 100 |
+| /servicios/web, después | 73 | 7,1 s | 130 ms | 100 |
+| /servicios/asistente-ia, después | 73 | 7,1 s | 156 ms | 100 |
+
+El rendimiento queda igual: el texto ya no espera a su animación de entrada,
+pero la cortina de entrada sigue tapando la página (ver «Problemas
+conocidos»). El TBT sube algo, por debajo de los 200 ms que Google considera
+bueno.

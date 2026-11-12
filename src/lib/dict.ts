@@ -44,7 +44,10 @@ const es = {
     "recommended": "Recomendado",
     "customPriceNote": "según los minutos que necesites",
     "seePlans": "Ver planes",
-    "otherServices": "Otros servicios"
+    "otherServices": "Otros servicios",
+    "plansContain": "Cada plan contiene al anterior.",
+    "startWith": "Empezar con {plan}",
+    "planMessage": "Hola, me interesa el plan {plan} de {service}."
   },
   "hero": {
     "eyebrow": "Estudio digital independiente",
@@ -697,7 +700,10 @@ const en: Dict = {
     "recommended": "Recommended",
     "customPriceNote": "based on the minutes you need",
     "seePlans": "See plans",
-    "otherServices": "Other services"
+    "otherServices": "Other services",
+    "plansContain": "Each plan includes the one before it.",
+    "startWith": "Start with {plan}",
+    "planMessage": "Hi, I am interested in the {plan} plan for {service}."
   },
   "hero": {
     "eyebrow": "Independent digital studio",
@@ -1347,7 +1353,10 @@ const nl: Dict = {
     "recommended": "Aanbevolen",
     "customPriceNote": "op basis van de minuten die je nodig hebt",
     "seePlans": "Bekijk pakketten",
-    "otherServices": "Andere diensten"
+    "otherServices": "Andere diensten",
+    "plansContain": "Elk pakket bevat het vorige.",
+    "startWith": "Beginnen met {plan}",
+    "planMessage": "Hallo, ik heb interesse in het pakket {plan} voor {service}."
   },
   "hero": {
     "eyebrow": "Onafhankelijke digitale studio",
@@ -1997,7 +2006,10 @@ const de: Dict = {
     "recommended": "Empfohlen",
     "customPriceNote": "je nach den Minuten, die Sie brauchen",
     "seePlans": "Pakete ansehen",
-    "otherServices": "Weitere Leistungen"
+    "otherServices": "Weitere Leistungen",
+    "plansContain": "Jedes Paket enthält das vorherige.",
+    "startWith": "Mit {plan} starten",
+    "planMessage": "Hallo, ich interessiere mich für das Paket {plan} für {service}."
   },
   "hero": {
     "eyebrow": "Unabhängiges Digitalstudio",
