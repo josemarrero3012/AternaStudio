@@ -1,9 +1,7 @@
 // Orden de la entrada, igual en todos los navegadores. En la portada la da
-// la pantalla de carga del recorrido (Journey.tsx) cuando empieza a fundirse;
-// en las demás páginas, la cortina al subir (Curtain, en Chrome.tsx), o en
-// cuanto hay JavaScript si la cortina ya salió en esta sesión o se prefiere
-// menos movimiento. Las piezas se enteran por un atributo en <html> y un
-// evento, así da igual quién monte antes.
+// el recorrido (Journey.tsx); en las demás páginas, IntroStart (Chrome.tsx)
+// en cuanto hay JavaScript. Las piezas se enteran por un atributo en <html>
+// y un evento, así da igual quién monte antes.
 
 const INTRO = "aterna:intro";
 

@@ -8,7 +8,8 @@ midiendo de la misma forma.
 
 Todo se mide sobre la web exportada (`out/`), servida en local con
 `npm start` o `node scripts/serve-out.mjs`, que aplica las mismas reglas que
-el `.htaccess`. Así no influyen la red ni el servidor.
+el `.htaccess` y **comprime el texto con brotli, como Hostinger**. Así no
+influyen la red ni el servidor.
 
 - **Lighthouse 12.8.2** (`npx lighthouse@12.8.2`), con Chrome 156. Móvil con
   la configuración por defecto (teléfono de gama media con red 4G lenta
@@ -26,6 +27,13 @@ dice cómo carga para un visitante real: eso solo lo darían datos de campo
 
 ## Lighthouse
 
+> **Corrección (12 de noviembre, más tarde).** Esta primera tabla se midió con
+> el servidor local sirviendo el JavaScript **sin comprimir** (unas tres veces
+> más peso que en Hostinger). En móvil, Lighthouse simula una red lenta, así
+> que el LCP y el rendimiento de móvil salieron mucho peores de lo real. Las
+> cifras de escritorio y de accesibilidad valen. Las cifras válidas de móvil
+> están en «Medición corregida», más abajo.
+
 | Página | Dispositivo | Rendimiento | Accesib. | Buenas prác. | SEO | FCP | LCP | TBT | CLS |
 |---|---|---|---|---|---|---|---|---|---|
 | Portada | Móvil | **47** | 100 | 100 | 100 | 1,7 s | **7,2 s** | **1.441 ms** | 0 |
@@ -42,11 +50,9 @@ Objetivo de Google para un LCP «bueno»: menos de 2,5 s. Para el TBT, menos de
 
 **Lo que explican estas cifras**
 
-- **El LCP en móvil (7–8 s) lo causan las entradas animadas, no la red.** La
-  primera pintura llega a 1,4 s, pero el texto principal de cada página
-  empieza oculto y espera a que el JavaScript lo haga aparecer. En la portada,
-  el elemento que Lighthouse toma como LCP es la etiqueta «Menú», porque el
-  titular aún no se ve.
+- **El LCP en móvil (7–8 s) estaba inflado** por la falta de compresión (ver
+  la corrección de arriba). La conclusión que se sacó aquí, que lo causaban
+  las entradas animadas, era errónea.
 - **El TBT de la portada en móvil (1,4 s)** viene del recorrido de partículas
   y del JavaScript compartido. Lighthouse calcula unos 251 KB de JavaScript
   sin usar en la portada y 10,6 s de trabajo en el hilo principal.
@@ -94,8 +100,8 @@ su motivo y fallan con cualquier problema nuevo.
 | Problema | Dónde | Cuándo se corrige |
 |---|---|---|
 | Los idiomas de la cabecera miden menos de 24 px (WCAG 2.2, criterio 2.5.8) | Portada, escritorio | Dirección de arte (rediseño de la cabecera) |
-| El texto principal aparece tarde en móvil (LCP de 7–8 s). Causa: la cortina de entrada (`Curtain`, `components/Chrome.tsx`) tapa cada página interior en la primera visita hasta que el JavaScript la retira; con el móvil lento de Lighthouse, a los ~7 s | Todas las páginas interiores | Movimiento |
-| 8 avisos de ESLint de las reglas del compilador de React (refs escritas al pintar, `setState` dentro de efectos) | `Assistant`, `Chrome`, `WordReveal`, formulario | Arquitectura |
+| LCP de unos 4 s en móvil (el objetivo es 2,5 s). Causa: cada página carga unos 300 KB de JavaScript comprimido (el del recorrido de la portada y los textos de los cuatro idiomas van en los paquetes comunes), y Lighthouse simula que el texto espera a ese JavaScript | Todas las páginas, en móvil | Arquitectura |
+| 7 avisos de ESLint de las reglas del compilador de React (refs escritas al pintar, `setState` dentro de efectos) | `Assistant`, `Chrome`, `WordReveal`, formulario | Arquitectura |
 | `npm audit`: 7 avisos moderados (`minimatch`) | Solo herramientas de desarrollo (ESLint); no llega a `out/` | Al actualizar ESLint |
 
 ## Fuera del código
@@ -104,9 +110,45 @@ su motivo y fallan con cualquier problema nuevo.
   octubre (sin el árbol de partículas). Lo de `main` solo está en la demo de
   GitHub Pages. Hay que avisar al responsable del despliegue.
 
+## Medición corregida (con compresión)
+
+Medida el 12 de noviembre por la noche, ya con el servidor local comprimiendo
+como Hostinger y con las fichas de servicio rediseñadas («Raíz»). Es la base
+válida para comparar en móvil.
+
+| Página | Dispositivo | Rendimiento | FCP | LCP | Índice de velocidad | TBT |
+|---|---|---|---|---|---|---|
+| /servicios | Móvil | 77 | 0,9 s | 3,9 s | 2,6 s | 416 ms |
+| /servicios/web | Móvil | 83 | 0,9 s | 4,0 s | 2,7 s | 211 ms |
+| /contacto | Móvil | 88 | 0,9 s | 3,8 s | 2,5 s | 76 ms |
+| Las tres | Escritorio | 99–100 | 0,2 s | 0,8–0,9 s | 0,7–0,9 s | 3–42 ms |
+
+La portada no está en esta tabla: con el equipo cargado y el recorrido de
+partículas en marcha en otra pestaña, su TBT salió de 8 a 17 s en todas las
+pasadas, una cifra que no se puede comparar. Hay que medirla aparte, con el
+equipo en reposo.
+
 ## Cambios medidos
 
-### Fichas de servicio con la dirección «Raíz» (12 de noviembre de 2026)
+### Sin cortina de entrada
+
+La cortina de marca tapaba cada página interior en la primera visita hasta
+que el JavaScript la levantaba. Se quitó. El LCP no cambia (Lighthouse no
+tiene en cuenta lo que queda tapado), pero el **índice de velocidad**, que
+mide cuándo se ve la página, mejora en las tres páginas:
+
+| Página (móvil) | Índice de velocidad antes | Después | Rendimiento antes | Después |
+|---|---|---|---|---|
+| /servicios | 2,6 s | 1,8 s | 77 | 85 |
+| /servicios/web | 2,7 s | 1,9 s | 83 | 87 |
+| /contacto | 2,5 s | 1,9 s | 88 | 87 |
+
+En escritorio, sin cambios (99–100).
+
+### Fichas de servicio con la dirección «Raíz» (sin compresión)
+
+Medido sin compresión: el LCP de móvil no es válido (ver la corrección de la
+primera tabla). Sirve para ver que el rediseño no empeoró nada.
 
 | Página (móvil) | Rendimiento | LCP | TBT | Accesib. |
 |---|---|---|---|---|
@@ -114,7 +156,4 @@ su motivo y fallan con cualquier problema nuevo.
 | /servicios/web, después | 73 | 7,1 s | 130 ms | 100 |
 | /servicios/asistente-ia, después | 73 | 7,1 s | 156 ms | 100 |
 
-El rendimiento queda igual: el texto ya no espera a su animación de entrada,
-pero la cortina de entrada sigue tapando la página (ver «Problemas
-conocidos»). El TBT sube algo, por debajo de los 200 ms que Google considera
-bueno.
+El TBT sube algo, por debajo de los 200 ms que Google considera bueno.

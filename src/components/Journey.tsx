@@ -17,7 +17,6 @@
 // contexto ya perdido del primer montaje).
 
 import { useEffect, useRef, type CSSProperties, type ReactNode, type Ref } from "react";
-import { CURTAIN_KEY } from "./Chrome";
 import { ArrowRight } from "./icons";
 import { Link, useI18n } from "@/lib/i18n";
 import { startIntro } from "@/lib/intro";
@@ -474,11 +473,7 @@ export function Journey() {
     ro.observe(stage);
 
     // Entrada: sin pantalla de carga. Las partículas llegan en cuanto está
-    // la silueta y el resto entra con su animación de CSS. Haber pasado por
-    // la portada cuenta como la cortina de esta sesión (ver Curtain).
-    try {
-      sessionStorage.setItem(CURTAIN_KEY, "1");
-    } catch {}
+    // la silueta y el resto entra con su animación de CSS.
     void treeReady.then(startAssemble);
     startIntro();
     played = true;

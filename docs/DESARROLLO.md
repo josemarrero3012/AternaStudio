@@ -149,9 +149,10 @@ sacada de una imagen y que, con el scroll, se deshacen y se rehacen en otra.
   (mientras se ve el nombre, la cabecera va sin logo).
 - **Entrada**: sin pantalla de carga. La página se ve en cuanto llega: las
   partículas se forman en el árbol y el titular entra palabra a palabra. Al
-  volver a la portada sin recargar, las partículas se forman más deprisa. La
-  portada cuenta como la cortina de la sesión (las demás páginas ya no la
-  muestran) y en ella la cortina no sale nunca.
+  volver a la portada sin recargar, las partículas se forman más deprisa.
+  Ninguna página tiene pantalla de carga: la cortina de marca que tapaba las
+  páginas interiores en la primera visita se quitó porque, en un móvil
+  lento, dejaba la pantalla vacía hasta que cargaba el JavaScript.
 - **Scroll**: la entrada se va y el árbol baja a sus raíces
   («Lo que no se ve…»); luego las raíces suben y crece un árbol de verdad,
   del tronco a la copa, grande y solo. Con el árbol formado, al seguir

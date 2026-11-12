@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { Assistant } from "@/components/Assistant";
-import { CURTAIN_SCRIPT, Curtain, Cursor, PageTransition, SkipLink, SmoothScroll, Spotlight, WhatsAppWidget } from "@/components/Chrome";
+import { BOOT_SCRIPT, Cursor, IntroStart, PageTransition, SkipLink, SmoothScroll, Spotlight, WhatsAppWidget } from "@/components/Chrome";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { JsonLd } from "@/components/JsonLd";
@@ -65,18 +65,15 @@ function organization(locale: Locale) {
  */
 export function Shell({ locale, lost, children }: { locale: Locale; lost?: boolean; children: ReactNode }) {
   return (
-    // data-curtain lo pone CURTAIN_SCRIPT antes de hidratar: no es un desajuste.
+    // data-motion y data-veil los pone BOOT_SCRIPT antes de hidratar: no es un desajuste.
     <html lang={locale} className={`${fraunces.variable} ${geist.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <body>
-        {/* Antes que nada: decide si la cortina de entrada sale (ver Chrome.tsx). */}
-        <script dangerouslySetInnerHTML={{ __html: CURTAIN_SCRIPT }} />
-        <noscript>
-          <style>{".curtain{display:none}"}</style>
-        </noscript>
+        {/* Antes que nada: movimiento y velo entre idiomas (ver Chrome.tsx). */}
+        <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
         <JsonLd data={organization(locale)} />
         <LanguageProvider locale={locale} lost={lost}>
           <SkipLink />
-          <Curtain />
+          <IntroStart />
           <Cursor />
           <Spotlight />
           <LightDust />
