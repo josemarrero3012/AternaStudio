@@ -21,3 +21,6 @@ public/semantic/*
 /blob-report/
 # Capturas de referencia: dependen de esta máquina (ver docs/DESARROLLO.md).
 /tests/*-snapshots/
+
+# Entregas para Hostinger (npm run package): se pasan a mano, no van a git.
+/entregas/

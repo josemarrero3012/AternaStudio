@@ -9,9 +9,11 @@
 //     aunque exista la carpeta servicios/).
 //   - Si es una carpeta con index.html (los ejemplos), se sirve su index.html.
 //   - Si nada existe: 404 del idioma (/en/... -> en/404.html) o la de la raíz.
+//   - Las cabeceras `Header always set` del .htaccess de la raíz (seguridad,
+//     política de contenido) se envían igual, para que las pruebas las usen.
 // Los .php no se ejecutan (no hay PHP en local): responden 404.
 
-import { createReadStream, existsSync, statSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, resolve } from "node:path";
 
@@ -37,6 +39,17 @@ const TYPES = {
 };
 
 const isFile = (p) => existsSync(p) && statSync(p).isFile();
+
+/** Las líneas `Header always set Nombre "valor"` del .htaccess de la raíz. */
+function htaccessHeaders() {
+  const file = join(ROOT, ".htaccess");
+  if (!isFile(file)) return {};
+  const headers = {};
+  for (const m of readFileSync(file, "utf8").matchAll(/^\s*Header always set ([\w-]+) "([^"]*)"\s*$/gm)) {
+    headers[m[1]] = m[2];
+  }
+  return headers;
+}
 
 function resolvePath(urlPath) {
   const clean = normalize(decodeURIComponent(urlPath)).replace(/^(\.\.[/\\])+/, "");
@@ -66,6 +79,8 @@ createServer((req, res) => {
     status = 404;
   }
   res.writeHead(status, {
+    // Se leen en cada petición: así valen tras recompilar sin reiniciar.
+    ...htaccessHeaders(),
     "Content-Type": TYPES[extname(file)] ?? "application/octet-stream",
     "Cache-Control": "no-cache",
   });

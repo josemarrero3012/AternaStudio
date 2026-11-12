@@ -34,7 +34,12 @@ npm start            # sirve out/ en http://localhost:3000 como lo hace Hostinge
   idioma, un solo `h1`, canónica, `hreflang`, sin errores de consola), todos
   los enlaces internos, el sitemap, la accesibilidad automática (axe, WCAG 2.2
   AA, en español y alemán), el menú del móvil, el selector de idioma y el
-  formulario.
+  formulario. También las cabeceras de seguridad del `.htaccess` y que
+  ninguna página (ejemplos incluidos) pida nada a otro dominio.
+- `bash scripts/contact-check.sh` prueba `contacto.php` con el servidor de PHP
+  (respuestas, trampa para bots y límite de envíos) sin enviar correos. Corre
+  en el CI; en local necesita `php`.
+- Para entregar la web: `npm run package` (ver [DESPLIEGUE.md](DESPLIEGUE.md)).
 - `test:visual` hace capturas de página completa (escritorio y móvil, con
   movimiento reducido y sin los lienzos) y las compara con las guardadas en
   `tests/visual.spec.ts-snapshots/`. Dependen de las fuentes del sistema, así

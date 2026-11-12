@@ -3,8 +3,9 @@
  * Backend real del formulario de contacto, para el hosting compartido
  * clásico de aternastudio.com — sin Node.js, sin servicio de terceros.
  * Envía por SMTP propio (Hostinger) usando PHPMailer, vendorizado en
- * php/PHPMailer/ (versión 6.9.3, sin Composer: este hosting no lo
- * garantiza).
+ * php/PHPMailer/ (versión 7.1.1, sin Composer: este hosting no lo
+ * garantiza). Las comprobaciones de este archivo se prueban en cada PR
+ * (scripts/contact-check.sh).
  */
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -23,6 +24,25 @@ function contactError(int $status, string $code): void
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     header('Allow: POST');
     contactError(405, 'method_not_allowed');
+}
+
+// Solo JSON. Un formulario HTML de otra web no puede enviar JSON sin que el
+// navegador pida permiso antes (CORS), y aquí no se da: así nadie puede
+// mandar el formulario en nombre de un visitante desde otro sitio.
+$contentType = strtolower(trim(explode(';', $_SERVER['CONTENT_TYPE'] ?? '')[0]));
+if ($contentType !== 'application/json') {
+    contactError(415, 'unsupported_media_type');
+}
+
+// Si el navegador dice desde qué web llega la petición, tiene que ser esta.
+// (Algunos navegadores o extensiones no envían Origin: entonces se acepta.)
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if ($origin !== '') {
+    $originHost = strtolower((string) parse_url($origin, PHP_URL_HOST));
+    $ownHost = strtolower(preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? ''));
+    if ($originHost === '' || $originHost !== $ownHost) {
+        contactError(403, 'forbidden_origin');
+    }
 }
 
 // También limita cuerpos sin Content-Length. Hay margen para JSON escapado.
