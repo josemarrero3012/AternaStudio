@@ -1,0 +1,41 @@
+name: Comprobaciones
+
+# En cada PR a main: tipos, lint, compilación y pruebas de la web exportada
+# (humo, enlaces, accesibilidad e interacción). Las capturas visuales no
+# corren aquí: dependen de las fuentes del sistema (ver playwright.config.ts).
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      # Sin el modelo del asistente (130 MB): las pruebas no lo usan y la web
+      # compila igual sin él. Por eso next build y no npm run build.
+      - run: npx next build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: informe-playwright
+          path: playwright-report/
+          retention-days: 7

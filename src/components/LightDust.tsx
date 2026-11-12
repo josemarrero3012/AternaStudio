@@ -96,7 +96,7 @@ export function LightDust() {
     const reduced = prefersReducedMotion();
     const sprites = makeSprites();
     const pointer = { x: -9999, y: -9999, on: false };
-    let dots: Dot[] = [];
+    const dots: Dot[] = [];
     let w = 0;
     let h = 0;
     let dpr = 1;

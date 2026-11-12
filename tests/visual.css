@@ -1,0 +1,6 @@
+/* Durante las capturas visuales: los lienzos se mueven solos y no se repiten
+   igual dos veces. Ocultos y no tapados con máscara: el polvo de luz es un
+   lienzo fijo a pantalla completa y la máscara cubriría la cabecera. */
+canvas {
+  visibility: hidden !important;
+}

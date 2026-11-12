@@ -14,3 +14,10 @@ public/semantic/*
 
 # Referencia Cycles (>3 MB); no se carga en la web.
 /scripts/estudio-v2/pillar-1/preview.mp4
+
+# Pruebas (Playwright)
+/playwright-report/
+/test-results/
+/blob-report/
+# Capturas de referencia: dependen de esta máquina (ver docs/DESARROLLO.md).
+/tests/*-snapshots/
