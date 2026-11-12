@@ -12,6 +12,12 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["node_modules/next/dist/bin/next", "dev", "--port", "3000"],
       "port": 3000
+    },
+    {
+      "name": "out",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scripts/serve-out.mjs", "4173"],
+      "port": 4173
     }
   ]
 }

@@ -14,6 +14,38 @@ npm run dev     # desarrollo en http://localhost:3000
 npm run build   # genera out/ (lo que se publica)
 ```
 
+### Comprobaciones y pruebas
+
+```bash
+npm run check        # tipos (tsc) y lint (ESLint con las reglas de Next.js)
+npm run build        # las pruebas usan out/
+npm run test:e2e     # humo, enlaces, accesibilidad e interacción
+npm run test:visual  # capturas comparadas con las de referencia (solo en local)
+npm start            # sirve out/ en http://localhost:3000 como lo hace Hostinger
+```
+
+- `npm start` y las pruebas usan `scripts/serve-out.mjs`, que sirve `out/`
+  con las mismas reglas que el `.htaccess` (URLs limpias y la 404 de cada
+  idioma). No ejecuta PHP: el formulario se prueba simulando la respuesta.
+- La primera vez, Playwright necesita su navegador:
+  `npx playwright install chromium`.
+- `test:e2e` corre en cada PR (`.github/workflows/checks.yml`) junto con
+  `check` y la compilación. Revisa cada página en los cuatro idiomas (estado,
+  idioma, un solo `h1`, canónica, `hreflang`, sin errores de consola), todos
+  los enlaces internos, el sitemap, la accesibilidad automática (axe, WCAG 2.2
+  AA, en español y alemán), el menú del móvil, el selector de idioma y el
+  formulario.
+- `test:visual` hace capturas de página completa (escritorio y móvil, con
+  movimiento reducido y sin los lienzos) y las compara con las guardadas en
+  `tests/visual.spec.ts-snapshots/`. Dependen de las fuentes del sistema, así
+  que solo valen en la máquina donde se tomaron y no están en git. Tras un
+  cambio visual buscado, se renuevan con
+  `npm run test:visual -- --update-snapshots`. Para tomarlas de una versión
+  anterior (por ejemplo, la de partida), se compila ese commit y se lanza ese
+  mismo comando; después se vuelve a la rama y se compara.
+- Las cifras de partida (Lighthouse, peso de cada página) y cómo se miden
+  están en [CALIDAD.md](CALIDAD.md).
+
 Para publicar, sube el **contenido** de `out/` a `public_html/`. Los pasos
 completos, con lo que no está en git (la contraseña del correo) y cómo
 comprobar que todo funciona, están en [DESPLIEGUE.md](DESPLIEGUE.md).

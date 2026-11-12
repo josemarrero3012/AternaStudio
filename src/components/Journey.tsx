@@ -242,7 +242,7 @@ export function Journey() {
     caveHost.appendChild(canvas);
     canvasRef.current = canvas;
     let renderer: TreeRenderer | null = null;
-    const usePoster = (err: unknown) => {
+    const showPoster = (err: unknown) => {
       console.warn("[árbol] sin partículas, imagen fija:", err);
       try {
         renderer = new PosterRenderer(canvas, POSTER_URL, () => {
@@ -259,12 +259,12 @@ export function Journey() {
         try {
           renderer = new ParticleRenderer(canvas, shapes);
         } catch (err) {
-          usePoster(err);
+          showPoster(err);
         }
         needsDraw = true;
       })
       .catch((err) => {
-        if (alive) usePoster(err);
+        if (alive) showPoster(err);
       });
 
     // Estado del bucle ------------------------------------------------------
@@ -283,7 +283,7 @@ export function Journey() {
     // La entrada de las partículas: empieza con la del titular (o ya, si la
     // pantalla de carga salió antes en esta página).
     let assembleFrom = Number.NaN;
-    let assembleMs = skip ? ASSEMBLE_AGAIN_MS : ASSEMBLE_MS;
+    const assembleMs = skip ? ASSEMBLE_AGAIN_MS : ASSEMBLE_MS;
     const startAssemble = () => {
       if (Number.isNaN(assembleFrom)) assembleFrom = performance.now();
     };
@@ -511,7 +511,6 @@ export function Journey() {
         <div ref={probeRef} className="journey__probe" aria-hidden="true" />
         <div ref={caveRef} className="journey__cave">
           <noscript>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="journey__poster" src={POSTER_URL} alt={j.label} />
           </noscript>
         </div>
