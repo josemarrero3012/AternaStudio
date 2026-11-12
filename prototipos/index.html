@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Direcciones para /servicios/web — Aterna Studio</title>
+<link rel="stylesheet" href="base/base.css">
+<style>
+  /* Herramienta de comparación: dos paneles, una propuesta en cada uno. */
+  body::before, body::after { display: none; }
+  html, body { height: 100%; }
+  body { display: grid; grid-template-rows: auto 1fr; overflow: hidden; }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; padding: 12px 20px; border-bottom: 1px solid var(--ink-hair); background: var(--night-1); }
+  .bar h1 { margin-right: auto; font-family: var(--font-display); font-size: 1.25rem; font-variation-settings: "opsz" 36; }
+  .bar label { display: flex; align-items: center; gap: 8px; color: var(--text-mid); font-size: var(--t-small); }
+  .bar select { min-height: 36px; padding: 0 10px; border: 1px solid var(--field-line); border-radius: 8px; background: var(--night-2); color: var(--text-hi); font: inherit; }
+  .seg { display: inline-flex; padding: 3px; border: 1px solid var(--ink-hair-strong); border-radius: 999px; }
+  .seg button { min-height: 32px; padding: 0 14px; border-radius: 999px; font-size: var(--t-small); color: var(--text-mid); }
+  .seg button[aria-pressed="true"] { background: var(--text-hi); color: var(--ink); }
+  .panes { display: grid; grid-template-columns: 1fr 1fr; min-height: 0; }
+  .pane { position: relative; display: grid; grid-template-rows: auto 1fr; min-width: 0; min-height: 0; }
+  .pane + .pane { border-left: 1px solid var(--ink-hair-strong); }
+  .pane__name { display: flex; justify-content: space-between; gap: 12px; padding: 8px 20px; color: var(--text-mid); font-size: var(--t-small); background: var(--night-0); border-bottom: 1px solid var(--ink-hair); }
+  .pane__name a { color: var(--text-hi); text-decoration: underline; text-underline-offset: 4px; }
+  .pane__view { position: relative; overflow: hidden; min-height: 0; background: #0b0d26; }
+  .pane__view iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: 0 0; background: var(--ink); }
+  .pane__view.is-image { overflow: auto; }
+  .pane__view img { display: block; width: 100%; height: auto; }
+  .pane__view.is-mobile { display: grid; justify-content: center; }
+  .pane__view.is-mobile iframe { position: static; }
+  .pane__view.is-mobile.is-image img { width: 375px; }
+  @media (max-width: 800px) { .panes { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; } .pane + .pane { border-left: 0; border-top: 1px solid var(--ink-hair-strong); } }
+</style>
+</head>
+<body>
+<header class="bar">
+  <h1>Direcciones para /servicios/web</h1>
+  <label>Izquierda <select id="left"></select></label>
+  <label>Derecha <select id="right"></select></label>
+  <div class="seg" role="group" aria-label="Ancho">
+    <button type="button" data-width="1440" aria-pressed="true">Escritorio</button>
+    <button type="button" data-width="375" aria-pressed="false">Móvil</button>
+  </div>
+</header>
+<main class="panes">
+  <section class="pane" data-side="left"><p class="pane__name"><span></span><a target="_blank" rel="noopener">Abrir sola</a></p><div class="pane__view"></div></section>
+  <section class="pane" data-side="right"><p class="pane__name"><span></span><a target="_blank" rel="noopener">Abrir sola</a></p><div class="pane__view"></div></section>
+</main>
+<script>
+// Las propuestas. «Actual» es una captura de la web de hoy (no se puede
+// incrustar: la web prohíbe mostrarse dentro de otra página).
+const OPTIONS = [
+  { id: "actual", name: "Actual (captura)", image: (w) => `actual/servicios-web-${w}.jpg` },
+  { id: "fable-raiz", name: "Raíz", url: "servicios-web/fable-raiz/" },
+  { id: "fable-ficha", name: "Ficha", url: "servicios-web/fable-ficha/" },
+  { id: "opus", name: "Propuesta de Opus 5.5", url: "servicios-web/opus/", optional: true },
+];
+let width = 1440;
+const state = { left: "actual", right: "fable-raiz" };
+
+function render(side) {
+  const pane = document.querySelector(`.pane[data-side="${side}"]`);
+  const view = pane.querySelector(".pane__view");
+  const opt = OPTIONS.find((o) => o.id === state[side]);
+  pane.querySelector(".pane__name span").textContent = opt.name;
+  const src = opt.image ? opt.image(width) : opt.url;
+  pane.querySelector(".pane__name a").href = src;
+  view.className = "pane__view" + (opt.image ? " is-image" : "") + (width === 375 ? " is-mobile" : "");
+  view.replaceChildren();
+  if (opt.image) {
+    const img = new Image();
+    img.src = src;
+    img.alt = "Captura de la página actual";
+    view.append(img);
+  } else {
+    const frame = document.createElement("iframe");
+    frame.src = src;
+    frame.title = opt.name;
+    view.append(frame);
+  }
+  fit();
+}
+
+// En escritorio, la página se pinta a 1440 px y se reduce para caber.
+function fit() {
+  for (const view of document.querySelectorAll(".pane__view")) {
+    const frame = view.querySelector("iframe");
+    if (!frame) continue;
+    if (width === 375) {
+      frame.style.cssText = `width:375px;height:${view.clientHeight}px;transform:none`;
+    } else {
+      const scale = view.clientWidth / 1440;
+      frame.style.cssText = `width:1440px;height:${view.clientHeight / scale}px;transform:scale(${scale})`;
+    }
+  }
+}
+
+async function init() {
+  const available = [];
+  for (const o of OPTIONS) {
+    if (!o.optional) available.push(o);
+    else if ((await fetch(o.url, { method: "HEAD" }).catch(() => ({ ok: false }))).ok) available.push(o);
+  }
+  for (const side of ["left", "right"]) {
+    const select = document.getElementById(side);
+    for (const o of available) select.add(new Option(o.name, o.id, false, o.id === state[side]));
+    select.addEventListener("change", () => { state[side] = select.value; render(side); });
+    render(side);
+  }
+  for (const b of document.querySelectorAll("[data-width]")) {
+    b.addEventListener("click", () => {
+      width = +b.dataset.width;
+      document.querySelectorAll("[data-width]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      render("left");
+      render("right");
+    });
+  }
+  addEventListener("resize", fit);
+}
+init();
+</script>
+</body>
+</html>

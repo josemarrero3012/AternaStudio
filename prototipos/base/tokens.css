@@ -1,0 +1,186 @@
+/* ==========================================================================
+   Aterna Studio — tokens de diseño
+   Único sitio donde viven color, tipografía, espacio, forma, movimiento y
+   capas. globals.css solo usa estas variables.
+   ========================================================================== */
+
+/* Tokens ------------------------------------------------------------------ */
+
+:root {
+  /* Paleta «noche», sacada del vídeo del hero: fondo índigo, raíces índigo
+     y lavanda, destellos violeta y orquídea. Toda la web vive en esta
+     familia; no hay superficies claras. La base es más clara que el negro
+     del vídeo (#05060f): el vídeo se funde con ella en modo «screen», así
+     que su negro pasa a ser este azul. */
+  --night-0: #13163b; /* base de la página */
+  --night-1: #181c46;
+  --night-2: #1e2352;
+  --night-3: #262c62;
+  --night-4: #2f3672; /* superficies elevadas */
+
+  /* Acentos del vídeo. Índigo solo para líneas y luz (≈3:1); lavanda y
+     orquídea sirven también para texto sobre cualquier noche (≥4,5:1;
+     orquídea, sobre las bandas y el vidrio). */
+  --indigo: #4b55d6;
+  --lavender: #9aa3ff;
+  --violet: #9a5cf0;
+  --orchid: #d77cf5;
+  /* Rosa de marca: solo el hover del botón principal y los errores. */
+  --rose: #ff4d8f;
+
+  --brand-gradient: linear-gradient(135deg, var(--indigo) 0%, var(--violet) 52%, var(--orchid) 100%);
+  --brand-gradient-h: linear-gradient(90deg, var(--indigo) 0%, var(--violet) 52%, var(--orchid) 100%);
+  /* Para texto y bordes finos: la versión clara, legible sobre noche. */
+  --brand-gradient-on-ink: linear-gradient(90deg, #8590ff 0%, #b57cf5 50%, #e48af7 100%);
+  /* Para texto sobre el vídeo del hero, más luminoso aún. */
+  --brand-gradient-light: linear-gradient(90deg, #b3bcff 0%, #d6a8f7 50%, #f0b2f5 100%);
+
+  /* Superficies (nombres heredados: «ink» es la noche base). */
+  --ink: var(--night-0);
+  --ink-raised: var(--night-3);
+  --ink-hair: #e6e9ff1a;
+  --ink-hair-strong: #e6e9ff38;
+  --text-hi: #eef0fa;
+  --text-mid: #a9adc8; /* ≥5:1 sobre cualquier noche */
+  --text-low: #a3a7c6; /* ≥4,7:1 sobre cualquier noche */
+  --text-support: #c6c9de; /* apoyo del hero, sobre el vídeo */
+
+  /* Acentos puntuales (detalles, no texto). */
+  --accent-violet: var(--violet);
+  --accent-magenta: var(--orchid);
+
+  /* Contexto */
+  --surface: var(--ink);
+  --surface-raised: var(--night-3);
+  --on-surface-hi: var(--text-hi);
+  --on-surface-mid: var(--text-mid);
+  --on-surface-low: var(--text-low);
+  --hair: var(--ink-hair);
+  --hair-strong: var(--ink-hair-strong);
+  /* Línea de campo de formulario: ≥3:1 con el fondo (WCAG 1.4.11). */
+  --field-line: #e6e9ff6b;
+
+  /* Profundidad: tarjetas de vidrio sobre las bandas, con un filo de luz
+     arriba y dos sombras (contacto y caída larga). */
+  --glass: color-mix(in srgb, var(--night-3) 58%, transparent);
+  --glass-hover: color-mix(in srgb, var(--night-4) 66%, transparent);
+  --glass-blur: blur(16px) saturate(1.2);
+  --shadow-card: inset 0 1px 0 #e6e9ff14, 0 1px 2px #00000066, 0 24px 48px -28px #000000cc;
+  --shadow-card-hover: inset 0 1px 0 #e6e9ff24, 0 1px 2px #00000066, 0 32px 64px -28px color-mix(in srgb, var(--violet) 45%, #000);
+  --spot: color-mix(in srgb, var(--violet) 20%, transparent);
+
+  /* Tipografía */
+  --font-display: var(--font-fraunces), "Times New Roman", serif;
+  --font-ui: var(--font-geist), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --t-hero: clamp(2.75rem, 1.125rem + 6.25vw, 6.75rem);
+  --t-display: clamp(2.125rem, 1.15rem + 4.6vw, 4.75rem);
+  --t-title: clamp(1.6875rem, 1.35rem + 1.6vw, 2.75rem);
+  --t-card: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
+  --t-lead: clamp(1.1875rem, 1.1rem + 0.35vw, 1.5rem);
+  --t-body: clamp(1rem, 0.98rem + 0.1vw, 1.0625rem);
+  --t-small: 0.875rem;
+  --t-label: clamp(0.75rem, 0.73rem + 0.08vw, 0.8125rem);
+  --lh-hero: 0.92;
+  --lh-display: 0.98;
+  --lh-title: 1.06;
+  --lh-lead: 1.5;
+  --lh-body: 1.62;
+  --ls-hero: -0.02em;
+  --ls-display: -0.016em;
+  --ls-title: -0.02em;
+  --ls-lead: -0.01em;
+  --ls-label: 0.16em;
+  --measure: 62ch;
+
+  /* Espacio (escala de 4/8 px) */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 40px;
+  --s-8: 48px;
+  --s-9: 64px;
+  --s-10: 80px;
+  --s-12: 128px;
+  --section-y: clamp(72px, 8.1vw, 144px);
+  --section-y-lg: clamp(94px, 11.7vw, 198px);
+  --block-y: clamp(40px, 4vw, 64px);
+  --head-top: clamp(120px, 10vw, 152px);
+  --header-h: 68px;
+  --gutter: 16px;
+  --margin: 20px;
+  --container: 1440px;
+
+  /* Forma y movimiento */
+  --r-xs: 2px;
+  --r-card: 10px;
+  --r-pill: 999px;
+  --d-micro: 0.2s;
+  --d-std: 0.45s;
+  --d-cine: 0.9s;
+  --e-aterna: cubic-bezier(0.16, 1, 0.3, 1);
+  --e-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --e-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Capas */
+  --z-base: 1;
+  --z-header: 50;
+  --z-float: 80;
+  --z-menu: 90;
+  --z-curtain: 100;
+
+  /* Velo de la cabecera al hacer scroll */
+  --ink-veil: color-mix(in srgb, var(--night-0) 72%, transparent);
+
+  /* Estados de formulario */
+  --ok-on-ink: #6fdc9b;
+
+  /* Botón principal: relleno claro; al pasar, rosa de marca (texto noche
+     sobre rosa: 5,6:1). */
+  --btn-bg: var(--text-hi);
+  --btn-fg: var(--ink);
+  --btn-hover-bg: var(--rose);
+  --btn-hover-fg: var(--ink);
+
+  /* Recorrido de la portada (Journey.tsx, styles/journey.css). Sus medidas
+     van en px de diseño: --u (ver journey.css). */
+  --journey-scene-h: 600vh;
+  --journey-stage: #0b0d26; /* detrás del lienzo mientras se forman las partículas (es el fondo del shader) */
+  /* Velo sobre la escena: algo arriba (cabecera), mucho abajo (textos), y
+     en el borde inferior, la noche de la página para fundirse con lo que sigue. */
+  --journey-shade: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--night-0) 34%, transparent) 0%,
+    transparent 24%,
+    transparent 56%,
+    color-mix(in srgb, var(--night-0) 62%, transparent) 84%,
+    color-mix(in srgb, var(--night-0) 88%, transparent) 100%
+  );
+  /* El nombre grande de la entrada, sobre las partículas. */
+  --journey-name: #f4f1ff;
+  --journey-name-shadow: #0b0d2659;
+  /* Vidrio: borde fino (el separador de los idiomas en la cabecera). */
+  --glass-edge: #e6e9ff40;
+
+  /* Cursor: anillo, punto y etiqueta. */
+  --cursor-ring: #e6e9ff8c;
+  --cursor-orbit: #9aa3ff1f;
+  --cursor-orbit-hover: #9aa3ff40;
+  --cursor-dot-shadow: 0 1px 8px #00000029;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 24px;
+    --margin: 48px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 84px;
+  }
+}

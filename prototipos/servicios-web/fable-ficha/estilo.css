@@ -1,0 +1,533 @@
+/* «Ficha» — la página es una decisión, y la decisión va en una sola pieza.
+   La tarjeta de marca (marco de color y panel negro) aparece una vez: es la
+   ficha del servicio, con el plan, el precio y la llamada. Acompaña al
+   lector mientras lee; todo lo demás es noche, tipografía y filetes. */
+
+.ficha-page {
+  padding-top: var(--header-h);
+}
+
+.f-layout {
+  display: grid;
+  gap: 0;
+}
+
+.f-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.625rem, 1.3rem + 1.3vw, 2.375rem);
+  font-weight: 460;
+  font-variation-settings: "opsz" 72;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+.f-lead {
+  max-width: 46ch;
+  color: var(--text-support);
+  font-size: clamp(1.125rem, 1.05rem + 0.4vw, 1.375rem);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+.f-n {
+  color: var(--lavender);
+  font-family: var(--font-display);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.dibujo {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.dibujo path {
+  stroke: var(--lavender);
+  stroke-width: 1.2px;
+  vector-effect: non-scaling-stroke;
+}
+.dibujo .dibujo__tenue {
+  opacity: 0.42;
+}
+.dibujo__punto {
+  fill: var(--lavender);
+  opacity: 0.6;
+}
+.dibujo__halo {
+  fill: color-mix(in srgb, var(--orchid) 26%, transparent);
+}
+.dibujo__nodo {
+  fill: var(--orchid);
+}
+
+/* Cabecera de página -------------------------------------------------------- */
+.f-head {
+  padding-block: clamp(48px, 5.5vw, 96px) clamp(32px, 3vw, 48px);
+}
+.f-crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 10px;
+  color: var(--text-mid);
+  font-size: var(--t-small);
+}
+.f-crumbs li + li::before {
+  content: "/";
+  margin-right: 10px;
+  color: var(--text-low);
+}
+.f-crumbs [aria-current] {
+  color: var(--text-hi);
+}
+.f-crumbs a {
+  display: inline-block;
+  padding-block: 4px;
+}
+.f-h1 {
+  margin-top: var(--s-5);
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 1.2rem + 4.6vw, 4.625rem);
+  font-weight: 500;
+  font-variation-settings: "opsz" 144;
+  line-height: 0.98;
+  letter-spacing: -0.024em;
+}
+.f-head .f-lead {
+  margin-top: var(--s-6);
+}
+
+/* La ficha ----------------------------------------------------------------- */
+.f-card {
+  --card-a: color-mix(in srgb, var(--indigo) 88%, #000);
+  --card-b: color-mix(in srgb, var(--violet) 82%, var(--indigo));
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: var(--s-4);
+  padding: var(--s-4);
+  border: 1px solid color-mix(in srgb, #fff 14%, transparent);
+  border-radius: calc(var(--r-card) * 2);
+  background:
+    radial-gradient(90% 55% at 100% 100%, color-mix(in srgb, var(--orchid) 38%, transparent), transparent 70%),
+    linear-gradient(160deg, var(--card-a) 0%, var(--card-b) 100%);
+  box-shadow: var(--shadow-card), 0 40px 120px -40px color-mix(in srgb, var(--violet) 60%, transparent);
+  color: #fff;
+}
+.f-card__art {
+  position: relative;
+  padding: 26px 22%;
+  border: 1px solid color-mix(in srgb, #fff 7%, transparent);
+  border-radius: calc(var(--r-card) * 1.4);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--violet) 14%, transparent), transparent), #07081a;
+}
+.f-card__art::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  inset-inline: 14%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--lavender) 80%, transparent), color-mix(in srgb, var(--orchid) 80%, transparent), transparent);
+}
+.f-card__title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.f-seg {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 4px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, #07081a 62%, transparent);
+}
+.f-seg label {
+  display: grid;
+  place-items: center;
+  min-height: 40px;
+  padding-inline: 6px;
+  border-radius: var(--r-pill);
+  font-size: var(--t-small);
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color var(--d-micro) var(--e-out), color var(--d-micro) var(--e-out);
+}
+.f-seg input:checked + label {
+  background: var(--text-hi);
+  color: var(--ink);
+}
+.f-seg input:focus-visible + label {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+@media (hover: hover) {
+  .f-seg input:not(:checked) + label:hover {
+    background: color-mix(in srgb, #fff 12%, transparent);
+  }
+}
+.f-plan {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-3) var(--s-3);
+}
+.f-plan + .f-plan {
+  border-top: 1px solid color-mix(in srgb, #fff 18%, transparent);
+  padding-top: var(--s-5);
+}
+.f-plan__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--s-3);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-variation-settings: "opsz" 72;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+.f-plan__flag {
+  font-family: var(--font-ui);
+  font-size: var(--t-small);
+  letter-spacing: 0;
+  color: color-mix(in srgb, #fff 86%, transparent);
+}
+.f-plan__price {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 2rem + 1.6vw, 3.25rem);
+  font-variation-settings: "opsz" 144;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.f-plan__price span {
+  font-family: var(--font-ui);
+  font-size: var(--t-small);
+  letter-spacing: 0;
+  color: color-mix(in srgb, #fff 86%, transparent);
+}
+.f-plan__price span:last-child {
+  display: block;
+  margin-top: 6px;
+}
+.f-plan__tagline {
+  color: color-mix(in srgb, #fff 90%, transparent);
+  line-height: 1.45;
+}
+.f-plan__features {
+  display: grid;
+  gap: 7px;
+  font-size: var(--t-small);
+}
+.f-plan__features li {
+  position: relative;
+  padding-left: 22px;
+}
+.f-plan__features li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.42em;
+  width: 9px;
+  height: 5px;
+  border-left: 1.5px solid #fff;
+  border-bottom: 1.5px solid #fff;
+  rotate: -45deg;
+}
+.f-plan__cta {
+  justify-content: center;
+  margin-top: var(--s-2);
+}
+.f-card__note {
+  padding-inline: var(--s-3);
+  padding-bottom: var(--s-2);
+  font-size: 0.8125rem;
+  color: color-mix(in srgb, #fff 82%, transparent);
+}
+/* Con :has, solo se ve el plan elegido. Sin :has, los tres, uno tras otro. */
+@supports selector(:has(*)) {
+  .f-plan {
+    display: none;
+  }
+  .f-plan + .f-plan {
+    border-top: 0;
+    padding-top: var(--s-2);
+  }
+  .f-plan .f-plan__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .f-plan[data-plan="2"] .f-plan__name {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    font-size: 0;
+    gap: 0;
+  }
+  .f-plan[data-plan="2"] .f-plan__flag {
+    font-size: var(--t-small);
+  }
+  .f-card:has(#plan-1:checked) .f-plan[data-plan="1"],
+  .f-card:has(#plan-2:checked) .f-plan[data-plan="2"],
+  .f-card:has(#plan-3:checked) .f-plan[data-plan="3"] {
+    display: grid;
+  }
+}
+
+/* Columna de lectura ------------------------------------------------------- */
+.f-block {
+  padding-block: clamp(36px, 4vw, 64px);
+  border-top: 1px solid var(--ink-hair);
+}
+.f-statement {
+  border-top: 0;
+}
+.f-statement p {
+  max-width: 25em;
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 1.1rem + 1.1vw, 1.875rem);
+  font-variation-settings: "opsz" 36;
+  line-height: 1.28;
+  letter-spacing: -0.012em;
+}
+.f-steps {
+  margin-top: var(--s-5);
+}
+.f-steps li {
+  display: grid;
+  grid-template-columns: 2ch 1fr;
+  gap: var(--s-4);
+  padding-block: 12px;
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  line-height: 1.4;
+}
+.f-steps li + li {
+  border-top: 1px solid var(--ink-hair);
+}
+.f-steps .f-n {
+  font-size: 1.25em;
+  line-height: 1.1;
+}
+.f-faq {
+  display: grid;
+  gap: var(--s-6);
+  margin-top: var(--s-5);
+}
+.f-faq dt {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem);
+  font-variation-settings: "opsz" 36;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.f-faq dd {
+  max-width: 58ch;
+  margin-top: var(--s-2);
+  color: var(--text-mid);
+}
+
+/* Otros servicios ---------------------------------------------------------- */
+.f-others {
+  padding-block: clamp(48px, 6vw, 96px) 0;
+}
+.f-others__list {
+  display: grid;
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+}
+.f-other {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: var(--s-2);
+  height: 100%;
+  padding: var(--s-5);
+  border: 1px solid var(--ink-hair-strong);
+  border-radius: calc(var(--r-card) * 2);
+  background: color-mix(in srgb, var(--night-2) 55%, transparent);
+  transition: border-color var(--d-std) var(--e-out), background-color var(--d-std) var(--e-out);
+}
+.f-other__art {
+  width: 132px;
+  margin-bottom: var(--s-4);
+}
+.f-other__name {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-variation-settings: "opsz" 72;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+}
+.f-other__body {
+  color: var(--text-mid);
+  font-size: var(--t-small);
+  line-height: 1.5;
+}
+.f-other__price {
+  align-self: end;
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--ink-hair);
+  color: var(--text-mid);
+}
+.f-other__price strong {
+  color: var(--text-hi);
+  font-weight: 500;
+}
+@media (hover: hover) {
+  .f-other:hover {
+    border-color: var(--lavender);
+    background-color: color-mix(in srgb, var(--night-3) 60%, transparent);
+  }
+}
+
+/* Llamada final ------------------------------------------------------------ */
+.f-end {
+  position: relative;
+  isolation: isolate;
+  padding-top: clamp(72px, 9vw, 152px);
+}
+.f-end::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  top: 0;
+  width: min(1100px, 100%);
+  height: 640px;
+  background: radial-gradient(closest-side at 30% 52%, color-mix(in srgb, var(--violet) 22%, transparent), transparent);
+  pointer-events: none;
+}
+.f-end__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 1rem + 5vw, 5.25rem);
+  font-weight: 500;
+  font-variation-settings: "opsz" 144;
+  line-height: 0.98;
+  letter-spacing: -0.022em;
+}
+.f-end__row {
+  display: grid;
+  gap: var(--s-5);
+  margin-top: var(--s-7);
+}
+.f-end__actions {
+  display: grid;
+  justify-items: start;
+  gap: var(--s-3);
+}
+.f-end__mail {
+  color: var(--text-mid);
+  font-size: var(--t-small);
+}
+.f-end__mail a {
+  display: inline-block;
+  padding-block: 4px;
+  color: var(--text-hi);
+}
+.f-next {
+  margin-top: clamp(56px, 6vw, 96px);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--ink-hair);
+}
+.f-next__title {
+  color: var(--text-mid);
+  font-size: var(--t-body);
+}
+.f-next__list {
+  display: grid;
+  gap: var(--s-5);
+  margin-top: var(--s-5);
+}
+.f-next__list li {
+  display: grid;
+  grid-template-columns: 2ch 1fr;
+  gap: 4px var(--s-4);
+}
+.f-next__list .f-n {
+  grid-row: span 2;
+  font-size: 1.375rem;
+  line-height: 1.2;
+}
+.f-next__list strong {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 400;
+  font-variation-settings: "opsz" 36;
+  line-height: 1.2;
+}
+.f-next__list li > span:last-child {
+  grid-column: 2;
+  max-width: 40ch;
+  color: var(--text-mid);
+  font-size: var(--t-small);
+  line-height: 1.5;
+}
+.f-next__note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--s-6);
+  color: var(--text-mid);
+  font-size: var(--t-small);
+}
+.f-next__note::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ok-on-ink);
+}
+
+@media (min-width: 700px) {
+  .f-h1 span,
+  .f-end__title span {
+    display: block;
+  }
+  .f-others__list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .f-next__list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .f-card {
+    max-width: 460px;
+  }
+}
+
+/* Escritorio: la ficha a la derecha, fija mientras se lee la columna. */
+@media (min-width: 1024px) {
+  .f-layout {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 1fr) minmax(360px, 4fr);
+  }
+  .f-layout > * {
+    grid-column: 1;
+  }
+  .f-layout > .f-card {
+    grid-column: 3;
+    grid-row: 1 / span 4;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--header-h) + var(--s-5));
+    margin-top: clamp(48px, 5.5vw, 96px);
+    max-width: none;
+  }
+  .f-end__row {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: start;
+  }
+  .f-head {
+    isolation: isolate;
+  }
+}
+/* En pantallas bajas, la ficha sin dibujo para que quepa entera. */
+@media (min-width: 1024px) and (max-height: 820px) {
+  .f-card__art {
+    display: none;
+  }
+}

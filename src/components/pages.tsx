@@ -8,14 +8,15 @@ import { useEffect, useState } from "react";
 import { Link, useI18n } from "@/lib/i18n";
 import { useReveal } from "@/lib/reveal";
 import { formatPrice, pricing, slugToProduct, type ServiceSlug } from "@/lib/pricing";
+import { growthRings } from "@/lib/rings";
 import { site } from "@/lib/site";
 import { BeliefArt } from "./BeliefArt";
 import { CopyEmail } from "./CopyEmail";
 import { whatsappHref } from "./Chrome";
-import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
+import { ArrowDown, ArrowExternal, ArrowRight } from "./icons";
 import { Journey } from "./Journey";
 import { Approach, Cases, FinalCTA, NextSteps, Services, StartingPrice, StudioStatement } from "./sections";
-import { ServiceGlyph, ServiceTrace } from "./ServiceTrace";
+import { ServiceGlyph } from "./ServiceTrace";
 import { WordReveal } from "./WordReveal";
 
 // / -------------------------------------------------------------------------
@@ -108,54 +109,15 @@ export function ServiciosContent() {
 
 // /servicios/<slug> -----------------------------------------------------------
 
-function Plan({
-  name,
-  priceLabel,
-  pricePrefix,
-  priceSuffix,
-  unitNote,
-  tagline,
-  features,
-  featured,
-}: {
-  name: string;
-  priceLabel: string;
-  pricePrefix?: string;
-  priceSuffix?: string;
-  unitNote?: string;
-  tagline: string;
-  features: string[];
-  featured: boolean;
-}) {
-  const { t } = useI18n();
-  return (
-    <article className={`plan aurora-card${featured ? " plan--featured" : " aurora-card--soft"}`} data-spot>
-      {featured ? <span className="t-label plan__badge">{t.common.recommended}</span> : null}
-      <header className="plan__head">
-        <h3 className="t-label plan__name">{name}</h3>
-        <p className="t-small plan__tagline">{tagline}</p>
-      </header>
-      {/* El importe, en el panel negro: como el dibujo en las demás tarjetas. */}
-      <div className="plan__panel aurora-panel">
-        <p className={`plan__price${priceSuffix === undefined && !/\d/.test(priceLabel) ? " plan__price--text" : ""}`}>
-          {pricePrefix ? <span className="plan__prefix">{pricePrefix}</span> : null}
-          {priceLabel}
-          {priceSuffix ? <span className="plan__suffix">{priceSuffix}</span> : null}
-        </p>
-        {unitNote ? <p className="t-label plan__unit">{unitNote}</p> : null}
-      </div>
-      <ul className="plan__features">
-        {features.map((f, i) => (
-          <li key={i}>
-            <Check />
-            <span>{f}</span>
-          </li>
-        ))}
-      </ul>
-    </article>
-  );
-}
-
+/**
+ * Ficha de un servicio («Raíz»). La página sigue una raíz de luz que baja
+ * desde el árbol del logo: cada bloque se agarra a ella con un nodo, una luz
+ * la recorre con el scroll (es posición, no animación) y la raíz acaba en la
+ * llamada final. Los planes son anillos de crecimiento: cada plan contiene al
+ * anterior. Elegir un plan enciende sus anillos y cambia la llamada; funciona
+ * sin JavaScript (radios y :has(), ver styles/servicio.css). Todo el texto
+ * se ve desde el primer momento, sin esperar a ninguna entrada.
+ */
 export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
   const { t, locale } = useI18n();
   const product = slugToProduct[slug];
@@ -163,178 +125,262 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
   const prices = pricing[product];
   const cards = t.servicePages.index.cards;
   const card = cards.find((c) => c.slug === slug)!;
+  const [h1a, h1b = ""] = page.h1.split("\n");
+  // Solo en diseño web «Qué incluye» es un orden (de la auditoría a la
+  // entrega): ahí lleva números. En los demás es una lista.
+  const ordered = product === "web";
+  const featured = Math.max(0, page.plans.findIndex((p) => p.featured));
+  const tiers = growthRings(page.plans.length);
+  const planHref = (name: string) =>
+    `/contacto?mensaje=${encodeURIComponent(t.common.planMessage.replace("{plan}", name).replace("{service}", card.title))}`;
 
   return (
-    <>
-      <section className="container page-head page-head--lit svc-head">
-        <div className="svc-head__intro">
-          <nav aria-label="Breadcrumb" className="t-label eyebrow crumbs page-head__eyebrow">
-            <ol>
-              <li>
-                <Link href="/servicios" className="link-underline">
-                  {t.servicePages.index.eyebrow}
-                </Link>
-              </li>
-              <li aria-current="page">{card.title}</li>
-            </ol>
-          </nav>
-          <WordReveal as="h1" className="t-display svc-h1" text={page.h1} onScroll={false} delay={0.1} />
-        </div>
-        <p className="t-lead muted svc-head__lead">{page.lead}</p>
-        {/* Precio de salida y acciones arriba: antes había que bajar hasta los planes. */}
-        <div className="svc-summary">
-          <p className="svc-summary__price">
-            <span className="t-label dim">{card.kicker}</span>
-            <StartingPrice slug={slug} />
-          </p>
-          <div className="svc-summary__actions">
-            <Link href="/contacto" className="btn-primary">
-              {t.cta}
-              <ArrowRight />
-            </Link>
-            <a href="#planes" className="btn-ghost">
-              {t.common.seePlans}
-              <ArrowDown />
-            </a>
+    <div className="raiz">
+      <div className="container">
+        <div className="raiz__tronco">
+          <div className="raiz__linea" aria-hidden="true">
+            <span className="raiz__luz" />
           </div>
-        </div>
-      </section>
 
-      <section className="container section svc-row svc-row--first" aria-label={t.common.overview}>
-        <div className="svc-row__label">
-          <span className="t-label dim">{t.common.overview}</span>
-          {/* La frase clave del servicio, dibujada (ver ServiceTrace). */}
-          <ServiceTrace slug={slug} />
-        </div>
-        <div className="svc-row__body svc-prose">
-          {page.intro.map((p, i) => (
-            <p key={i} className={i === 0 ? "t-lead" : "t-body muted"}>
-              {p}
-            </p>
-          ))}
-        </div>
-      </section>
-
-      <section className="container section svc-row">
-        <div className="svc-row__label">
-          <h2 className="t-label dim">{page.includesTitle}</h2>
-        </div>
-        <ul className="svc-row__body svc-list">
-          {page.includes.map((item, i) => (
-            <li key={i}>
-              <Check />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {page.report ? (
-        <section className="container section svc-row">
-          <div className="svc-row__label">
-            <h2 className="t-label dim">{page.reportTitle}</h2>
-          </div>
-          <p className="svc-row__body t-lead svc-report__body">{page.report}</p>
-        </section>
-      ) : null}
-
-      {page.examples.length > 0 ? (
-        <section className="container section svc-row">
-          <div className="svc-row__label">
-            <h2 className="t-label dim">{page.examplesTitle}</h2>
-          </div>
-          <div className="svc-row__body">
-            <p className="t-body muted svc-examples__lead">{page.examplesLead}</p>
-            <div className="ex-cards">
-              {page.examples.map((ex, i) => (
-                <a key={i} className="ex-card aurora-card aurora-card--soft" data-spot href={withBase(ex.href)} target="_blank" rel="noopener noreferrer">
-                  <span className="t-label ex-card__label">{ex.label}</span>
-                  <span className="t-card ex-card__title">
-                    {ex.title}
-                    <ArrowExternal />
-                  </span>
-                </a>
-              ))}
+          <section className="tramo r-head">
+            <nav className="r-crumbs" aria-label="Breadcrumb">
+              <ol>
+                <li>
+                  <Link href="/servicios" className="link-underline">
+                    {t.servicePages.index.eyebrow}
+                  </Link>
+                </li>
+                <li aria-current="page">{card.title}</li>
+              </ol>
+            </nav>
+            <h1 className="r-h1">
+              <span>{h1a}</span> <span>{h1b}</span>
+            </h1>
+            <div className="r-head__grid">
+              <div>
+                <p className="r-lead">{page.lead}</p>
+                <div className="r-offer">
+                  <p className="r-price">
+                    <StartingPrice slug={slug} />
+                    <span className="r-price__unit">{card.kicker}</span>
+                  </p>
+                  <div className="r-offer__actions">
+                    <Link href="/contacto" className="btn-primary">
+                      {t.cta}
+                      <ArrowRight />
+                    </Link>
+                    <a href="#planes" className="btn-ghost">
+                      {t.common.seePlans}
+                      <ArrowDown />
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div className="r-head__art">
+                <ServiceGlyph slug={slug} size="xl" />
+              </div>
             </div>
-          </div>
-        </section>
-      ) : null}
+          </section>
 
-      {/* Banda a todo el ancho: el vidrio de los planes tiene luz detrás. */}
-      <section className="section band-indigo plans-band" id="planes" aria-labelledby="plans-title">
-        <div className="container svc-plans">
-          <header className="svc-plans__head">
-            <h2 id="plans-title" className="t-display">
-              {page.plansTitle}
-            </h2>
-            <p className="t-small dim svc-plans__note">{page.plansNote}</p>
-          </header>
-          <div className="plans" data-count={page.plans.length}>
-            {page.plans.map((plan, i) => {
-              const p = prices[i];
-              if (p.custom) {
-                return (
-                  <Plan
-                    key={i}
-                    name={plan.name}
-                    priceLabel={t.common.customPrice}
-                    unitNote={t.common.customPriceNote}
-                    tagline={plan.tagline}
-                    features={plan.features}
-                    featured={plan.featured}
-                  />
-                );
-              }
-              const amount = formatPrice(p.amount, locale);
-              return (
-                <Plan
-                  key={i}
-                  name={plan.name}
-                  priceLabel={amount}
-                  pricePrefix={p.from ? t.common.priceFrom : undefined}
-                  priceSuffix={p.unit === "month" ? t.common.perMonth : undefined}
-                  unitNote={p.unit === "month" ? undefined : t.common.oncePayment}
-                  tagline={plan.tagline}
-                  features={plan.features}
-                  featured={plan.featured}
-                />
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section className="container section svc-row">
-        <div className="svc-row__label">
-          <h2 className="t-label dim">{page.faqTitle}</h2>
-        </div>
-        <dl className="svc-row__body svc-faq__list">
-          {page.faq.map((item, i) => (
-            <div className="svc-faq__item" key={i}>
-              <dt className="svc-faq__q">{item.q}</dt>
-              <dd className="t-body muted svc-faq__a">{item.a}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section className="container section other-svcs" aria-labelledby="other-title">
-        <header className="other-svcs__head">
-          <h2 id="other-title" className="t-title">
-            {t.common.otherServices}
-          </h2>
-        </header>
-        <div className="svc-cards svc-cards--three">
-          {cards
-            .filter((c) => c.slug !== slug)
-            .map((c, i) => (
-              <SvcCard key={c.slug} card={c} heading="h3" soft={i === 1} />
+          <section className="tramo r-statement" aria-label={t.common.overview}>
+            {page.intro.map((p, i) => (
+              <p key={i} className={i === 0 ? "nodo" : "r-statement__more"}>
+                {p}
+              </p>
             ))}
-        </div>
-      </section>
+          </section>
 
-      <FinalCTA />
-    </>
+          <section className="tramo" aria-labelledby="incluye">
+            <h2 className="r-h2 nodo" id="incluye">
+              {page.includesTitle}
+            </h2>
+            <ul className={`r-steps${ordered ? " r-steps--ordered" : ""}`}>
+              {page.includes.map((item, i) => (
+                <li key={i}>
+                  {ordered ? <span className="r-n">{i + 1}</span> : null}
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {page.report ? (
+            <section className="tramo" aria-labelledby="informe">
+              <h2 className="r-h2 nodo" id="informe">
+                {page.reportTitle}
+              </h2>
+              <p className="r-report">{page.report}</p>
+              {page.examples.length > 0 ? (
+                <>
+                  <p className="r-note r-report__lead">{page.examplesLead}</p>
+                  <ul className="r-index">
+                    {page.examples.map((ex, i) => (
+                      <li key={i}>
+                        <a className="r-row" href={withBase(ex.href)} target="_blank" rel="noopener noreferrer">
+                          <span className="r-row__name">
+                            {ex.title}
+                            <ArrowExternal />
+                          </span>
+                          <span className="r-row__body">{ex.label}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
+            </section>
+          ) : null}
+
+          <section className="tramo r-plans" id="planes" aria-labelledby="planes-titulo">
+            <header className="r-plans__head">
+              <h2 className="r-h2 nodo" id="planes-titulo">
+                {page.plansTitle}
+              </h2>
+              <p className="r-note">{page.plansNote}</p>
+            </header>
+            <div className="r-plans__grid">
+              <figure className="r-rings" aria-hidden="true">
+                <svg viewBox="0 0 400 400" focusable="false">
+                  {tiers.map((tier) => (
+                    <g key={tier.level} className="anillo" data-nivel={tier.level}>
+                      {tier.rings.map((d, j) => (
+                        <path key={j} d={d} className={j === tier.rings.length - 1 ? "anillo__borde" : undefined} />
+                      ))}
+                    </g>
+                  ))}
+                  <circle className="r-rings__halo" cx="200" cy="200" r="16" />
+                  <circle className="r-rings__pith" cx="200" cy="200" r="3.5" />
+                </svg>
+                <figcaption>{t.common.plansContain}</figcaption>
+              </figure>
+
+              <fieldset className="r-plans__list">
+                <legend className="sr-only">{page.plansTitle}</legend>
+                {page.plans.map((plan, i) => {
+                  const p = prices[i];
+                  const id = `plan-${i + 1}`;
+                  return (
+                    <div className="r-plan" data-nivel={i + 1} key={i}>
+                      <input className="r-plan__radio" type="radio" name="plan" id={id} value={plan.name} defaultChecked={i === featured} />
+                      <h3 className="r-plan__name">
+                        <label htmlFor={id}>{plan.name}</label>
+                        {plan.featured ? <span className="r-plan__flag">{t.common.recommended}</span> : null}
+                      </h3>
+                      <p className="r-plan__price">
+                        {p.custom ? (
+                          <span className="r-plan__text">{t.common.customPrice}</span>
+                        ) : (
+                          <>
+                            {p.from ? <span>{t.common.priceFrom} </span> : null}
+                            {formatPrice(p.amount, locale)}
+                            {p.unit === "month" ? <span>{t.common.perMonth}</span> : <span className="r-plan__unit">{t.common.oncePayment}</span>}
+                          </>
+                        )}
+                      </p>
+                      <p className="r-plan__tagline">{plan.tagline}</p>
+                      <ul className="r-plan__features">
+                        {plan.features.map((f, j) => (
+                          <li key={j}>{f}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
+                {/* Con :has(), solo se ve la llamada del plan elegido; sin él,
+                    la genérica. Cada una deja el plan escrito en el formulario. */}
+                <p className="r-plans__cta">
+                  {page.plans.map((plan, i) => (
+                    <Link key={i} href={planHref(plan.name)} className="btn-primary" data-plan={i + 1}>
+                      {t.common.startWith.replace("{plan}", plan.name)}
+                      <ArrowRight />
+                    </Link>
+                  ))}
+                  <Link href="/contacto" className="btn-primary" data-plan="0">
+                    {t.cta}
+                    <ArrowRight />
+                  </Link>
+                </p>
+              </fieldset>
+            </div>
+          </section>
+
+          <section className="tramo" aria-labelledby="faq">
+            <h2 className="r-h2 nodo" id="faq">
+              {page.faqTitle}
+            </h2>
+            <dl className="r-faq">
+              {page.faq.map((item, i) => (
+                <div key={i}>
+                  <dt>{item.q}</dt>
+                  <dd>{item.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+
+          <section className="tramo" aria-labelledby="otros">
+            <h2 className="r-h2 nodo" id="otros">
+              {t.common.otherServices}
+            </h2>
+            <ul className="r-index">
+              {cards
+                .filter((c) => c.slug !== slug)
+                .map((c) => (
+                  <li key={c.slug}>
+                    <Link href={`/servicios/${c.slug}`} className="r-row r-row--service">
+                      <span className="r-row__art">
+                        <ServiceGlyph slug={c.slug as ServiceSlug} size="xl" />
+                      </span>
+                      <span className="r-row__name">{c.title}</span>
+                      <span className="r-row__body">{c.body}</span>
+                      <StartingPrice slug={c.slug as ServiceSlug} className="r-row__price" />
+                    </Link>
+                  </li>
+                ))}
+            </ul>
+          </section>
+
+          <div className="raiz__cabo" aria-hidden="true" />
+        </div>
+
+        {/* Donde acaba la raíz. */}
+        <section className="tramo r-end" aria-labelledby="fin-titulo">
+          <h2 className="r-end__title nodo nodo--fin" id="fin-titulo">
+            {t.finalCta.title.split("\n").map((line, i) => (
+              <span key={i}>{line} </span>
+            ))}
+          </h2>
+          <div className="r-end__row">
+            <p className="r-lead">{t.finalCta.lead}</p>
+            <div className="r-end__actions">
+              <Link href="/contacto" className="btn-primary">
+                {t.cta}
+                <ArrowRight />
+              </Link>
+              <p className="r-end__mail">
+                {t.finalCta.mailLabel}:{" "}
+                <a className="link-underline" href={`mailto:${site.email}`}>
+                  {site.email}
+                </a>
+              </p>
+            </div>
+          </div>
+          <div className="r-next">
+            <h3 className="r-next__title">{t.finalCta.nextTitle}</h3>
+            <ol className="r-next__list">
+              {t.finalCta.next.map((step, i) => (
+                <li key={i}>
+                  <span className="r-n">{i + 1}</span>
+                  <strong>{step.title}</strong>
+                  <span>{step.body}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="r-next__note">{t.finalCta.availability}</p>
+          </div>
+        </section>
+      </div>
+    </div>
   );
 }
 

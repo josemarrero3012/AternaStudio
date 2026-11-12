@@ -61,10 +61,12 @@ test("cada idioma tiene su 404", async ({ request }, info) => {
 
 test("los enlaces internos no llevan a una 404", async ({ page, request }, info) => {
   test.skip(info.project.name !== "desktop", "Una vez basta.");
+  // Recorre 44 páginas: necesita más que los 30 s por defecto.
+  test.setTimeout(120_000);
   const found = new Set<string>();
   for (const locale of LOCALES) {
     for (const route of ROUTES) {
-      await page.goto(localPath(route, locale));
+      await page.goto(localPath(route, locale), { waitUntil: "domcontentloaded" });
       const hrefs = await page.locator('a[href^="/"]').evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
       for (const href of hrefs) found.add(href.split("#")[0].split("?")[0] || "/");
     }
