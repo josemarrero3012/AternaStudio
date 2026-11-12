@@ -5,6 +5,16 @@
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  # La web no usa cámara, micrófono, ubicación ni pagos: nadie puede pedirlos.
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+  # Política de contenido: todo sale de la propia web. 'unsafe-inline' en
+  # scripts lo exige la exportación estática de Next.js (datos de la página
+  # en línea); 'wasm-unsafe-eval' y blob:, el motor WebAssembly del asistente
+  # (compila el WebAssembly y carga parte de su código desde un blob).
+  # scripts/serve-out.mjs lee estas líneas para que las pruebas usen la misma
+  # política: si se añade un servicio externo, hay que darle permiso aquí.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
 
   # Las páginas y sus datos de navegación deben poder actualizarse al publicar.
   <FilesMatch "\.(html|txt|xml|json)$">
@@ -44,6 +54,11 @@ AddType application/wasm .wasm
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
+
+  # Una sola dirección: www.aternastudio.com lleva a aternastudio.com (la
+  # canónica de todas las páginas), con la misma ruta.
+  RewriteCond %{HTTP_HOST} ^www\.aternastudio\.com$ [NC]
+  RewriteRule ^ https://aternastudio.com%{REQUEST_URI} [R=301,L]
 
   # Si la ruta pedida NO es un archivo real pero existe <ruta>.html, servirlo.
   # (Se quita la condición !-d a propósito: queremos servir /servicios.html

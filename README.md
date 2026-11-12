@@ -5,7 +5,7 @@ Aquí está el código de la web de Aterna Studio, un estudio digital que hace w
 **De momento la web está terminada.** Lo que hay en `main` es la versión final.
 
 **Web oficial:** https://aternastudio.com
-(La misma versión, en la demo de GitHub Pages: https://josemarrero3012.github.io/AternaStudio/)
+(La demo de GitHub Pages, https://josemarrero3012.github.io/AternaStudio/, muestra siempre lo último de `main`; la web oficial cambia cuando se sube una entrega.)
 
 **Vista previa con casos de éxito:** https://josemarrero3012.github.io/AternaStudio/casos/
 Es la web oficial más la sección «Casos de éxito», con [Calma Café](https://josemarrero3012.github.io/AternaStudio/casos/trabajo/calma-cafe) y [The Fragrance Bar](https://josemarrero3012.github.io/AternaStudio/casos/trabajo/the-fragrance-bar). Vive en la rama `casos-de-exito` y es para cuando formalicemos esos dos proyectos; hasta entonces esas páginas no se indexan.
@@ -16,10 +16,10 @@ Los pasos para compilarla y subirla a Hostinger, lo que no está en el repositor
 
 ```bash
 npm ci
-npm run build   # deja la web en out/
+npm run package   # deja en entregas/ el zip y su nota
 ```
 
-y se sube el contenido de `out/` a `public_html/`, archivos con punto incluidos.
+y se entregan los dos archivos a quien la sube: la nota explica cómo subirla a `public_html/` y qué comprobar después.
 
 Las dos demos de GitHub Pages se vuelven a publicar solas cada vez que se sube algo a `main` o a `casos-de-exito`.
 

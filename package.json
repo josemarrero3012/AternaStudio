@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "check": "npm run typecheck && npm run lint",
     "test:e2e": "playwright test --project=desktop --project=mobile",
-    "test:visual": "playwright test --project=visual-desktop --project=visual-mobile"
+    "test:visual": "playwright test --project=visual-desktop --project=visual-mobile",
+    "package": "node scripts/package.mjs"
   },
   "dependencies": {
     "gsap": "3.15.0",
