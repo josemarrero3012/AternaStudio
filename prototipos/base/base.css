@@ -1,0 +1,443 @@
+/* Base común de los prototipos: lo que NO se está rediseñando.
+   Fuentes, tokens (copia de src/styles/tokens.css), fondo de noche,
+   cabecera, pie y botones como en la web actual, simplificados. Cada
+   prototipo añade su propia hoja para el cuerpo de la página. */
+
+@import url("tokens.css");
+
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/fraunces-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/fraunces-italic-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Geist";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/geist-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/geist-mono-latin.woff2") format("woff2");
+}
+
+:root {
+  /* En la web las pone next/font. */
+  --font-fraunces: "Fraunces";
+  --font-geist: "Geist";
+  --font-geist-mono: "Geist Mono";
+  --col: min(50vw, calc(var(--container) / 2));
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + var(--s-5));
+}
+
+body {
+  background-color: var(--ink);
+  color: var(--text-hi);
+  font-family: var(--font-ui);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-optical-sizing: auto;
+  overflow-x: clip;
+}
+
+:is(h1, h2, h3) {
+  font-size: inherit;
+  font-weight: inherit;
+  text-wrap: balance;
+}
+:is(p, li, dd) {
+  text-wrap: pretty;
+}
+ul,
+ol {
+  list-style: none;
+}
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+::selection {
+  background: var(--violet);
+  color: var(--text-hi);
+}
+:focus-visible {
+  outline: 2px solid var(--lavender);
+  outline-offset: 3px;
+  border-radius: var(--r-xs);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Grano fijo, como en la web. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-header) - 1);
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 2.2 0 0 0 -1.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px;
+}
+
+/* Polvo de luz: en la web es un lienzo animado (LightDust). Aquí, unas
+   motas fijas para que el fondo no quede más vacío que el real. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, #cfd3ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 31% 64%, #b9a8ff 50%, transparent 51%),
+    radial-gradient(2px 2px at 47% 31%, #e6e9ff88 50%, transparent 51%),
+    radial-gradient(1px 1px at 58% 82%, #cfd3ff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 69% 12%, #d9a6f7 50%, transparent 51%),
+    radial-gradient(1px 1px at 78% 47%, #cfd3ff 50%, transparent 51%),
+    radial-gradient(2px 2px at 88% 71%, #e6e9ff77 50%, transparent 51%),
+    radial-gradient(1px 1px at 94% 27%, #b9a8ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 6% 76%, #cfd3ff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 23% 41%, #e6e9ff66 50%, transparent 51%),
+    radial-gradient(1px 1px at 39% 9%, #cfd3ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 64% 56%, #d9a6f7 50%, transparent 51%);
+  background-size: 1180px 940px;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--margin);
+}
+
+main,
+.footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* Botones y enlaces (como en la web) ------------------------------------- */
+.btn-primary,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 48px;
+  font-size: var(--t-small);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.btn-primary {
+  padding: 0 28px;
+  border: 1px solid var(--btn-bg);
+  border-radius: var(--r-pill);
+  color: var(--btn-fg);
+  background-color: var(--btn-bg);
+  text-transform: uppercase;
+  transition: background-color var(--d-micro) var(--e-out), border-color var(--d-micro) var(--e-out);
+}
+.btn-ghost {
+  position: relative;
+}
+.btn-ghost::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 12px;
+  height: 1px;
+  background-color: currentColor;
+  opacity: 0.35;
+  transition: opacity var(--d-micro) var(--e-out);
+}
+.arrow {
+  flex: none;
+  transition: transform var(--d-micro) var(--e-out);
+}
+@media (hover: hover) {
+  .btn-primary:hover {
+    border-color: var(--btn-hover-bg);
+    background-color: var(--btn-hover-bg);
+  }
+  .btn-primary:hover .arrow,
+  .btn-ghost:hover .arrow {
+    transform: translateX(3px);
+  }
+  .btn-ghost:hover::after {
+    opacity: 1;
+  }
+}
+.link-underline {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 5px;
+  transition: text-decoration-color var(--d-micro) var(--e-out);
+}
+.link-underline:hover,
+.link-underline[aria-current] {
+  text-decoration-color: currentColor;
+}
+.t-small {
+  font-size: var(--t-small);
+  line-height: 1.5;
+}
+.t-label {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  line-height: 1.2;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+}
+.muted {
+  color: var(--text-mid);
+}
+.dim {
+  color: var(--text-low);
+}
+
+/* Cabecera ---------------------------------------------------------------- */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--margin);
+  z-index: 200;
+  padding: var(--s-3) var(--s-5);
+  background: var(--text-hi);
+  color: var(--ink);
+}
+.skip-link:focus-visible {
+  top: var(--s-4);
+}
+.header {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: var(--z-header);
+  background-color: var(--ink-veil);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ink-hair);
+}
+.header__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--s-6);
+  height: var(--header-h);
+}
+.header__brand {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+}
+.header__symbol {
+  width: auto;
+  height: 26px;
+}
+.header__wordmark {
+  width: auto;
+  height: 17px;
+}
+.header__nav,
+.header__end {
+  display: none;
+}
+.header__nav {
+  margin-inline-start: auto;
+}
+.header__nav ul {
+  display: flex;
+  gap: var(--s-6);
+}
+.header__end {
+  align-items: center;
+  gap: var(--s-6);
+}
+.lang-toggle {
+  display: inline-flex;
+}
+.lang-toggle a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 6px 8px;
+  color: var(--text-mid);
+}
+.lang-toggle a + a {
+  border-left: 1px solid var(--hair);
+}
+.lang-toggle a[aria-current] {
+  color: var(--text-hi);
+}
+.menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-inline-start: auto;
+}
+.menu-toggle__icon {
+  width: 24px;
+  height: 8px;
+  border-block: 1.5px solid currentColor;
+}
+@media (min-width: 1024px) {
+  .header__nav,
+  .header__end {
+    display: flex;
+  }
+  .menu-toggle {
+    display: none;
+  }
+  .header__symbol {
+    height: 34px;
+  }
+  .header__wordmark {
+    height: 24px;
+  }
+}
+
+/* Botones flotantes (asistente y WhatsApp): solo su hueco, para ver con qué
+   chocan. */
+.floats {
+  position: fixed;
+  right: var(--margin);
+  bottom: var(--s-5);
+  z-index: var(--z-float);
+  display: grid;
+  gap: var(--s-3);
+}
+.floats span {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid var(--ink-hair-strong);
+  background: var(--night-3);
+}
+.floats span:first-child {
+  border: 0;
+  background: radial-gradient(circle at 35% 30%, #e9c9ff, var(--violet) 55%, var(--indigo));
+}
+
+/* Pie --------------------------------------------------------------------- */
+.footer {
+  margin-top: var(--section-y);
+  border-top: 1px solid var(--ink-hair);
+}
+.footer__inner {
+  display: grid;
+  gap: var(--s-8);
+  padding-block: var(--s-9) 0;
+}
+.footer__lockup {
+  width: auto;
+  height: 44px;
+  margin-bottom: var(--s-4);
+}
+.footer__cols {
+  display: grid;
+  gap: var(--s-7);
+}
+.footer__col ul {
+  display: grid;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+.footer__giant {
+  margin-top: var(--s-10);
+  font-family: var(--font-display);
+  font-size: min(37vw, 34.5rem);
+  font-weight: 400;
+  font-variation-settings: "opsz" 144;
+  line-height: 0.8;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--lavender) 24%, transparent) 0%, color-mix(in srgb, var(--indigo) 4%, transparent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
+}
+.footer__base {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+  padding-block: var(--s-5);
+  border-top: 1px solid var(--ink-hair);
+}
+.footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-5);
+}
+@media (min-width: 768px) {
+  .footer__inner {
+    grid-template-columns: 1fr 2fr;
+  }
+  .footer__cols {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
