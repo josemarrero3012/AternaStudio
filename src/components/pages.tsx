@@ -14,36 +14,9 @@ import { BeliefArt } from "./BeliefArt";
 import { CopyEmail } from "./CopyEmail";
 import { whatsappHref } from "./Chrome";
 import { ArrowDown, ArrowExternal, ArrowRight } from "./icons";
-import { Journey } from "./Journey";
-import { Approach, Cases, FinalCTA, Services, StartingPrice, StudioStatement } from "./sections";
+import { FinalCTA, StartingPrice } from "./sections";
 import { ServiceGlyph } from "./ServiceTrace";
 import { WordReveal } from "./WordReveal";
-
-// / -------------------------------------------------------------------------
-
-// La portada abre con el recorrido (Journey: el árbol de Aterna en
-// partículas, que baja a sus raíces y vuelve a crecer) y después cuenta
-// quiénes somos (el estudio), después cómo trabajamos (el método) y luego
-// casos de uso; con eso ya presentado,
-// el catálogo de servicios y el contacto. Los casos solo salen cuando hay
-// alguno real: tres huecos «Pendiente» en la portada restaban más de lo que
-// contaban. La numeración se ajusta sola.
-export function HomeContent() {
-  const { t, locale } = useI18n();
-  const withCases = t.cases.items.some((item) => !item.pending);
-  const k = withCases ? 1 : 0;
-  return (
-    <>
-      {/* Por idioma: el recorrido guarda sus palabras al montar. */}
-      <Journey key={locale} />
-      <StudioStatement n={1} />
-      <Approach n={2} />
-      {withCases ? <Cases n={3} /> : null}
-      <Services n={3 + k} />
-      <FinalCTA n={4 + k} />
-    </>
-  );
-}
 
 // /servicios ----------------------------------------------------------------
 

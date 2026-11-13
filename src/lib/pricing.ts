@@ -1,4 +1,4 @@
-import { LOCALE_TAGS, type Locale } from "./dict";
+import { LOCALE_TAGS, type Locale } from "./locales";
 
 export type Price = {
   amount: number;

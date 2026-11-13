@@ -9,15 +9,18 @@ import { JsonLd } from "@/components/JsonLd";
 import { LightDust } from "@/components/LightDust";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { withBase } from "@/lib/base";
-import type { Locale } from "@/lib/dict";
+import { dict, type Locale } from "@/lib/dict";
 import { LanguageProvider } from "@/lib/i18n";
 import { routeMeta } from "@/lib/meta";
 import { absoluteUrl } from "@/lib/seo";
 import { site } from "@/lib/site";
 import "@/app/globals.css";
 
-// La cursiva es la segunda línea de los titulares del recorrido y su contador.
-const fraunces = Fraunces({ subsets: ["latin"], style: ["normal", "italic"], axes: ["opsz"], variable: "--font-fraunces", display: "swap" });
+const fraunces = Fraunces({ subsets: ["latin"], style: ["normal"], axes: ["opsz"], variable: "--font-fraunces", display: "swap" });
+// La cursiva solo la usa la portada (los titulares del recorrido): sin
+// precarga, el navegador la pide cuando hace falta y el resto de páginas no
+// la descarga (81 KB).
+const frauncesItalic = Fraunces({ subsets: ["latin"], style: ["italic"], axes: ["opsz"], variable: "--font-fraunces-italic", display: "swap", preload: false });
 // Texto en Geist: de la misma familia que la mono de las etiquetas, más
 // estrecha y fina que Archivo; contrasta mejor con Fraunces.
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
@@ -66,12 +69,12 @@ function organization(locale: Locale) {
 export function Shell({ locale, lost, children }: { locale: Locale; lost?: boolean; children: ReactNode }) {
   return (
     // data-motion y data-veil los pone BOOT_SCRIPT antes de hidratar: no es un desajuste.
-    <html lang={locale} className={`${fraunces.variable} ${geist.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang={locale} className={`${fraunces.variable} ${frauncesItalic.variable} ${geist.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <body>
         {/* Antes que nada: movimiento y velo entre idiomas (ver Chrome.tsx). */}
         <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
         <JsonLd data={organization(locale)} />
-        <LanguageProvider locale={locale} lost={lost}>
+        <LanguageProvider locale={locale} t={dict[locale]} lost={lost}>
           <SkipLink />
           <IntroStart />
           <Cursor />
