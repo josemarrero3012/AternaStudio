@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { isDesktop, isMobile } from "./routes";
 
 // Lo que la gente toca: menú del móvil, cambio de idioma y formulario.
 
 test("el menú del móvil se abre, atrapa el foco y se cierra con Escape", async ({ page }, info) => {
-  test.skip(info.project.name !== "mobile", "El menú desplegable es del móvil.");
+  test.skip(!isMobile(info.project.name), "El menú desplegable es del móvil.");
   await page.goto("/servicios");
   const toggle = page.locator(".menu-toggle");
   const panel = page.getByRole("dialog", { name: "Menú de navegación" });
@@ -20,7 +21,7 @@ test("el menú del móvil se abre, atrapa el foco y se cierra con Escape", async
 });
 
 test("el menú del móvil lleva a cada sección", async ({ page }, info) => {
-  test.skip(info.project.name !== "mobile", "El menú desplegable es del móvil.");
+  test.skip(!isMobile(info.project.name), "El menú desplegable es del móvil.");
   await page.goto("/");
   await page.locator(".menu-toggle").click();
   await page.getByRole("dialog", { name: "Menú de navegación" }).getByRole("link", { name: /Estudio/ }).click();
@@ -29,7 +30,7 @@ test("el menú del móvil lleva a cada sección", async ({ page }, info) => {
 });
 
 test("el selector de idioma lleva a la misma página en el otro idioma", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "En móvil está dentro del menú.");
+  test.skip(!isDesktop(info.project.name), "En móvil está dentro del menú.");
   await page.goto("/servicios/web");
   const group = page.locator(".header__lang");
   await expect(group.getByRole("link", { name: /^EN/ })).toHaveAttribute("href", "/en/servicios/web");
@@ -47,6 +48,8 @@ test.describe("formulario de contacto", () => {
       return route.fulfill({ json: { ok: true } });
     });
     await page.goto("/contacto");
+    // Con React ya en marcha: si se escribe antes, al arrancar vacía los campos.
+    await expect(page.locator("html")).toHaveAttribute("data-intro", "on");
     await page.locator(".contact-form__submit").click();
     await expect(page.locator("#cf-name")).toBeFocused();
     expect(sent).toBe(false);
@@ -59,6 +62,8 @@ test.describe("formulario de contacto", () => {
       await route.fulfill({ json: { ok: true } });
     });
     await page.goto("/contacto");
+    // Con React ya en marcha: si se escribe antes, al arrancar vacía los campos.
+    await expect(page.locator("html")).toHaveAttribute("data-intro", "on");
     await page.locator("#cf-name").fill("Prueba");
     await page.locator("#cf-email").fill("prueba@example.com");
     await page.locator("#cf-message").fill("Mensaje de prueba automática.");
@@ -71,6 +76,8 @@ test.describe("formulario de contacto", () => {
   test("si el servidor falla, lo dice", async ({ page }) => {
     await page.route("**/contacto.php", (route) => route.fulfill({ status: 502, json: { ok: false, error: "send_failed" } }));
     await page.goto("/contacto");
+    // Con React ya en marcha: si se escribe antes, al arrancar vacía los campos.
+    await expect(page.locator("html")).toHaveAttribute("data-intro", "on");
     await page.locator("#cf-name").fill("Prueba");
     await page.locator("#cf-email").fill("prueba@example.com");
     await page.locator("#cf-message").fill("Mensaje de prueba automática.");
@@ -81,7 +88,7 @@ test.describe("formulario de contacto", () => {
 });
 
 test("«Ver cómo trabajamos» lleva al método de la portada", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "Una vez basta.");
+  test.skip(!isDesktop(info.project.name), "En móvil, igual que en escritorio.");
   await page.goto("/estudio");
   const link = page.locator(".section-foot a", { hasText: "cómo trabajamos" });
   await link.scrollIntoViewIfNeeded();

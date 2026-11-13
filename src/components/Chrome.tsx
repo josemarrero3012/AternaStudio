@@ -293,19 +293,26 @@ export function PageTransition({ children }: { children: ReactNode }) {
       // Next se quedaba en la misma página en vez de ir a la portada.
       const to = (url.pathname.slice(basePath.length) || "/") + url.search + url.hash;
       el.dataset.state = "cover";
+      // Se navega al acabar el fundido, o a los 0,6 s aunque el navegador no
+      // lo complete (en Safari la animación podía no terminar y el velo se
+      // quedaba tapando la página sin navegar). Lo que llegue antes, una vez.
+      let gone = false;
+      const go = () => {
+        if (gone) return;
+        gone = true;
+        window.clearTimeout(fallback);
+        try {
+          sessionStorage.setItem(VEIL_KEY, "1");
+        } catch {}
+        router.push(to);
+        // Si la ruta no llegara a cambiar, el velo no se queda puesto.
+        window.setTimeout(() => {
+          if (covering.current) reveal();
+        }, 2500);
+      };
+      const fallback = window.setTimeout(go, 600);
       timeline.current = gsap
-        .timeline({
-          onComplete: () => {
-            try {
-              sessionStorage.setItem(VEIL_KEY, "1");
-            } catch {}
-            router.push(to);
-            // Si la ruta no llegara a cambiar, el velo no se queda puesto.
-            window.setTimeout(() => {
-              if (covering.current) reveal();
-            }, 2500);
-          },
-        })
+        .timeline({ onComplete: go })
         // La página se apaga en la noche y el símbolo se enciende en el centro,
         // como la luz del árbol: un fundido, no una pared que barre la pantalla.
         .fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.42, ease: "power2.inOut" })

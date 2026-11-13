@@ -11,9 +11,10 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "check": "npm run typecheck && npm run lint",
-    "test:e2e": "playwright test --project=desktop --project=mobile",
+    "test:e2e": "playwright test --project=desktop --project=mobile --project=firefox --project=webkit --project=iphone",
     "test:visual": "playwright test --project=visual-desktop --project=visual-mobile",
-    "package": "node scripts/package.mjs"
+    "package": "node scripts/package.mjs",
+    "test:e2e:local": "playwright test --project=desktop --project=mobile --project=firefox"
   },
   "dependencies": {
     "gsap": "3.15.0",

@@ -31,7 +31,7 @@ jobs:
       # Sin el modelo del asistente (130 MB): las pruebas no lo usan y la web
       # compila igual sin él. Por eso next build y no npm run build.
       - run: npx next build
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:e2e
       # El formulario (contacto.php) con el PHP del runner, sin enviar correos.
       - run: bash scripts/contact-check.sh

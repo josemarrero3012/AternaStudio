@@ -89,16 +89,14 @@ function MobileMenu() {
       }
       if (e.key !== "Tab" || !panel.current) return;
       // El botón de cerrar está en la cabecera: entra en el ciclo del foco.
+      // El foco se mueve siempre dentro de esta lista: el botón está en la
+      // cabecera y el panel al final del <body>, así que el orden del
+      // documento llevaría del botón a la página tapada.
       const items = [toggle.current, ...panel.current.querySelectorAll<HTMLElement>("a, button")].filter(Boolean) as HTMLElement[];
-      const first = items[0];
-      const last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
+      const at = items.indexOf(document.activeElement as HTMLElement);
+      e.preventDefault();
+      const next = e.shiftKey ? (at <= 0 ? items.length - 1 : at - 1) : at === -1 || at === items.length - 1 ? 0 : at + 1;
+      items[next].focus();
     };
     // La página de detrás no se mueve. Sin overflow: hidden en <body>, que
     // obligaba a recalcular toda la página justo al empezar la animación:
