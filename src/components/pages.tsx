@@ -15,7 +15,7 @@ import { CopyEmail } from "./CopyEmail";
 import { whatsappHref } from "./Chrome";
 import { ArrowDown, ArrowExternal, ArrowRight } from "./icons";
 import { Journey } from "./Journey";
-import { Approach, Cases, FinalCTA, NextSteps, Services, StartingPrice, StudioStatement } from "./sections";
+import { Approach, Cases, FinalCTA, Services, StartingPrice, StudioStatement } from "./sections";
 import { ServiceGlyph } from "./ServiceTrace";
 import { WordReveal } from "./WordReveal";
 
@@ -47,63 +47,117 @@ export function HomeContent() {
 
 // /servicios ----------------------------------------------------------------
 
-type Card = { slug: string; kicker: string; title: string; body: string; cta: string };
-
 /**
- * Tarjeta de servicio: en /servicios y en «Otros servicios» de cada ficha.
- * El diseño de los pilares de la portada: texto arriba, el dibujo en el
- * panel negro y, al pie, el importe y la llamada. `soft` baja la intensidad
- * del marco para alternar en la rejilla.
+ * El catálogo, con la raíz de las fichas: los cuatro servicios cuelgan de
+ * ella como filas grandes (dibujo, qué es, cómo se paga y desde cuánto), sin
+ * tarjetas de color; la raíz acaba en la llamada final. Ver styles/servicio.css.
  */
-function SvcCard({ card, heading = "h2", soft = false }: { card: Card; heading?: "h2" | "h3"; soft?: boolean }) {
-  const slug = card.slug as ServiceSlug;
-  const Heading = heading;
-  return (
-    <Link href={`/servicios/${slug}`} className={`svc-card aurora-card${soft ? " aurora-card--soft" : ""}`} data-spot>
-      <p className="t-label svc-card__kicker">{card.kicker}</p>
-      <Heading className="t-card svc-card__title">{card.title}</Heading>
-      <p className="t-small svc-card__body">{card.body}</p>
-      <div className="svc-card__stage aurora-panel">
-        <ServiceGlyph slug={slug} size="xl" />
-      </div>
-      {/* La modalidad de pago ya la dice el antetítulo: aquí solo el importe. */}
-      <div className="svc-card__foot">
-        <p className="svc-card__price">
-          <StartingPrice slug={slug} />
-        </p>
-        <span className="link-cta svc-card__cta">
-          {card.cta}
-          <ArrowRight />
-        </span>
-      </div>
-    </Link>
-  );
-}
-
 export function ServiciosContent() {
   const { t } = useI18n();
   const page = t.servicePages.index;
+  const [h1a, h1b = ""] = page.h1.split("\n");
   return (
-    <>
-      <section className="container page-head">
-        <p className="t-label dim eyebrow page-head__eyebrow">{page.eyebrow}</p>
-        <WordReveal as="h1" className="t-display" text={page.h1} onScroll={false} delay={0.1} />
-        <p className="t-lead muted page-head__lead">{page.lead}</p>
-      </section>
-      {/* Banda a todo el ancho: el vidrio de las tarjetas tiene luz detrás. */}
-      <section className="section section--flush-top band-indigo" aria-label={page.eyebrow}>
-        <div className="container">
-          <div className="svc-cards">
-            {page.cards.map((card, i) => (
-              <SvcCard key={card.slug} card={card} soft={i === 1 || i === 2} />
-            ))}
+    <div className="raiz">
+      <div className="container">
+        <div className="raiz__tronco">
+          <div className="raiz__linea" aria-hidden="true">
+            <span className="raiz__luz" />
           </div>
+
+          <section className="tramo r-head">
+            <h1 className="r-h1">
+              <span>{h1a}</span> <span>{h1b}</span>
+            </h1>
+            <p className="r-lead r-head__lead">{page.lead}</p>
+          </section>
+
+          <section className="tramo r-catalog-wrap" aria-labelledby="catalogo">
+            <h2 className="sr-only" id="catalogo">
+              {page.eyebrow}
+            </h2>
+            <ul className="r-catalog">
+              {page.cards.map((card) => {
+                const slug = card.slug as ServiceSlug;
+                return (
+                  <li key={slug} className="nodo">
+                    <Link href={`/servicios/${slug}`} className="r-service">
+                      <span className="r-service__art">
+                        <ServiceGlyph slug={slug} size="xl" />
+                      </span>
+                      <span className="r-service__text">
+                        <h3 className="r-service__name">{card.title}</h3>
+                        <span className="r-service__body">{card.body}</span>
+                      </span>
+                      <span className="r-service__meta">
+                        <span className="r-service__kicker">{card.kicker}</span>
+                        <StartingPrice slug={slug} className="r-service__price" />
+                        <span className="r-service__cta">
+                          {card.cta}
+                          <ArrowRight />
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+
+          <div className="raiz__cabo" aria-hidden="true" />
         </div>
-      </section>
-      {/* El método («Cómo trabajamos») vive en la portada: aquí solo el
-          catálogo y el paso siguiente. */}
-      <FinalCTA />
-    </>
+        <RaizEnd />
+      </div>
+    </div>
+  );
+}
+
+/** Los tres pasos de «Qué pasa después», con la numeración de la raíz. */
+function RaizNext({ heading: Heading = "h3", node = false }: { heading?: "h2" | "h3"; node?: boolean }) {
+  const { t } = useI18n();
+  return (
+    <div className="r-next">
+      <Heading className={`r-next__title${node ? " nodo" : ""}`}>{t.finalCta.nextTitle}</Heading>
+      <ol className="r-next__list">
+        {t.finalCta.next.map((step, i) => (
+          <li key={i}>
+            <span className="r-n">{i + 1}</span>
+            <strong>{step.title}</strong>
+            <span>{step.body}</span>
+          </li>
+        ))}
+      </ol>
+      <p className="r-next__note">{t.finalCta.availability}</p>
+    </div>
+  );
+}
+
+/** Donde acaba la raíz: la llamada final de las páginas con raíz. */
+function RaizEnd() {
+  const { t } = useI18n();
+  return (
+    <section className="tramo r-end" aria-labelledby="fin-titulo">
+      <h2 className="r-end__title nodo nodo--fin" id="fin-titulo">
+        {t.finalCta.title.split("\n").map((line, i) => (
+          <span key={i}>{line} </span>
+        ))}
+      </h2>
+      <div className="r-end__row">
+        <p className="r-lead">{t.finalCta.lead}</p>
+        <div className="r-end__actions">
+          <Link href="/contacto" className="btn-primary">
+            {t.cta}
+            <ArrowRight />
+          </Link>
+          <p className="r-end__mail">
+            {t.finalCta.mailLabel}:{" "}
+            <a className="link-underline" href={`mailto:${site.email}`}>
+              {site.email}
+            </a>
+          </p>
+        </div>
+      </div>
+      <RaizNext />
+    </section>
   );
 }
 
@@ -343,42 +397,7 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
           <div className="raiz__cabo" aria-hidden="true" />
         </div>
 
-        {/* Donde acaba la raíz. */}
-        <section className="tramo r-end" aria-labelledby="fin-titulo">
-          <h2 className="r-end__title nodo nodo--fin" id="fin-titulo">
-            {t.finalCta.title.split("\n").map((line, i) => (
-              <span key={i}>{line} </span>
-            ))}
-          </h2>
-          <div className="r-end__row">
-            <p className="r-lead">{t.finalCta.lead}</p>
-            <div className="r-end__actions">
-              <Link href="/contacto" className="btn-primary">
-                {t.cta}
-                <ArrowRight />
-              </Link>
-              <p className="r-end__mail">
-                {t.finalCta.mailLabel}:{" "}
-                <a className="link-underline" href={`mailto:${site.email}`}>
-                  {site.email}
-                </a>
-              </p>
-            </div>
-          </div>
-          <div className="r-next">
-            <h3 className="r-next__title">{t.finalCta.nextTitle}</h3>
-            <ol className="r-next__list">
-              {t.finalCta.next.map((step, i) => (
-                <li key={i}>
-                  <span className="r-n">{i + 1}</span>
-                  <strong>{step.title}</strong>
-                  <span>{step.body}</span>
-                </li>
-              ))}
-            </ol>
-            <p className="r-next__note">{t.finalCta.availability}</p>
-          </div>
-        </section>
+        <RaizEnd />
       </div>
     </div>
   );
@@ -551,30 +570,48 @@ function ContactForm() {
   );
 }
 
+/**
+ * Contacto con la raíz: baja por la columna del texto (titular, canales y
+ * qué pasa después). El formulario conserva su tarjeta de marca: es la
+ * acción de la página.
+ */
 export function ContactoContent() {
   const { t } = useI18n();
   const page = t.pages.contacto;
+  const [h1a, h1b = ""] = page.h1.split("\n");
   return (
-    <section className="container page-head page-head--lit contacto">
-      <p className="t-label dim eyebrow page-head__eyebrow">{page.eyebrow}</p>
-      <WordReveal as="h1" className="t-hero contacto__title" text={page.h1} onScroll={false} delay={0.1} />
-      <div className="contact-grid">
-        {/* Canales y qué pasa después; qué contarnos y que respondemos
-            siempre ya lo dicen los pasos. */}
-        <div className="contact-grid__copy">
-          <p className="t-lead prose">{page.lead}</p>
-          <div className="contact-grid__channels">
-            <CopyEmail email={site.email} />
-            <a href={whatsappHref(t.whatsapp.message)} target="_blank" rel="noopener noreferrer" className="btn-ghost">
-              WhatsApp
-              <ArrowExternal />
-            </a>
+    <div className="raiz">
+      <div className="container">
+        <div className="raiz__tronco c-raiz">
+          <div className="raiz__linea" aria-hidden="true">
+            <span className="raiz__luz" />
           </div>
-          <NextSteps heading="h2" />
+          <div className="c-raiz__copy">
+            <section className="tramo r-head">
+              <h1 className="r-h1">
+                <span>{h1a}</span> <span>{h1b}</span>
+              </h1>
+              <p className="r-lead r-head__lead">{page.lead}</p>
+            </section>
+            <div className="tramo c-raiz__channels">
+              <div className="nodo">
+                <CopyEmail email={site.email} />
+              </div>
+              <a href={whatsappHref(t.whatsapp.message)} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+                WhatsApp
+                <ArrowExternal />
+              </a>
+            </div>
+            <div className="tramo c-raiz__next">
+              <RaizNext heading="h2" node />
+            </div>
+          </div>
+          <div className="tramo c-raiz__form">
+            <ContactForm />
+          </div>
         </div>
-        <ContactForm />
       </div>
-    </section>
+    </div>
   );
 }
 

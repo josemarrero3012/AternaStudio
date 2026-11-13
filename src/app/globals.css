@@ -1828,11 +1828,11 @@ body[data-menu="open"] .assistant__orb {
 
 /* En las filas y tarjetas que reaccionan al puntero, el icono se enciende. */
 @media (hover: hover) {
-  :is(a.service__inner, .svc-card):hover .trace__glow {
+  a.service__inner:hover .trace__glow {
     transform: scale(1.4);
   }
 
-  :is(a.service__inner, .svc-card):hover .trace__halo {
+  a.service__inner:hover .trace__halo {
     opacity: 0.32;
   }
 }
@@ -2123,11 +2123,9 @@ a.aurora-card {
   color: color-mix(in srgb, #fff 84%, transparent);
 }
 
-/* Escenario del icono en las tarjetas (pilares y servicios): centrado, a
-   doble tamaño, con una luz suave detrás y un filete que lo separa del
-   texto. */
-.pillar__stage,
-.svc-card__stage {
+/* Escenario del icono en las tarjetas de los pilares: centrado, a doble
+   tamaño, con una luz suave detrás y un filete que lo separa del texto. */
+.pillar__stage {
   display: flex;
   justify-content: center;
   padding-block: var(--s-4) var(--s-6);
@@ -2137,7 +2135,7 @@ a.aurora-card {
 }
 
 /* En las tarjetas de marca, el escenario es el panel negro del pie. */
-.aurora-card :is(.pillar__stage, .svc-card__stage) {
+.aurora-card .pillar__stage {
   align-items: center;
   margin-top: auto;
   margin-bottom: 0;
@@ -3690,62 +3688,7 @@ a.aurora-card {
   }
 }
 
-/* Página de servicios ----------------------------------------------------- */
-
-.svc-cards {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--s-5);
-}
-
-.svc-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-  padding: var(--s-6);
-}
-
-.svc-card__title {
-  color: #fff;
-}
-
-.svc-card__body {
-  max-width: 52ch;
-  margin-bottom: var(--s-4);
-  color: color-mix(in srgb, #fff 84%, transparent);
-}
-
-/* Importe y llamada al pie, sobre un filete. */
-.svc-card__foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s-2) var(--s-5);
-  margin-top: var(--s-4);
-  padding-top: var(--s-4);
-  border-top: 1px solid color-mix(in srgb, #fff 16%, transparent);
-}
-
-.svc-card__price {
-  font-size: 1.25rem;
-}
-
-@media (min-width: 768px) {
-  .svc-cards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .svc-cards--three {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  }
-
-  .svc-card {
-    padding: var(--s-7);
-  }
-}
-
-/* Página de producto: ver styles/servicio.css. */
+/* Página de servicios y de producto: ver styles/servicio.css. */
 
 /* En el panel negro los trazos nacen menos apagados: los dibujos son
    escenas, no hilos que salen de la nada. */
@@ -3899,69 +3842,7 @@ a.aurora-card {
 
 /* Contacto ---------------------------------------------------------------- */
 
-.contacto {
-  padding-bottom: var(--section-y);
-}
-
-.contacto__title {
-  max-width: 14ch;
-}
-
-.contact-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--section-y);
-  margin-top: var(--block-y);
-}
-
-.contact-grid__copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--block-y);
-  min-width: 0;
-}
-
-.contact-grid__channels {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--s-4);
-}
-
-/* Escritorio: el formulario sube a la altura del titular (antes empezaba
-   640 px más abajo y dejaba vacía la esquina superior derecha). */
-@media (min-width: 1024px) {
-  .contacto {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    align-items: start;
-    column-gap: var(--gutter);
-  }
-
-  .contacto > .page-head__eyebrow {
-    grid-column: 1 / -1;
-  }
-
-  .contacto__title {
-    grid-column: 1 / span 7;
-    grid-row: 2;
-  }
-
-  .contacto .contact-grid {
-    display: contents;
-  }
-
-  .contact-grid__copy {
-    grid-column: 1 / span 6;
-    grid-row: 3;
-    margin-top: var(--block-y);
-  }
-
-  .contact-grid > .contact-frame {
-    grid-column: 8 / span 5;
-    grid-row: 2 / span 2;
-  }
-}
+/* La página la monta styles/servicio.css (.c-raiz); aquí, el formulario. */
 
 /* El formulario, en el panel negro de una tarjeta de marca. */
 .contact-frame {

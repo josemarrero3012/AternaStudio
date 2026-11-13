@@ -807,3 +807,159 @@
     gap: var(--s-7);
   }
 }
+
+/* ==========================================================================
+   /servicios: el catálogo cuelga de la raíz. Cada servicio, una fila grande
+   con su dibujo; el nodo de cada fila se agarra a la raíz a la altura del
+   nombre.
+   ========================================================================== */
+.r-head__lead {
+  margin-top: var(--s-6);
+}
+.r-catalog-wrap {
+  padding-top: 0;
+}
+.r-catalog > li {
+  border-top: 1px solid var(--ink-hair);
+}
+.r-catalog > li:last-child {
+  border-bottom: 1px solid var(--ink-hair);
+}
+/* El nodo, a la altura del nombre (no del borde de la fila). */
+.r-catalog > li.nodo::before,
+.r-catalog > li.nodo::after {
+  top: calc(var(--s-6) + 1.1rem);
+}
+.r-service {
+  display: grid;
+  gap: var(--s-4);
+  padding-block: var(--s-6);
+}
+.r-service__art {
+  width: min(100%, 220px);
+}
+.r-service__art .trace--xl {
+  width: 100%;
+}
+.r-service__name {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1.35rem + 1.6vw, 2.75rem);
+  font-weight: 460;
+  font-variation-settings: "opsz" 72;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 8px;
+  transition: text-decoration-color var(--d-micro) var(--e-out);
+}
+.r-service__body {
+  display: block;
+  max-width: 48ch;
+  margin-top: var(--s-3);
+  color: var(--text-mid);
+  line-height: 1.55;
+}
+.r-service__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--s-5);
+}
+.r-service__kicker {
+  color: var(--text-low);
+  font-size: var(--t-small);
+}
+.r-service__price {
+  font-size: 1.125rem;
+}
+.r-service__price .price-tag__amount {
+  color: var(--text-hi);
+}
+.r-service__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  color: var(--text-hi);
+  font-size: var(--t-small);
+  font-weight: 500;
+}
+@media (hover: hover) {
+  .r-service:hover .r-service__name {
+    text-decoration-color: currentColor;
+  }
+  .r-service:hover .arrow {
+    transform: translateX(3px);
+  }
+}
+@media (min-width: 1024px) {
+  .r-service {
+    grid-template-columns: 220px minmax(0, 1fr) 220px;
+    align-items: center;
+    gap: var(--s-8);
+    padding-block: var(--s-8);
+  }
+  .r-catalog > li.nodo::before,
+  .r-catalog > li.nodo::after {
+    top: 50%;
+  }
+  .r-service__meta {
+    display: grid;
+    justify-items: end;
+    text-align: right;
+    gap: 4px;
+  }
+}
+
+/* ==========================================================================
+   /contacto: la raíz baja por la columna del texto; el formulario conserva
+   su tarjeta de marca (.contact-frame, en globals.css).
+   ========================================================================== */
+.c-raiz .raiz__linea {
+  bottom: 0;
+}
+.c-raiz__channels {
+  display: grid;
+  justify-items: start;
+  gap: var(--s-3);
+  padding-top: 0;
+}
+.c-raiz__next {
+  padding-top: 0;
+}
+.c-raiz__next .r-next {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.c-raiz__next .r-next__title {
+  color: var(--text-hi);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.25rem + 1vw, 2.125rem);
+  font-weight: 460;
+  font-variation-settings: "opsz" 72;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.c-raiz__next .r-next__list {
+  grid-template-columns: 1fr;
+}
+.c-raiz__form {
+  padding-top: 0;
+}
+@media (min-width: 1024px) {
+  .c-raiz {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: clamp(32px, 4vw, 72px);
+    align-items: start;
+  }
+  .c-raiz__form {
+    position: sticky;
+    top: calc(var(--header-h) + var(--s-5));
+    padding-left: 0;
+    padding-top: clamp(56px, 6vw, 104px);
+  }
+}

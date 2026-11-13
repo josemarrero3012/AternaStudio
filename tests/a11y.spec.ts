@@ -15,13 +15,7 @@ test.use({ reducedMotion: "reduce" });
  * deja pasar (salen en el anexo) y falla con cualquiera nuevo. Al
  * arreglarlos, se borran de aquí.
  */
-const KNOWN: { id: string; target: string; why: string }[] = [
-  {
-    id: "target-size",
-    target: ".header__lang",
-    why: "En la portada, los idiomas de la cabecera miden menos de 24 px (WCAG 2.2, 2.5.8). Se rediseña la cabecera en la fase de dirección de arte.",
-  },
-];
+const KNOWN: { id: string; target: string; why: string }[] = [];
 
 const isKnown = (id: string, target: string) => KNOWN.some((k) => k.id === id && target.includes(k.target));
 

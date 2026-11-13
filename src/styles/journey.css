@@ -575,8 +575,10 @@ html[data-journey="over"] .header::after {
     border-left: 1px solid var(--glass-edge);
   }
 
+  /* Pequeños a la vista, pero con 24 × 24 px de zona táctil (WCAG 2.2, 2.5.8). */
   html[data-journey="over"] .header__lang .lang-toggle__btn {
-    min-width: 0;
+    min-width: 24px;
+    min-height: 24px;
     padding: 8px 4px;
     border-left: 0;
     font-size: 9.5px;
