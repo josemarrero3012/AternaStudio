@@ -48,6 +48,8 @@ test.describe("formulario de contacto", () => {
       return route.fulfill({ json: { ok: true } });
     });
     await page.goto("/contacto");
+    // Con React ya en marcha: si se escribe antes, al arrancar vacía los campos.
+    await expect(page.locator("html")).toHaveAttribute("data-intro", "on");
     await page.locator(".contact-form__submit").click();
     await expect(page.locator("#cf-name")).toBeFocused();
     expect(sent).toBe(false);
@@ -60,6 +62,8 @@ test.describe("formulario de contacto", () => {
       await route.fulfill({ json: { ok: true } });
     });
     await page.goto("/contacto");
+    // Con React ya en marcha: si se escribe antes, al arrancar vacía los campos.
+    await expect(page.locator("html")).toHaveAttribute("data-intro", "on");
     await page.locator("#cf-name").fill("Prueba");
     await page.locator("#cf-email").fill("prueba@example.com");
     await page.locator("#cf-message").fill("Mensaje de prueba automática.");
@@ -72,6 +76,8 @@ test.describe("formulario de contacto", () => {
   test("si el servidor falla, lo dice", async ({ page }) => {
     await page.route("**/contacto.php", (route) => route.fulfill({ status: 502, json: { ok: false, error: "send_failed" } }));
     await page.goto("/contacto");
+    // Con React ya en marcha: si se escribe antes, al arrancar vacía los campos.
+    await expect(page.locator("html")).toHaveAttribute("data-intro", "on");
     await page.locator("#cf-name").fill("Prueba");
     await page.locator("#cf-email").fill("prueba@example.com");
     await page.locator("#cf-message").fill("Mensaje de prueba automática.");

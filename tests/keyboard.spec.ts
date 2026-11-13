@@ -81,6 +81,8 @@ test("el formulario de contacto se rellena y se envía solo con el teclado", asy
     return route.fulfill({ json: { ok: true } });
   });
   await page.goto("/contacto");
+  // Con React ya en marcha: si se escribe antes, al arrancar vacía los campos.
+  await expect(page.locator("html")).toHaveAttribute("data-intro", "on");
   await page.locator("#cf-name").focus();
   await page.keyboard.type("Prueba");
   await page.keyboard.press("Tab");
