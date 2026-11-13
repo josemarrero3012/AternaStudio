@@ -35,3 +35,9 @@ export function publicUrl(path: string, locale: Locale) {
 
 /** Las páginas que se miran en cada prueba larga (accesibilidad, capturas). */
 export const KEY_PAGES = ["/", "/servicios", "/servicios/web", "/estudio", "/contacto"] as const;
+
+/** Proyectos de Playwright (ver playwright.config.ts) por tipo de pantalla. */
+export const DESKTOP_PROJECTS = ["desktop", "firefox", "webkit"];
+export const MOBILE_PROJECTS = ["mobile", "iphone"];
+export const isDesktop = (name: string) => DESKTOP_PROJECTS.includes(name);
+export const isMobile = (name: string) => MOBILE_PROJECTS.includes(name);

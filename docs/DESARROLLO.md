@@ -19,7 +19,9 @@ npm run build   # genera out/ (lo que se publica)
 ```bash
 npm run check        # tipos (tsc) y lint (ESLint con las reglas de Next.js)
 npm run build        # las pruebas usan out/
-npm run test:e2e     # humo, enlaces, accesibilidad e interacción
+npm run test:e2e     # humo, enlaces, accesibilidad, teclado e interacción, en
+                     # Chrome, Firefox y Safari (escritorio y móvil)
+npm run test:e2e:local  # lo mismo sin Safari (WebKit no arranca en todos los Linux)
 npm run test:visual  # capturas comparadas con las de referencia (solo en local)
 npm start            # sirve out/ en http://localhost:3000 como lo hace Hostinger
 ```
@@ -27,8 +29,10 @@ npm start            # sirve out/ en http://localhost:3000 como lo hace Hostinge
 - `npm start` y las pruebas usan `scripts/serve-out.mjs`, que sirve `out/`
   con las mismas reglas que el `.htaccess` (URLs limpias y la 404 de cada
   idioma). No ejecuta PHP: el formulario se prueba simulando la respuesta.
-- La primera vez, Playwright necesita su navegador:
-  `npx playwright install chromium`.
+- La primera vez, Playwright necesita sus navegadores:
+  `npx playwright install chromium firefox webkit`. WebKit (Safari) pide
+  bibliotecas de Ubuntu; en otros Linux puede no arrancar: ahí, `test:e2e:local`.
+  En el CI corren los cinco (Chrome, móvil, Firefox, Safari y iPhone).
 - `test:e2e` corre en cada PR (`.github/workflows/checks.yml`) junto con
   `check` y la compilación. Revisa cada página en los cuatro idiomas (estado,
   idioma, un solo `h1`, canónica, `hreflang`, sin errores de consola), todos

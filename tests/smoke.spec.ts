@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { LOCALES, NOINDEX, ROUTES, localPath, publicUrl } from "./routes";
+import { LOCALES, NOINDEX, ROUTES, isDesktop, localPath, publicUrl } from "./routes";
 
 /** Errores de consola y peticiones propias que fallan mientras se usa la página. */
 function watch(page: Page) {
@@ -21,7 +21,7 @@ for (const locale of LOCALES) {
   for (const route of ROUTES) {
     const path = localPath(route, locale);
     test(`${path} carga bien`, async ({ page }, info) => {
-      test.skip(info.project.name !== "desktop", "El HTML es el mismo en móvil.");
+      test.skip(!isDesktop(info.project.name), "El HTML es el mismo en móvil; se mira en cada navegador de escritorio.");
       const problems = watch(page);
       const res = await page.goto(path);
       expect(res?.status()).toBe(200);

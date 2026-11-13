@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { LOCALES, ROUTES, localPath } from "./routes";
+import { LOCALES, ROUTES, isDesktop, localPath } from "./routes";
 
 // Seguridad y privacidad de lo que se entrega. Las cabeceras salen del
 // .htaccess (scripts/serve-out.mjs las lee de ahí), así que esto comprueba
@@ -28,7 +28,7 @@ test("las páginas llevan las cabeceras de seguridad", async ({ request }, info)
 // contenido, además, el navegador lo bloquearía y la página se vería mal.
 for (const path of [...LOCALES.flatMap((l) => ROUTES.map((r) => localPath(r, l))), ...EXAMPLES]) {
   test(`${path} no pide nada a otros dominios`, async ({ page }, info) => {
-    test.skip(info.project.name !== "desktop", "Lo mismo en móvil.");
+    test.skip(!isDesktop(info.project.name), "Lo mismo en móvil; se mira en cada navegador de escritorio.");
     const external: string[] = [];
     const blocked: string[] = [];
     page.on("request", (req) => {
