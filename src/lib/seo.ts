@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DEFAULT_LOCALE, LOCALES, LOCALE_TAGS, localePath, type Locale } from "./dict";
+import { DEFAULT_LOCALE, LOCALES, LOCALE_TAGS, localePath, type Locale } from "./locales";
 import { routeMeta, type RouteKey } from "./meta";
 import { site } from "./site";
 

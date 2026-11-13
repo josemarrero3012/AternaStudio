@@ -99,7 +99,7 @@ su motivo y fallan con cualquier problema nuevo.
 
 | Problema | Dónde | Cuándo se corrige |
 |---|---|---|
-| LCP de unos 4 s en móvil (el objetivo es 2,5 s). Causa: cada página carga unos 300 KB de JavaScript comprimido (el del recorrido de la portada y los textos de los cuatro idiomas van en los paquetes comunes), y Lighthouse simula que el texto espera a ese JavaScript | Todas las páginas, en móvil | Arquitectura |
+| LCP de unos 3,5 s en móvil (el objetivo es 2,5 s). Lighthouse cuenta todo lo que se pide antes de pintar el texto: unos 200 KB de JavaScript (112 de React y Next.js, 47 de GSAP), 119 KB de fuentes y 44 de CSS y HTML. En una visita real el texto se pinta antes, porque viene en el HTML | Todas las páginas, en móvil | Quitar GSAP de las páginas interiores |
 | 7 avisos de ESLint de las reglas del compilador de React (refs escritas al pintar, `setState` dentro de efectos) | `Assistant`, `Chrome`, `WordReveal`, formulario | Arquitectura |
 | `npm audit`: 7 avisos moderados (`minimatch`) | Solo herramientas de desarrollo (ESLint); no llega a `out/` | Al actualizar ESLint |
 
@@ -128,6 +128,28 @@ pasadas, una cifra que no se puede comparar. Hay que medirla aparte, con el
 equipo en reposo.
 
 ## Cambios medidos
+
+### Menos JavaScript, logos a su tamaño y cursiva bajo demanda (13 de noviembre de 2026)
+
+- Cada página recibe solo los textos de su idioma (antes, los de los cuatro).
+- El recorrido de partículas y las secciones de la portada solo los descarga
+  la portada.
+- Los logos de la cabecera y del pie se sirven a su tamaño (a doble
+  resolución): de 118 KB a 13 KB en la cabecera.
+- La cursiva de Fraunces (81 KB), que solo usa la portada, ya no se precarga.
+
+JavaScript real de cada página (sin el de navegadores antiguos, que los
+modernos no descargan): de 231 a 190 KB en las interiores y de 231 a 206 KB
+en la portada.
+
+| Página (móvil) | Rendimiento | LCP | Índice de velocidad | TBT |
+|---|---|---|---|---|
+| /servicios, antes | 89 | 3,8 s | 1,8 s | 46 ms |
+| /servicios, después | 91 | 3,5 s | 1,3 s | 41 ms |
+| /servicios/web, antes | 87 | 4,1 s | 1,6 s | 46 ms |
+| /servicios/web, después | 91 | 3,4 s | 1,4 s | 40 ms |
+| /contacto, antes | 89 | 3,8 s | 1,5 s | 38 ms |
+| /contacto, después | 91 | 3,5 s | 1,3 s | 33 ms |
 
 ### «Raíz» en /servicios y /contacto (13 de noviembre de 2026)
 

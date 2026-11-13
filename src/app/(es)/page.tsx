@@ -1,5 +1,5 @@
 import { preload } from "react-dom";
-import { HomeContent } from "@/components/pages";
+import { HomeContent } from "@/components/HomeContent";
 import { preloadTree } from "@/lib/tree/config";
 import { pageMeta } from "@/lib/seo";
 

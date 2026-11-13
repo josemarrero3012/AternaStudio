@@ -383,7 +383,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
     <>
       <div ref={ref}>{children}</div>
       <div ref={veil} className="page-veil" data-state="idle" aria-hidden="true">
-        <img className="page-veil__mark" src={withBase("/brand/aterna-symbol-light.webp")} alt="" width={319} height={320} decoding="async" />
+        <img className="page-veil__mark" src={withBase("/brand/aterna-symbol-light-160.webp")} alt="" width={160} height={160} decoding="async" loading="lazy" fetchPriority="low" />
       </div>
     </>
   );

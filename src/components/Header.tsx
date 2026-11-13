@@ -6,7 +6,7 @@ import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
-import { LOCALES, LOCALE_NAMES, localePath, stripLocale } from "@/lib/dict";
+import { LOCALES, LOCALE_NAMES, localePath, stripLocale } from "@/lib/locales";
 import { Link, useI18n } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import { ArrowRight } from "./icons";
@@ -209,8 +209,8 @@ export function Header() {
     <header className="header" data-scrolled={scrolled}>
       <div className="container header__inner">
         <Link href="/" className="header__brand" aria-label={`${site.name} — ${t.a11y.home}`}>
-          <Image src={withBase("/brand/aterna-symbol-light.webp")} alt="" width={319} height={320} priority className="header__symbol" />
-          <Image src={withBase("/brand/aterna-wordmark-light.webp")} alt={site.name} width={917} height={256} priority className="header__wordmark" />
+          <Image src={withBase("/brand/aterna-symbol-light-80.webp")} alt="" width={80} height={80} priority className="header__symbol" />
+          <Image src={withBase("/brand/aterna-wordmark-light-64.webp")} alt={site.name} width={229} height={64} priority className="header__wordmark" />
         </Link>
         <nav className="header__nav" aria-label={t.a11y.nav}>
           <ul>
