@@ -99,7 +99,6 @@ su motivo y fallan con cualquier problema nuevo.
 
 | Problema | Dónde | Cuándo se corrige |
 |---|---|---|
-| Los idiomas de la cabecera miden menos de 24 px (WCAG 2.2, criterio 2.5.8) | Portada, escritorio | Dirección de arte (rediseño de la cabecera) |
 | LCP de unos 4 s en móvil (el objetivo es 2,5 s). Causa: cada página carga unos 300 KB de JavaScript comprimido (el del recorrido de la portada y los textos de los cuatro idiomas van en los paquetes comunes), y Lighthouse simula que el texto espera a ese JavaScript | Todas las páginas, en móvil | Arquitectura |
 | 7 avisos de ESLint de las reglas del compilador de React (refs escritas al pintar, `setState` dentro de efectos) | `Assistant`, `Chrome`, `WordReveal`, formulario | Arquitectura |
 | `npm audit`: 7 avisos moderados (`minimatch`) | Solo herramientas de desarrollo (ESLint); no llega a `out/` | Al actualizar ESLint |
@@ -129,6 +128,20 @@ pasadas, una cifra que no se puede comparar. Hay que medirla aparte, con el
 equipo en reposo.
 
 ## Cambios medidos
+
+### «Raíz» en /servicios y /contacto (13 de noviembre de 2026)
+
+`/servicios` pasa de tarjetas de color a filas que cuelgan de la raíz;
+`/contacto` lleva la raíz por la columna del texto y conserva el formulario
+en su tarjeta. Los idiomas de la cabecera de la portada tienen ya 24 × 24 px
+de zona táctil (era el único problema de accesibilidad pendiente).
+
+| Página (móvil) | Rendimiento | Índice de velocidad | TBT | Accesib. |
+|---|---|---|---|---|
+| /servicios, antes | 85 | 1,8 s | 100 ms | 100 |
+| /servicios, después | 89 | 1,8 s | 46 ms | 100 |
+| /contacto, antes | 87 | 1,9 s | 141 ms | 100 |
+| /contacto, después | 89 | 1,5 s | 38 ms | 100 |
 
 ### Sin cortina de entrada
 

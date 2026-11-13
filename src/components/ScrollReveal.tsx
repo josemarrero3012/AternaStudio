@@ -16,11 +16,9 @@ import { prefersReducedMotion } from "@/lib/motion";
 const TARGETS = [
   "main .eyebrow",
   "main .services__all",
-  "main .svc-cards > *",
   "main .estudio__grid > *",
   "main .section-foot",
   "main .final-cta__copy",
-  "main .contact-grid__copy > *",
   "main .contact-frame",
   "main .legal__body > h2",
   "main .not-found__actions",
