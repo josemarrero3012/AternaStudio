@@ -129,6 +129,15 @@ equipo en reposo.
 
 ## Cambios medidos
 
+> **13 de noviembre: se revierte «Raíz».** Las fichas de servicio,
+> /servicios y /contacto vuelven al diseño anterior, con todas sus
+> animaciones (titulares palabra a palabra, «Qué pasa después» con sus iconos
+> y su filamento, la llamada final y las entradas al hacer scroll). Las
+> mediciones de «Raíz» de esta sección quedan como histórico. Se mantienen
+> los cambios que no son de diseño: sin cortina de entrada, textos por
+> idioma, portada aparte, logos a su tamaño, cursiva bajo demanda e idiomas
+> de la cabecera con 24 px de zona táctil.
+
 ### Menos JavaScript, logos a su tamaño y cursiva bajo demanda (13 de noviembre de 2026)
 
 - Cada página recibe solo los textos de su idioma (antes, los de los cuatro).

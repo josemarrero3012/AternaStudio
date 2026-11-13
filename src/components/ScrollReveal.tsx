@@ -1,11 +1,11 @@
 "use client";
 
 // Entrada al hacer scroll para los bloques que no tienen la suya (las
-// tarjetas de servicios, el formulario, las columnas del pie…): antes
-// aparecían de golpe, como bloques pegados. Suben y se encienden
-// escalonados al entrar en pantalla, y el filamento de cada antetítulo se
-// dibuja. Solo se preparan los que están por debajo de la pantalla al
-// llegar: lo que ya se ve no parpadea.
+// tarjetas de servicios y planes, las filas de cada ficha, las preguntas,
+// el formulario, las columnas del pie…): antes aparecían de golpe, como
+// bloques pegados. Suben y se encienden escalonados al entrar en pantalla,
+// y el filamento de cada antetítulo se dibuja. Solo se preparan los que
+// están por debajo de la pantalla al llegar: lo que ya se ve no parpadea.
 // Con movimiento reducido no hace nada.
 
 import { usePathname } from "next/navigation";
@@ -16,9 +16,18 @@ import { prefersReducedMotion } from "@/lib/motion";
 const TARGETS = [
   "main .eyebrow",
   "main .services__all",
+  "main .svc-cards > *",
+  "main .svc-plans__head",
+  "main .plans > *",
+  "main .svc-summary",
+  "main .svc-row__label",
+  "main .svc-row__body",
+  "main .svc-faq__item",
+  "main .other-svcs__head",
   "main .estudio__grid > *",
   "main .section-foot",
   "main .final-cta__copy",
+  "main .contact-grid__copy > *",
   "main .contact-frame",
   "main .legal__body > h2",
   "main .not-found__actions",

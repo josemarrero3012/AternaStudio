@@ -1,6 +1,6 @@
 "use client";
 
-// Dibujos de luz de la web: el de cada servicio (ServiceGlyph) y los
+// Dibujos de luz de la web: el de cada ficha de servicio (ServiceTrace) y los
 // iconos del resto de páginas (glyphs.ts). Un solo vocabulario, el de las
 // raíces del vídeo: filamentos que nacen en la nada, puntos y un nodo
 // encendido. Coordenadas fijas (mismo SVG en el servidor y en el navegador);

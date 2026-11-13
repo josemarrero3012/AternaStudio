@@ -79,3 +79,14 @@ test.describe("formulario de contacto", () => {
     await expect(page.locator(".contact-form__note")).toHaveAttribute("data-state", "error");
   });
 });
+
+test("«Ver cómo trabajamos» lleva al método de la portada", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "Una vez basta.");
+  await page.goto("/estudio");
+  const link = page.locator(".section-foot a", { hasText: "cómo trabajamos" });
+  await link.scrollIntoViewIfNeeded();
+  await link.click();
+  await expect(page).toHaveURL(/\/#metodo$/);
+  // El método queda arriba, bajo la cabecera (no se queda en /estudio).
+  await expect.poll(() => page.evaluate(() => Math.round(document.getElementById("metodo")!.getBoundingClientRect().top)), { timeout: 8_000 }).toBeLessThan(200);
+});

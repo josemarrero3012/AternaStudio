@@ -288,7 +288,10 @@ export function PageTransition({ children }: { children: ReactNode }) {
       covering.current = true;
       registerGsap();
       timeline.current?.kill();
-      const to = url.pathname.slice(basePath.length) + url.search + url.hash;
+      // Sin el prefijo de la demo (basePath). La portada se queda en "" al
+      // quitarlo: sin la «/», «/AternaStudio#metodo» acababa en «#metodo» y
+      // Next se quedaba en la misma página en vez de ir a la portada.
+      const to = (url.pathname.slice(basePath.length) || "/") + url.search + url.hash;
       el.dataset.state = "cover";
       timeline.current = gsap
         .timeline({
@@ -296,7 +299,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
             try {
               sessionStorage.setItem(VEIL_KEY, "1");
             } catch {}
-            router.push(to || "/");
+            router.push(to);
             // Si la ruta no llegara a cambiar, el velo no se queda puesto.
             window.setTimeout(() => {
               if (covering.current) reveal();
