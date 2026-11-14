@@ -137,6 +137,20 @@ equipo en reposo.
 > idioma, portada aparte, logos a su tamaño, cursiva bajo demanda e idiomas
 > de la cabecera con 24 px de zona táctil.
 
+### Sin grano en Firefox (14 de noviembre de 2026)
+
+Fotogramas por segundo al desplazarse (1440×900, sin tarjeta gráfica, tres
+pasadas intercaladas con y sin la capa de grano `body::after`):
+
+| Página | Firefox con grano | Firefox sin grano | Chrome con grano | Chrome sin grano |
+|---|---|---|---|---|
+| `/` | 31,0 | 40,5 | 19,8 | 19,4 |
+| `/servicios` | 20,4 | 25,2 | 45,7 | 49,1 |
+
+En Chrome la diferencia entra en el ruido; en Firefox es un 24-30 %. El
+grano (7 % de opacidad) se quita solo en Firefox con
+`@supports (-moz-appearance: none)`; en el resto de navegadores sigue igual.
+
 ### Menos JavaScript, logos a su tamaño y cursiva bajo demanda (13 de noviembre de 2026)
 
 - Cada página recibe solo los textos de su idioma (antes, los de los cuatro).
