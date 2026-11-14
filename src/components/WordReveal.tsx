@@ -1,6 +1,6 @@
 "use client";
 
-import { createElement, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   ATERNA_EASE,
   DURATION,
@@ -28,7 +28,7 @@ type Props = {
 
 /** Titular que aparece palabra a palabra. `\n` en el texto = salto de línea. */
 export function WordReveal({ text, as = "h2", className, id, delay = 0, onScroll = true, accent = 0 }: Props) {
-  const ref = useRef<HTMLElement | null>(null);
+  const ref = useRef<HTMLHeadingElement | null>(null);
 
   useEffect(() => {
     const el = ref.current;
@@ -80,11 +80,10 @@ export function WordReveal({ text, as = "h2", className, id, delay = 0, onScroll
   const lines = text.split("\n").map((line) => line.split(" "));
   const total = lines.reduce((n, l) => n + l.length, 0);
   let count = 0;
-  return createElement(
-    as,
-    { ref, className, id },
-    lines.map((words, li) => {
-      return (
+  const Tag = as;
+  return (
+    <Tag ref={ref} className={className} id={id}>
+      {lines.map((words, li) => (
         <span key={li} className="reveal-line">
           {words.map((w, wi) => (
             <span key={wi}>
@@ -96,7 +95,7 @@ export function WordReveal({ text, as = "h2", className, id, delay = 0, onScroll
           ))}
           {li < lines.length - 1 ? " " : null}
         </span>
-      );
-    }),
+      ))}
+    </Tag>
   );
 }

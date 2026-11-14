@@ -4,7 +4,7 @@
 // LanguageProvider): cada idioma se exporta ya traducido.
 
 import { withBase } from "@/lib/base";
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Link, useI18n } from "@/lib/i18n";
 import { useReveal } from "@/lib/reveal";
 import { formatPrice, pricing, slugToProduct, type ServiceSlug } from "@/lib/pricing";
@@ -374,21 +374,23 @@ export function EstudioContent() {
 
 type FormState = "idle" | "sending" | "sent" | "error";
 
+// La URL no cambia mientras el formulario está montado: no hay a qué suscribirse.
+const noopSubscribe = () => () => {};
+const readDraft = () => new URLSearchParams(window.location.search).get("mensaje")?.slice(0, 2000) || null;
+
 function ContactForm() {
   const { t } = useI18n();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  // El asistente puede traer el mensaje ya escrito (/contacto?mensaje=…). Se
+  // lee de la URL; en cuanto se escribe o se envía, manda lo escrito.
+  const draft = useSyncExternalStore(noopSubscribe, readDraft, () => null);
+  const [edited, setMessage] = useState<string | null>(null);
+  const message = edited ?? draft ?? "";
   const [consent, setConsent] = useState(false);
   const [company, setCompany] = useState(""); // trampa para bots
   const [state, setState] = useState<FormState>("idle");
   const sending = state === "sending";
-
-  // El asistente puede traer el mensaje ya escrito (/contacto?mensaje=…).
-  useEffect(() => {
-    const draft = new URLSearchParams(window.location.search).get("mensaje");
-    if (draft) setMessage(draft.slice(0, 2000));
-  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

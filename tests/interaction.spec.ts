@@ -73,6 +73,27 @@ test.describe("formulario de contacto", () => {
     expect(body).toMatchObject({ name: "Prueba", email: "prueba@example.com", consent: true, company: "" });
   });
 
+  test("trae el mensaje que deja el asistente", async ({ page }) => {
+    // Al abrir la página con el enlace.
+    await page.goto("/contacto?mensaje=Hola%2C%20quiero%20una%20web");
+    await expect(page.locator("#cf-message")).toHaveValue("Hola, quiero una web");
+    // Y al llegar desde otra página sin recargar, como hace el asistente.
+    await page.goto("/servicios");
+    await expect(page.locator("html")).toHaveAttribute("data-intro", "on");
+    await page.evaluate(() => {
+      const a = document.createElement("a");
+      a.href = "/contacto?mensaje=Desde%20el%20asistente";
+      a.textContent = "ir";
+      document.body.append(a);
+      a.click();
+    });
+    await expect(page).toHaveURL(/\/contacto\?mensaje=/);
+    await expect(page.locator("#cf-message")).toHaveValue("Desde el asistente");
+    // Lo escrito manda sobre el borrador.
+    await page.locator("#cf-message").fill("Otro texto");
+    await expect(page.locator("#cf-message")).toHaveValue("Otro texto");
+  });
+
   test("si el servidor falla, lo dice", async ({ page }) => {
     await page.route("**/contacto.php", (route) => route.fulfill({ status: 502, json: { ok: false, error: "send_failed" } }));
     await page.goto("/contacto");

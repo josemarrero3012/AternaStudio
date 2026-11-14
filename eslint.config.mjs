@@ -8,14 +8,13 @@ export default defineConfig([
   ...nextTs,
   {
     rules: {
-      // Reglas del compilador de React. Señalan patrones que funcionan hoy
-      // pero conviene rehacer (refs escritas al pintar, setState dentro de un
-      // efecto…), en Assistant, Chrome, WordReveal y el formulario. Avisos
-      // hasta la reorganización de esos componentes; luego, errores.
-      "react-hooks/refs": "warn",
-      "react-hooks/purity": "warn",
-      "react-hooks/set-state-in-effect": "warn",
-      "react-hooks/immutability": "warn",
+      // Reglas del compilador de React: refs escritas al pintar, funciones
+      // impuras, setState dentro de un efecto, valores usados antes de
+      // declararse. Errores: el código queda listo para el compilador.
+      "react-hooks/refs": "error",
+      "react-hooks/purity": "error",
+      "react-hooks/set-state-in-effect": "error",
+      "react-hooks/immutability": "error",
       // Exportación estática con images.unoptimized: next/image no aporta
       // nada aquí y el símbolo de la cortina tiene que ir en el HTML.
       "@next/next/no-img-element": "off",
