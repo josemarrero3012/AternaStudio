@@ -7,7 +7,7 @@ import { withBase } from "@/lib/base";
 import { useState, useSyncExternalStore } from "react";
 import { Link, useI18n } from "@/lib/i18n";
 import { useReveal } from "@/lib/reveal";
-import { formatPrice, pricing, slugToProduct, type ServiceSlug } from "@/lib/pricing";
+import { slugToProduct, type ServiceSlug } from "@/lib/pricing";
 import { site } from "@/lib/site";
 import { BeliefArt } from "./BeliefArt";
 import { CopyEmail } from "./CopyEmail";
@@ -130,10 +130,9 @@ function Plan({
 }
 
 export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const product = slugToProduct[slug];
   const page = t.servicePages[product];
-  const prices = pricing[product];
   const cards = t.servicePages.index.cards;
   const card = cards.find((c) => c.slug === slug)!;
 
@@ -243,36 +242,17 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
             <p className="t-small dim svc-plans__note">{page.plansNote}</p>
           </header>
           <div className="plans" data-count={page.plans.length}>
-            {page.plans.map((plan, i) => {
-              const p = prices[i];
-              if (p.custom) {
-                return (
-                  <Plan
-                    key={i}
-                    name={plan.name}
-                    priceLabel={t.common.customPrice}
-                    unitNote={t.common.customPriceNote}
-                    tagline={plan.tagline}
-                    features={plan.features}
-                    featured={plan.featured}
-                  />
-                );
-              }
-              const amount = formatPrice(p.amount, locale);
-              return (
-                <Plan
-                  key={i}
-                  name={plan.name}
-                  priceLabel={amount}
-                  pricePrefix={p.from ? t.common.priceFrom : undefined}
-                  priceSuffix={p.unit === "month" ? t.common.perMonth : undefined}
-                  unitNote={p.unit === "month" ? undefined : t.common.oncePayment}
-                  tagline={plan.tagline}
-                  features={plan.features}
-                  featured={plan.featured}
-                />
-              );
-            })}
+            {page.plans.map((plan, i) => (
+              <Plan
+                key={i}
+                name={plan.name}
+                priceLabel={t.common.customPrice}
+                unitNote={t.common.customPriceNote}
+                tagline={plan.tagline}
+                features={plan.features}
+                featured={plan.featured}
+              />
+            ))}
           </div>
         </div>
       </section>

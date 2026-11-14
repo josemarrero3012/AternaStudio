@@ -2930,7 +2930,7 @@ a.aurora-card {
 
 .rail {
   --rail-h: min(64svh, 560px);
-  --phase-w: clamp(260px, 24vw, 380px);
+  --phase-w: clamp(310px, 27vw, 410px);
   --rail-gap: clamp(48px, 6vw, 120px);
   display: flex;
   align-items: stretch;
@@ -2981,16 +2981,27 @@ a.aurora-card {
   left: 0;
   right: 0;
   height: 1px;
-  background-color: var(--hair);
 }
 
-.rail__axis-fill {
-  display: block;
+.rail__axis-svg {
+  position: absolute;
+  top: -20px;
   width: 100%;
-  height: 100%;
-  background-image: var(--brand-gradient-h);
-  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--violet) 60%, transparent);
-  transform-origin: left;
+  height: 40px;
+  overflow: visible;
+  fill: none;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.rail__axis-base { stroke: var(--hair); }
+.rail__axis-fill {
+  stroke: var(--orchid);
+  filter: drop-shadow(0 0 5px var(--violet));
+}
+.rail-phase__roots--up {
+  transform: rotate(180deg);
+  transform-origin: 34px 0;
 }
 
 .rail-phase {
@@ -3165,7 +3176,9 @@ a.aurora-card {
 }
 
 .rail-phase__body {
-  max-width: 34ch;
+  max-width: 36ch;
+  line-height: 1.65;
+  text-wrap: pretty;
   color: var(--on-surface-mid);
 }
 
@@ -4060,6 +4073,8 @@ a.aurora-card {
 }
 
 .plan__price--text {
+  line-height: 1.2;
+  text-wrap: balance;
   font-size: clamp(1.6rem, 1.4rem + 0.8vw, 2rem);
 }
 

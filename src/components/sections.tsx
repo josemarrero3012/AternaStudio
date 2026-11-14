@@ -4,7 +4,7 @@
 
 import { useId, useRef, type ReactNode } from "react";
 import { Link, useI18n } from "@/lib/i18n";
-import { formatPrice, pricing, slugToProduct, startingPrice, type ServiceSlug } from "@/lib/pricing";
+import { type ServiceSlug } from "@/lib/pricing";
 import { useReveal } from "@/lib/reveal";
 import { site } from "@/lib/site";
 import { CopyEmail } from "./CopyEmail";
@@ -26,25 +26,10 @@ export function eyebrow(text: string, n?: number): ReactNode {
   );
 }
 
-/**
- * Precio de salida de un servicio, igual en toda la web: "Desde 1490 €",
- * "Desde 390 €/mes" o "Precio personalizado". Siempre lleva "desde" porque
- * cada servicio tiene varios planes.
- */
-export function StartingPrice({ slug, className }: { slug: ServiceSlug; className?: string }) {
-  const { t, locale } = useI18n();
-  const product = slugToProduct[slug];
-  const p = startingPrice[product];
-  const cls = `price-tag${className ? ` ${className}` : ""}`;
-  if (p.custom) return <span className={cls}>{t.common.customPrice}</span>;
-  const from = p.from || pricing[product].length > 1;
-  return (
-    <span className={cls}>
-      {from ? <span className="price-tag__soft">{t.common.priceFrom} </span> : null}
-      <span className="price-tag__amount">{formatPrice(p.amount, locale)}</span>
-      {p.unit === "month" ? <span className="price-tag__soft">{t.common.perMonth}</span> : null}
-    </span>
-  );
+/** Presupuesto flexible compartido por las tarjetas de servicios. */
+export function StartingPrice({ className }: { slug: ServiceSlug; className?: string }) {
+  const { t } = useI18n();
+  return <span className={`price-tag${className ? ` ${className}` : ""}`}>{t.common.customPrice}</span>;
 }
 
 /** Cierre de página: el contacto, en la banda más luminosa. En la portada lleva número. */

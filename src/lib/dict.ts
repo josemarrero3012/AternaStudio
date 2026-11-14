@@ -40,9 +40,9 @@ const es = {
     "oncePayment": "pago único",
     "priceFrom": "desde",
     "overview": "El servicio",
-    "customPrice": "Precio personalizado",
+    "customPrice": "Presupuesto a medida",
     "recommended": "Recomendado",
-    "customPriceNote": "según los minutos que necesites",
+    "customPriceNote": "Según tu proyecto y tus posibilidades. Acordamos contigo el alcance y el presupuesto antes de empezar.",
     "seePlans": "Ver planes",
     "otherServices": "Otros servicios"
   },
@@ -108,11 +108,11 @@ const es = {
     "items": [
       {
         "title": "Entender",
-        "body": "Miramos qué hay, qué funciona y qué está roto. Lo ponemos por escrito antes de proponer nada."
+        "body": "Escuchamos tu idea, revisamos lo que tienes y definimos juntos qué necesita tu proyecto."
       },
       {
         "title": "Dirigir",
-        "body": "Elegimos estructura, tipografía, color y tono, y te explicamos por qué. Te proponemos una sola dirección, no tres para que elijas."
+        "body": "Damos forma a una dirección clara: estructura, diseño y tono, con cada decisión explicada."
       },
       {
         "title": "Construir",
@@ -121,7 +121,7 @@ const es = {
       },
       {
         "title": "Crecer",
-        "body": "Cuando la web sale, seguimos: medimos qué pasa, corregimos lo que no funciona y trabajamos el SEO y el contenido para que te encuentre más gente.",
+        "body": "Tras el lanzamiento, medimos, mejoramos y trabajamos el SEO para que más personas encuentren tu negocio.",
         "service": "seo"
       }
     ] as { title: string; body: string; service?: string }[],
@@ -336,7 +336,7 @@ const es = {
       "examplesLead": "",
       "examples": [],
       "plansTitle": "Planes",
-      "plansNote": "Precio orientativo según alcance. IVA no incluido.",
+      "plansNote": "Presupuesto a medida según tu proyecto y tus posibilidades. IVA no incluido.",
       "plans": [
         {
           "name": "Esencial",
@@ -557,7 +557,7 @@ const es = {
       "examplesLead": "",
       "examples": [],
       "plansTitle": "Planes",
-      "plansNote": "El precio de cada plan es personalizado según los minutos de llamada que necesite tu negocio. Te lo damos cerrado antes de empezar. Alta y configuración: 290 € (pago único). Cuota mensual, permanencia mínima de 3 meses. IVA no incluido.",
+      "plansNote": "El precio de cada plan es personalizado según los minutos de llamada que necesite tu negocio. Te lo damos cerrado antes de empezar. Cuota mensual, permanencia mínima de 3 meses. IVA no incluido.",
       "plans": [
         {
           "name": "Esencial",
@@ -693,9 +693,9 @@ const en: Dict = {
     "oncePayment": "one-time",
     "priceFrom": "from",
     "overview": "The service",
-    "customPrice": "Custom pricing",
+    "customPrice": "Tailored quote",
     "recommended": "Recommended",
-    "customPriceNote": "based on the minutes you need",
+    "customPriceNote": "Based on your project and budget. We agree the scope and quote with you before starting.",
     "seePlans": "See plans",
     "otherServices": "Other services"
   },
@@ -988,7 +988,7 @@ const en: Dict = {
       "examplesLead": "",
       "examples": [],
       "plansTitle": "Plans",
-      "plansNote": "Indicative price by scope. VAT not included.",
+      "plansNote": "A tailored quote based on your project and budget. VAT not included.",
       "plans": [
         {
           "name": "Essential",
@@ -1209,7 +1209,7 @@ const en: Dict = {
       "examplesLead": "",
       "examples": [],
       "plansTitle": "Plans",
-      "plansNote": "Each plan is priced individually based on the call minutes your business needs. You get a fixed price before we start. Set-up and configuration: €290 (one-time). Monthly fee, 3-month minimum. VAT not included.",
+      "plansNote": "Each plan is priced individually based on the call minutes your business needs. You get a fixed price before we start. Monthly fee, 3-month minimum. VAT not included.",
       "plans": [
         {
           "name": "Essential",
@@ -1343,9 +1343,9 @@ const nl: Dict = {
     "oncePayment": "eenmalig",
     "priceFrom": "vanaf",
     "overview": "De dienst",
-    "customPrice": "Prijs op maat",
+    "customPrice": "Offerte op maat",
     "recommended": "Aanbevolen",
-    "customPriceNote": "op basis van de minuten die je nodig hebt",
+    "customPriceNote": "Afgestemd op je project en mogelijkheden. We spreken de omvang en het budget samen af voordat we beginnen.",
     "seePlans": "Bekijk pakketten",
     "otherServices": "Andere diensten"
   },
@@ -1638,7 +1638,7 @@ const nl: Dict = {
       "examplesLead": "",
       "examples": [],
       "plansTitle": "Pakketten",
-      "plansNote": "Indicatieve prijs afhankelijk van de omvang. Exclusief btw.",
+      "plansNote": "Een offerte op maat, afgestemd op je project en mogelijkheden. Exclusief btw.",
       "plans": [
         {
           "name": "Essentieel",
@@ -1859,7 +1859,7 @@ const nl: Dict = {
       "examplesLead": "",
       "examples": [],
       "plansTitle": "Pakketten",
-      "plansNote": "De prijs van elk pakket is op maat, op basis van de belminuten die je bedrijf nodig heeft. Je krijgt een vaste prijs voordat we beginnen. Aansluiting en inrichting: € 290 (eenmalig). Maandbedrag, minimaal 3 maanden. Exclusief btw.",
+      "plansNote": "De prijs van elk pakket is op maat, op basis van de belminuten die je bedrijf nodig heeft. Je krijgt een vaste prijs voordat we beginnen. Maandbedrag, minimaal 3 maanden. Exclusief btw.",
       "plans": [
         {
           "name": "Essentieel",
@@ -1993,9 +1993,9 @@ const de: Dict = {
     "oncePayment": "einmalig",
     "priceFrom": "ab",
     "overview": "Die Leistung",
-    "customPrice": "Individueller Preis",
+    "customPrice": "Individuelles Angebot",
     "recommended": "Empfohlen",
-    "customPriceNote": "je nach den Minuten, die Sie brauchen",
+    "customPriceNote": "Passend zu Ihrem Projekt und Ihren Möglichkeiten. Umfang und Budget stimmen wir vor dem Start gemeinsam mit Ihnen ab.",
     "seePlans": "Pakete ansehen",
     "otherServices": "Weitere Leistungen"
   },
@@ -2288,7 +2288,7 @@ const de: Dict = {
       "examplesLead": "",
       "examples": [],
       "plansTitle": "Pakete",
-      "plansNote": "Richtpreis je nach Umfang. Zzgl. MwSt.",
+      "plansNote": "Ein individuelles Angebot passend zu Ihrem Projekt und Ihren Möglichkeiten. Zzgl. MwSt.",
       "plans": [
         {
           "name": "Essenziell",
@@ -2509,7 +2509,7 @@ const de: Dict = {
       "examplesLead": "",
       "examples": [],
       "plansTitle": "Pakete",
-      "plansNote": "Der Preis jedes Pakets richtet sich individuell nach den Gesprächsminuten, die Ihr Unternehmen braucht. Sie bekommen ihn fest, bevor wir beginnen. Einrichtung und Konfiguration: 290 € (einmalig). Monatliche Gebühr, Mindestlaufzeit 3 Monate. Zzgl. MwSt.",
+      "plansNote": "Der Preis jedes Pakets richtet sich individuell nach den Gesprächsminuten, die Ihr Unternehmen braucht. Sie bekommen ihn fest, bevor wir beginnen. Monatliche Gebühr, Mindestlaufzeit 3 Monate. Zzgl. MwSt.",
       "plans": [
         {
           "name": "Essenziell",

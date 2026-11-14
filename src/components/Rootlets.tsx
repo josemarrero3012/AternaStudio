@@ -39,9 +39,9 @@ const SIDE: RootCurve[] = [
   [[0, 0], [0, 12], [22, 16], [26, 32]],
   [[26, 32], [30, 48], [36, 56], [40, 70]],
 ];
-const FAN: RootCurve = [[0, 0], [0, 30], [-4, 54], [0, 92]];
-const FAN_LEFT = rootBranch(FAN, 0.08, 18, [-30, 42], [-40, 74]);
-const FAN_RIGHT = rootBranch(FAN, 0.08, 18, [30, 38], [44, 66]);
+const FAN: RootCurve = [[0, 0], [10, 24], [-10, 58], [0, 92]];
+const FAN_LEFT = rootBranch(FAN, 0.22, 12, [-32, 44], [-40, 74]);
+const FAN_RIGHT = rootBranch(FAN, 0.42, 12, [36, 48], [44, 66]);
 const TAIL: RootCurve = [[0, 0], [0, 30], [-2, 54], [2, 92]];
 const TAIL_RIGHT = rootBranch(TAIL, 0.08, 18, [30, 38], [44, 66]);
 const HORIZON: RootCurve[][] = [
@@ -82,8 +82,8 @@ const SHAPES = {
       { d: rootPath(FAN), delay: 0.05, tip: true },
       { d: rootPath(FAN_LEFT), delay: 0.2, tip: true },
       { d: rootPath(FAN_RIGHT), delay: 0.3, tip: true },
-      { d: rootPath(rootBranch(FAN_LEFT, 0.58, 12, [-46, 52], [-56, 64])), delay: 0.6, faint: true },
-      { d: rootPath(rootBranch(FAN_RIGHT, 0.58, 12, [23, 58], [27, 74])), delay: 0.7, faint: true },
+      { d: rootPath(rootBranch(FAN_LEFT, 0.58, 9, [-44, 60], [-56, 72])), delay: 0.6, faint: true },
+      { d: rootPath(rootBranch(FAN_RIGHT, 0.58, 8, [36, 68], [38, 80])), delay: 0.7, faint: true },
     ],
     tips: [
       { x: 0, y: 92, delay: 1 },

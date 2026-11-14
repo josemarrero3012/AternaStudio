@@ -22,7 +22,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState, type FormEven
 import { answer, followUps, labelFor, nearest, replyFor, semanticGroups, type ReplyId } from "@/lib/assistant";
 import { Link, useI18n } from "@/lib/i18n";
 import { prefersReducedMotion } from "@/lib/motion";
-import { formatPrice, pricing, slugToProduct, type ServiceSlug } from "@/lib/pricing";
+import { type ServiceSlug } from "@/lib/pricing";
 import { index, similarities, warmUp } from "@/lib/semantic";
 import { whatsappHref } from "./Chrome";
 
@@ -308,10 +308,7 @@ export function Assistant() {
     const card = slug ? t.servicePages.index.cards.find((c) => c.slug === slug) : undefined;
     let text = f.summaryUnsure;
     if (slug && card) {
-      const plans = pricing[slugToProduct[slug]];
-      const from = Math.min(...plans.map((p) => p.amount));
-      const unit = plans[0].unit === "month" ? t.common.perMonth : "";
-      const price = plans[0].custom ? a.custom : `${t.common.priceFrom} ${formatPrice(from, locale)}${unit}`;
+      const price = t.common.customPriceNote;
       text = f.summary.replace("{service}", card.title).replace("{price}", price);
     }
     const message = [

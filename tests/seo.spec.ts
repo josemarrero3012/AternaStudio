@@ -67,13 +67,10 @@ for (const locale of LOCALES) {
         expect(svc.areaServed, `${path}: sin zona de servicio inventada`).toBeUndefined();
         expect(svc.offers.length).toBeGreaterThan(1);
         for (const o of svc.offers) {
-          const spec = o.priceSpecification as Node | undefined;
-          if (route === "/servicios/asistente-ia") expect(o.price, `${path}: precio personalizado`).toBeUndefined();
-          else expect(Number(o.price), path).toBeGreaterThan(0);
-          if (["/servicios/seo", "/servicios/mantenimiento"].includes(route)) {
-            expect(spec, `${path}: los mensuales llevan la unidad`).toMatchObject({ "@type": "UnitPriceSpecification", unitCode: "MON" });
-          }
-          if (route === "/servicios/web") expect(spec, `${path}: «desde» como precio mínimo`).toMatchObject({ minPrice: o.price });
+          expect(o.price, `${path}: presupuesto a medida sin importe`).toBeUndefined();
+          expect(o.priceSpecification).toBeUndefined();
+          expect(o.priceCurrency).toBeUndefined();
+          expect(String(o.description).length).toBeGreaterThan(0);
         }
         const faq = nodes.find((n) => n["@type"] === "FAQPage") as Node & { mainEntity: Node[] };
         expect(faq?.mainEntity.length, path).toBeGreaterThan(0);

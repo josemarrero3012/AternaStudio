@@ -206,7 +206,7 @@ export function Header() {
   return (
     <header className="header" data-scrolled={scrolled}>
       <div className="container header__inner">
-        <Link href="/" className="header__brand" aria-label={`${site.name} — ${t.a11y.home}`}>
+        <Link href="/#inicio" className="header__brand" aria-label={`${site.name} — ${t.a11y.home}`}>
           <Image src={withBase("/brand/aterna-symbol-light-80.webp")} alt="" width={80} height={80} priority className="header__symbol" />
           <Image src={withBase("/brand/aterna-wordmark-light-64.webp")} alt={site.name} width={229} height={64} priority className="header__wordmark" />
         </Link>

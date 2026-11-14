@@ -16,7 +16,7 @@
 // Funciona sin servidor (la web es estática).
 
 import type { Dict, Locale } from "./dict";
-import { formatPrice, pricing, slugToProduct, startingPrice, type ServiceSlug } from "./pricing";
+import { slugToProduct, type ServiceSlug } from "./pricing";
 import { site } from "./site";
 
 export type Reply = { text: string; href?: string; link?: string };
@@ -309,10 +309,8 @@ const SERVICE_KEYS: Record<ServiceSlug, string> = {
 };
 
 /** Todo lo que el asistente sabe, en el idioma de la web. */
-export function knowledge(t: Dict, locale: Locale): Entry[] {
+export function knowledge(t: Dict): Entry[] {
   const a = t.assistant;
-  const price = (amount: number, unit: "once" | "month", from?: boolean) =>
-    `${from ? `${t.common.priceFrom} ` : ""}${formatPrice(amount, locale)}${unit === "month" ? t.common.perMonth : ` (${t.common.oncePayment})`}`;
   const out: Entry[] = [{ ref: "hola", topic: "hello", keys: "hola quien eres ayuda", text: a.hello }];
 
   for (const card of t.servicePages.index.cards) {
@@ -321,8 +319,7 @@ export function knowledge(t: Dict, locale: Locale): Entry[] {
     const page = t.servicePages[product];
     const href = `/servicios/${slug}`;
     const base = `${card.title} ${SERVICE_KEYS[slug]} ${slug}`;
-    const start = startingPrice[product];
-    const startText = start.custom ? t.common.customPrice : price(start.amount, start.unit, true);
+    const startText = t.common.customPriceNote;
 
     // Qué es y qué incluye.
     out.push({
@@ -336,11 +333,7 @@ export function knowledge(t: Dict, locale: Locale): Entry[] {
     });
     // Precios, plan por plan.
     const plans = page.plans
-      .map((plan, i) => {
-        const p = pricing[product][i];
-        const amount = p.custom ? a.custom : price(p.amount, p.unit, p.from);
-        return `${plan.name}: ${amount}`;
-      })
+      .map((plan) => `${plan.name}: ${t.common.customPrice}`)
       .join(" · ");
     out.push({
       ref: `${slug}:planes`,
@@ -429,12 +422,13 @@ type Base = {
   idf: Map<string, number>;
 };
 
-const cache = new WeakMap<Dict, Base>();
+const cache = new WeakMap<Dict, Partial<Record<Locale, Base>>>();
 
 function base(t: Dict, locale: Locale): Base {
-  let kb = cache.get(t);
+  const localized = cache.get(t) ?? {};
+  let kb = localized[locale];
   if (!kb) {
-    const entries = knowledge(t, locale);
+    const entries = knowledge(t);
     const label = entries.map((e) => tokens(e.label ?? ""));
     const keys = entries.map((e) => tokens(`${e.keys} ${e.label ?? ""}`));
     const body = entries.map((e) => tokens(e.text));
@@ -449,7 +443,8 @@ function base(t: Dict, locale: Locale): Base {
     const n = entries.length;
     const idf = new Map([...df].map(([w, d]) => [w, Math.log(1 + n / d) / Math.log(1 + n)]));
     kb = { entries, label, keys, body, vocab, idf };
-    cache.set(t, kb);
+    localized[locale] = kb;
+    cache.set(t, localized);
   }
   return kb;
 }

@@ -5,7 +5,7 @@
 // la izquierda: primero el titular sobre su raíz de luz, luego las cuatro
 // fases, alternando arriba y abajo de un eje que se dibuja con el scroll.
 // Cuando cada fase entra, crece su tallo, se enciende su nodo y su texto
-// sube línea a línea (SplitText). Sin fechas: son las fases del método.
+// aparece sin máscaras que recorten las letras. Sin fechas: son las fases del método.
 // La línea del suelo de la raíz cruza el hueco y empalma con el eje: la raíz
 // y el método son la misma línea (MethodRoot). La luz del eje avanza con el
 // scroll y lleva una cabeza encendida: cuando llega al nodo de una fase, la
@@ -20,7 +20,6 @@
 // movimiento reducido. Se usa una vez, en la portada.
 
 import { useEffect, type ReactNode, type RefObject } from "react";
-import { SplitText } from "gsap/SplitText";
 import { Link, useI18n } from "@/lib/i18n";
 import { ScrollTrigger, gsap, registerGsap } from "@/lib/motion";
 import { ArrowRight } from "./icons";
@@ -37,13 +36,12 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
     const rail = root?.querySelector<HTMLElement>(".rail");
     if (!root || !pin || !rail) return;
     registerGsap();
-    gsap.registerPlugin(SplitText);
 
     // Desde 768 px y con movimiento. En móvil cada fase ocupaba la pantalla y
     // el texto pasaba cortado por los dos bordes: allí manda la línea
     // vertical. matchMedia la monta y desmonta sola al cambiar de tamaño.
     const mm = gsap.matchMedia(root);
-    mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
+    mm.add("(min-width: 768px) and (min-height: 740px) and (prefers-reduced-motion: no-preference)", () => {
       // Primero se muestra la pista (data-rail), luego se mide.
       root.dataset.rail = "on";
       // Con la fuente definitiva cambian anchos y cortes de línea.
@@ -53,10 +51,29 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
       const distance = () => Math.max(0, rail.scrollWidth - window.innerWidth);
       const scroll = { trigger: pin, start: "top top", end: () => `+=${distance()}`, scrub: 0.6, invalidateOnRefresh: true };
 
+      const shapeAxis = () => {
+        const svg = rail.querySelector<SVGSVGElement>(".rail__axis-svg");
+        const track = rail.querySelector<HTMLElement>(".rail__track");
+        if (!svg || !track) return;
+        const nodes = [...track.querySelectorAll<HTMLElement>(".rail-phase, .rail__end")];
+        const width = track.offsetWidth;
+        svg.setAttribute("viewBox", `0 0 ${width} 40`);
+        let x = 0;
+        let d = "M0 20";
+        nodes.forEach((node, i) => {
+          const end = node.offsetLeft;
+          const span = end - x;
+          const bend = i % 2 ? -14 : 14;
+          d += ` C${x + span * 0.3} ${20 + bend} ${end - span * 0.3} ${20 - bend} ${end} 20`;
+          x = end;
+        });
+        svg.querySelectorAll("path").forEach((path) => path.setAttribute("d", d));
+      };
+      shapeAxis();
       const move = gsap.to(rail, {
         x: () => -distance(),
         ease: "none",
-        scrollTrigger: { ...scroll, pin: true, anticipatePin: 1 },
+        scrollTrigger: { ...scroll, pin: true, anticipatePin: 1, onRefresh: shapeAxis },
       });
       // La luz del eje y su cabeza. Con el progreso real de la luz (ya
       // suavizado por el scrub) se decide qué fases ha alcanzado.
@@ -66,16 +83,18 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
       const end = rail.querySelector<HTMLElement>(".rail__end");
       gsap.fromTo(
         ".rail__axis-fill",
-        { scaleX: 0 },
+        { clipPath: "inset(0 100% 0 0)" },
         {
-          scaleX: 1,
+          clipPath: "inset(0 0% 0 0)",
           ease: "none",
           scrollTrigger: scroll,
           onUpdate() {
             const width = axis?.offsetWidth ?? 0;
             const tip = this.progress() * width;
             if (head) {
-              head.style.transform = `translateX(${tip}px)`;
+              const path = rail.querySelector<SVGPathElement>(".rail__axis-base");
+              const point = path?.getPointAtLength(this.progress() * path.getTotalLength());
+              head.style.transform = `translate(${point?.x ?? tip}px, ${(point?.y ?? 20) - 20}px)`;
               head.style.opacity = this.progress() > 0.001 && this.progress() < 0.999 ? "1" : "0";
             }
             // El nodo de cada fase está en su borde izquierdo (left: 0 en la pista).
@@ -108,11 +127,7 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
       };
 
       root.querySelectorAll<HTMLElement>(".rail-phase").forEach((phase) => {
-        const lines = SplitText.create(phase.querySelectorAll(".rail-phase__title, .rail-phase__body"), {
-          type: "lines",
-          mask: "lines",
-          aria: "none",
-        }).lines;
+        const copy = phase.querySelector(".rail-phase__copy");
         const link = phase.querySelector(".rail-phase__link");
         const tl = gsap
           .timeline({
@@ -130,7 +145,7 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
           .from(phase.querySelector(".rail-phase__dot"), { scale: 0, ease: "back.out(2)" }, "<")
           // El número sale con su fase: antes asomaba solo, sin tallo ni texto.
           .from(phase.querySelector(".rail-phase__index"), { autoAlpha: 0, yPercent: 30, ease: "power2.out" }, "<0.1")
-          .from(lines, { yPercent: 110, stagger: 0.08, ease: "power2.out" }, "<0.15");
+          .from(copy, { autoAlpha: 0, y: 14, ease: "power2.out" }, "<0.15");
         if (link) tl.from(link, { autoAlpha: 0, y: 8, ease: "power2.out" }, ">-0.1");
       });
 
@@ -163,7 +178,10 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
         </div>
         <div className="rail__track">
           <span className="rail__axis">
-            <span className="rail__axis-fill" />
+            <svg className="rail__axis-svg" preserveAspectRatio="none" aria-hidden="true">
+              <path className="rail__axis-base" />
+              <path className="rail__axis-fill" />
+            </svg>
             <span className="rail__axis-head" />
           </span>
           {t.approach.items.map((item, i) => (
@@ -173,14 +191,9 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
               <span className="rail-phase__dot" />
               <span className="rail-phase__ring" aria-hidden="true" />
               {/* Bajo el eje, donde la fase no tiene texto, cuelgan raíces. */}
-              {i % 2 ? null : <Rootlets shape="hang" trigger="lit" className="rail-phase__roots" />}
+              <Rootlets shape="hang" trigger="lit" className={`rail-phase__roots${i % 2 ? " rail-phase__roots--up" : ""}`} />
               <div className="rail-phase__copy">
                 <span className="rail-phase__index">{String(i + 1).padStart(2, "0")}</span>
-                {/* SplitText reescribe el contenido de estos dos por debajo
-                    de React: al cambiar de idioma React actualizaba nodos
-                    que ya no estaban en la página y, al deshacer el corte,
-                    volvía el texto anterior (idiomas mezclados). Con la
-                    clave del idioma se montan de nuevo y se vuelven a partir. */}
                 <h3 className="rail-phase__title" key={`t-${locale}`}>
                   {item.title}
                 </h3>

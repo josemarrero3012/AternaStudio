@@ -56,17 +56,17 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     web: {
       title: "Diseño y desarrollo web",
       description:
-        "Diseño, dirección de arte y desarrollo web a medida. Sin plantillas ni plugins. Código propio, rápido y accesible. Desde 1.490 €.",
+        "Diseño, dirección de arte y desarrollo web a medida. Sin plantillas ni plugins. Código propio, rápido y accesible. Presupuesto a medida según tu proyecto y tus posibilidades.",
     },
     seo: {
       title: "SEO y crecimiento orgánico",
       description:
-        "SEO y crecimiento orgánico con foco local, para hoteles, bodegas y restaurantes. Trabajo mensual con un informe claro de lo que cambia. Desde 390 €/mes.",
+        "SEO y crecimiento orgánico con foco local, para hoteles, bodegas y restaurantes. Trabajo mensual con un informe claro de lo que cambia. Presupuesto a medida según tu proyecto y tus posibilidades.",
     },
     mantenimiento: {
       title: "Mantenimiento y soporte",
       description:
-        "Mantenimiento web: hosting, copias, actualizaciones, seguridad y soporte. Nos ocupamos de que tu web siga rápida y segura. Desde 59 €/mes.",
+        "Mantenimiento web: hosting, copias, actualizaciones, seguridad y soporte. Nos ocupamos de que tu web siga rápida y segura. Presupuesto a medida según tu proyecto y tus posibilidades.",
     },
     "asistente-ia": {
       title: "Asistente telefónico con IA 24/7",
@@ -98,17 +98,17 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     web: {
       title: "Web design & development",
       description:
-        "Bespoke web design, art direction and development. No templates or plugins. Our own code, fast and accessible. From €1,490.",
+        "Bespoke web design, art direction and development. No templates or plugins. Our own code, fast and accessible. A tailored quote based on your project and budget.",
     },
     seo: {
       title: "SEO & organic growth",
       description:
-        "SEO and organic growth with a local focus, for hotels, wineries and restaurants. Monthly work with a clear report on what changes. From €390/month.",
+        "SEO and organic growth with a local focus, for hotels, wineries and restaurants. Monthly work with a clear report on what changes. A tailored quote based on your project and budget.",
     },
     mantenimiento: {
       title: "Maintenance & support",
       description:
-        "Website maintenance: hosting, backups, updates, security and support. We keep your site fast and secure. From €59/month.",
+        "Website maintenance: hosting, backups, updates, security and support. We keep your site fast and secure. A tailored quote based on your project and budget.",
     },
     "asistente-ia": {
       title: "24/7 AI phone assistant",
@@ -140,17 +140,17 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     web: {
       title: "Webdesign en -ontwikkeling",
       description:
-        "Webdesign, art direction en ontwikkeling op maat. Geen templates of plug-ins. Eigen code, snel en toegankelijk. Vanaf € 1.490.",
+        "Webdesign, art direction en ontwikkeling op maat. Geen templates of plug-ins. Eigen code, snel en toegankelijk. Een offerte op maat voor je project en budget.",
     },
     seo: {
       title: "SEO en organische groei",
       description:
-        "SEO en organische groei met lokale focus, voor hotels, wijnhuizen en restaurants. Maandelijks werk met een helder verslag van wat er verandert. Vanaf € 390 per maand.",
+        "SEO en organische groei met lokale focus, voor hotels, wijnhuizen en restaurants. Maandelijks werk met een helder verslag van wat er verandert. Een offerte op maat voor je project en budget.",
     },
     mantenimiento: {
       title: "Onderhoud en support",
       description:
-        "Website-onderhoud: hosting, back-ups, updates, beveiliging en support. Wij zorgen dat je website snel en veilig blijft. Vanaf € 59 per maand.",
+        "Website-onderhoud: hosting, back-ups, updates, beveiliging en support. Wij zorgen dat je website snel en veilig blijft. Een offerte op maat voor je project en budget.",
     },
     "asistente-ia": {
       title: "AI-telefoonassistent 24/7",
@@ -182,17 +182,17 @@ const meta: Record<Locale, { tagline: string } & Record<RouteKey, Entry>> = {
     web: {
       title: "Webdesign und -entwicklung",
       description:
-        "Maßgeschneidertes Webdesign, Art Direction und Entwicklung. Ohne Templates oder Plugins. Eigener Code, schnell und barrierearm. Ab 1.490 €.",
+        "Maßgeschneidertes Webdesign, Art Direction und Entwicklung. Ohne Templates oder Plugins. Eigener Code, schnell und barrierearm. Ein individuelles Angebot passend zu Ihrem Projekt und Budget.",
     },
     seo: {
       title: "SEO und organisches Wachstum",
       description:
-        "SEO und organisches Wachstum mit lokalem Fokus, für Hotels, Weingüter und Restaurants. Monatliche Arbeit mit einem klaren Bericht, was sich ändert. Ab 390 €/Monat.",
+        "SEO und organisches Wachstum mit lokalem Fokus, für Hotels, Weingüter und Restaurants. Monatliche Arbeit mit einem klaren Bericht, was sich ändert. Ein individuelles Angebot passend zu Ihrem Projekt und Budget.",
     },
     mantenimiento: {
       title: "Wartung und Support",
       description:
-        "Website-Wartung: Hosting, Backups, Updates, Sicherheit und Support. Wir sorgen dafür, dass Ihre Website schnell und sicher bleibt. Ab 59 €/Monat.",
+        "Website-Wartung: Hosting, Backups, Updates, Sicherheit und Support. Wir sorgen dafür, dass Ihre Website schnell und sicher bleibt. Ein individuelles Angebot passend zu Ihrem Projekt und Budget.",
     },
     "asistente-ia": {
       title: "KI-Telefonassistent 24/7",

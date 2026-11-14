@@ -501,7 +501,7 @@ export function Journey() {
   }, [j.label]);
 
   return (
-    <div ref={mainRef} className="journey">
+    <div ref={mainRef} className="journey" id="inicio">
       <div ref={stageRef} className="journey__stage">
         <div ref={probeRef} className="journey__probe" aria-hidden="true" />
         <div ref={caveRef} className="journey__cave">
