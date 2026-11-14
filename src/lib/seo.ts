@@ -26,6 +26,8 @@ export function pageMeta(key: RouteKey, locale: Locale): Metadata {
   const { path, title, description, noindex = false } = routeMeta(key, locale);
   const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${routeMeta("home", locale).tagline}`;
   const url = absoluteUrl(path, noindex ? DEFAULT_LOCALE : locale);
+  // Imagen para redes con el titular en el idioma de la página (scripts/og-images.ts).
+  const image = { url: `${site.url}/brand/og-${locale}.jpg`, width: 1200, height: 630, alt: `${site.name} — ${routeMeta("home", locale).tagline}` };
   return {
     title: fullTitle,
     description,
@@ -39,13 +41,13 @@ export function pageMeta(key: RouteKey, locale: Locale): Metadata {
       alternateLocale: LOCALES.filter((l) => l !== locale).map((l) => LOCALE_TAGS[l].replace("-", "_")),
       title: fullTitle,
       description,
-      images: [{ url: `${site.url}/brand/og.jpg`, width: 1200, height: 630, alt: site.name }],
+      images: [image],
     },
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description,
-      images: [`${site.url}/brand/og.jpg`],
+      images: [image.url],
     },
   };
 }

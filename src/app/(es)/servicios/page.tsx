@@ -1,8 +1,14 @@
 import { ServiciosContent } from "@/components/pages";
+import { SectionJsonLd } from "@/components/SectionJsonLd";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta("servicios", "es");
 
 export default function Page() {
-  return <ServiciosContent />;
+  return (
+    <>
+      <SectionJsonLd locale="es" path="/servicios" />
+      <ServiciosContent />
+    </>
+  );
 }
