@@ -161,8 +161,11 @@ export function Assistant() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const lastRef = useRef<HTMLDivElement>(null);
+  // El orbe lee si está pensando en cada fotograma, sin volver a montarse.
   const thinkingRef = useRef(false);
-  thinkingRef.current = thinking;
+  useEffect(() => {
+    thinkingRef.current = thinking;
+  }, [thinking]);
   const timer = useRef<number | undefined>(undefined);
   /** Si la última pregunta llegó por un botón, el foco va a la respuesta. */
   const focusAnswer = useRef(false);
@@ -176,8 +179,13 @@ export function Assistant() {
     return () => io.disconnect();
   }, [pathname]);
 
-  // Al cambiar de página se cierra (la conversación se queda).
-  useEffect(() => setOpen(false), [pathname]);
+  // Al cambiar de página se cierra (la conversación se queda). Se ajusta al
+  // pintar, no en un efecto: así no hay un render de más con el panel abierto.
+  const [openOn, setOpenOn] = useState(pathname);
+  if (openOn !== pathname) {
+    setOpenOn(pathname);
+    setOpen(false);
+  }
 
   const close = useCallback(() => {
     setOpen(false);
@@ -245,15 +253,16 @@ export function Assistant() {
     setLabel(0);
     setThinking(true);
     setLog((l) => [...l, { from: "user", text: q }]);
-    const started = performance.now();
-    const sims = await similarities(locale, q);
+    // Piensa al menos MIN_THINK: la búsqueda y la espera mínima van a la vez.
+    // Si el panel se desmonta, el temporizador se limpia y no responde.
+    const minimum = new Promise<void>((done) => {
+      timer.current = window.setTimeout(done, prefersReducedMotion() ? 0 : MIN_THINK);
+    });
+    const [sims] = await Promise.all([similarities(locale, q), minimum]);
     const reply = answer(q, t, locale, sims ?? undefined);
     const near = reply === "fallback" ? nearest(q, t, locale, sims ?? undefined) : [];
-    const rest = prefersReducedMotion() ? 0 : Math.max(0, MIN_THINK - (performance.now() - started));
-    timer.current = window.setTimeout(() => {
-      setThinking(false);
-      setLog((l) => [...l, { from: "bot", reply, question: q, near }]);
-    }, rest);
+    setThinking(false);
+    setLog((l) => [...l, { from: "bot", reply, question: q, near }]);
   };
 
   const onSubmit = (e: FormEvent) => {

@@ -6,7 +6,7 @@
 
 import Lenis from "lenis";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 import {
   ATERNA_EASE,
@@ -270,6 +270,41 @@ export function PageTransition({ children }: { children: ReactNode }) {
   const covering = useRef(false);
   const timeline = useRef<gsap.core.Timeline | null>(null);
 
+  // Entrada: el símbolo se deshace en luz, la noche se abre y la página
+  // sube despacio a su sitio.
+  // Solo usa refs: es la misma función en cada render.
+  const reveal = useCallback(() => {
+    const el = veil.current;
+    const page = ref.current;
+    covering.current = false;
+    try {
+      sessionStorage.removeItem(VEIL_KEY);
+    } catch {}
+    delete document.documentElement.dataset.veil;
+    if (!el) return;
+    registerGsap();
+    timeline.current?.kill();
+    el.dataset.state = "reveal";
+    timeline.current = gsap
+      .timeline({
+        onComplete: () => {
+          el.dataset.state = "idle";
+          gsap.set(el, { clearProps: "opacity" });
+        },
+      })
+      .set(el, { opacity: 1 })
+      .to(el.querySelector(".page-veil__mark"), { opacity: 0, scale: 1.12, filter: "blur(8px)", duration: 0.4, ease: "power2.in" }, 0)
+      .to(el, { opacity: 0, duration: 0.6, ease: "power2.inOut" }, 0.15);
+    if (page) {
+      timeline.current.fromTo(
+        page,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.9, ease: ATERNA_EASE, clearProps: "transform,opacity" },
+        0.2,
+      );
+    }
+  }, []);
+
   // Salida: interceptamos los enlaces antes que Next (fase de captura en
   // window); next/link respeta defaultPrevented y no navega por su cuenta.
   useEffect(() => {
@@ -325,41 +360,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
     };
     window.addEventListener("click", onClick, true);
     return () => window.removeEventListener("click", onClick, true);
-  }, [router]);
-
-  // Entrada: el símbolo se deshace en luz, la noche se abre y la página
-  // sube despacio a su sitio.
-  const reveal = () => {
-    const el = veil.current;
-    const page = ref.current;
-    covering.current = false;
-    try {
-      sessionStorage.removeItem(VEIL_KEY);
-    } catch {}
-    delete document.documentElement.dataset.veil;
-    if (!el) return;
-    registerGsap();
-    timeline.current?.kill();
-    el.dataset.state = "reveal";
-    timeline.current = gsap
-      .timeline({
-        onComplete: () => {
-          el.dataset.state = "idle";
-          gsap.set(el, { clearProps: "opacity" });
-        },
-      })
-      .set(el, { opacity: 1 })
-      .to(el.querySelector(".page-veil__mark"), { opacity: 0, scale: 1.12, filter: "blur(8px)", duration: 0.4, ease: "power2.in" }, 0)
-      .to(el, { opacity: 0, duration: 0.6, ease: "power2.inOut" }, 0.15);
-    if (page) {
-      timeline.current.fromTo(
-        page,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.9, ease: ATERNA_EASE, clearProps: "transform,opacity" },
-        0.2,
-      );
-    }
-  };
+  }, [router, reveal]);
 
   useEffect(() => {
     const el = ref.current;
@@ -386,8 +387,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
       tween.kill();
       gsap.set(el, { clearProps: "transform,opacity" });
     };
-    // reveal solo usa refs: no hace falta en las dependencias.
-  }, [pathname]);
+  }, [pathname, reveal]);
 
   return (
     <>

@@ -100,7 +100,6 @@ su motivo y fallan con cualquier problema nuevo.
 | Problema | Dónde | Cuándo se corrige |
 |---|---|---|
 | LCP de unos 3,5 s en móvil (el objetivo es 2,5 s). Lighthouse cuenta todo lo que se pide antes de pintar el texto: unos 200 KB de JavaScript (112 de React y Next.js, 47 de GSAP), 119 KB de fuentes y 44 de CSS y HTML. En una visita real el texto se pinta antes, porque viene en el HTML | Todas las páginas, en móvil | Quitar GSAP de las páginas interiores |
-| 7 avisos de ESLint de las reglas del compilador de React (refs escritas al pintar, `setState` dentro de efectos) | `Assistant`, `Chrome`, `WordReveal`, formulario | Arquitectura |
 | `npm audit`: 7 avisos moderados (`minimatch`) | Solo herramientas de desarrollo (ESLint); no llega a `out/` | Al actualizar ESLint |
 
 ## Fuera del código
