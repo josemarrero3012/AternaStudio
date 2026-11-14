@@ -50,6 +50,13 @@ for (const locale of LOCALES) {
   }
 }
 
+test("el grano se ve en todos los navegadores salvo en Firefox", async ({ page, browserName }) => {
+  await page.goto("/");
+  const content = await page.evaluate(() => getComputedStyle(document.body, "::after").content);
+  if (browserName === "firefox") expect(content).toBe("none");
+  else expect(content).not.toBe("none");
+});
+
 test("cada idioma tiene su 404", async ({ request }, info) => {
   test.skip(info.project.name !== "desktop", "Una vez basta.");
   for (const locale of LOCALES) {

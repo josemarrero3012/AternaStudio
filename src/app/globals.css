@@ -72,6 +72,15 @@ body::after {
   background-size: 220px;
 }
 
+/* Firefox compone esta capa fija sobre toda la pantalla en cada fotograma:
+   con ella, al desplazarse, pierde un 25-30 % de fluidez (Chrome y Safari,
+   nada). El grano apenas se ve; ahí pesa más la fluidez. */
+@supports (-moz-appearance: none) {
+  body::after {
+    content: none;
+  }
+}
+
 ul,
 ol {
   list-style: none;
