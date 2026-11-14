@@ -85,7 +85,7 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 | Páginas legales (HTML literal) | `src/content/legal/` |
 | Asistente (respuestas, flujo guiado) | `src/lib/assistant.ts`, `src/components/Assistant.tsx` |
 | Modelo del asistente en el navegador | `src/lib/semantic.ts`, `public/semantic/worker.js` |
-| Imagen para redes (OG) | `public/brand/og.jpg` (se regenera con `scripts/og-image.js`) |
+| Imágenes para redes (OG), una por idioma | `public/brand/og-<idioma>.jpg` (se regeneran con `npx tsx scripts/og-images.ts`, con la web servida) |
 
 ## Idiomas
 

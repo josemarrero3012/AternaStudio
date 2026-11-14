@@ -14,6 +14,7 @@ import { LanguageProvider } from "@/lib/i18n";
 import { routeMeta } from "@/lib/meta";
 import { absoluteUrl } from "@/lib/seo";
 import { site } from "@/lib/site";
+import { ORGANIZATION_ID } from "@/lib/structured";
 import "@/app/globals.css";
 
 const fraunces = Fraunces({ subsets: ["latin"], style: ["normal"], axes: ["opsz"], variable: "--font-fraunces", display: "swap" });
@@ -41,13 +42,20 @@ function organization(locale: Locale) {
     "@graph": [
       {
         "@type": "Organization",
-        "@id": `${site.url}/#organization`,
+        "@id": ORGANIZATION_ID,
         name: site.name,
         url: site.url,
         email: site.email,
         description: routeMeta("home", locale).description,
         logo: `${site.url}/brand/aterna-mark.png`,
-        contactPoint: { "@type": "ContactPoint", email: site.email, contactType: "customer support" },
+        // La sede del Impressum (sin la calle: no hace falta para buscar).
+        address: { "@type": "PostalAddress", addressLocality: "Kleve", postalCode: "47533", addressCountry: "DE" },
+        contactPoint: {
+          "@type": "ContactPoint",
+          email: site.email,
+          contactType: "customer support",
+          availableLanguage: ["es", "en", "nl", "de"],
+        },
       },
       {
         "@type": "WebSite",
@@ -55,7 +63,7 @@ function organization(locale: Locale) {
         url,
         name: site.name,
         inLanguage: locale,
-        publisher: { "@id": `${site.url}/#organization` },
+        publisher: { "@id": ORGANIZATION_ID },
       },
     ],
   };

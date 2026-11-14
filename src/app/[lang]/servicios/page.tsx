@@ -1,4 +1,5 @@
 import { ServiciosContent } from "@/components/pages";
+import { SectionJsonLd } from "@/components/SectionJsonLd";
 import type { Locale } from "@/lib/dict";
 import { pageMeta } from "@/lib/seo";
 
@@ -8,6 +9,12 @@ export async function generateMetadata({ params }: Props) {
   return pageMeta("servicios", (await params).lang as Locale);
 }
 
-export default function Page() {
-  return <ServiciosContent />;
+export default async function Page({ params }: Props) {
+  const locale = (await params).lang as Locale;
+  return (
+    <>
+      <SectionJsonLd locale={locale} path="/servicios" />
+      <ServiciosContent />
+    </>
+  );
 }
