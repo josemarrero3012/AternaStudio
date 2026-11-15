@@ -22,5 +22,8 @@ public/semantic/*
 # Capturas de referencia: dependen de esta máquina (ver docs/DESARROLLO.md).
 /tests/*-snapshots/
 
+# Fotogramas de prueba de la película (scripts/anatomy/render.mjs --stills).
+/.anatomy-stills/
+
 # Entregas para Hostinger (npm run package): se pasan a mano, no van a git.
 /entregas/

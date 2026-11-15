@@ -178,6 +178,13 @@ const es = {
     "copy": "Copiar",
     "copied": "Copiado"
   },
+  // La película de «Qué incluye» en /servicios/web (WebAnatomy.tsx).
+  "anatomy": {
+    "label": "Una web a medida dibujada como un árbol de luz: las raíces, el tronco y, arriba, la página con su versión móvil y un buscador, dentro de un círculo.",
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "replay": "Ver de nuevo"
+  },
   "contactForm": {
     "name": "Nombre",
     "email": "Email",
@@ -830,6 +837,13 @@ const en: Dict = {
     "copy": "Copy",
     "copied": "Copied"
   },
+  // La película de «Qué incluye» en /servicios/web (WebAnatomy.tsx).
+  "anatomy": {
+    "label": "A custom website drawn as a tree of light: the roots, the trunk and, above, the page with its mobile version and a search engine, inside a circle.",
+    "play": "Play",
+    "pause": "Pause",
+    "replay": "Watch again"
+  },
   "contactForm": {
     "name": "Name",
     "email": "Email",
@@ -1480,6 +1494,13 @@ const nl: Dict = {
     "copy": "Kopiëren",
     "copied": "Gekopieerd"
   },
+  // La película de «Qué incluye» en /servicios/web (WebAnatomy.tsx).
+  "anatomy": {
+    "label": "Een website op maat getekend als een boom van licht: de wortels, de stam en daarboven de pagina met haar mobiele versie en een zoekmachine, binnen een cirkel.",
+    "play": "Afspelen",
+    "pause": "Pauzeren",
+    "replay": "Opnieuw bekijken"
+  },
   "contactForm": {
     "name": "Naam",
     "email": "E-mail",
@@ -2129,6 +2150,13 @@ const de: Dict = {
   "copyEmail": {
     "copy": "Kopieren",
     "copied": "Kopiert"
+  },
+  // La película de «Qué incluye» en /servicios/web (WebAnatomy.tsx).
+  "anatomy": {
+    "label": "Eine maßgeschneiderte Website, gezeichnet als Baum aus Licht: die Wurzeln, der Stamm und darüber die Seite mit ihrer mobilen Version und einer Suchmaschine, in einem Kreis.",
+    "play": "Abspielen",
+    "pause": "Pausieren",
+    "replay": "Noch einmal ansehen"
   },
   "contactForm": {
     "name": "Name",

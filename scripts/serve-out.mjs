@@ -11,6 +11,8 @@
 //   - Si nada existe: 404 del idioma (/en/... -> en/404.html) o la de la raíz.
 //   - Las cabeceras `Header always set` del .htaccess de la raíz (seguridad,
 //     política de contenido) se envían igual, para que las pruebas las usen.
+//   - Peticiones por rangos (Range) para el vídeo, como Apache: Safari no
+//     reproduce un vídeo si el servidor no las atiende.
 //   - Texto comprimido (brotli o gzip, según pida el navegador), como hace
 //     Hostinger. Sin esto, Lighthouse mide en local tres veces más peso del
 //     real y el LCP en móvil sale inflado.
@@ -38,6 +40,8 @@ const TYPES = {
   ".webp": "image/webp",
   ".ico": "image/x-icon",
   ".woff2": "font/woff2",
+  ".webm": "video/webm",
+  ".mp4": "video/mp4",
   ".wasm": "application/wasm",
   ".onnx": "application/octet-stream",
 };
@@ -92,12 +96,36 @@ createServer((req, res) => {
   const accept = String(req.headers["accept-encoding"] ?? "");
   const compressible = /^(text\/|application\/(json|xml|wasm)|image\/svg)/.test(type);
   const encoding = !compressible ? null : /\bbr\b/.test(accept) ? "br" : /\bgzip\b/.test(accept) ? "gzip" : null;
+  // Vídeo: el tramo que pida el navegador (bytes=inicio-fin).
+  const video = type.startsWith("video/") && status === 200;
+  const range = video ? /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range ?? "")) : null;
+  if (range && (range[1] || range[2])) {
+    const size = statSync(file).size;
+    const start = range[1] ? Number(range[1]) : Math.max(0, size - Number(range[2]));
+    const end = range[1] && range[2] ? Math.min(Number(range[2]), size - 1) : size - 1;
+    if (start > end || start >= size) {
+      res.writeHead(416, { "Content-Range": `bytes */${size}` });
+      res.end();
+      return;
+    }
+    res.writeHead(206, {
+      ...htaccessHeaders(),
+      "Content-Type": type,
+      "Cache-Control": "no-cache",
+      "Accept-Ranges": "bytes",
+      "Content-Range": `bytes ${start}-${end}/${size}`,
+      "Content-Length": end - start + 1,
+    });
+    createReadStream(file, { start, end }).pipe(res);
+    return;
+  }
   res.writeHead(status, {
     // Se leen en cada petición: así valen tras recompilar sin reiniciar.
     ...htaccessHeaders(),
     "Content-Type": type,
     "Cache-Control": "no-cache",
     Vary: "Accept-Encoding",
+    ...(video ? { "Accept-Ranges": "bytes", "Content-Length": statSync(file).size } : {}),
     ...(encoding ? { "Content-Encoding": encoding } : {}),
   });
   const stream = createReadStream(file);

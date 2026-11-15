@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anatomía de una web · vista previa</title>
+    <!-- Vista previa de la película de /servicios/web. Se abre con
+         `node scripts/anatomy/render.mjs --preview` (ver README.md). -->
+    <style>
+      @font-face {
+        font-family: "Fraunces";
+        src: url("/public/ejemplos/fonts/fraunces-latin.woff2") format("woff2");
+        font-weight: 100 900;
+      }
+      html,
+      body {
+        margin: 0;
+        background: #13163b;
+        color: #eef0fa;
+        font: 14px/1.4 system-ui, sans-serif;
+      }
+      main {
+        display: grid;
+        justify-items: center;
+        gap: 12px;
+        padding: 16px;
+      }
+      canvas {
+        width: min(92vmin, 720px);
+        height: min(92vmin, 720px);
+        border-radius: 14px;
+      }
+      .bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: min(92vmin, 720px);
+      }
+      input[type="range"] {
+        flex: 1;
+      }
+      body.capture main {
+        padding: 0;
+        gap: 0;
+      }
+      body.capture .bar {
+        display: none;
+      }
+      body.capture canvas {
+        border-radius: 0;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/node_modules/three/build/three.module.js",
+          "three/addons/": "/node_modules/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main>
+      <canvas id="film"></canvas>
+      <div class="bar">
+        <button id="play" type="button">Reproducir</button>
+        <input id="seek" type="range" min="0" max="1" step="0.001" value="0" aria-label="Tiempo" />
+        <output id="time">0.00 s</output>
+      </div>
+    </main>
+    <script type="module">
+      import { createFilm } from "./scene.mjs";
+
+      const params = new URLSearchParams(location.search);
+      const capture = params.has("capture");
+      document.body.classList.toggle("capture", capture);
+      const timeline = await (await fetch("/src/lib/anatomy/timeline.json")).json();
+      await document.fonts.load('400 300px "Fraunces"');
+      const film = createFilm(document.getElementById("film"), {
+        size: Number(params.get("size") ?? 720),
+        ss: Number(params.get("ss") ?? (capture ? 2 : 1)),
+        timeline,
+      });
+      film.refreshType();
+
+      const seek = document.getElementById("seek");
+      const time = document.getElementById("time");
+      const play = document.getElementById("play");
+      seek.max = String(timeline.duration);
+      let t = Number(params.get("t") ?? 0);
+      let playing = false;
+      let last = 0;
+      const draw = () => {
+        film.render(t);
+        seek.value = String(t);
+        time.textContent = `${t.toFixed(2)} s`;
+      };
+      const loop = (now) => {
+        if (!playing) return;
+        t += (now - last) / 1000;
+        last = now;
+        if (t >= timeline.duration) {
+          t = timeline.duration;
+          playing = false;
+          play.textContent = "Reproducir";
+        }
+        draw();
+        if (playing) requestAnimationFrame(loop);
+      };
+      play.addEventListener("click", () => {
+        playing = !playing;
+        play.textContent = playing ? "Pausar" : "Reproducir";
+        if (playing) {
+          if (t >= timeline.duration) t = 0;
+          last = performance.now();
+          requestAnimationFrame(loop);
+        }
+      });
+      seek.addEventListener("input", () => {
+        t = Number(seek.value);
+        draw();
+      });
+      draw();
+
+      // Para render.mjs: dibuja el fotograma y lo devuelve como PNG.
+      window.film = {
+        timeline,
+        async frame(at) {
+          film.render(at);
+          const canvas = document.getElementById("film");
+          const blob = await new Promise((done) => canvas.toBlob(done, "image/png"));
+          return blob;
+        },
+      };
+      window.filmReady = true;
+    </script>
+  </body>
+</html>

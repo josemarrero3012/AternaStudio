@@ -118,3 +118,57 @@ test("«Ver cómo trabajamos» lleva al método de la portada", async ({ page },
   // El método queda arriba, bajo la cabecera (no se queda en /estudio).
   await expect.poll(() => page.evaluate(() => Math.round(document.getElementById("metodo")!.getBoundingClientRect().top)), { timeout: 8_000 }).toBeLessThan(200);
 });
+
+// «Qué incluye» de /servicios/web: la película y sus seis pasos (WebAnatomy).
+test.describe("la película de diseño web", () => {
+  // El WebKit de Playwright no siempre trae códecs de vídeo: sin vídeo queda
+  // la imagen fija con la lista, que es lo que comprueba la última prueba.
+  test.skip(({ browserName }) => browserName === "webkit", "Sin códecs de vídeo garantizados.");
+
+  test("arranca al verse, se puede parar y cada paso lleva a su tramo", async ({ page }) => {
+    await page.goto("/servicios/web");
+    const stage = page.locator(".anatomy__stage");
+    const video = stage.locator("video");
+    const steps = page.locator(".anatomy__step");
+    await expect(steps).toHaveCount(6);
+    await stage.scrollIntoViewIfNeeded();
+    await expect.poll(() => video.evaluate((v: HTMLVideoElement) => !v.paused && v.currentTime > 0), { timeout: 15_000 }).toBe(true);
+    await stage.getByRole("button", { name: "Pausar" }).click();
+    await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
+    await expect(stage.getByRole("button", { name: "Reproducir" })).toBeVisible();
+
+    await steps.nth(3).click();
+    await expect(steps.nth(3)).toHaveAttribute("aria-current", "step");
+    expect(await video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(8);
+  });
+
+  test.describe("con movimiento reducido", () => {
+    test.use({ reducedMotion: "reduce" });
+
+    test("no arranca sola: imagen fija, y cada paso enseña su fotograma quieto", async ({ page }) => {
+      await page.goto("/servicios/web");
+      const stage = page.locator(".anatomy__stage");
+      const video = stage.locator("video");
+      await stage.scrollIntoViewIfNeeded();
+      await expect(stage.locator("img")).toBeVisible();
+      await page.waitForTimeout(800);
+      expect(await video.evaluate((v: HTMLVideoElement) => v.paused && v.currentSrc === "")).toBe(true);
+
+      await page.locator(".anatomy__step").nth(1).click();
+      await expect(page.locator(".anatomy__step").nth(1)).toHaveAttribute("aria-current", "step");
+      expect(await video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
+    });
+  });
+});
+
+test("sin vídeo, «Qué incluye» de diseño web se queda con la imagen y los pasos", async ({ page }, info) => {
+  test.skip(!isDesktop(info.project.name), "En móvil, igual que en escritorio.");
+  await page.route("**/film/web/**/*.{webm,mp4}", (route) => route.abort());
+  await page.goto("/servicios/web");
+  const stage = page.locator(".anatomy__stage");
+  await stage.scrollIntoViewIfNeeded();
+  await expect(stage.locator("img")).toBeVisible();
+  await expect(page.locator(".anatomy__steps li")).toHaveCount(6);
+  // Sin vídeo no hay nada que pausar: el botón desaparece.
+  await expect(stage.getByRole("button")).toBeHidden({ timeout: 15_000 });
+});

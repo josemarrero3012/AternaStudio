@@ -3919,6 +3919,164 @@ a.aurora-card {
   gap: 10px;
 }
 
+/* «Qué incluye» de diseño web: la película y sus seis pasos (WebAnatomy.tsx).
+   El escenario es un panel negro, como el de los dibujos, y reserva su
+   cuadrado antes de que llegue nada. La lista hace de subtítulos: con la
+   película en marcha (data-run), el paso que se ve lleva una línea de luz
+   que avanza (--p) y los que faltan esperan en gris. */
+.svc-row.svc-row--film {
+  grid-template-columns: 1fr;
+  gap: var(--s-6);
+}
+
+.svc-row--film .svc-row__label {
+  position: static;
+}
+
+.anatomy {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: var(--s-6);
+}
+
+/* En una columna (móvil y tableta) el escenario se queda fijo bajo la
+   cabecera mientras pasan los pasos: se ve siempre el tramo que se elige. En
+   pantallas bajas se encoge para dejar sitio a la lista. */
+.anatomy__stage {
+  position: sticky;
+  top: calc(var(--header-h) + var(--s-3));
+  z-index: 1;
+  aspect-ratio: 1;
+  width: 100%;
+  max-width: min(560px, 46svh);
+  margin-inline: auto;
+}
+
+.anatomy__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
+/* Sin JavaScript o sin vídeo no hay nada que pausar. */
+.anatomy__stage .anatomy__toggle {
+  display: none;
+  position: absolute;
+  left: var(--s-3);
+  bottom: var(--s-3);
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 36px;
+  padding: 0 var(--s-4) 0 var(--s-3);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--r-pill);
+  background-color: color-mix(in srgb, #07081a 72%, transparent);
+  color: var(--text-hi);
+  cursor: pointer;
+  transition:
+    background-color var(--d-micro) var(--e-out),
+    border-color var(--d-micro) var(--e-out);
+}
+
+.anatomy__stage[data-ready] .anatomy__toggle {
+  display: inline-flex;
+}
+
+.anatomy__steps li + li {
+  border-top: 1px solid var(--hair);
+}
+
+.anatomy__step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--s-3);
+  width: 100%;
+  padding-block: var(--s-4);
+  color: var(--on-surface-hi);
+  font-size: var(--t-body);
+  line-height: 1.45;
+  text-align: left;
+  transition: color var(--d-std) var(--e-out);
+}
+
+.anatomy__stage[data-ready] + .anatomy__steps .anatomy__step {
+  cursor: pointer;
+}
+
+.anatomy__index {
+  color: var(--orchid);
+}
+
+.anatomy__step::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--brand-gradient-on-ink);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.anatomy__steps[data-run] .anatomy__step[data-s="next"] {
+  color: var(--on-surface-mid);
+}
+
+.anatomy__steps[data-run] .anatomy__step[data-s="now"]::after {
+  transform: scaleX(var(--p, 0));
+}
+
+.anatomy__steps[data-run] .anatomy__step[data-s="done"]::after {
+  opacity: 0.4;
+  transform: none;
+}
+
+@media (hover: hover) {
+  .anatomy__toggle:hover {
+    border-color: var(--lavender);
+    background-color: color-mix(in srgb, var(--night-2) 86%, transparent);
+  }
+
+  .anatomy__stage[data-ready] + .anatomy__steps .anatomy__step:hover {
+    color: var(--on-surface-hi);
+  }
+
+  .anatomy__stage[data-ready] + .anatomy__steps .anatomy__step:hover .anatomy__index {
+    color: var(--text-hi);
+  }
+}
+
+@media (min-width: 768px) {
+  .anatomy__step {
+    grid-template-columns: 3rem minmax(0, 1fr);
+    padding-block: var(--s-5);
+    font-size: var(--t-lead);
+    letter-spacing: var(--ls-lead);
+    line-height: 1.35;
+  }
+}
+
+/* Escritorio: el escenario a la izquierda (la columna que antes iba casi
+   vacía) y los pasos a su lado. */
+@media (min-width: 1024px) {
+  .anatomy {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--s-9);
+  }
+
+  .anatomy__stage {
+    position: relative;
+    top: auto;
+    max-width: none;
+  }
+}
+
 .svc-report__body {
   max-width: 52ch;
   font-family: var(--font-display);

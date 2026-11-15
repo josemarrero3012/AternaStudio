@@ -15,6 +15,7 @@ import { whatsappHref } from "./Chrome";
 import { ArrowDown, ArrowExternal, ArrowRight, Check } from "./icons";
 import { FinalCTA, NextSteps, StartingPrice } from "./sections";
 import { ServiceGlyph, ServiceTrace } from "./ServiceTrace";
+import { WebAnatomy } from "./WebAnatomy";
 import { WordReveal } from "./WordReveal";
 
 // /servicios ----------------------------------------------------------------
@@ -187,19 +188,30 @@ export function ServiceProductContent({ slug }: { slug: ServiceSlug }) {
         </div>
       </section>
 
-      <section className="container section svc-row">
-        <div className="svc-row__label">
-          <h2 className="t-label dim">{page.includesTitle}</h2>
-        </div>
-        <ul className="svc-row__body svc-list">
-          {page.includes.map((item, i) => (
-            <li key={i}>
-              <Check />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {slug === "web" ? (
+        // Diseño web: los seis pasos van en orden (de la auditoría a la
+        // entrega) y los cuenta una película (WebAnatomy).
+        <section className="container section svc-row svc-row--film">
+          <div className="svc-row__label">
+            <h2 className="t-label dim">{page.includesTitle}</h2>
+          </div>
+          <WebAnatomy items={page.includes} />
+        </section>
+      ) : (
+        <section className="container section svc-row">
+          <div className="svc-row__label">
+            <h2 className="t-label dim">{page.includesTitle}</h2>
+          </div>
+          <ul className="svc-row__body svc-list">
+            {page.includes.map((item, i) => (
+              <li key={i}>
+                <Check />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {page.report ? (
         <section className="container section svc-row">

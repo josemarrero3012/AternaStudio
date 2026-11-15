@@ -22,7 +22,7 @@
   </FilesMatch>
 
   # Estos recursos tienen URLs de compilación o una versión explícita.
-  Header set Cache-Control "public, max-age=31536000, immutable" "expr=%{REQUEST_STATUS} -lt 400 && %{REQUEST_URI} =~ m#^/(?:_next/static/|tree/v1/)#"
+  Header set Cache-Control "public, max-age=31536000, immutable" "expr=%{REQUEST_STATUS} -lt 400 && %{REQUEST_URI} =~ m#^/(?:_next/static/|tree/v1/|film/web/v1/)#"
 
   # Las URLs estables de marca y del asistente pueden cambiar entre versiones.
   Header set Cache-Control "no-cache" "expr=%{REQUEST_URI} =~ m#^/(?:brand/|semantic/|favicon\.ico$)#"
@@ -30,6 +30,9 @@
 
 # El navegador necesita este tipo MIME para compilar el motor WebAssembly.
 AddType application/wasm .wasm
+# La película de /servicios/web (public/film/).
+AddType video/webm .webm
+AddType video/mp4 .mp4
 
 # Compresión de texto (HTML, CSS, JS, JSON, SVG). Las imágenes y los vídeos
 # ya van comprimidos. Si el servidor no tiene el módulo, no hace nada.

@@ -81,6 +81,8 @@ local: `NEXT_PUBLIC_BASE_PATH=/AternaStudio npm run build`.
 | Recorrido: tiempos de los textos y del texto que se escribe | `src/lib/journey/` (`config.ts`) |
 | Árbol de partículas: formas, shader, números | `src/lib/tree/` (todos los números en `config.ts`) |
 | Silueta del árbol para las partículas | `scripts/tree/make-mask.py` |
+| Película de «Qué incluye» en /servicios/web (componente, vídeos) | `src/components/WebAnatomy.tsx`, `public/film/web/v1/` |
+| Película: escena en Three.js y cómo se renderiza | `scripts/anatomy/` (`npm run film`) |
 | Estilos de componentes y páginas | `src/app/globals.css` |
 | Páginas legales (HTML literal) | `src/content/legal/` |
 | Asistente (respuestas, flujo guiado) | `src/lib/assistant.ts`, `src/components/Assistant.tsx` |
@@ -221,6 +223,30 @@ python -m venv .venv && .venv/bin/pip install bpy==5.2.3 numpy scipy opencv-pyth
 El símbolo en 3D también está aparte, listo para abrir en Blender:
 `scripts/journey/aterna-mark.blend`. Se regenera con
 `scene.py --mark-blend scripts/journey/aterna-mark.blend`.
+
+## La película de /servicios/web
+
+En la ficha de diseño web, «Qué incluye» son seis pasos en orden y los
+cuenta una película: la anatomía de una web a medida, de la raíz a la copa
+(las raíces de la auditoría, el tronco del que brotan tipografía, color e
+imagen, la página y su versión móvil, las capas de código y datos, la raíz
+que llega al buscador y la web terminada dentro del círculo del símbolo).
+
+- Es un **vídeo** y no una escena en tiempo real: la secuencia es fija, así
+  que el visitante no carga Three.js. La escena está en `scripts/anatomy/`
+  y se renderiza con `npm run film` (ver su
+  [README](../scripts/anatomy/README.md)); `three` es solo una dependencia
+  de desarrollo.
+- El vídeo no lleva texto (vale para los cuatro idiomas). Los pasos son la
+  lista de la página, en HTML: se enciende el que se está viendo y cada uno
+  lleva a su tramo. Los tiempos están en `src/lib/anatomy/timeline.json`,
+  que usan la escena y la página.
+- No se pide hasta que la sección se acerca. Se reproduce una vez al entrar
+  en pantalla, en silencio, y se queda en el último fotograma; se para al
+  salir de pantalla, al cambiar de pestaña y con su botón.
+- Con movimiento reducido o ahorro de datos no arranca sola: se ve la imagen
+  fija (la web terminada) y cada paso enseña su fotograma, quieto. Sin
+  JavaScript o si el vídeo falla, quedan la imagen y la lista.
 
 ## Asistente
 
