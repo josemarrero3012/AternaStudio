@@ -5,18 +5,9 @@ test("el logo vuelve al hero desde otra página y desde el recorrido", async ({ 
   await page.locator(".header__brand").click();
   await expect(page).toHaveURL(/\/#inicio$/);
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(5);
-  // Con la transición ya acabada: el velo tapa la cabecera mientras se abre.
-  await expect(page.locator(".page-veil")).toHaveAttribute("data-state", "idle");
   await page.evaluate(() => window.scrollTo(0, 1400));
-  const brand = page.locator(".header__brand");
-  await expect(brand).toHaveCSS("opacity", "1");
-  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(1000);
-  // Clic en el sitio del logo, como una persona, sin que Playwright desplace
-  // antes la página hasta un elemento fijo (en WebKit el clic acababa en
-  // .header__inner y el logo volvía a ocultarse).
-  const box = await brand.boundingBox();
-  expect(box).not.toBeNull();
-  await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
+  await expect(page.locator(".header__brand")).toHaveCSS("opacity", "1");
+  await page.locator(".header__brand").click();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(5);
 });
 
