@@ -44,7 +44,7 @@ export function StudioStatement({ n }: { n?: number }) {
         <ul className="pillars" ref={pillars}>
           {t.studioHome.pillars.map((p, i) => (
             <li className={`pillar aurora-card${i % 2 ? " aurora-card--soft" : ""}`} key={i}>
-              <h3 className="t-title pillar__title">{p.title}</h3>
+              <h3 className="t-card pillar__title">{p.title}</h3>
               <p className="t-small pillar__body">{p.body}</p>
               {PILLAR_GLYPHS[i] ? (
                 <div className="pillar__stage aurora-panel">
@@ -149,9 +149,9 @@ export function Services({ n }: { n?: number }) {
                 <Link href={`/servicios/${slug}`} className={`service__inner aurora-card${i === 1 || i === 2 ? " aurora-card--soft" : ""}`} data-spot>
                   <div className="service__head">
                     <span className="t-index service__index">{String(i + 1).padStart(2, "0")}</span>
-                    <h3 className="t-title service__title">{card.title}</h3>
+                    <h3 className="t-card service__title">{card.title}</h3>
                   </div>
-                  <p className="service__lead">{card.body}</p>
+                  <p className="t-small service__lead">{card.body}</p>
                   <div className="service__wire aurora-panel" data-service={slug}>
                     <ServiceGlyph slug={slug} size="xl" className="service__glyph" />
                   </div>

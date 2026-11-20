@@ -79,6 +79,8 @@
   --t-card: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
   --t-lead: clamp(1.1875rem, 1.1rem + 0.35vw, 1.5rem);
   --t-body: clamp(1rem, 0.98rem + 0.1vw, 1.0625rem);
+  /* Titular serif pequeño sobre un párrafo: pasos, preguntas frecuentes. */
+  --t-sub: clamp(1.25rem, 1.15rem + 0.4vw, 1.5rem);
   --t-small: 0.875rem;
   --t-label: clamp(0.75rem, 0.73rem + 0.08vw, 0.8125rem);
   --lh-hero: 0.92;
@@ -108,15 +110,26 @@
   --section-y: clamp(72px, 8.1vw, 144px);
   --section-y-lg: clamp(94px, 11.7vw, 198px);
   --block-y: clamp(40px, 4vw, 64px);
+  /* Filas de una ficha de servicio (entre --block-y y --section-y). */
+  --row-y: clamp(56px, 6vw, 96px);
   --head-top: clamp(120px, 10vw, 152px);
   --header-h: 68px;
+  /* Lo que queda fijo junto al texto (índice legal, etiqueta de fila). */
+  --sticky-top: calc(var(--header-h) + var(--s-8));
   --gutter: 16px;
   --margin: 20px;
   --container: 1440px;
+  /* Rejilla: 12 columnas con --gutter entre ellas desde 1024 px. Los ejes
+     que se repiten: col. 5 y 9 (tercios, tarjetas de tres), col. 7 (mitad,
+     tarjetas de dos y el cierre) y col. 8 (texto a la derecha de un titular). */
 
   /* Forma y movimiento */
   --r-xs: 2px;
   --r-card: 10px;
+  /* Familia de tarjetas: el marco (tarjetas de marca, vidrio, panel del
+     asistente) y el panel negro de dentro (y los bocadillos). */
+  --r-frame: calc(var(--r-card) * 2);
+  --r-panel: calc(var(--r-card) * 1.4);
   --r-pill: 999px;
   --d-micro: 0.2s;
   --d-std: 0.45s;

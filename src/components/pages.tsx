@@ -41,7 +41,7 @@ function SvcCard({ card, heading = "h2", soft = false }: { card: Card; heading?:
       {/* La modalidad de pago ya la dice el antetítulo: aquí solo el importe. */}
       <div className="svc-card__foot">
         <p className="svc-card__price">
-          <StartingPrice slug={slug} />
+          <StartingPrice slug={slug} className="t-small" />
         </p>
         <span className="link-cta svc-card__cta">
           {card.cta}
@@ -303,7 +303,7 @@ export function EstudioContent() {
         <p className="t-label dim eyebrow page-head__eyebrow">{page.eyebrow}</p>
         <WordReveal as="h1" className="t-display" text={page.h1} onScroll={false} delay={0.1} />
       </section>
-      <section className="section band-indigo estudio-about" aria-label={page.eyebrow}>
+      <section className="section section--flush-top band-indigo estudio-about" aria-label={page.eyebrow}>
         <div className="container estudio__grid">
           <p className="t-lead estudio__lead">{page.prose[0]}</p>
           <div className="prose estudio__prose">

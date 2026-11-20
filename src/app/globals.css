@@ -312,9 +312,11 @@ html.lenis body {
   padding-top: calc(var(--section-y) * 0.6);
 }
 
-/* Tras Servicios, el cierre no suma su margen grande al de la sección
-   anterior: quedaban ~380 px vacíos bajo «Ver todos los servicios». */
-.services + .final-cta {
+/* El cierre no suma su margen grande al de la sección anterior: quedaban
+   ~380 px vacíos bajo «Ver todos los servicios». La misma cadencia en todas
+   las páginas que acaban en él (portada, servicios, cada ficha, estudio):
+   el filete de su antetítulo ya marca el cambio. */
+.section + .final-cta {
   padding-top: var(--block-y);
 }
 
@@ -1325,7 +1327,7 @@ body[data-menu="open"] .assistant__orb {
   width: min(380px, calc(100vw - 2 * var(--edge)));
   max-height: min(560px, calc(100svh - var(--orb-bottom) - var(--orb) - var(--header-h) - 24px));
   border: 1px solid var(--hair-strong);
-  border-radius: 16px;
+  border-radius: var(--r-frame);
   background: color-mix(in srgb, var(--night-2) 94%, transparent);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
@@ -2006,7 +2008,7 @@ body[data-menu="open"] .assistant__orb {
   isolation: isolate;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, #fff 14%, transparent);
-  border-radius: calc(var(--r-card) * 2);
+  border-radius: var(--r-frame);
   background:
     radial-gradient(90% 55% at 100% 100%, var(--card-rose), transparent 70%),
     linear-gradient(160deg, var(--card-a) 0%, var(--card-b) 100%);
@@ -2055,7 +2057,7 @@ body[data-menu="open"] .assistant__orb {
 .aurora-panel {
   position: relative;
   border: 1px solid color-mix(in srgb, #fff 7%, transparent);
-  border-radius: calc(var(--r-card) * 1.4);
+  border-radius: var(--r-panel);
   background:
     radial-gradient(closest-side, color-mix(in srgb, var(--violet) 12%, transparent), transparent),
     #07081a;
@@ -2120,14 +2122,15 @@ a.aurora-card {
   padding: var(--s-6);
 }
 
+/* Titular (.t-card), texto (.t-small) y aire hasta el panel: lo mismo en
+   pilares, servicios de la portada y tarjetas de /servicios. */
 .pillar__title {
   margin-bottom: var(--s-1);
-  font-size: var(--t-card);
   color: #fff;
 }
 
 .pillar__body {
-  margin-bottom: var(--s-5);
+  margin-bottom: var(--s-4);
   color: color-mix(in srgb, #fff 84%, transparent);
 }
 
@@ -2201,7 +2204,7 @@ a.aurora-card {
   gap: var(--s-3);
   padding: var(--s-6);
   border: 1px solid var(--hair);
-  border-radius: var(--r-card);
+  border-radius: var(--r-frame);
   background: var(--glass);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
@@ -2318,7 +2321,6 @@ a.aurora-card {
 }
 
 .service__title {
-  font-size: var(--t-card);
   color: #fff;
 }
 
@@ -2348,16 +2350,38 @@ a.aurora-card {
   gap: 10px;
 }
 
-/* Precio y llamada al pie, sobre un filete. */
-.service__meta {
+/* Precio y llamada al pie, sobre un filete: el mismo pie que .svc-card__foot. */
+.service__meta,
+.svc-card__foot {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--s-2) var(--s-6);
-  margin-top: auto;
+  gap: var(--s-2) var(--s-5);
   padding-top: var(--s-4);
   border-top: 1px solid color-mix(in srgb, #fff 16%, transparent);
+}
+
+.service__meta {
+  margin-top: auto;
+}
+
+/* El pie se decide por el ancho de la tarjeta, no por lo que mide cada
+   texto: así todas las tarjetas de una fila acaban igual (antes, en una
+   misma fila, unas llevaban importe y llamada en una línea y otras en dos).
+   Con 340 px de ancho útil caben en una línea en los cuatro idiomas (el
+   más largo, en alemán, mide unos 330). */
+.service__inner,
+.svc-card {
+  container: card / inline-size;
+}
+
+@container card (max-width: 339px) {
+  .service__meta,
+  .svc-card__foot {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 @media (min-width: 768px) {
@@ -3399,9 +3423,12 @@ a.aurora-card {
   color: var(--text-low);
 }
 
-.next-step__title {
+/* Titular serif pequeño sobre un párrafo: los pasos y las preguntas
+   frecuentes de cada ficha. */
+.next-step__title,
+.svc-faq__q {
   font-family: var(--font-display);
-  font-size: clamp(1.25rem, 1.15rem + 0.4vw, 1.5rem);
+  font-size: var(--t-sub);
   font-weight: 500;
   font-variation-settings: "opsz" 72;
   line-height: 1.15;
@@ -3688,13 +3715,18 @@ a.aurora-card {
   border-top: 1px solid var(--ink-hair);
 }
 
-@media (min-width: 768px) {
+/* En tableta la marca va encima y las tres columnas debajo, a todo el
+   ancho: al lado de la marca no cabían y partían cada enlace en dos o tres
+   líneas («SEO y / crecimiento / orgánico»). En fila, desde 1024 px. */
+@media (min-width: 1024px) {
   .footer__inner {
     flex-direction: row;
     justify-content: space-between;
     gap: var(--s-9);
   }
+}
 
+@media (min-width: 768px) {
   .footer__cols {
     grid-template-columns: repeat(3, auto);
     column-gap: var(--s-9);
@@ -3716,7 +3748,7 @@ a.aurora-card {
 .svc-cards {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--s-5);
+  gap: var(--gutter);
 }
 
 .svc-card {
@@ -3736,33 +3768,33 @@ a.aurora-card {
   color: color-mix(in srgb, #fff 84%, transparent);
 }
 
-/* Importe y llamada al pie, sobre un filete. */
+/* Importe y llamada al pie (reglas con .service__meta). Mismo cuerpo que en
+   la portada: con 20 px, el importe y la llamada no cabían en una línea en
+   «Otros servicios» y cada tarjeta de la fila acababa distinta. */
 .svc-card__foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s-2) var(--s-5);
   margin-top: var(--s-4);
-  padding-top: var(--s-4);
-  border-top: 1px solid color-mix(in srgb, #fff 16%, transparent);
 }
 
-.svc-card__price {
-  font-size: 1.25rem;
-}
-
+/* Tarjetas en rejilla: de dos desde 768 px; las filas de tres (otros
+   servicios, planes), de tres desde 1024. En tableta, la tercera no se
+   queda sola a la izquierda: va centrada bajo las dos, a su mismo ancho. */
 @media (min-width: 768px) {
   .svc-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
 
-  .svc-cards--three {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+@media (min-width: 768px) and (max-width: 1023px) {
+  :is(.svc-cards--three, .plans) > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc((100% - var(--gutter)) / 2);
   }
+}
 
-  .svc-card {
-    padding: var(--s-7);
+@media (min-width: 1024px) {
+  .svc-cards--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -3847,7 +3879,7 @@ a.aurora-card {
   align-items: start;
   gap: var(--s-5);
   position: relative;
-  padding-block: clamp(56px, 6vw, 96px);
+  padding-block: var(--row-y);
 }
 
 /* Separador alineado con el contenido (no con el borde de la ventana). */
@@ -3936,7 +3968,7 @@ a.aurora-card {
 .ex-cards {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--s-4);
+  gap: var(--gutter);
 }
 
 .ex-card {
@@ -3955,7 +3987,7 @@ a.aurora-card {
 
 .svc-plans {
   position: relative;
-  padding-block: clamp(56px, 6vw, 96px);
+  padding-block: var(--row-y);
 }
 
 /* Banda de los planes: el espacio y el filete los pone .svc-plans. */
@@ -3979,7 +4011,7 @@ a.aurora-card {
 .plans {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--s-5);
+  gap: var(--gutter);
 }
 
 /* Planes: tarjetas de marca. El recomendado, con el marco a plena luz; los
@@ -4123,12 +4155,9 @@ a.aurora-card {
   padding-top: 0;
 }
 
+/* Pregunta: el mismo titular pequeño que los pasos (.next-step__title). */
 .svc-faq__q {
   margin-bottom: var(--s-3);
-  font-family: var(--font-display);
-  font-size: 1.375rem;
-  font-variation-settings: "opsz" 72;
-  line-height: 1.2;
 }
 
 @media (min-width: 768px) {
@@ -4168,7 +4197,7 @@ a.aurora-card {
   }
 
   .plans {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .plans[data-count="2"] {
@@ -4176,10 +4205,66 @@ a.aurora-card {
   }
 }
 
+/* Escritorio: la ficha sobre la rejilla de 12 columnas, como el resto de la
+   web. La entradilla, en la columna 8 (como el estudio, /estudio y
+   /contacto); el cuerpo de cada fila, en la 5, y sus dos columnas
+   interiores en la 5 y la 9: los mismos ejes que los planes, «Otros
+   servicios» y los pasos del cierre, que van debajo. */
 @media (min-width: 1024px) {
+  .svc-head {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+
+  .svc-head__intro {
+    grid-column: 1 / span 7;
+  }
+
+  .svc-head__lead {
+    grid-column: 8 / span 5;
+  }
+
+  .svc-row {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+
   .svc-row__label {
+    grid-column: 1 / span 4;
     position: sticky;
-    top: 120px;
+    top: var(--sticky-top);
+  }
+
+  .svc-row__body {
+    grid-column: 5 / -1;
+  }
+
+  .svc-list,
+  .svc-faq__list {
+    column-gap: var(--gutter);
+  }
+
+  .plans {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .plans[data-count="2"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* La nota de los planes, sobre la tercera tarjeta (columna 9). */
+  .svc-plans__head {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+
+  .svc-plans__head > h2 {
+    grid-column: 1 / span 8;
+  }
+
+  .svc-plans__note {
+    grid-column: 9 / -1;
   }
 }
 
@@ -4608,7 +4693,7 @@ a.aurora-card {
   .legal-toc {
     grid-column: 9 / span 4;
     position: sticky;
-    top: calc(var(--header-h) + var(--s-8));
+    top: var(--sticky-top);
     display: flex;
     flex-direction: column;
     gap: var(--s-4);
