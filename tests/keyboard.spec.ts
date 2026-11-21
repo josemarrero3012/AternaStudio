@@ -69,7 +69,7 @@ test("el asistente se abre y se cierra con el teclado", async ({ page }) => {
   await expect(input).toBeFocused();
   await page.keyboard.type("precio de una web");
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("dialog", { name: "Asistente de Aterna" })).toContainText("1490");
+  await expect(page.getByRole("dialog", { name: "Asistente de Aterna" })).toContainText("Presupuesto a medida");
   await page.keyboard.press("Escape");
   await expect(orb).toBeFocused();
 });
