@@ -1,197 +1,213 @@
 "use client";
 
-// Raicillas de luz: el mismo vocabulario que la raíz del método (MethodRoot)
-// —filamento que se dibuja, raicillas más tenues, un nodo en la punta—, en
+// Raicillas de luz: las mismas raíces que la del método (MethodRoot), en
 // piezas pequeñas que cuelgan de las líneas que ya hay en la web: el eje del
-// método (rail y línea vertical de móvil) y el horizonte del pie. Pocas y
-// finas, para que acompañen sin llenar.
+// método (rail y línea vertical de móvil) y el horizonte del pie, donde
+// nacen de los pies de las letras de «Aterna». No están dibujadas a mano:
+// las genera lib/roots.ts (haces de fibras que se abren y se ramifican) y
+// las hace crecer useRoots.
 //
-// Cómo se encienden: con movimiento, la pieza lleva data-anim y espera
-// apagada. Las del método se dibujan cuando su fase se enciende (data-lit
-// en el padre, lo pone la luz del eje); las demás, al entrar en pantalla
-// (data-in). Sin movimiento o sin JavaScript se ven ya dibujadas.
+// Cómo se encienden: las del método crecen cuando su fase se enciende
+// (data-lit en el padre, lo pone la luz del eje, o en ellas mismas en la
+// línea de móvil) y se recogen si se apaga; las del pie, al entrar en
+// pantalla (data-in). Sin movimiento se ven ya crecidas.
 
-import { useEffect, useId, useRef, type CSSProperties } from "react";
-import { prefersReducedMotion } from "@/lib/motion";
-import { rootBranch, rootPath, type RootCurve } from "@/lib/root-curves";
+import { useRef } from "react";
+import type { RootSeed, Vec } from "@/lib/roots";
+import { useRoots, type RootPlanner } from "./useRoots";
 
-type Strand = { d: string; delay: number; faint?: boolean; tip?: boolean };
-type Shape = {
-  /** viewBox; el origen (0, 0) es el punto de la línea del que cuelga. */
-  box: [number, number, number, number];
-  strands: Strand[];
-  tips?: { x: number; y: number; delay: number }[];
-  /**
-   * true: cubre todo el ancho de su caja sin deformarse (el pie): se escala
-   * hasta llenarla y se recorta lo que sobra por los lados o por abajo. El
-   * trazo mantiene su grosor a cualquier escala.
-   */
-  cover?: boolean;
+/** Azar fijo por índice: la misma pieza sale siempre igual. */
+const noise = (seed: number) => (i: number) => {
+  const x = Math.sin(i * 127.1 + seed * 311.7) * 43758.5453;
+  return x - Math.floor(x);
 };
 
-// Los tramos consecutivos comparten punto y tangente; las ramas se calculan
-// sobre ellos para que nunca queden separadas ni atraviesen la raíz madre.
-const HANG: RootCurve[] = [
-  [[0, 0], [2, 34], [22, 54], [18, 96]],
-  [[18, 96], [14, 138], [26, 144], [22, 164]],
-];
-const SIDE: RootCurve[] = [
-  [[0, 0], [0, 12], [22, 16], [26, 32]],
-  [[26, 32], [30, 48], [36, 56], [40, 70]],
-];
-const FAN: RootCurve = [[0, 0], [10, 24], [-10, 58], [0, 92]];
-const FAN_LEFT = rootBranch(FAN, 0.22, 12, [-32, 44], [-40, 74]);
-const FAN_RIGHT = rootBranch(FAN, 0.42, 12, [36, 48], [44, 66]);
-const TAIL: RootCurve = [[0, 0], [0, 30], [-2, 54], [2, 92]];
-const TAIL_RIGHT = rootBranch(TAIL, 0.08, 18, [30, 38], [44, 66]);
-const HORIZON: RootCurve[][] = [
-  [[[556, 0], [558, 30], [546, 52], [552, 84]], [[552, 84], [555, 100], [548, 114], [550, 120]]],
-  [[[642, 0], [642, 22], [662, 40], [658, 70]], [[658, 70], [656, 85], [666, 100], [664, 112]]],
-  [[[724, 0], [726, 26], [712, 46], [716, 70]]],
-  [[[806, 0], [804, 18], [818, 34], [814, 56]], [[814, 56], [812, 67], [820, 82], [818, 96]]],
-];
+/**
+ * Dónde tocan las letras la línea base: los pies (remates y curvas) de cada
+ * letra, en px de pantalla. Cada letra se mide en su sitio real (Range) y se
+ * pinta sola en un lienzo para ver qué tramos tienen tinta justo encima de
+ * la base.
+ */
+function feet(el: HTMLElement) {
+  const text = el.firstChild;
+  if (!(text instanceof Text)) return [];
+  const css = getComputedStyle(el);
+  const size = parseFloat(css.fontSize);
+  if (!size) return [];
+  const W = Math.ceil(size * 1.4);
+  const H = Math.ceil(size * 1.5);
+  const canvas = document.createElement("canvas");
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) return [];
+  ctx.font = `${css.fontStyle} ${css.fontWeight} ${size}px ${css.fontFamily}`;
+  const base = Math.round(size * 1.15);
+  const pad = Math.round(size * 0.2);
+  const range = document.createRange();
+  const out: { x: number; w: number }[] = [];
+  for (let i = 0; i < text.data.length; i++) {
+    if (!text.data[i].trim()) continue;
+    range.setStart(text, i);
+    range.setEnd(text, i + 1);
+    const left = range.getBoundingClientRect().left;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillText(text.data[i], pad, base);
+    const row = ctx.getImageData(0, Math.round(base - size * 0.012), W, 1).data;
+    let start = -1;
+    for (let x = 0; x <= W; x++) {
+      const ink = x < W && row[x * 4 + 3] > 96;
+      if (ink && start < 0) start = x;
+      else if (!ink && start >= 0) {
+        out.push({ x: left + (start + x) / 2 - pad, w: x - start });
+        start = -1;
+      }
+    }
+  }
+  return out;
+}
 
-const SHAPES = {
-  // Cuelga del eje, bajo el nodo de una fase (rail, escritorio).
-  hang: {
-    box: [-34, 0, 104, 170],
-    strands: [
-      { d: rootPath(...HANG), delay: 0.05, tip: true },
-      { d: rootPath(rootBranch(HANG[0], 0.6, 18, [46, 84], [44, 116])), delay: 0.4, faint: true, tip: true },
-      { d: rootPath(rootBranch(HANG[1], 0, 14, [2, 126], [6, 142])), delay: 0.65, faint: true },
-      { d: rootPath(rootBranch(HANG[0], 0, 18, [-16, 34], [-14, 60])), delay: 0.25, faint: true },
-    ],
-    tips: [
-      { x: 22, y: 164, delay: 1 },
-      { x: 44, y: 116, delay: 1.1 },
-    ],
-  },
-  // Sale de la línea vertical hacia el hueco entre fases (móvil).
-  side: {
-    box: [-4, 0, 52, 78],
-    strands: [
-      { d: rootPath(...SIDE), delay: 0.05, tip: true },
-      { d: rootPath(rootBranch(SIDE[0], 0.55, 10, [8, 36], [10, 52])), delay: 0.35, faint: true },
-    ],
-    tips: [{ x: 40, y: 70, delay: 0.9 }],
-  },
-  // Donde acaba un eje: la línea echa raíces en abanico.
-  fan: {
-    box: [-64, 0, 128, 100],
-    strands: [
-      { d: rootPath(FAN), delay: 0.05, tip: true },
-      { d: rootPath(FAN_LEFT), delay: 0.2, tip: true },
-      { d: rootPath(FAN_RIGHT), delay: 0.3, tip: true },
-      { d: rootPath(rootBranch(FAN_LEFT, 0.58, 9, [-44, 60], [-56, 72])), delay: 0.6, faint: true },
-      { d: rootPath(rootBranch(FAN_RIGHT, 0.58, 8, [36, 68], [38, 80])), delay: 0.7, faint: true },
-    ],
-    tips: [
-      { x: 0, y: 92, delay: 1 },
-      { x: -40, y: 74, delay: 1.1 },
-      { x: 44, y: 66, delay: 1.2 },
-    ],
-  },
-  // Como el abanico, pero abierto hacia dentro: para una línea pegada al
-  // borde de la pantalla (final de la línea vertical, móvil).
-  tail: {
-    box: [-20, 0, 84, 100],
-    strands: [
-      { d: rootPath(TAIL), delay: 0.05, tip: true },
-      { d: rootPath(TAIL_RIGHT), delay: 0.2, tip: true },
-      { d: rootPath(rootBranch(TAIL, 0.05, 14, [-13, 32], [-14, 52])), delay: 0.35, faint: true },
-      { d: rootPath(rootBranch(TAIL_RIGHT, 0.58, 12, [23, 58], [27, 74])), delay: 0.6, faint: true },
-      { d: rootPath(rootBranch(TAIL, 0.68, 10, [16, 76], [16, 88])), delay: 0.75, faint: true },
-    ],
-    tips: [
-      { x: 2, y: 92, delay: 1 },
-      { x: 44, y: 66, delay: 1.1 },
-    ],
-  },
-  // Del filamento del horizonte del pie, sobre todo bajo la luz de la derecha.
-  horizon: {
-    box: [0, 0, 1000, 120],
-    cover: true,
-    strands: [
-      { d: rootPath(...HORIZON[0]), delay: 0.1 },
-      { d: rootPath(...HORIZON[1]), delay: 0.3 },
-      { d: rootPath(...HORIZON[2]), delay: 0.5 },
-      { d: rootPath(...HORIZON[3]), delay: 0.4 },
-      { d: "M884 0 C886 14 876 26 880 44", delay: 0.7, faint: true },
-      { d: rootPath(rootBranch(HORIZON[0][0], 0.55, 12, [580, 70], [576, 90])), delay: 0.8, faint: true },
-      { d: rootPath(rootBranch(HORIZON[1][0], 0.65, 12, [684, 70], [682, 86])), delay: 0.9, faint: true },
-      { d: rootPath(rootBranch(HORIZON[2][0], 0.5, 12, [696, 58], [700, 74])), delay: 0.95, faint: true },
-      { d: "M420 0 C421 18 412 30 416 50", delay: 0.6, faint: true },
-      { d: "M292 0 C292 12 298 22 296 36", delay: 0.85, faint: true },
-      { d: "M944 0 C944 12 952 20 950 34", delay: 1, faint: true },
-    ],
-    // Sin puntas: el pie las apaga con la máscara antes de llegar.
-  },
-} satisfies Record<string, Shape>;
+const seedOf = (host: HTMLElement) => Number(host.dataset.seed) || 1;
 
-export type RootletShape = keyof typeof SHAPES;
+const PLANS = {
+  // Del horizonte del pie: de cada pie de las letras nace un haz (o dos,
+  // uno a cada lado) que se abre bajo la palabra; se cruzan con los de las
+  // letras vecinas y se apagan hacia abajo. Destellos que suben: la savia
+  // que luego asciende por las letras.
+  horizon: ({ h, host }) => {
+    const giant = host.parentElement?.querySelector<HTMLElement>(".footer__giant");
+    if (!giant) return null;
+    const size = parseFloat(getComputedStyle(giant).fontSize) || 200;
+    // Todo a la medida de la palabra: en móvil, menos fibras y más cortas.
+    const k = size / 533;
+    const deep = Math.max(56, size * 0.3);
+    const thin = 0.45 + 0.55 * Math.min(1, k);
+    const left = host.getBoundingClientRect().left;
+    const R = noise(seedOf(host));
+    const seeds: RootSeed[] = [];
+    const steps = feet(giant);
+    steps.forEach((f, n) => {
+      const x = f.x - left;
+      const total = Math.max(3, Math.min(11, Math.round((f.w / size) * 85 * thin)));
+      const reach = () => deep * (0.95 + R(n + 2 + seeds.length) * 0.9);
+      if (f.w < size * 0.06) {
+        // Curvas que apenas tocan la base («e», panza de la «a»): poca raíz.
+        seeds.push({ at: [x, 0], angle: 90 + (R(n + 7) - 0.5) * 34, strands: Math.max(2, Math.round(total * 0.5)), length: deep * (0.55 + R(n + 8) * 0.35), flare: 30, open: 0.4, offset: n * 5 });
+      } else {
+        // Un haz por pie, que se abre a un lado y se parte más abajo (en Y,
+        // no en «∧»); a veces, otro más fino y más atrás hacia el otro lado.
+        const lean = R(n + 11) < 0.5 ? -1 : 1;
+        const tilt = 0.4 + 0.6 * Math.min(1, k * 1.6);
+        const length = reach();
+        seeds.push({ at: [x, 0], angle: 90 - lean * (4 + R(n + 1) * 28) * tilt, strands: total, length, flare: (30 + R(n + 3) * 35) * tilt, open: 0.45, offset: n * 5 });
+        if (R(n + 21) < 0.45 && total > 4) {
+          seeds.push({ at: [x - lean * f.w * 0.12, 0], angle: 90 + lean * (14 + R(n + 4) * 26) * tilt, strands: 2 + Math.round(R(n + 5)), length: length * (0.45 + R(n + 6) * 0.35), flare: 30 * tilt, open: 0.3, offset: n * 5 + 14, depth: 0.35 });
+        }
+      }
+    });
+    // Raicillas finas junto a algunos pies, como pelos de la raíz. Sueltas
+    // entre letra y letra parecían trazos perdidos.
+    steps.forEach((f, n) => {
+      if (R(n + 31) < 0.4) return;
+      const side = R(n + 32) < 0.5 ? -1 : 1;
+      seeds.push({
+        at: [f.x - left + side * (f.w * 0.5 + size * (0.01 + R(n + 33) * 0.03)), 0],
+        angle: 90 + side * (6 + R(n + 34) * 22),
+        strands: 1,
+        length: deep * (0.22 + R(n + 35) * 0.25),
+        offset: n * 5 + 20,
+        depth: 0.45 + R(n + 36) * 0.25,
+      });
+    });
+    // Se apagan antes del fondo de la caja (y del filete del pie).
+    return { field: { seed: seedOf(host), seeds, scale: Math.max(0.6, k) }, ink: { fade: Math.min(h, deep) * 0.86 }, sparks: "up" };
+  },
+  // Cuelga del eje, bajo el nodo de una fase de arriba, y se abre hacia el
+  // hueco de la derecha (a la izquierda está el texto de la fase anterior).
+  hang: ({ w, h, host }) => {
+    const R = noise(seedOf(host));
+    const o: Vec = [40, 0];
+    return {
+      field: {
+        seed: seedOf(host),
+        walls: [6, w],
+        seeds: [
+          { at: o, angle: 70 + R(1) * 12, strands: 8, length: h * (0.85 + R(2) * 0.2), flare: 30 + R(3) * 14 },
+          { at: o, angle: 112 + R(4) * 10, strands: 3, length: h * 0.42, flare: 22, offset: 8, depth: 0.25 },
+        ],
+      },
+      ink: { fade: h * 0.95 },
+    };
+  },
+  // Donde acaba el eje, la línea echa raíces: sobre todo hacia la derecha y
+  // hacia abajo; a la izquierda, poco (ahí está el texto de la última fase).
+  fan: ({ w, h, host }) => {
+    const o: Vec = [60, 0];
+    return {
+      field: {
+        seed: seedOf(host),
+        walls: [20, w],
+        seeds: [
+          { at: o, angle: 58, strands: 7, length: h * 1.05, flare: 48 },
+          { at: o, angle: 90, strands: 5, length: h * 0.85, flare: 18, offset: 6 },
+          { at: o, angle: 128, strands: 2, length: h * 0.32, flare: 30, offset: 12, depth: 0.3 },
+        ],
+      },
+      ink: { fade: h },
+    };
+  },
+  // Sale de la línea vertical (móvil) hacia el hueco entre fases.
+  side: ({ w, h, host }) => ({
+    field: {
+      seed: seedOf(host),
+      walls: [2, w],
+      seeds: [
+        { at: [3, 0], angle: 66, strands: 4, length: h * 1.05, flare: 30, open: 0.3 },
+        { at: [3, h * 0.18], angle: 76, strands: 1, length: h * 0.5, offset: 12, depth: 0.3 },
+      ],
+    },
+    ink: { fade: h },
+  }),
+  // Donde acaba la línea vertical (móvil): echa raíces, más hacia dentro
+  // porque la línea va pegada al borde de la pantalla.
+  tail: ({ w, h, host }) => ({
+    field: {
+      seed: seedOf(host),
+      walls: [4, w],
+      seeds: [
+        { at: [20, 0], angle: 84, strands: 5, length: h * 1.05, flare: 20 },
+        { at: [20, 0], angle: 60, strands: 4, length: h * 0.9, flare: 40, offset: 5 },
+        { at: [20, 0], angle: 118, strands: 2, length: h * 0.5, flare: 24, offset: 9, depth: 0.3 },
+      ],
+    },
+    ink: { fade: h },
+  }),
+} satisfies Record<string, RootPlanner>;
+
+export type RootletShape = keyof typeof PLANS;
 
 export function Rootlets({
   shape,
   className,
   trigger = "view",
+  seed = 1,
 }: {
   shape: RootletShape;
   className?: string;
-  /** "view": se dibuja al entrar en pantalla. "lit": cuando el padre lleva data-lit="true". */
+  /** "view": crece al entrar en pantalla. "lit": cuando él o su padre llevan data-lit="true". */
   trigger?: "view" | "lit";
+  /** Cada pieza con su semilla, para que dos iguales no salgan idénticas. */
+  seed?: number;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const id = `rl${useId().replace(/[^\w-]/g, "")}`;
-  const s: Shape = SHAPES[shape];
-  const [x, y, w, h] = s.box;
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || prefersReducedMotion()) return;
-    el.dataset.anim = "";
-    if (trigger !== "view") return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (!e.isIntersecting) return;
-        el.dataset.in = "";
-        io.disconnect();
-      },
-      { threshold: 0.35 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [trigger]);
+  useRoots(ref, { plan: PLANS[shape], trigger, duration: shape === "horizon" ? 3 : 2, text: shape === "horizon" });
 
   return (
-    <span ref={ref} className={`rootlets${className ? ` ${className}` : ""}`} data-shape={shape} aria-hidden="true">
-      <svg viewBox={`${x} ${y} ${w} ${h}`} preserveAspectRatio={s.cover ? "xMidYMin slice" : undefined} focusable="false">
-        <defs>
-          <linearGradient id={id} x1="0" y1={y} x2="0" y2={y + h} gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="var(--orchid)" />
-            <stop offset="0.5" stopColor="var(--violet)" stopOpacity="0.65" />
-            <stop offset="1" stopColor="var(--indigo)" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id={`${id}-tip`} href={`#${id}`}>
-            <stop offset="0" stopColor="var(--orchid)" />
-            <stop offset="0.5" stopColor="var(--violet)" stopOpacity="0.65" />
-            <stop offset="1" stopColor="var(--violet)" stopOpacity="0.35" />
-          </linearGradient>
-        </defs>
-        {s.strands.map((r, i) => (
-          <path
-            key={i}
-            className={`rootlets__line${r.faint ? " rootlets__line--faint" : ""}`}
-            d={r.d}
-            pathLength={1}
-            stroke={`url(#${id}${r.tip ? "-tip" : ""})`}
-            vectorEffect={s.cover ? "non-scaling-stroke" : undefined}
-            style={{ "--d": `${r.delay}s` } as CSSProperties}
-          />
-        ))}
-        {s.tips?.map((p, i) => (
-          <circle key={i} className="rootlets__tip" cx={p.x} cy={p.y} r={2.2} style={{ "--d": `${p.delay}s` } as CSSProperties} />
-        ))}
-      </svg>
+    <span ref={ref} className={`rootlets${className ? ` ${className}` : ""}`} data-shape={shape} data-seed={seed} aria-hidden="true">
+      <canvas className="rootlets__layer rootlets__layer--back" data-layer="back" />
+      <canvas className="rootlets__layer rootlets__layer--glow" data-layer="glow" />
+      <canvas className="rootlets__layer rootlets__layer--front" data-layer="front" />
+      {shape === "horizon" ? <canvas className="rootlets__layer rootlets__layer--spark" data-layer="spark" /> : null}
     </span>
   );
 }

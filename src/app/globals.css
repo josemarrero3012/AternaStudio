@@ -2616,31 +2616,46 @@ a.aurora-card {
   pointer-events: none;
 }
 
+/* La caja de diseño (460 × 250): raíces, puntas y etiquetas, a la vez. */
+.root__art {
+  position: relative;
+  aspect-ratio: 460 / 250;
+}
+
 .root__svg {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
   overflow: visible;
   fill: none;
 }
 
-.root__line {
-  stroke-width: 1.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--violet) 70%, transparent));
+/* Las raíces (lienzos de MethodRoot/useRoots). Sobresalen de la caja por la
+   izquierda (lo que se abre bajo el nodo) y por abajo; las proporciones
+   van a juego con OUT en MethodRoot.tsx. */
+.root__roots {
+  position: absolute;
+  top: 0;
+  left: -14%;
+  width: 120%;
+  height: 112%;
+  pointer-events: none;
 }
 
-.root__line--faint {
-  stroke-width: 0.8;
-  opacity: 0.6;
-  filter: none;
+.root__layer,
+.rootlets__layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.root__dot {
-  fill: var(--lavender);
-  opacity: 0.5;
-}
+/* Sin filtros CSS: el halo de las fibras de delante y el desenfoque de las
+   del fondo salen de pintarlos a menos resolución en sus propios lienzos
+   (el del halo va entre los dos; ver paintGlow en lib/roots.ts y useRoots).
+   Un filtro aquí se recalcularía en cada fotograma en que algo se mueve por
+   encima (los destellos, el polvo de luz). */
 
 .root__tip {
   fill: var(--orchid);
@@ -2685,7 +2700,9 @@ a.aurora-card {
 }
 
 /* Con movimiento: el nodo se enciende, el suelo se tiende y las raíces
-   bajan; luego las puntas laten y un pulso recorre el suelo hacia el eje. */
+   crecen (useRoots); cuando cada raíz con etiqueta llega a su punta
+   (--tip-N, lo calcula MethodRoot) aparecen el nodo y la etiqueta; luego
+   las puntas laten y un pulso recorre el suelo hacia el eje. */
 .root[data-anim] .root__seed {
   transform: scale(0);
   transition: transform var(--d-std) var(--e-aterna);
@@ -2696,27 +2713,13 @@ a.aurora-card {
   transition: transform 1.1s var(--e-aterna) 0.15s;
 }
 
-.root[data-anim] .root__line {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 1.6s var(--e-out) var(--d);
-}
-
-.root[data-anim] :is(.root__dot, .root__tip, .root__label) {
+.root[data-anim] :is(.root__tip, .root__label) {
   opacity: 0;
   transition: opacity 0.6s var(--e-out) var(--d);
 }
 
 .root[data-in] :is(.root__seed, .root__ground) {
   transform: none;
-}
-
-.root[data-in] .root__line {
-  stroke-dashoffset: 0;
-}
-
-.root[data-in] .root__dot {
-  opacity: 0.5;
 }
 
 .root[data-in] :is(.root__tip, .root__label) {
@@ -2793,94 +2796,42 @@ a.aurora-card {
 
 /* Raicillas (Rootlets.tsx) ---------------------------------------------------
    Piezas pequeñas de la misma raíz de luz, colgadas de las líneas que ya
-   hay: el eje del método y el horizonte del pie. Cada pieza mide en px lo
-   mismo que su lienzo (salvo «side») y el margen deja su origen sobre la
-   línea. */
+   hay: el eje del método y el horizonte del pie. Cada pieza es una caja con
+   sus lienzos; el margen deja su origen sobre la línea (el origen de cada
+   forma está en PLANS, en Rootlets.tsx). */
 .rootlets {
   position: absolute;
   display: block;
   pointer-events: none;
 }
 
-.rootlets svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  fill: none;
-}
-
+/* Bajo el nodo de una fase: se abre hacia el hueco de la derecha. */
 .rootlets[data-shape="hang"] {
-  width: 104px;
-  height: 170px;
-  margin-left: -34px;
+  width: min(300px, calc(var(--phase-w, 320px) * 0.8));
+  height: calc(var(--rail-h, 520px) * 0.36);
+  margin-left: -40px;
 }
 
-/* A tres cuartos: cabe en el hueco entre fases sin tocar el texto. */
+/* De la línea vertical (móvil), en el hueco entre fases. */
 .rootlets[data-shape="side"] {
-  width: 39px;
-  height: 58.5px;
+  width: 64px;
+  height: 84px;
   margin-left: -3px;
 }
 
 .rootlets[data-shape="fan"] {
-  width: 128px;
-  height: 100px;
-  margin-left: -64px;
+  width: 260px;
+  height: calc(var(--rail-h, 520px) * 0.42);
+  margin-left: -60px;
 }
 
+/* Donde acaba la línea vertical. La sección recorta lo que sobresale
+   (overflow: clip) y debajo solo queda su margen: la caja cabe en él, para
+   que las raíces se apaguen antes del borde y no se corten en seco. */
 .rootlets[data-shape="tail"] {
-  width: 84px;
-  height: 100px;
+  width: 104px;
+  height: min(120px, var(--section-y));
   margin-left: -20px;
-}
-
-.rootlets__line {
-  stroke-width: 1.1;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--violet) 70%, transparent));
-}
-
-.rootlets__line--faint {
-  stroke-width: 0.7;
-  opacity: 0.55;
-  filter: none;
-}
-
-.rootlets__tip {
-  fill: var(--orchid);
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--orchid) 80%, transparent));
-}
-
-/* Con movimiento esperan apagadas y se dibujan al encenderse: por sí mismas
-   (data-in al entrar en pantalla, data-lit cuando llega la luz) o con su
-   fase (data-lit en el padre). Al apagarse se recogen rápido. */
-.rootlets[data-anim] .rootlets__line {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0.5s var(--e-out);
-}
-
-.rootlets[data-anim] .rootlets__tip {
-  opacity: 0;
-  transition: opacity 0.3s var(--e-out);
-}
-
-:is(.rootlets[data-in], .rootlets[data-lit="true"], [data-lit="true"] > .rootlets)[data-anim] .rootlets__line {
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 1.5s var(--e-out) var(--d);
-}
-
-:is(.rootlets[data-in], .rootlets[data-lit="true"], [data-lit="true"] > .rootlets)[data-anim] .rootlets__tip {
-  opacity: 1;
-  transition: opacity 0.6s var(--e-out) var(--d);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  :is(.rootlets[data-in], .rootlets[data-lit="true"], [data-lit="true"] > .rootlets)[data-anim] .rootlets__tip {
-    animation: root-beat 3.6s ease-in-out calc(var(--d) + 0.8s) infinite;
-  }
 }
 
 /* En la línea vertical del método (móvil): nacen de la línea, en el hueco
@@ -2900,7 +2851,8 @@ a.aurora-card {
   }
 }
 
-/* En el rail: bajo el nodo de las fases de arriba y al final del eje. */
+/* En el rail: bajo el nodo de las fases de arriba (las de abajo tienen ahí
+   su texto) y al final del eje. */
 .rail-phase__roots {
   top: 50%;
   left: 0;
@@ -2915,18 +2867,21 @@ a.aurora-card {
   left: 0;
 }
 
-/* Del horizonte del pie: a todo el ancho, desde el filamento. */
+/* Del horizonte del pie: a todo el ancho, desde el filamento (a 0,02em de
+   la base de «Aterna», ver .footer__giant::after). La caja crece con la
+   palabra; el hueco de debajo, también, para que las raíces se apaguen
+   antes del filete del pie. */
 .footer__horizon {
-  padding-bottom: clamp(36px, 5vw, 72px);
+  --giant: min(37vw, 34.5rem);
+  padding-bottom: max(44px, calc(var(--giant) * 0.2));
 }
 
 .footer__roots {
   inset-inline: 0;
-  overflow: hidden;
-  top: calc(100% - clamp(36px, 5vw, 72px) - min(0.74vw, 0.69rem));
-  height: clamp(64px, 8vw, 128px);
-  -webkit-mask-image: linear-gradient(180deg, #000 40%, transparent);
-  mask-image: linear-gradient(180deg, #000 40%, transparent);
+  top: calc(100% - max(44px, calc(var(--giant) * 0.2)) - var(--giant) * 0.02);
+  height: max(84px, calc(var(--giant) * 0.3));
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
 }
 
 /* Método en horizontal (ApproachRail.tsx) ---------------------------------- */
@@ -3022,10 +2977,6 @@ a.aurora-card {
 .rail__axis-fill {
   stroke: var(--orchid);
   filter: drop-shadow(0 0 5px var(--violet));
-}
-.rail-phase__roots--up {
-  transform: rotate(180deg);
-  transform-origin: 34px 0;
 }
 
 .rail-phase {
