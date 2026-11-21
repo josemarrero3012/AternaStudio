@@ -76,7 +76,7 @@ export function Footer() {
       <div className="container footer__horizon" aria-hidden="true">
         <p className="footer__giant">Aterna</p>
         {/* La marca, apoyada sobre sus raíces. */}
-        <Rootlets shape="horizon" className="footer__roots" />
+        <Rootlets shape="horizon" seed={12} className="footer__roots" />
       </div>
       <div className="container footer__base">
         <p className="t-label dim">

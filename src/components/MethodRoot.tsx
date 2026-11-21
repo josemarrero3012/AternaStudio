@@ -2,41 +2,36 @@
 
 // «No empezamos por el código», como una raíz de luz: el titular queda
 // encima de la tierra y debajo crece lo que no se ve. Un nodo enciende la
-// línea del suelo y, de ella, cuelgan raíces que se apagan en la oscuridad;
-// en tres de sus puntas, lo que se decide antes del código. En el rail, la
+// línea del suelo y de ella cuelgan raíces que se apagan en la oscuridad;
+// tres de ellas acaban en lo que se decide antes del código. En el rail, la
 // línea del suelo cruza el hueco y se convierte en el eje de las fases: la
-// raíz y el método son la misma línea. Mismo vocabulario que Trace.tsx
-// (filamento, puntos, nodo), pero a la medida de la sección. Alrededor,
-// raicillas muy finas, un resplandor de tierra bajo el suelo y motas de luz
-// que suben despacio desde las raíces.
+// raíz y el método son la misma línea. Las raíces no están dibujadas: las
+// genera lib/roots.ts (haces de fibras, como las raíces del árbol del vídeo)
+// y crecen de verdad cuando la sección entra; ya crecidas, de vez en cuando
+// baja un destello por alguna fibra. Alrededor, un resplandor de tierra bajo
+// el suelo y motas de luz que suben despacio desde las raíces.
 //
-// Sin movimiento (o sin JavaScript) se ve ya dibujada.
+// Sin movimiento se ve ya crecida y quieta.
 
-import { useEffect, useId, useRef, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { useI18n } from "@/lib/i18n";
 import { prefersReducedMotion } from "@/lib/motion";
-import { rootBranch, rootPath, type RootCurve } from "@/lib/root-curves";
+import { growEaseInverse, type RootSeed, type RootSystem, type Vec } from "@/lib/roots";
+import { useRoots, type RootPlanner } from "./useRoots";
 
-/** Lienzo de 460 × 250: y = 0 es la línea del suelo. */
-const MAIN: RootCurve[][] = [
-  [[[0, 0], [2, 52], [30, 84], [24, 140]], [[24, 140], [21, 168], [36, 206], [30, 240]]],
-  [[[118, 0], [116, 46], [88, 80], [94, 128]], [[94, 128], [98, 160], [80, 192], [84, 226]]],
-  [[[252, 0], [254, 38], [282, 66], [276, 114]], [[276, 114], [272, 146], [292, 170], [288, 200]]],
+/** Lienzo de diseño de 460 × 250: y = 0 es la línea del suelo. */
+const W = 460;
+const H = 250;
+
+/** Puntas con etiqueta (x, y en el lienzo de diseño). */
+const TIPS = [
+  { x: 84, y: 226 },
+  { x: 288, y: 200 },
+  { x: 358, y: 92 },
 ];
-const ROOTS: { d: string; delay: number; faint?: boolean; tip?: boolean }[] = [
-  { d: rootPath(...MAIN[0]), delay: 0.2, tip: true },
-  { d: rootPath(...MAIN[1]), delay: 0.45, tip: true },
-  { d: rootPath(rootBranch(MAIN[1][0], 0.52, 24, [146, 104], [144, 152])), delay: 0.8, faint: true, tip: true },
-  { d: rootPath(...MAIN[2]), delay: 0.6, tip: true },
-  { d: rootPath(rootBranch(MAIN[2][0], 0.48, 20, [232, 92], [236, 124])), delay: 0.95, faint: true, tip: true },
-  { d: "M372 0 C370 30 352 50 358 92", delay: 0.75, tip: true },
-  // Raicillas: más finas y tenues, salen de las raíces principales.
-  { d: rootPath(rootBranch(MAIN[0][0], 0.8, 18, [-2, 150], [6, 172])), delay: 1.1, faint: true },
-  { d: rootPath(rootBranch(MAIN[1][1], 0.35, 16, [112, 196], [108, 214])), delay: 1.2, faint: true },
-  { d: "M196 0 C198 22 186 40 190 66", delay: 0.9, faint: true },
-  { d: rootPath(rootBranch(MAIN[2][1], 0.32, 14, [312, 166], [312, 184])), delay: 1.25, faint: true },
-  { d: "M420 0 C421 18 432 30 430 50", delay: 1, faint: true },
-];
+
+/** Cuánto sobresale el lienzo de las raíces de la caja (fracción de su ancho). */
+const OUT = { left: 0.14, right: 0.06, bottom: 0.12 };
 
 /** Motas de luz: dónde nacen (% del lienzo), cuándo y cuánto tardan en subir. */
 const MOTES = [
@@ -49,22 +44,69 @@ const MOTES = [
   { x: 86, y: 26, d: 0.8, dur: 8 },
 ];
 
-/** Puntas con etiqueta (x, y en el lienzo) y puntas sin ella. */
-const TIPS = [
-  { x: 84, y: 226 },
-  { x: 288, y: 200 },
-  { x: 358, y: 92 },
+const tip = (i: number): Vec => [TIPS[i].x, TIPS[i].y];
+
+/**
+ * La raíz en el lienzo de diseño. La principal nace del nodo y baja hasta
+ * «Qué hay»; otras dos, de la línea del suelo, acaban en las otras dos
+ * etiquetas. Cada una empieza cuando la línea del suelo llega a su sitio.
+ */
+const BASE: RootSeed[] = [
+  { at: [0, 0], angle: 80, strands: 12, length: 250, to: tip(0) },
+  { at: [0, 0], angle: 114, strands: 5, length: 120, depth: 0.7, offset: 10 },
+  { at: [120, 0], angle: 96, strands: 5, length: 170, depth: 0.2, open: 0.4 },
+  { at: [252, 0], angle: 84, strands: 8, length: 220, to: tip(1), open: 0.35 },
+  { at: [372, 0], angle: 96, strands: 5, length: 100, to: tip(2), open: 0.35 },
+  { at: [190, 0], angle: 92, strands: 3, length: 70, depth: 0.65, open: 0.4 },
+  { at: [432, 0], angle: 80, strands: 3, length: 52, depth: 0.6, open: 0.4 },
+  // Raicillas sueltas del suelo, cortas y tenues.
+  ...[64, 168, 318, 410].map((x, i): RootSeed => ({ at: [x, 0], angle: 90 + ((i * 41) % 31) - 15, strands: 1, length: 14 + ((i * 13) % 20), depth: 0.55 })),
 ];
-const DOTS = [
-  { x: 30, y: 240 },
-  { x: 144, y: 152 },
-  { x: 236, y: 124 },
-];
+const SEEDS = BASE.map((s): RootSeed => ({ ...s, offset: (s.offset ?? 0) + s.at[0] * 0.45 }));
+
+const plan: RootPlanner = ({ w }) => {
+  const box = w / (1 + OUT.left + OUT.right);
+  const s = box / W;
+  const ox = OUT.left * box;
+  const at = ([x, y]: Vec): Vec => [ox + x * s, y * s];
+  return {
+    field: {
+      seed: 7,
+      scale: Math.max(0.6, s),
+      walls: [0, w],
+      seeds: SEEDS.map((seed) => ({
+        ...seed,
+        at: at(seed.at),
+        to: seed.to ? at(seed.to) : undefined,
+        length: seed.length * s,
+        offset: (seed.offset ?? 0) * s,
+      })),
+    },
+    ink: { fade: H * s },
+    sparks: "down",
+  };
+};
+
+/** Las etiquetas aparecen cuando su raíz llega a la punta. */
+const onGrow = (sys: RootSystem, host: HTMLElement, duration: number) => {
+  const art = host.parentElement;
+  if (!art) return;
+  const box = host.offsetWidth / (1 + OUT.left + OUT.right);
+  const s = box / W;
+  sys.strands.forEach((st) => {
+    const end = st.tip;
+    if (!end) return;
+    const i = TIPS.findIndex((p) => Math.hypot(OUT.left * box + p.x * s - end[0], p.y * s - end[1]) < 1);
+    if (i >= 0) art.style.setProperty(`--tip-${i}`, `${(duration * growEaseInverse(st.c1 / sys.reach)).toFixed(2)}s`);
+  });
+};
 
 export function MethodRoot({ variant }: { variant: "rail" | "static" }) {
   const { t } = useI18n();
   const ref = useRef<HTMLDivElement>(null);
-  const id = `root${useId().replace(/[^\w-]/g, "")}`;
+  const art = useRef<HTMLDivElement>(null);
+  const roots = useRef<HTMLSpanElement>(null);
+  useRoots(roots, { plan, trigger: "lit", duration: 2.6, onGrow });
 
   useEffect(() => {
     const el = ref.current;
@@ -74,6 +116,8 @@ export function MethodRoot({ variant }: { variant: "rail" | "static" }) {
       ([e]) => {
         if (!e.isIntersecting) return;
         el.dataset.in = "";
+        // Las raíces (useRoots) crecen cuando su caja lleva data-lit.
+        if (art.current) art.current.dataset.lit = "true";
         io.disconnect();
       },
       { threshold: 0.3 },
@@ -87,52 +131,38 @@ export function MethodRoot({ variant }: { variant: "rail" | "static" }) {
       {/* El suelo: nace en el nodo y, en el rail, sigue hasta el eje. */}
       <span className="root__ground" />
       <span className="root__seed" />
-      <svg className="root__svg" viewBox="0 0 460 250" focusable="false">
-        <defs>
-          <linearGradient id={id} x1="0" y1="0" x2="0" y2="250" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="var(--orchid)" />
-            <stop offset="0.45" stopColor="var(--violet)" stopOpacity="0.7" />
-            <stop offset="1" stopColor="var(--indigo)" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id={`${id}-tip`} href={`#${id}`}>
-            <stop offset="0" stopColor="var(--orchid)" />
-            <stop offset="0.45" stopColor="var(--violet)" stopOpacity="0.7" />
-            <stop offset="1" stopColor="var(--violet)" stopOpacity="0.35" />
-          </linearGradient>
-        </defs>
-        {ROOTS.map((r, i) => (
-          <path
+      {/* La caja de 460 × 250: raíces, nodos de las puntas y etiquetas
+          comparten medidas (antes las etiquetas iban por la altura de la
+          sección y en el rail quedaban 40 px por debajo de su punta). */}
+      <div className="root__art" ref={art}>
+        <span className="root__roots" ref={roots}>
+          <canvas className="root__layer root__layer--back" data-layer="back" />
+          <canvas className="root__layer root__layer--glow" data-layer="glow" />
+          <canvas className="root__layer root__layer--front" data-layer="front" />
+          <canvas className="root__layer root__layer--spark" data-layer="spark" />
+        </span>
+        <svg className="root__svg" viewBox={`0 0 ${W} ${H}`} focusable="false">
+          {TIPS.map((p, i) => (
+            <circle key={i} className="root__tip" cx={p.x} cy={p.y} r={2.4} style={{ "--d": `var(--tip-${i}, ${1.6 + i * 0.15}s)` } as CSSProperties} />
+          ))}
+        </svg>
+        {/* Las etiquetas, en HTML para que el texto se lea nítido a cualquier tamaño. */}
+        {t.approach.root.map((label, i) => (
+          <span
             key={i}
-            className={`root__line${r.faint ? " root__line--faint" : ""}`}
-            d={r.d}
-            pathLength={1}
-            stroke={`url(#${id}${r.tip ? "-tip" : ""})`}
-            style={{ "--d": `${r.delay}s` } as CSSProperties}
-          />
+            className="t-label root__label"
+            style={{ left: `${(TIPS[i].x / W) * 100}%`, top: `${(TIPS[i].y / H) * 100}%`, "--d": `calc(var(--tip-${i}, ${1.6 + i * 0.15}s) + 0.15s)` } as CSSProperties}
+          >
+            {label}
+          </span>
         ))}
-        {DOTS.map((p, i) => (
-          <circle key={i} className="root__dot" cx={p.x} cy={p.y} r={1.6} style={{ "--d": `${1.4 + i * 0.1}s` } as CSSProperties} />
-        ))}
-        {TIPS.map((p, i) => (
-          <circle key={i} className="root__tip" cx={p.x} cy={p.y} r={2.4} style={{ "--d": `${1.5 + i * 0.15}s` } as CSSProperties} />
-        ))}
-      </svg>
+      </div>
       {MOTES.map((m, i) => (
         <span
           key={i}
           className="root__mote"
           style={{ left: `${m.x}%`, top: `${m.y}%`, "--d": `${m.d}s`, "--dur": `${m.dur}s` } as CSSProperties}
         />
-      ))}
-      {/* Las etiquetas, en HTML para que el texto se lea nítido a cualquier tamaño. */}
-      {t.approach.root.map((label, i) => (
-        <span
-          key={i}
-          className="t-label root__label"
-          style={{ left: `${(TIPS[i].x / 460) * 100}%`, top: `${(TIPS[i].y / 250) * 100}%`, "--d": `${1.7 + i * 0.15}s` } as CSSProperties}
-        >
-          {label}
-        </span>
       ))}
     </div>
   );

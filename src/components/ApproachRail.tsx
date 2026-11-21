@@ -63,7 +63,9 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
         nodes.forEach((node, i) => {
           const end = node.offsetLeft;
           const span = end - x;
-          const bend = i % 2 ? -14 : 14;
+          // El primer tramo sigue recta la línea del suelo de la raíz: con
+          // curva, en sus 24 px salía un rizo junto al primer nodo.
+          const bend = i === 0 ? 0 : i % 2 ? -14 : 14;
           d += ` C${x + span * 0.3} ${20 + bend} ${end - span * 0.3} ${20 - bend} ${end} 20`;
           x = end;
         });
@@ -190,8 +192,9 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
               <span className="rail-phase__glow" aria-hidden="true" />
               <span className="rail-phase__dot" />
               <span className="rail-phase__ring" aria-hidden="true" />
-              {/* Bajo el eje, donde la fase no tiene texto, cuelgan raíces. */}
-              <Rootlets shape="hang" trigger="lit" className={`rail-phase__roots${i % 2 ? " rail-phase__roots--up" : ""}`} />
+              {/* Bajo el eje, en las fases de arriba (las de abajo tienen ahí
+                  su texto), cuelgan raíces hacia el hueco de la derecha. */}
+              {i % 2 ? null : <Rootlets shape="hang" trigger="lit" seed={11 + i * 7} className="rail-phase__roots" />}
               <div className="rail-phase__copy">
                 <span className="rail-phase__index">{String(i + 1).padStart(2, "0")}</span>
                 <h3 className="rail-phase__title" key={`t-${locale}`}>
@@ -210,7 +213,7 @@ export function ApproachRail({ section, eyebrow }: { section: RefObject<HTMLElem
             </div>
           ))}
           <span className="rail__end" data-lit="false">
-            <Rootlets shape="fan" trigger="lit" className="rail__end-roots" />
+            <Rootlets shape="fan" trigger="lit" seed={5} className="rail__end-roots" />
           </span>
         </div>
       </div>

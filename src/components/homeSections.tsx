@@ -304,7 +304,7 @@ export function Approach({ n }: { n?: number }) {
                 ) : null}
                 {/* Móvil: una raicilla sale de la línea en el hueco tras la
                     fase; en la última, donde acaba la línea, echa raíces. */}
-                <Rootlets shape={i === t.approach.items.length - 1 ? "tail" : "side"} trigger="lit" className="phase__roots" />
+                <Rootlets shape={i === t.approach.items.length - 1 ? "tail" : "side"} trigger="lit" seed={3 + i * 5} className="phase__roots" />
               </li>
             ))}
           </ol>
