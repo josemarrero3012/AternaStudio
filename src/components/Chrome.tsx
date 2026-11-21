@@ -303,6 +303,16 @@ export function PageTransition({ children }: { children: ReactNode }) {
         0.2,
       );
     }
+    // Como en la salida: si el navegador no completa la animación (en WebKit
+    // se quedaba a medias, con el velo opaco tapando la página y la página
+    // invisible), medio segundo después de lo previsto se salta al final.
+    const tl = timeline.current;
+    window.setTimeout(
+      () => {
+        if (timeline.current === tl && tl.progress() < 1) tl.progress(1);
+      },
+      (tl.duration() + 0.5) * 1000,
+    );
   }, []);
 
   // Salida: interceptamos los enlaces antes que Next (fase de captura en
